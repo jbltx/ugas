@@ -548,19 +548,22 @@ The Current Value calculation MUST follow a standardized pipeline to ensure math
 
 #### Formula
 
-The Current Value (V_current) is calculated as:
+The Current Value $$V_{current}$$ is calculated as:
 
-```
-V_current = Clamp((V_base + Σ a_i) × (1 + Σ p_j) × Π m_k, V_min, V_max)
-```
+$$V_{current} = \max\left( V_{min},\ \min\left( V_{max},\ \left( V_{base} + \sum a_i \right) \times \left( 1 + \sum p_j \right) \times \prod m_k + \sum b_l \right) \right)$$
 
 Where:
-- `V_base` = Base Value
-- `a_i` = Flat additive modifiers (Add operations)
-- `p_j` = Additive percentage modifiers (expressed as decimals, e.g., +10% = 0.1)
-- `m_k` = Multiplicative factors (Multiply operations)
-- `V_min` = Minimum value constraint
-- `V_max` = Maximum value constraint
+- $$V_{base}$$ = Base Value
+- $$a_i$$ = Flat additive modifiers (Add operations)
+- $$p_j$$ = Additive percentage modifiers (expressed as decimals, e.g., +10% = 0.1)
+- $$m_k$$ = Multiplicative factors (Multiply operations)
+- $$b_l$$ = Bonus flat (Add operations)
+- $$V_{min}$$ = Minimum value constraint
+- $$V_{max}$$ = Maximum value constraint
+
+Note that clamping is not mandatory, in that case the formula can be simplified as:
+
+$$V_{current} = \left( V_{base} + \sum a_i \right) \times \left( 1 + \sum p_j \right) \times \prod m_k + \sum b_l$$
 
 #### Order of Operations
 
@@ -572,8 +575,9 @@ The order of operations is CRITICAL for deterministic results:
 4. Apply percentage modification
 5. Multiply all multiplicative factors together
 6. Apply multiplicative factors
-7. Apply Override modifiers (if any, replacing the result)
-8. Apply clamping constraints
+7. Add the sum of all flat bonus modifiers (very rare use cases, usually there is none)
+8. Apply Override modifiers (if any, replacing the result)
+9. Apply clamping constraints
 
 #### Example Calculation
 
@@ -585,6 +589,7 @@ Given:
 - Additive Percentage 2: +15% (0.15)
 - Multiplicative 1: 1.5×
 - Multiplicative 2: 2.0×
+- No Bonus Flat
 
 Calculation:
 ```
@@ -3159,30 +3164,26 @@ class UndoSystem {
 
 | Symbol | Meaning |
 |--------|---------|
-| V | Value (generic) |
-| V_base | Base Value of an Attribute |
-| V_current | Current Value of an Attribute |
-| V_min, V_max | Minimum/Maximum bounds |
-| a | Additive modifier magnitude |
-| p | Percentage modifier magnitude |
-| m | Multiplicative factor |
-| t | Time variable |
-| Δt | Time delta |
-| n | Count/index variable |
+| $$V$$ | Value (generic) |
+| $$V{base}$$ | Base Value of an Attribute |
+| $$V{current}$$ | Current Value of an Attribute |
+| $$V{min}$$, $$V{max}$$ | Minimum/Maximum bounds |
+| $$a$$ | Additive modifier magnitude |
+| $$p$$ | Percentage modifier magnitude |
+| $$m$$ | Multiplicative factor |
+| $$t$$ | Time variable |
+| $$\Delta_t$$ | Time delta |
+| $$n$$ | Count/index variable |
 
 ### Summation and Product Notation
 
-**Summation** (Σ): Sum of values over an index range
+**Summation** ($$\sum$$): Sum of values over an index range
 
-```
-Σ(i=1 to n) a_i = a_1 + a_2 + ... + a_n
-```
+$$\sum_{i=1}^{n} a_i = a_1 + a_2 + \cdots + a_n$$
 
-**Product** (Π): Product of values over an index range
+**Product** ($$\prod$$): Product of values over an index range
 
-```
-Π(k=1 to n) m_k = m_1 × m_2 × ... × m_n
-```
+$$\prod_{k=1}^{n} m_k = m_1 \times m_2 \times \cdots \times m_n$$
 
 ### Set Theory Notation for Tags
 
