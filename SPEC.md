@@ -13,7 +13,7 @@
   - [2. Terminology](#2-terminology)
   - [3. Architectural Overview](#3-architectural-overview)
 - [Part II: Core Components](#part-ii-core-components)
-  - [4. Ability System Component (ASC)](#4-ability-system-component-asc)
+  - [4. Gameplay Controller(GC)](#4-ability-system-component-GC)
   - [5. Attributes](#5-attributes)
   - [6. Attribute Sets](#6-attribute-sets)
   - [7. Gameplay Tags](#7-gameplay-tags)
@@ -66,7 +66,7 @@ The UGAS specification is founded on three core principles:
 
 **Decoupled Gameplay Logic**
 
-Traditional gameplay programming relies on imperative state changes within character classes, leading to tightly coupled code where a single modification to a health variable must manually notify UI elements, sound systems, and networking layers. UGAS shifts this paradigm toward a reactive, data-driven architecture where the Actor is merely an avatar—a spatial representation—while the Ability System Component (ASC) serves as the authoritative state container.
+Traditional gameplay programming relies on imperative state changes within character classes, leading to tightly coupled code where a single modification to a health variable must manually notify UI elements, sound systems, and networking layers. UGAS shifts this paradigm toward a reactive, data-driven architecture where the Actor is merely an avatar—a spatial representation—while the Gameplay Controller(GC) serves as the authoritative state container.
 
 **Reactive, Data-Driven Architecture**
 
@@ -74,7 +74,7 @@ All state changes flow through a single mutation layer (Gameplay Effects), ensur
 
 **Cross-Platform Interoperability**
 
-By defining gameplay rules as deterministic, replicable operations on abstract data structures, UGAS enables a unified framework that can be implemented across diverse execution environments. An ASC can exist as a C++ component in Unreal Engine, a Data-Oriented Technology Stack (DOTS) entity in Unity, or a latent action sequence in an AI-generated environment.
+By defining gameplay rules as deterministic, replicable operations on abstract data structures, UGAS enables a unified framework that can be implemented across diverse execution environments. An GC can exist as a C++ component in Unreal Engine, a Data-Oriented Technology Stack (DOTS) entity in Unity, or a latent action sequence in an AI-generated environment.
 
 ### 1.3 Document Conventions
 
@@ -112,13 +112,13 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 This section provides formal definitions for terms used throughout this specification.
 
 **Actor**
-: An entity within the game world that can possess an Ability System Component. Actors MAY have spatial representation, AI behavior, or player control.
+: An entity within the game world that can possess an Gameplay Entity. Actors MAY have spatial representation, AI behavior, or player control.
 
 **Avatar**
-: The world representation (visual, physical) associated with an Ability System Component. The Avatar is the entity that exists in game space and interacts with the physics and rendering systems.
+: The world representation (visual, physical) associated with an Gameplay Entity. The Avatar is the entity that exists in game space and interacts with the physics and rendering systems.
 
 **Owner**
-: The logical owner of an Ability System Component. The Owner is responsible for the persistence and lifecycle of the ASC. In networked games, the Owner typically corresponds to the authoritative controller of the entity.
+: The logical owner of an Gameplay Entity. The Owner is responsible for the persistence and lifecycle of the GC. In networked games, the Owner typically corresponds to the authoritative controller of the entity.
 
 **Attribute**
 : A named, typed value representing a quantitative aspect of an Actor's state. Attributes implement the dual-value pattern with Base Value and Current Value.
@@ -162,8 +162,8 @@ This section provides formal definitions for terms used throughout this specific
 **CueManager**
 : Client-side system responsible for instantiating and managing Cue resources.
 
-**ASC (Ability System Component)**
-: The central component managing an Actor's Attributes, Tags, Abilities, and Effects. The ASC is the authoritative state container for gameplay logic.
+**GC (Gameplay Entity)**
+: The central component managing an Actor's Attributes, Tags, Abilities, and Effects. The GC is the authoritative state container for gameplay logic.
 
 ---
 
@@ -175,7 +175,7 @@ The UGAS architecture is predicated on the interaction between four distinct pil
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    ABILITY SYSTEM COMPONENT                     │
+│                       GAMEPLAY CONTROLLER                       │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  ┌───────────────┐ ┌───────────────┐ ┌──────────────────────┐   │
@@ -223,8 +223,8 @@ The UGAS architecture is predicated on the interaction between four distinct pil
                                      │ possesses
                                      ▼
 ┌─────────────┐              ┌───────────────┐              ┌─────────────┐
-│   OWNER     │──────────────│     ASC       │──────────────│ ATTRIBUTE   │
-│   ACTOR     │   owns       │               │   contains   │   SETS      │
+│   OWNER     │──────────────│   GAMEPLAY    │──────────────│ ATTRIBUTE   │
+│   ACTOR     │   owns       │  CONTROLLER   │   contains   │   SETS      │
 └─────────────┘              └───────┬───────┘              └─────────────┘
                                      │
                     ┌────────────────┼────────────────┐
@@ -247,7 +247,7 @@ The UGAS execution model follows a deterministic sequence for processing gamepla
 
 1. **Input Processing**: Hardware inputs are mapped to Input Actions, which trigger Ability activation attempts.
 
-2. **Ability Activation**: The ASC validates activation requirements (Tags, Costs, Cooldowns) before committing the Ability.
+2. **Ability Activation**: The GC validates activation requirements (Tags, Costs, Cooldowns) before committing the Ability.
 
 3. **Effect Application**: Abilities apply Effects to Targets. Effects create Modifiers on Attributes and grant/remove Tags.
 
@@ -275,11 +275,11 @@ Implementations SHOULD consider the following threading guidelines:
 
 # Part II: Core Components
 
-## 4. Ability System Component (ASC)
+## 4. Gameplay Controller(GC)
 
 ### 4.1 Responsibilities
 
-The Ability System Component is the central hub for all gameplay ability logic. An ASC implementation MUST:
+The Gameplay Controlleris the central hub for all gameplay ability logic. An GC implementation MUST:
 
 1. Maintain collections of granted Abilities, active Effects, and owned Tags
 2. Manage one or more AttributeSets
@@ -290,16 +290,16 @@ The Ability System Component is the central hub for all gameplay ability logic. 
 
 ### 4.2 Ownership Model
 
-The ASC implements a dual-actor ownership model:
+The GC implements a dual-actor ownership model:
 
 **Owner Actor**
-: The logical owner of the ASC. The Owner is responsible for:
-- ASC lifecycle management
+: The logical owner of the GC. The Owner is responsible for:
+- GC lifecycle management
 - Network authority
 - Persistence across possession changes
 
 **Avatar Actor**
-: The world representation associated with the ASC. The Avatar provides:
+: The world representation associated with the GC. The Avatar provides:
 - Spatial position for targeting
 - Animation and physics integration
 - Visual representation
@@ -312,7 +312,7 @@ For simple entities (AI-controlled enemies, destructible objects), the Owner and
 ┌─────────────────────────────┐
 │         AI ENEMY            │
 │  ┌───────────────────────┐  │
-│  │         ASC           │  │
+│  │         GC            │  │
 │  │   Owner: this         │  │
 │  │   Avatar: this        │  │
 │  └───────────────────────┘  │
@@ -321,14 +321,14 @@ For simple entities (AI-controlled enemies, destructible objects), the Owner and
 
 #### Split-Actor Configuration
 
-For player-controlled characters in networked games, the Owner and Avatar SHOULD be separate to ensure ASC persistence across respawns:
+For player-controlled characters in networked games, the Owner and Avatar SHOULD be separate to ensure GC persistence across respawns:
 
 ```
 ┌─────────────────────────────┐        ┌─────────────────────────────┐
 │       PLAYER STATE          │        │      PLAYER CHARACTER       │
 │  (Persists entire session)  │        │  (Destroyed on death)       │
 │  ┌───────────────────────┐  │        │                             │
-│  │         ASC           │──┼────────┼──▶ Avatar reference         │
+│  │         GC            │──┼────────┼──▶ Avatar reference         │
 │  │   Owner: this         │  │        │                             │
 │  └───────────────────────┘  │        └─────────────────────────────┘
 └─────────────────────────────┘
@@ -338,8 +338,8 @@ For player-controlled characters in networked games, the Owner and Avatar SHOULD
 
 #### Initialization Sequence
 
-1. ASC is instantiated on Owner Actor
-2. AttributeSets are registered with ASC
+1. GC is instantiated on Owner Actor
+2. AttributeSets are registered with GC
 3. Owner and Avatar references are set
 4. Initial Abilities are granted
 5. Initial Effects are applied
@@ -363,13 +363,13 @@ When Avatar possession changes:
 
 ### 4.4 Interface Specification
 
-Implementations SHOULD provide an interface for ASC discovery:
+Implementations SHOULD provide an interface for GC discovery:
 
 ```typescript
 interface IAbilitySystemInterface {
   /**
-   * Returns the Ability System Component associated with this entity.
-   * @returns The ASC instance, or null if not available
+   * Returns the Gameplay Controllerassociated with this entity.
+   * @returns The GC instance, or null if not available
    */
   GetAbilitySystemComponent(): AbilitySystemComponent | null;
 }
@@ -379,7 +379,7 @@ Actors participating in the ability system MUST implement this interface or prov
 
 ### 4.5 Public API
 
-The following methods define the core ASC interface:
+The following methods define the core GC interface:
 
 #### Effect Context Creation
 
@@ -412,7 +412,7 @@ MakeOutgoingSpec(
 
 ```typescript
 /**
- * Applies an effect to this ASC's owner.
+ * Applies an effect to this GC's owner.
  * @param spec - The effect spec to apply
  * @param predictionKey - Optional prediction key for client-side prediction
  * @returns Handle to the active effect, or invalid handle if application failed
@@ -423,8 +423,8 @@ ApplyGameplayEffectToSelf(
 ): ActiveEffectHandle;
 
 /**
- * Applies an effect to a target ASC.
- * @param target - The target ASC
+ * Applies an effect to a target GC.
+ * @param target - The target GC
  * @param spec - The effect spec to apply
  * @param predictionKey - Optional prediction key for client-side prediction
  * @returns Handle to the active effect, or invalid handle if application failed
@@ -455,7 +455,7 @@ RemoveActiveGameplayEffect(
 
 ```typescript
 /**
- * Grants an ability to this ASC.
+ * Grants an ability to this GC.
  * @param abilityClass - The ability class to grant
  * @param level - Initial ability level
  * @param inputID - Optional input binding
@@ -548,18 +548,18 @@ The Current Value calculation MUST follow a standardized pipeline to ensure math
 
 #### Formula
 
-The Current Value $$V_{current}$$ is calculated as:
+The Current Value $V_{current}$ is calculated as:
 
 $$V_{current} = \max\left( V_{min},\ \min\left( V_{max},\ \left( V_{base} + \sum a_i \right) \times \left( 1 + \sum p_j \right) \times \prod m_k + \sum b_l \right) \right)$$
 
 Where:
-- $$V_{base}$$ = Base Value
-- $$a_i$$ = Flat additive modifiers (Add operations)
-- $$p_j$$ = Additive percentage modifiers (expressed as decimals, e.g., +10% = 0.1)
-- $$m_k$$ = Multiplicative factors (Multiply operations)
-- $$b_l$$ = Bonus flat (Add operations)
-- $$V_{min}$$ = Minimum value constraint
-- $$V_{max}$$ = Maximum value constraint
+- $V_{base}$ = Base Value
+- $a_i$ = Flat additive modifiers (Add operations)
+- $p_j$ = Additive percentage modifiers (expressed as decimals, e.g., +10% = 0.1)
+- $m_k$ = Multiplicative factors (Multiply operations)
+- $b_l$ = Bonus flat (Add operations)
+- $V_{min}$ = Minimum value constraint
+- $V_{max}$ = Maximum value constraint
 
 Note that clamping is not mandatory, in that case the formula can be simplified as:
 
@@ -679,19 +679,19 @@ interface IAttributeChangeObserver {
 }
 
 // Registration
-ASC.RegisterAttributeChangeObserver(
+GC.RegisterAttributeChangeObserver(
   attribute: AttributeReference,
   observer: IAttributeChangeObserver
 ): void;
 
 // Unregistration
-ASC.UnregisterAttributeChangeObserver(
+GC.UnregisterAttributeChangeObserver(
   attribute: AttributeReference,
   observer: IAttributeChangeObserver
 ): void;
 ```
 
-### 5.7 Schema Definition (YAML)
+### 5.7 Schema Definition
 
 ```yaml
 Attribute:
@@ -721,28 +721,28 @@ An Attribute Set is a logical container grouping related Attributes. Attribute S
 - **Reusability**: Common sets can be shared across Actor types
 - **Serialization Boundary**: Sets define units for save/load operations
 
-### 6.2 Set Registration with ASC
+### 6.2 Set Registration with GC
 
-Attribute Sets MUST be registered with an ASC before use:
+Attribute Sets MUST be registered with an GC before use:
 
 ```typescript
 /**
- * Registers an attribute set with this ASC.
+ * Registers an attribute set with this GC.
  * @param attributeSet - The set to register
  */
-ASC.RegisterAttributeSet(attributeSet: AttributeSet): void;
+GC.RegisterAttributeSet(attributeSet: AttributeSet): void;
 
 /**
- * Unregisters an attribute set from this ASC.
+ * Unregisters an attribute set from this GC.
  * @param attributeSet - The set to unregister
  */
-ASC.UnregisterAttributeSet(attributeSet: AttributeSet): void;
+GC.UnregisterAttributeSet(attributeSet: AttributeSet): void;
 
 /**
  * Retrieves a registered attribute set by type.
  * @returns The attribute set, or null if not registered
  */
-ASC.GetAttributeSet<T extends AttributeSet>(): T | null;
+GC.GetAttributeSet<T extends AttributeSet>(): T | null;
 ```
 
 ### 6.3 Modular Design Patterns
@@ -869,7 +869,7 @@ Cross-set references are resolved at runtime. Implementations MUST:
 2. Ensure proper recalculation order when dependencies change
 3. Prevent circular dependency chains
 
-### 6.5 Schema Definition (YAML)
+### 6.5 Schema Definition
 
 ```yaml
 AttributeSet:
@@ -902,7 +902,7 @@ Examples:
 
 #### Naming Rules
 
-1. Each segment MUST use PascalCase
+1. Each segment MUST use PGCalCase
 2. Hierarchies SHOULD NOT exceed 5 levels
 3. Leaf tags SHOULD be specific; parent tags SHOULD be categorical
 4. Reserved prefixes:
@@ -1078,7 +1078,7 @@ abstract class GameplayAbility {
   abstract ActivateAbility(context: AbilityContext): void;
 
   /** Called when ability ends */
-  abstract EndAbility(wasCancelled: boolean): void;
+  abstract EndAbility(wGCancelled: boolean): void;
 }
 ```
 
@@ -1141,7 +1141,7 @@ struct AbilitySpec {
 
 Before an Ability can activate, the following checks MUST pass:
 
-1. **Granted Check**: Ability must be granted to the ASC
+1. **Granted Check**: Ability must be granted to the GC
 2. **Not Already Active**: Ability must not currently be active (unless configured for multiple instances)
 3. **Required Tags**: Owner must have all tags in `ActivationRequiredTags`
 4. **Blocked Tags**: Owner must NOT have any tags in `ActivationBlockedTags`
@@ -1150,7 +1150,7 @@ Before an Ability can activate, the following checks MUST pass:
 
 ```typescript
 function CanActivateAbility(spec: AbilitySpec): boolean {
-  const ownerTags = ASC.GetOwnedTags();
+  const ownerTags = GC.GetOwnedTags();
 
   // Check required tags
   if (!ownerTags.HasAll(spec.AbilityClass.ActivationRequiredTags)) {
@@ -1200,7 +1200,7 @@ function CommitAbility(spec: AbilitySpec): boolean {
   }
 
   // Grant activation tags
-  ASC.AddLooseGameplayTags(spec.AbilityClass.ActivationOwnedTags);
+  GC.AddLooseGameplayTags(spec.AbilityClass.ActivationOwnedTags);
 
   return true;
 }
@@ -1257,7 +1257,7 @@ Effect:
 Abilities may be cancelled by:
 
 1. **Self-Cancellation**: Ability logic calls EndAbility(true)
-2. **External Cancel**: Another system calls CancelAbility on the ASC
+2. **External Cancel**: Another system calls CancelAbility on the GC
 3. **Cancel Tags**: An Effect grants a tag in the Ability's `CancelAbilitiesWithTags` set
 4. **Owner Death**: Owner's Health reaches zero
 
@@ -1267,10 +1267,10 @@ function CancelAbility(handle: AbilitySpecHandle): void {
   if (!spec.IsActive) return;
 
   // Remove activation tags
-  ASC.RemoveLooseGameplayTags(spec.AbilityClass.ActivationOwnedTags);
+  GC.RemoveLooseGameplayTags(spec.AbilityClass.ActivationOwnedTags);
 
   // Call ability's end handler
-  spec.AbilityInstance.EndAbility(true /* wasCancelled */);
+  spec.AbilityInstance.EndAbility(true /* wGCancelled */);
 
   // Cleanup active tasks
   CancelAllAbilityTasks(handle);
@@ -1279,7 +1279,7 @@ function CancelAbility(handle: AbilitySpecHandle): void {
 }
 ```
 
-### 8.7 Schema Definition (YAML)
+### 8.7 Schema Definition
 
 ```yaml
 Ability:
@@ -1673,8 +1673,8 @@ struct EffectSpec {
 
 ```typescript
 struct EffectContext {
-  /** ASC that created this effect */
-  InstigatorASC: AbilitySystemComponent;
+  /** GC that created this effect */
+  InstigatorGC: AbilitySystemComponent;
 
   /** Actor that caused this effect */
   EffectCauser: Actor;
@@ -1708,69 +1708,94 @@ struct ActiveEffectHandle {
 }
 ```
 
-### 9.10 Schema Definition (JSON)
+### 9.10 Schema Definition
 
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "Name": { "type": "string" },
-    "DurationPolicy": {
-      "enum": ["Instant", "HasDuration", "Infinite"]
-    },
-    "Duration": {
-      "type": "object",
-      "properties": {
-        "Type": { "enum": ["ScalableFloat", "AttributeBased", "SetByCaller"] },
-        "Value": { "type": "number" }
-      }
-    },
-    "Period": {
-      "type": "object",
-      "properties": {
-        "Period": { "type": "number" },
-        "ExecuteOnApplication": { "type": "boolean" }
-      }
-    },
-    "ExecutionPolicy": {
-      "enum": ["RunInParallel", "RunInSequence", "RunInMerge"]
-    },
-    "Modifiers": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "Attribute": { "type": "string" },
-          "Operation": { "enum": ["Add", "Multiply", "Divide", "Override"] },
-          "Magnitude": { "type": "object" }
-        },
-        "required": ["Attribute", "Operation", "Magnitude"]
-      }
-    },
-    "GrantedTags": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
-    "GrantedAbilities": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "AbilityClass": { "type": "string" },
-          "Level": { "type": "integer" },
-          "InputID": { "type": "string" },
-          "RemoveOnEffectRemoval": { "type": "boolean" }
-        }
-      }
-    },
-    "GameplayCues": {
-      "type": "array",
-      "items": { "type": "string" }
-    }
-  },
-  "required": ["Name", "DurationPolicy"]
-}
+```yaml
+# GameplayEffect Definition Schema
+type: object
+required:
+  - Name
+  - DurationPolicy
+properties:
+  Name:
+    type: string
+    description: Unique effect identifier
+  DurationPolicy:
+    type: string
+    enum:
+      - Instant
+      - HasDuration
+      - Infinite
+  Duration:
+    type: object
+    properties:
+      Type:
+        type: string
+        enum:
+          - ScalableFloat
+          - AttributeBased
+          - SetByCaller
+      Value:
+        type: number
+  Period:
+    type: object
+    properties:
+      Period:
+        type: number
+        minimum: 0
+      ExecuteOnApplication:
+        type: boolean
+        default: false
+  ExecutionPolicy:
+    type: string
+    enum:
+      - RunInParallel
+      - RunInSequence
+      - RunInMerge
+    default: RunInParallel
+  Modifiers:
+    type: array
+    items:
+      type: object
+      required:
+        - Attribute
+        - Operation
+        - Magnitude
+      properties:
+        Attribute:
+          type: string
+        Operation:
+          type: string
+          enum:
+            - Add
+            - Multiply
+            - Divide
+            - Override
+        Magnitude:
+          type: object
+  GrantedTags:
+    type: array
+    items:
+      type: string
+  GrantedAbilities:
+    type: array
+    items:
+      type: object
+      properties:
+        AbilityClass:
+          type: string
+        Level:
+          type: integer
+          default: 1
+        InputID:
+          type: string
+        RemoveOnEffectRemoval:
+          type: boolean
+          default: true
+  GameplayCues:
+    type: array
+    items:
+      type: string
 ```
 
 ---
@@ -1976,7 +2001,7 @@ Tasks are owned by the Ability that created them. When an Ability ends:
 3. Task resources are released
 
 ```typescript
-function EndAbility(wasCancelled: boolean): void {
+function EndAbility(wGCancelled: boolean): void {
   // Cancel all active tasks
   for (const task of this.ActiveTasks) {
     task.Cancel();
@@ -2042,7 +2067,7 @@ InputMapping:
 Ability grants include optional Input ID binding:
 
 ```typescript
-ASC.GrantAbility(
+GC.GrantAbility(
   abilityClass: GA_Fireball,
   level: 1,
   inputID: "Ability.Slot.1"
@@ -2264,7 +2289,7 @@ UGAS defines a client-server replication model where:
 │      SERVER      │            │      CLIENT      │
 │                  │            │                  │
 │  ┌────────────┐  │  Replicate │  ┌────────────┐  │
-│  │    ASC     │──┼───────────▶│  │    ASC     │  │
+│  │    GC     │──┼───────────▶│  │    GC     │  │
 │  │(Authority) │  │            │  │  (Proxy)   │  │
 │  └────────────┘  │            │  └────────────┘  │
 │                  │            │                  │
@@ -2454,17 +2479,17 @@ Effect:
 ```typescript
 function ApplyDamage(target: AbilitySystemComponent, damage: float): void {
   // 1. Create context
-  const context = this.ASC.MakeEffectContext();
+  const context = this.GC.MakeEffectContext();
   context.SetEffectCauser(this.Owner);
 
   // 2. Create spec
-  const spec = this.ASC.MakeOutgoingSpec(GE_BasicDamage, 1, context);
+  const spec = this.GC.MakeOutgoingSpec(GE_BasicDamage, 1, context);
 
   // 3. Set damage amount
   spec.SetByCallerMagnitude("Damage.Amount", -damage);  // Negative for subtraction
 
   // 4. Apply to target
-  const handle = this.ASC.ApplyGameplayEffectToTarget(target, spec);
+  const handle = this.GC.ApplyGameplayEffectToTarget(target, spec);
 
   // 5. Check success
   if (handle.IsValid()) {
@@ -2967,7 +2992,7 @@ class GA_Whirlwind extends GameplayAbility {
         spec.SetByCallerMagnitude("VulnerabilityBonus", 0.2);
       }
 
-      ApplyGameplayEffectToTarget(target.ASC, spec);
+      ApplyGameplayEffectToTarget(target.GC, spec);
     }
   }
 }
@@ -2982,14 +3007,14 @@ class ItemEquipSystem {
     const itemEffect = GenerateItemEffect(item);
 
     // Apply effect
-    const handle = this.ASC.ApplyGameplayEffectToSelf(itemEffect);
+    const handle = this.GC.ApplyGameplayEffectToSelf(itemEffect);
 
     // Store handle for unequip
     this.EquippedItemEffects.set(item.ID, handle);
 
     // Grant item abilities
     for (const ability of item.GrantedAbilities) {
-      this.ASC.GrantAbility(ability.Class, ability.Level, ability.InputID);
+      this.GC.GrantAbility(ability.Class, ability.Level, ability.InputID);
     }
   }
 
@@ -3072,13 +3097,13 @@ class GA_GridMove extends GameplayAbility {
       const moveSpec = MakeOutgoingSpec(GE_CellMove, 1);
       moveSpec.SetByCallerMagnitude("NewX", move.DestX);
       moveSpec.SetByCallerMagnitude("NewY", move.DestY);
-      ApplyGameplayEffectToTarget(move.Cell.ASC, moveSpec);
+      ApplyGameplayEffectToTarget(move.Cell.GC, moveSpec);
     }
 
     // Apply merge effects
     for (const merge of merges) {
       const mergeSpec = MakeOutgoingSpec(GE_CellMerge, 1);
-      ApplyGameplayEffectToTarget(merge.TargetCell.ASC, mergeSpec);
+      ApplyGameplayEffectToTarget(merge.TargetCell.GC, mergeSpec);
 
       // Mark source for destruction
       merge.SourceCell.Tags.AddTag("Status.PendingDestroy");
@@ -3147,7 +3172,7 @@ class UndoSystem {
         restoreSpec.SetByCallerMagnitude("Value", cellState.Value);
         restoreSpec.SetByCallerMagnitude("X", cellState.X);
         restoreSpec.SetByCallerMagnitude("Y", cellState.Y);
-        ApplyGameplayEffectToTarget(cell.ASC, restoreSpec);
+        ApplyGameplayEffectToTarget(cell.GC, restoreSpec);
       }
     }
   }
@@ -3164,24 +3189,24 @@ class UndoSystem {
 
 | Symbol | Meaning |
 |--------|---------|
-| $$V$$ | Value (generic) |
-| $$V{base}$$ | Base Value of an Attribute |
-| $$V{current}$$ | Current Value of an Attribute |
-| $$V{min}$$, $$V{max}$$ | Minimum/Maximum bounds |
-| $$a$$ | Additive modifier magnitude |
-| $$p$$ | Percentage modifier magnitude |
-| $$m$$ | Multiplicative factor |
-| $$t$$ | Time variable |
-| $$\Delta_t$$ | Time delta |
-| $$n$$ | Count/index variable |
+| $V$ | Value (generic) |
+| $V_{base}$ | Base Value of an Attribute |
+| $V_{current}$ | Current Value of an Attribute |
+| $V_{min}$, $V_{max}$ | Minimum/Maximum bounds |
+| $a$ | Additive modifier magnitude |
+| $p$ | Percentage modifier magnitude |
+| $m$ | Multiplicative factor |
+| $t$ | Time variable |
+| $\Delta_t$ | Time delta |
+| $n$ | Count/index variable |
 
 ### Summation and Product Notation
 
-**Summation** ($$\sum$$): Sum of values over an index range
+**Summation** ($\sum$): Sum of values over an index range
 
 $$\sum_{i=1}^{n} a_i = a_1 + a_2 + \cdots + a_n$$
 
-**Product** ($$\prod$$): Product of values over an index range
+**Product** ($\prod$): Product of values over an index range
 
 $$\prod_{k=1}^{n} m_k = m_1 \times m_2 \times \cdots \times m_n$$
 
@@ -3349,111 +3374,139 @@ properties:
 
 ### Effect JSON Schema
 
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://ugas.dev/schemas/effect.json",
-  "title": "GameplayEffect",
-  "type": "object",
-  "required": ["Name", "DurationPolicy"],
-  "properties": {
-    "Name": {
-      "type": "string",
-      "description": "Unique effect identifier"
-    },
-    "DurationPolicy": {
-      "type": "string",
-      "enum": ["Instant", "HasDuration", "Infinite"]
-    },
-    "Duration": {
-      "$ref": "#/$defs/MagnitudeDefinition"
-    },
-    "Period": {
-      "type": "object",
-      "properties": {
-        "Period": { "type": "number", "minimum": 0 },
-        "ExecuteOnApplication": { "type": "boolean", "default": false }
-      }
-    },
-    "ExecutionPolicy": {
-      "type": "string",
-      "enum": ["RunInParallel", "RunInSequence", "RunInMerge"],
-      "default": "RunInParallel"
-    },
-    "Modifiers": {
-      "type": "array",
-      "items": { "$ref": "#/$defs/Modifier" }
-    },
-    "Executions": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "CalculatorClass": { "type": "string" }
-        }
-      }
-    },
-    "GrantedTags": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
-    "ApplicationRequiredTags": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
-    "GrantedAbilities": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "AbilityClass": { "type": "string" },
-          "Level": { "type": "integer", "default": 1 },
-          "InputID": { "type": "string" },
-          "RemoveOnEffectRemoval": { "type": "boolean", "default": true }
-        }
-      }
-    },
-    "GameplayCues": {
-      "type": "array",
-      "items": { "type": "string" }
-    }
-  },
-  "$defs": {
-    "MagnitudeDefinition": {
-      "type": "object",
-      "required": ["Type"],
-      "properties": {
-        "Type": {
-          "type": "string",
-          "enum": ["ScalableFloat", "AttributeBased", "CustomCalculation", "SetByCaller"]
-        },
-        "Value": { "type": "number" },
-        "Curve": { "type": "string" },
-        "CurveInput": { "type": "string" },
-        "BackingAttribute": { "type": "string" },
-        "Source": { "type": "string", "enum": ["Source", "Target"] },
-        "Coefficient": { "type": "number", "default": 1 },
-        "PreMultiplyAdditive": { "type": "number", "default": 0 },
-        "PostMultiplyAdditive": { "type": "number", "default": 0 },
-        "CalculatorClass": { "type": "string" },
-        "DataTag": { "type": "string" }
-      }
-    },
-    "Modifier": {
-      "type": "object",
-      "required": ["Attribute", "Operation", "Magnitude"],
-      "properties": {
-        "Attribute": { "type": "string" },
-        "Operation": {
-          "type": "string",
-          "enum": ["Add", "Multiply", "Divide", "Override"]
-        },
-        "Magnitude": { "$ref": "#/$defs/MagnitudeDefinition" },
-        "Channel": { "type": "string" }
-      }
-    }
-  }
-}
+```yaml
+# GameplayEffect Definition Schema
+type: object
+required:
+  - Name
+  - DurationPolicy
+properties:
+  Name:
+    type: string
+    description: Unique effect identifier
+  DurationPolicy:
+    type: string
+    enum:
+      - Instant
+      - HasDuration
+      - Infinite
+  Duration:
+    $ref: "#/$defs/MagnitudeDefinition"
+  Period:
+    type: object
+    properties:
+      Period:
+        type: number
+        minimum: 0
+      ExecuteOnApplication:
+        type: boolean
+        default: false
+  ExecutionPolicy:
+    type: string
+    enum:
+      - RunInParallel
+      - RunInSequence
+      - RunInMerge
+    default: RunInParallel
+  Modifiers:
+    type: array
+    items:
+      $ref: "#/$defs/Modifier"
+  Executions:
+    type: array
+    items:
+      type: object
+      properties:
+        CalculatorClass:
+          type: string
+  GrantedTags:
+    type: array
+    items:
+      type: string
+  ApplicationRequiredTags:
+    type: array
+    items:
+      type: string
+  GrantedAbilities:
+    type: array
+    items:
+      type: object
+      properties:
+        AbilityClass:
+          type: string
+        Level:
+          type: integer
+          default: 1
+        InputID:
+          type: string
+        RemoveOnEffectRemoval:
+          type: boolean
+          default: true
+  GameplayCues:
+    type: array
+    items:
+      type: string
+
+$defs:
+  MagnitudeDefinition:
+    type: object
+    required:
+      - Type
+    properties:
+      Type:
+        type: string
+        enum:
+          - ScalableFloat
+          - AttributeBased
+          - CustomCalculation
+          - SetByCaller
+      Value:
+        type: number
+      Curve:
+        type: string
+      CurveInput:
+        type: string
+      BackingAttribute:
+        type: string
+      Source:
+        type: string
+        enum:
+          - Source
+          - Target
+      Coefficient:
+        type: number
+        default: 1
+      PreMultiplyAdditive:
+        type: number
+        default: 0
+      PostMultiplyAdditive:
+        type: number
+        default: 0
+      CalculatorClass:
+        type: string
+      DataTag:
+        type: string
+
+  Modifier:
+    type: object
+    required:
+      - Attribute
+      - Operation
+      - Magnitude
+    properties:
+      Attribute:
+        type: string
+      Operation:
+        type: string
+        enum:
+          - Add
+          - Multiply
+          - Divide
+          - Override
+      Magnitude:
+        $ref: "#/$defs/MagnitudeDefinition"
+      Channel:
+        type: string
 ```
 
 ### Tag Definition Schema

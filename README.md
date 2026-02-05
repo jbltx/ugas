@@ -17,23 +17,33 @@ UGAS defines a unified architecture for implementing gameplay abilities, attribu
 
 ## Documentation
 
-| Document | Description |
-|----------|-------------|
+| Document           | Description                              |
+|--------------------|------------------------------------------|
 | [SPEC.md](SPEC.md) | Full technical specification (UGAS v1.0) |
+
+## Schema Definitions
+
+| Schema Path                                   | Description                              |
+|-----------------------------------------------|------------------------------------------|
+| [schemas/gameplay_controller.yaml](schemas/gameplay_controller.yaml) | Gameplay Controller Interface Schema Definition |
+| [schemas/attribute.yaml](schemas/attribute.yaml) | Attribute Schema Definition |
+| [schemas/attribute_set.yaml](schemas/attribute_set.yaml) | Attribute Set Schema Definition |
+| [schemas/gameplay_effect.json](schemas/gameplay_effect.json) | Gameplay Effect Schema Definition |
+| [schemas/gameplay_ability.json](schemas/gameplay_ability.json) | Gameplay Ability Schema Definition |
+| [schemas/gameplay_tag.yaml](schemas/gameplay_tag.yaml) | Gameplay Tag Schema Definition |
 
 ## Core Concepts
 
-### Ability System Component (ASC)
+### Gameplay Controller (GC)
 
-The central hub managing an Actor's gameplay state. The ASC is the authoritative container for Attributes, Tags, Abilities, and Effects.
+The central hub managing an Actor's gameplay state. The GC is the authoritative container for Attributes, Tags, Abilities, and Effects.
 
 ### Attributes
 
 Numeric values representing quantitative state (Health, Mana, Strength). Implements the dual-value pattern:
 
-```
-CurrentValue = (BaseValue + Additions) x (1 + AdditivePercent) x Multiplicatives
-```
+$$V_{current} = \max\left( V_{min},\ \min\left( V_{max},\ \left( V_{base} + \sum a_i \right) \times \left( 1 + \sum p_j \right) \times \prod m_k + \sum b_l \right) \right)$$
+
 
 ### Gameplay Tags
 
@@ -61,9 +71,9 @@ Asynchronous, stateful action units with lifecycle: Grant -> TryActivate -> Comm
 
 1. Define your Attribute Sets in YAML
 2. Define your Gameplay Effects in JSON
-3. Implement the ASC interface for your engine
+3. Implement the GC interface for your engine
 4. Grant Abilities to Actors
-5. Apply Effects through Abilities or directly via ASC
+5. Apply Effects through Abilities or directly via GC
 
 See [SPEC.md](SPEC.md) Section 14 for implementation examples.
 
