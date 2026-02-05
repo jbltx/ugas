@@ -2289,7 +2289,7 @@ UGAS defines a client-server replication model where:
 │      SERVER      │            │      CLIENT      │
 │                  │            │                  │
 │  ┌────────────┐  │  Replicate │  ┌────────────┐  │
-│  │    GC     │──┼───────────▶│  │    GC     │  │
+│  │    GC      │──┼───────────▶│  │    GC      │  │
 │  │(Authority) │  │            │  │  (Proxy)   │  │
 │  └────────────┘  │            │  └────────────┘  │
 │                  │            │                  │
