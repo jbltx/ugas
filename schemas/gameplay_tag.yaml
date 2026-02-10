@@ -1,0 +1,23 @@
+# Tag Registry Schema
+# Based on UGAS Specification v1.0 - Appendix B
+
+type: object
+properties:
+  Tags:
+    type: array
+    items:
+      type: object
+      required:
+        - Tag
+      properties:
+        Tag:
+          type: string
+          pattern: "^[A-Z][a-zA-Z0-9]*(\\.[A-Z][a-zA-Z0-9]*)*$"
+          description: Hierarchical tag in dot notation (e.g., State.Debuff.Stunned)
+        Description:
+          type: string
+        AllowMultiple:
+          type: boolean
+          default: false
+        DevComment:
+          type: string
