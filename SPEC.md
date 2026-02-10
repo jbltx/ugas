@@ -3226,270 +3226,29 @@ $$\prod_{k=1}^{n} m_k = m_1 \times m_2 \times \cdots \times m_n$$
 
 ## Appendix B: Complete Schema Reference
 
+### GameplayController YAML Schema
+
+[schemas/gameplay_controller.yaml#L1-L151](schemas/gameplay_controller.yaml#L1-L151)
+
 ### Attribute YAML Schema
 
-https://github.com/jbltx/ugas/blob/d7d4f2a62043b1d41dbdfe953b07dd8e25c8680d/schemas/attribute.yaml#L1-L44
+[schemas/attribute.yaml#L1-L44](schemas/attribute.yaml#L1-L44)
 
 ### AttributeSet YAML Schema
 
-```yaml
-# AttributeSet Definition Schema
-type: object
-required:
-  - Name
-  - Attributes
-properties:
-  Name:
-    type: string
-    description: Unique set identifier
-  Dependencies:
-    type: array
-    items:
-      type: string
-    description: Required attribute sets
-  Attributes:
-    type: array
-    items:
-      $ref: "#/definitions/Attribute"
-  Metadata:
-    type: object
-    properties:
-      DisplayName:
-        type: string
-      Description:
-        type: string
-```
+[schemas/attribute_set.yaml#L1-L72](schemas/attribute_set.yaml#L1-L72)
 
 ### Ability YAML Schema
 
-```yaml
-# Ability Definition Schema
-type: object
-required:
-  - Name
-properties:
-  Name:
-    type: string
-  Tags:
-    type: object
-    properties:
-      AbilityTags:
-        type: array
-        items:
-          type: string
-      BlockedByTags:
-        type: array
-        items:
-          type: string
-      BlockAbilitiesWithTags:
-        type: array
-        items:
-          type: string
-      CancelAbilitiesWithTags:
-        type: array
-        items:
-          type: string
-      ActivationRequiredTags:
-        type: array
-        items:
-          type: string
-      ActivationBlockedTags:
-        type: array
-        items:
-          type: string
-      ActivationOwnedTags:
-        type: array
-        items:
-          type: string
-  Cost:
-    type: string
-    description: Reference to cost GameplayEffect
-  Cooldown:
-    type: string
-    description: Reference to cooldown GameplayEffect
-  Tasks:
-    type: array
-    items:
-      type: object
-      required:
-        - Type
-      properties:
-        Type:
-          type: string
-        Params:
-          type: object
-  Metadata:
-    type: object
-    properties:
-      DisplayName:
-        type: string
-      Description:
-        type: string
-      Icon:
-        type: string
-```
+[schemas/gameplay_ability.yaml#L1-L77](schemas/gameplay_ability.yaml#L1-L77)
 
 ### Effect JSON Schema
 
-```yaml
-# GameplayEffect Definition Schema
-type: object
-required:
-  - Name
-  - DurationPolicy
-properties:
-  Name:
-    type: string
-    description: Unique effect identifier
-  DurationPolicy:
-    type: string
-    enum:
-      - Instant
-      - HasDuration
-      - Infinite
-  Duration:
-    $ref: "#/$defs/MagnitudeDefinition"
-  Period:
-    type: object
-    properties:
-      Period:
-        type: number
-        minimum: 0
-      ExecuteOnApplication:
-        type: boolean
-        default: false
-  ExecutionPolicy:
-    type: string
-    enum:
-      - RunInParallel
-      - RunInSequence
-      - RunInMerge
-    default: RunInParallel
-  Modifiers:
-    type: array
-    items:
-      $ref: "#/$defs/Modifier"
-  Executions:
-    type: array
-    items:
-      type: object
-      properties:
-        CalculatorClass:
-          type: string
-  GrantedTags:
-    type: array
-    items:
-      type: string
-  ApplicationRequiredTags:
-    type: array
-    items:
-      type: string
-  GrantedAbilities:
-    type: array
-    items:
-      type: object
-      properties:
-        AbilityClass:
-          type: string
-        Level:
-          type: integer
-          default: 1
-        InputID:
-          type: string
-        RemoveOnEffectRemoval:
-          type: boolean
-          default: true
-  GameplayCues:
-    type: array
-    items:
-      type: string
-
-$defs:
-  MagnitudeDefinition:
-    type: object
-    required:
-      - Type
-    properties:
-      Type:
-        type: string
-        enum:
-          - ScalableFloat
-          - AttributeBased
-          - CustomCalculation
-          - SetByCaller
-      Value:
-        type: number
-      Curve:
-        type: string
-      CurveInput:
-        type: string
-      BackingAttribute:
-        type: string
-      Source:
-        type: string
-        enum:
-          - Source
-          - Target
-      Coefficient:
-        type: number
-        default: 1
-      PreMultiplyAdditive:
-        type: number
-        default: 0
-      PostMultiplyAdditive:
-        type: number
-        default: 0
-      CalculatorClass:
-        type: string
-      DataTag:
-        type: string
-
-  Modifier:
-    type: object
-    required:
-      - Attribute
-      - Operation
-      - Magnitude
-    properties:
-      Attribute:
-        type: string
-      Operation:
-        type: string
-        enum:
-          - Add
-          - Multiply
-          - Divide
-          - Override
-      Magnitude:
-        $ref: "#/$defs/MagnitudeDefinition"
-      Channel:
-        type: string
-```
+[schemas/gameplay_effect.yaml#L1-L158](schemas/gameplay_effect.yaml#L1-L158)
 
 ### Tag Definition Schema
 
-```yaml
-# Tag Registry Schema
-type: object
-properties:
-  Tags:
-    type: array
-    items:
-      type: object
-      required:
-        - Tag
-      properties:
-        Tag:
-          type: string
-          pattern: "^[A-Z][a-zA-Z0-9]*(\\.[A-Z][a-zA-Z0-9]*)*$"
-        Description:
-          type: string
-        AllowMultiple:
-          type: boolean
-          default: false
-        DevComment:
-          type: string
-```
+[schemas/gameplay_tag.yaml#L1-L24](schemas/gameplay_tag.yaml#L1-L24)
 
 ---
 
