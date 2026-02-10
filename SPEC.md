@@ -3228,50 +3228,10 @@ $$\prod_{k=1}^{n} m_k = m_1 \times m_2 \times \cdots \times m_n$$
 
 ### Attribute YAML Schema
 
-```yaml
-# Attribute Definition Schema
-type: object
-required:
-  - Name
-  - DefaultBaseValue
-properties:
-  Name:
-    type: string
-    description: Unique identifier for this attribute
-  DefaultBaseValue:
-    type: number
-    description: Initial base value
-  Category:
-    type: string
-    enum: [Resource, Statistic, Meta]
-    default: Statistic
-  Clamping:
-    type: object
-    properties:
-      Min:
-        oneOf:
-          - type: number
-          - type: string  # Attribute reference
-      Max:
-        oneOf:
-          - type: number
-          - type: string  # Attribute reference
-  ReplicationMode:
-    type: string
-    enum: [None, OwnerOnly, All]
-    default: All
-  Metadata:
-    type: object
-    properties:
-      DisplayName:
-        type: string
-      Description:
-        type: string
-      UICategory:
-        type: string
-      Icon:
-        type: string
-```
+https://github.com/jbltx/ugas/blob/d7d4f2a62043b1d41dbdfe953b07dd8e25c8680d/schemas/attribute.yaml
+
+https://github.com/jbltx/ugas/blob/d7d4f2a62043b1d41dbdfe953b07dd8e25c8680d/schemas/attribute.yaml?plain=1
+
 
 ### AttributeSet YAML Schema
 
