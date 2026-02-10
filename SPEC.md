@@ -3228,10 +3228,7 @@ $$\prod_{k=1}^{n} m_k = m_1 \times m_2 \times \cdots \times m_n$$
 
 ### Attribute YAML Schema
 
-https://github.com/jbltx/ugas/blob/d7d4f2a62043b1d41dbdfe953b07dd8e25c8680d/schemas/attribute.yaml
-
-https://github.com/jbltx/ugas/blob/d7d4f2a62043b1d41dbdfe953b07dd8e25c8680d/schemas/attribute.yaml?plain=1
-
+https://github.com/jbltx/ugas/blob/d7d4f2a62043b1d41dbdfe953b07dd8e25c8680d/schemas/attribute.yaml#L1-L44
 
 ### AttributeSet YAML Schema
 
