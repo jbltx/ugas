@@ -3226,29 +3226,29 @@ $$\prod_{k=1}^{n} m_k = m_1 \times m_2 \times \cdots \times m_n$$
 
 ## Appendix B: Complete Schema Reference
 
-### GameplayController YAML Schema
+### GameplayController Schema Definition
 
-https://github.com/jbltx/ugas/blob/HEAD/schemas/gameplay_controller.yaml#L1-L151
+[schemas/gameplay_controller.yaml](schemas/gameplay_controller.yaml)
 
-### Attribute YAML Schema
+### Attribute Schema Definition
 
-https://github.com/jbltx/ugas/blob/HEAD/schemas/attribute.yaml#L1-L44
+[schemas/attribute.yaml](schemas/attribute.yaml)
 
-### AttributeSet YAML Schema
+### AttributeSet Schema Definition
 
-https://github.com/jbltx/ugas/blob/HEAD/schemas/attribute_set.yaml#L1-L72
+[schemas/attribute_set.yaml](schemas/attribute_set.yaml)
 
-### Ability YAML Schema
+### Ability Schema Definition
 
-https://github.com/jbltx/ugas/blob/HEAD/schemas/gameplay_ability.yaml#L1-L77
+[schemas/gameplay_ability.yaml](schemas/gameplay_ability.yaml)
 
-### Effect JSON Schema
+### Effect Schema Definition
 
-https://github.com/jbltx/ugas/blob/HEAD/schemas/gameplay_effect.yaml#L1-L158
+[schemas/gameplay_effect.yaml](schemas/gameplay_effect.yaml)
 
-### Tag Definition Schema
+### Tag Schema Definition
 
-https://github.com/jbltx/ugas/blob/HEAD/schemas/gameplay_tag.yaml#L1-L24
+[schemas/gameplay_tag.yaml](schemas/gameplay_tag.yaml)
 
 ---
 
