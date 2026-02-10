@@ -8,7 +8,7 @@ This directory contains formal schema definitions for the Universal Gameplay Att
 |--------|------|------|-------------|
 | **Gameplay Controller** | `gameplay_controller.json` | `gameplay_controller.yaml` | Interface schema for the Gameplay Controller (GC), the central hub managing abilities, effects, attributes, and tags |
 | **Attribute** | `attribute.json` | `attribute.yaml` | Schema for individual attribute definitions with base values, clamping, and replication settings |
-| **Attribute Set** | - | `attribute_set.yaml` | Schema for attribute collections that group related attributes |
+| **Attribute Set** | `attribute_set.json` | `attribute_set.yaml` | Schema for attribute collections that group related attributes |
 | **Gameplay Effect** | `gameplay_effect.json` | `gameplay_effect.yaml` | Schema for effects that modify attributes, grant tags/abilities, with duration and magnitude definitions |
 | **Gameplay Ability** | `gameplay_ability.json` | `gameplay_ability.yaml` | Schema for ability definitions with tag-based activation requirements and blocking rules |
 | **Gameplay Tag** | `gameplay_tag.json` | `gameplay_tag.yaml` | Schema for the tag registry defining semantic state labels in hierarchical notation |
@@ -90,11 +90,11 @@ Tags:
   - Tag: State.Combat
     Description: Entity is in combat
     AllowMultiple: false
-  
+
   - Tag: State.Debuff.Stunned
     Description: Entity is stunned and cannot act
     AllowMultiple: false
-  
+
   - Tag: Ability.Magic.Fireball
     Description: Fireball ability identifier
     AllowMultiple: false
@@ -109,7 +109,7 @@ Tags:
     "ActorType": "PlayerState"
   },
   "AvatarActor": {
-    "ActorID": "character_001", 
+    "ActorID": "character_001",
     "ActorType": "PlayerCharacter"
   },
   "AttributeSets": [
@@ -189,7 +189,7 @@ These schemas are based on the **Universal Gameplay Attribute System Specificati
 
 - **Section 4**: Gameplay Controller - `gameplay_controller.{json,yaml}`
 - **Section 5**: Attributes - `attribute.{json,yaml}`
-- **Section 6**: Attribute Sets - `attribute_set.yaml`
+- **Section 6**: Attribute Sets - `attribute_set.{json,yaml}`
 - **Section 7**: Gameplay Tags - `gameplay_tag.{json,yaml}`
 - **Section 8**: Gameplay Abilities - `gameplay_ability.{json,yaml}`
 - **Section 9**: Gameplay Effects - `gameplay_effect.{json,yaml}`
@@ -199,10 +199,10 @@ These schemas are based on the **Universal Gameplay Attribute System Specificati
 
 1. **Single Source of Truth**: While SPEC.md contains the authoritative specification, these machine-readable schemas enable automated validation and tooling.
 
-2. **Format Choice**: 
+2. **Format Choice**:
    - Use JSON schemas for strict validation in programming contexts
    - Use YAML schemas for human-readable configuration files
-   
+
 3. **Extensions**: Implementations may extend these schemas with additional properties while maintaining backward compatibility with the core specification.
 
 4. **Versioning**: Schema files follow the UGAS specification version. Any breaking changes will result in new schema files with version suffixes.
