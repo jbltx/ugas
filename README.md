@@ -28,9 +28,16 @@ UGAS defines a unified architecture for implementing gameplay abilities, attribu
 | [schemas/gameplay_controller.yaml](schemas/gameplay_controller.yaml) | Gameplay Controller Interface Schema Definition |
 | [schemas/attribute.yaml](schemas/attribute.yaml) | Attribute Schema Definition |
 | [schemas/attribute_set.yaml](schemas/attribute_set.yaml) | Attribute Set Schema Definition |
-| [schemas/gameplay_effect.json](schemas/gameplay_effect.json) | Gameplay Effect Schema Definition |
-| [schemas/gameplay_ability.json](schemas/gameplay_ability.json) | Gameplay Ability Schema Definition |
+| [schemas/gameplay_effect.yaml](schemas/gameplay_effect.yaml) | Gameplay Effect Schema Definition |
+| [schemas/gameplay_ability.yaml](schemas/gameplay_ability.yaml) | Gameplay Ability Schema Definition |
 | [schemas/gameplay_tag.yaml](schemas/gameplay_tag.yaml) | Gameplay Tag Schema Definition |
+
+| Example Path                                   | Description                              |
+|-----------------------------------------------|------------------------------------------|
+| [schemas/examples/health_attribute.yaml](schemas/examples/health_attribute.yaml) | Example Attribute Definition |
+| [schemas/examples/damage_effect.yaml](schemas/examples/damage_effect.yaml) | Example Gameplay Effect Definition |
+| [schemas/examples/fireball_ability.yaml](schemas/examples/fireball_ability.yaml) | Example Gameplay Ability Definition |
+| [schemas/examples/tag_registry.yaml](schemas/examples/tag_registry.yaml) | Example Gameplay Tag Registry Definition |
 
 ## Core Concepts
 
