@@ -1,0 +1,15 @@
+# Example: Damage Effect
+# Demonstrates an instant effect that reduces health
+
+Name: SimpleDamageEffect
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Health
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -25.0
+GrantedTags:
+  - State.Damaged
+GameplayCues:
+  - GameplayCue.Character.Damage
