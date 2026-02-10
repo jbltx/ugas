@@ -1,0 +1,29 @@
+name: Validate schema examples
+
+on:
+  push:
+
+jobs:
+  validate-schema-examples:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyYAML jsonschema
+
+      - name: Validate schema examples
+        run: |
+          python scripts/validate_schema_examples.py
+
+      - name: Check schema equivalence
+        run: |
+          python scripts/compare_schema_definitions.py

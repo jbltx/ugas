@@ -22,11 +22,13 @@ properties:
       Min:
         oneOf:
           - type: number
-          - type: string  # Attribute reference
+          - type: string
+            description: Attribute reference
       Max:
         oneOf:
           - type: number
-          - type: string  # Attribute reference
+          - type: string
+            description: Attribute reference
   ReplicationMode:
     type: string
     enum: [None, OwnerOnly, All]

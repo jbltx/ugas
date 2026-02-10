@@ -750,100 +750,100 @@ GC.GetAttributeSet<T extends AttributeSet>(): T | null;
 #### Combat Attribute Set
 
 ```yaml
-AttributeSet:
-  Name: "CombatAttributeSet"
-  Attributes:
-    - Name: "Health"
-      DefaultBaseValue: 100.0
-      Category: Resource
-      Clamping:
-        Min: 0.0
-        Max: "MaxHealth"
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/attribute_set.json
+Name: "CombatAttributeSet"
+Attributes:
+  - Name: "Health"
+    DefaultBaseValue: 100.0
+    Category: Resource
+    Clamping:
+      Min: 0.0
+      Max: "MaxHealth"
 
-    - Name: "MaxHealth"
-      DefaultBaseValue: 100.0
-      Category: Statistic
-      Clamping:
-        Min: 1.0
+  - Name: "MaxHealth"
+    DefaultBaseValue: 100.0
+    Category: Statistic
+    Clamping:
+      Min: 1.0
 
-    - Name: "Mana"
-      DefaultBaseValue: 50.0
-      Category: Resource
-      Clamping:
-        Min: 0.0
-        Max: "MaxMana"
+  - Name: "Mana"
+    DefaultBaseValue: 50.0
+    Category: Resource
+    Clamping:
+      Min: 0.0
+      Max: "MaxMana"
 
-    - Name: "MaxMana"
-      DefaultBaseValue: 50.0
-      Category: Statistic
-      Clamping:
-        Min: 0.0
+  - Name: "MaxMana"
+    DefaultBaseValue: 50.0
+    Category: Statistic
+    Clamping:
+      Min: 0.0
 
-    - Name: "AttackPower"
-      DefaultBaseValue: 10.0
-      Category: Statistic
+  - Name: "AttackPower"
+    DefaultBaseValue: 10.0
+    Category: Statistic
 
-    - Name: "Defense"
-      DefaultBaseValue: 5.0
-      Category: Statistic
+  - Name: "Defense"
+    DefaultBaseValue: 5.0
+    Category: Statistic
 ```
 
 #### Movement Attribute Set
 
 ```yaml
-AttributeSet:
-  Name: "MovementAttributeSet"
-  Attributes:
-    - Name: "MoveSpeed"
-      DefaultBaseValue: 600.0
-      Category: Statistic
-      Clamping:
-        Min: 0.0
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/attribute_set.json
+Name: "MovementAttributeSet"
+Attributes:
+  - Name: "MoveSpeed"
+    DefaultBaseValue: 600.0
+    Category: Statistic
+    Clamping:
+      Min: 0.0
 
-    - Name: "JumpVelocity"
-      DefaultBaseValue: 800.0
-      Category: Statistic
+  - Name: "JumpVelocity"
+    DefaultBaseValue: 800.0
+    Category: Statistic
 
-    - Name: "GravityScale"
-      DefaultBaseValue: 1.0
-      Category: Statistic
+  - Name: "GravityScale"
+    DefaultBaseValue: 1.0
+    Category: Statistic
 
-    - Name: "AirControl"
-      DefaultBaseValue: 0.5
-      Category: Statistic
-      Clamping:
-        Min: 0.0
-        Max: 1.0
+  - Name: "AirControl"
+    DefaultBaseValue: 0.5
+    Category: Statistic
+    Clamping:
+      Min: 0.0
+      Max: 1.0
 ```
 
 #### Vehicle Attribute Set
 
 ```yaml
-AttributeSet:
-  Name: "VehicleAttributeSet"
-  Attributes:
-    - Name: "EngineTorque"
-      DefaultBaseValue: 500.0
-      Category: Statistic
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/attribute_set.json
+Name: "VehicleAttributeSet"
+Attributes:
+  - Name: "EngineTorque"
+    DefaultBaseValue: 500.0
+    Category: Statistic
 
-    - Name: "MaxSpeed"
-      DefaultBaseValue: 200.0
-      Category: Statistic
+  - Name: "MaxSpeed"
+    DefaultBaseValue: 200.0
+    Category: Statistic
 
-    - Name: "TireGrip"
-      DefaultBaseValue: 1.0
-      Category: Statistic
+  - Name: "TireGrip"
+    DefaultBaseValue: 1.0
+    Category: Statistic
 
-    - Name: "Fuel"
-      DefaultBaseValue: 100.0
-      Category: Resource
-      Clamping:
-        Min: 0.0
-        Max: "MaxFuel"
+  - Name: "Fuel"
+    DefaultBaseValue: 100.0
+    Category: Resource
+    Clamping:
+      Min: 0.0
+      Max: "MaxFuel"
 
-    - Name: "MaxFuel"
-      DefaultBaseValue: 100.0
-      Category: Statistic
+  - Name: "MaxFuel"
+    DefaultBaseValue: 100.0
+    Category: Statistic
 ```
 
 ### 6.4 Cross-Set Dependencies
@@ -851,16 +851,16 @@ AttributeSet:
 Attributes MAY reference Attributes from other registered sets:
 
 ```yaml
-AttributeSet:
-  Name: "DerivedStatsSet"
-  Dependencies:
-    - "CombatAttributeSet"
-  Attributes:
-    - Name: "EffectiveHealth"
-      DefaultBaseValue: 0.0
-      Category: Meta
-      DerivedFrom:
-        Expression: "Health * (1 + Defense / 100)"
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/attribute_set.json
+Name: "DerivedStatsSet"
+Dependencies:
+  - "CombatAttributeSet"
+Attributes:
+  - Name: "EffectiveHealth"
+    DefaultBaseValue: 0.0
+    Category: Meta
+    DerivedFrom:
+      Expression: "Health * (1 + Defense / 100)"
 ```
 
 Cross-set references are resolved at runtime. Implementations MUST:
@@ -1024,7 +1024,8 @@ TagDefinition:
 Tag definitions MAY be collected in a tag registry:
 
 ```yaml
-TagRegistry:
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_tag.json
+Tags:
   - Tag: "State.Debuff.Stunned"
     Description: "Actor is unable to perform actions"
 
@@ -1213,43 +1214,45 @@ Costs and Cooldowns are NOT separate variables but are implemented as specialize
 #### Cost Effect Pattern
 
 ```yaml
-Effect:
-  Name: "GE_Fireball_Cost"
-  DurationPolicy: Instant
-  Modifiers:
-    - Attribute: "Mana"
-      Operation: Add
-      Magnitude:
-        Type: ScalableFloat
-        Value: -50.0  # Negative to subtract
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+Name: "GE_Fireball_Cost"
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: "Mana"
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -50.0  # Negative to subtract
 ```
 
 #### Cooldown Effect Pattern
 
 ```yaml
-Effect:
-  Name: "GE_Fireball_Cooldown"
-  DurationPolicy: HasDuration
-  Duration:
-    Type: ScalableFloat
-    Value: 5.0  # 5 second cooldown
-  GrantedTags:
-    - "Cooldown.Ability.Fireball"
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+Name: "GE_Fireball_Cooldown"
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 5.0  # 5 second cooldown
+GrantedTags:
+  - "Cooldown.Ability.Fireball"
 ```
 
 This pattern enables external modification of costs and cooldowns. For example, a "Mana Efficiency" buff could apply a multiplier to all cost effects:
 
 ```yaml
-Effect:
-  Name: "GE_ManaEfficiency_Buff"
-  DurationPolicy: HasDuration
-  Duration:
-    Value: 30.0
-  Modifiers:
-    - Attribute: "ManaCostMultiplier"
-      Operation: Multiply
-      Magnitude:
-        Value: 0.75  # 25% reduction
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+Name: "GE_ManaEfficiency_Buff"
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 30.0
+Modifiers:
+  - Attribute: "ManaCostMultiplier"
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 0.75  # 25% reduction
 ```
 
 ### 8.6 Cancellation and Interruption
@@ -1386,19 +1389,21 @@ struct PeriodicSettings {
 Periodic effects behave like repeated Instant effects within a duration container:
 
 ```yaml
-Effect:
-  Name: "GE_Poison"
-  DurationPolicy: HasDuration
-  Duration:
-    Value: 10.0
-  Period:
-    Period: 1.0
-    ExecuteOnApplication: false
-  Modifiers:
-    - Attribute: "Health"
-      Operation: Add
-      Magnitude:
-        Value: -5.0  # 5 damage per second
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+Name: "GE_Poison"
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 10.0
+Period:
+  Period: 1.0
+  ExecuteOnApplication: false
+Modifiers:
+  - Attribute: "Health"
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -5.0  # 5 damage per second
 ```
 
 ### 9.4 Modifier Specification
@@ -1601,19 +1606,21 @@ Use case: Buff refreshing, grace periods
 Effects MAY grant Tags while active:
 
 ```yaml
-Effect:
-  Name: "GE_Burning"
-  DurationPolicy: HasDuration
-  Duration:
-    Value: 5.0
-  GrantedTags:
-    - "State.Debuff.Burning"
-    - "State.Element.Fire"
-  Modifiers:
-    - Attribute: "Health"
-      Operation: Add
-      Magnitude:
-        Value: -10.0
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+Name: "GE_Burning"
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 5.0
+GrantedTags:
+  - "State.Debuff.Burning"
+  - "State.Element.Fire"
+Modifiers:
+  - Attribute: "Health"
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -10.0
 ```
 
 When the Effect is applied:
@@ -1631,14 +1638,14 @@ When the Effect is removed (duration expires or manual removal):
 Effects MAY grant Abilities while active:
 
 ```yaml
-Effect:
-  Name: "GE_FireSword_Equipped"
-  DurationPolicy: Infinite
-  GrantedAbilities:
-    - AbilityClass: "GA_FlameStrike"
-      Level: 1
-      InputID: "Ability.Weapon.Special"
-      RemoveOnEffectRemoval: true
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+Name: "GE_FireSword_Equipped"
+DurationPolicy: Infinite
+GrantedAbilities:
+  - AbilityClass: "GA_FlameStrike"
+    Level: 1
+    InputID: "Ability.Weapon.Special"
+    RemoveOnEffectRemoval: true
 ```
 
 This pattern enables equipment-based abilities where unequipping the item removes the Effect and consequently the granted Ability.
@@ -2161,16 +2168,17 @@ Gameplay Cues enforce strict separation between Mechanics and Aesthetics. This s
 Cues are triggered by Tags following the `GameplayCue.*` convention:
 
 ```yaml
-Effect:
-  Name: "GE_FireDamage"
-  DurationPolicy: Instant
-  Modifiers:
-    - Attribute: "Health"
-      Operation: Add
-      Magnitude:
-        Value: -25.0
-  GameplayCues:
-    - "GameplayCue.Impact.Fire"
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+Name: "GE_FireDamage"
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: "Health"
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -25.0
+GameplayCues:
+  - "GameplayCue.Impact.Fire"
 ```
 
 When the Effect is applied:
@@ -2461,17 +2469,17 @@ function RollbackAndReplay(
 #### Effect Definition
 
 ```yaml
-Effect:
-  Name: "GE_BasicDamage"
-  DurationPolicy: Instant
-  Modifiers:
-    - Attribute: "Health"
-      Operation: Add
-      Magnitude:
-        Type: SetByCaller
-        DataTag: "Damage.Amount"
-  GameplayCues:
-    - "GameplayCue.Impact.Generic"
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+Name: "GE_BasicDamage"
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: "Health"
+    Operation: Add
+    Magnitude:
+      Type: SetByCaller
+      DataTag: "Damage.Amount"
+GameplayCues:
+  - "GameplayCue.Impact.Generic"
 ```
 
 #### Application Flow
@@ -2528,23 +2536,23 @@ class HealthObserver implements IAttributeChangeObserver {
 #### Temporary Modifier
 
 ```yaml
-Effect:
-  Name: "GE_StrengthBuff"
-  DurationPolicy: HasDuration
-  Duration:
-    Type: ScalableFloat
-    Value: 30.0
-  ExecutionPolicy: RunInMerge  # Refresh duration on reapplication
-  Modifiers:
-    - Attribute: "AttackPower"
-      Operation: Multiply
-      Magnitude:
-        Type: ScalableFloat
-        Value: 1.25  # +25% damage
-  GrantedTags:
-    - "Status.Buff.Strength"
-  GameplayCues:
-    - "GameplayCue.Status.StrengthBuff"
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+Name: "GE_StrengthBuff"
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 30.0
+ExecutionPolicy: RunInMerge  # Refresh duration on reapplication
+Modifiers:
+  - Attribute: "AttackPower"
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 1.25  # +25% damage
+GrantedTags:
+  - "Status.Buff.Strength"
+GameplayCues:
+  - "GameplayCue.Status.StrengthBuff"
 ```
 
 #### Visual Cue Integration
@@ -2710,39 +2718,39 @@ class ExecCalc_ArmorPenetration extends ExecutionCalculation {
 #### Movement Attributes
 
 ```yaml
-AttributeSet:
-  Name: "PlatformerMovementSet"
-  Attributes:
-    - Name: "GravityScale"
-      DefaultBaseValue: 1.0
-      Category: Statistic
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/attribute_set.json
+Name: "PlatformerMovementSet"
+Attributes:
+  - Name: "GravityScale"
+    DefaultBaseValue: 1.0
+    Category: Statistic
 
-    - Name: "JumpVelocity"
-      DefaultBaseValue: 1200.0
-      Category: Statistic
+  - Name: "JumpVelocity"
+    DefaultBaseValue: 1200.0
+    Category: Statistic
 
-    - Name: "AirControl"
-      DefaultBaseValue: 0.65
-      Category: Statistic
-      Clamping:
-        Min: 0.0
-        Max: 1.0
+  - Name: "AirControl"
+    DefaultBaseValue: 0.65
+    Category: Statistic
+    Clamping:
+      Min: 0.0
+      Max: 1.0
 
-    - Name: "CoyoteTimeDuration"
-      DefaultBaseValue: 0.15
-      Category: Statistic
+  - Name: "CoyoteTimeDuration"
+    DefaultBaseValue: 0.15
+    Category: Statistic
 
-    - Name: "JumpBufferDuration"
-      DefaultBaseValue: 0.1
-      Category: Statistic
+  - Name: "JumpBufferDuration"
+    DefaultBaseValue: 0.1
+    Category: Statistic
 
-    - Name: "VerticalVelocity"
-      DefaultBaseValue: 0.0
-      Category: Meta
+  - Name: "VerticalVelocity"
+    DefaultBaseValue: 0.0
+    Category: Meta
 
-    - Name: "HorizontalSpeed"
-      DefaultBaseValue: 600.0
-      Category: Statistic
+  - Name: "HorizontalSpeed"
+    DefaultBaseValue: 600.0
+    Category: Statistic
 ```
 
 #### Jump Ability with Variable Height
@@ -2793,22 +2801,24 @@ class GA_Jump extends GameplayAbility {
 #### Power-Up Effects
 
 ```yaml
-Effect:
-  Name: "GE_SuperMushroom"
-  DurationPolicy: Infinite
-  GrantedTags:
-    - "State.PowerUp.Super"
-  Modifiers:
-    - Attribute: "Scale"
-      Operation: Multiply
-      Magnitude:
-        Value: 2.0
-    - Attribute: "Health"
-      Operation: Add
-      Magnitude:
-        Value: 1.0  # Gain 1 hit point
-  GameplayCues:
-    - "GameplayCue.PowerUp.Super"
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+Name: "GE_SuperMushroom"
+DurationPolicy: Infinite
+GrantedTags:
+  - "State.PowerUp.Super"
+Modifiers:
+  - Attribute: "Scale"
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 2.0
+  - Attribute: "Health"
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 1.0  # Gain 1 hit point
+GameplayCues:
+  - "GameplayCue.PowerUp.Super"
 ```
 
 ### 15.2 Racing (Forza-style)
@@ -2816,68 +2826,71 @@ Effect:
 #### Vehicle Attribute Sets
 
 ```yaml
-AttributeSet:
-  Name: "VehiclePerformanceSet"
-  Attributes:
-    - Name: "EngineTorque"
-      DefaultBaseValue: 400.0
-      Description: "Base torque in Nm"
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/attribute_set.json
+Name: "VehiclePerformanceSet"
+Attributes:
+  - Name: "EngineTorque"
+    DefaultBaseValue: 400.0
+    Description: "Base torque in Nm"
 
-    - Name: "EngineRPM"
-      DefaultBaseValue: 0.0
-      Category: Meta
+  - Name: "EngineRPM"
+    DefaultBaseValue: 0.0
+    Category: Meta
 
-    - Name: "MaxSpeed"
-      DefaultBaseValue: 250.0
-      Description: "Top speed in km/h"
+  - Name: "MaxSpeed"
+    DefaultBaseValue: 250.0
+    Description: "Top speed in km/h"
 
-    - Name: "TireGripMultiplier"
-      DefaultBaseValue: 1.0
-      Category: Statistic
+  - Name: "TireGripMultiplier"
+    DefaultBaseValue: 1.0
+    Category: Statistic
 
-    - Name: "AeroDownforce"
-      DefaultBaseValue: 100.0
-      Description: "Downforce coefficient"
+  - Name: "AeroDownforce"
+    DefaultBaseValue: 100.0
+    Description: "Downforce coefficient"
 
-    - Name: "TireTemperature"
-      DefaultBaseValue: 80.0
-      Clamping:
-        Min: 20.0
-        Max: 150.0
+  - Name: "TireTemperature"
+    DefaultBaseValue: 80.0
+    Clamping:
+      Min: 20.0
+      Max: 150.0
 ```
 
 #### Biome-Based Area Effects
 
 ```yaml
-Effect:
-  Name: "GE_Biome_Mud"
-  DurationPolicy: Infinite
-  ApplicationRequiredTags:
-    - "Vehicle"
-  Modifiers:
-    - Attribute: "TireGripMultiplier"
-      Operation: Multiply
-      Magnitude:
-        Value: 0.4
-    - Attribute: "MaxSpeed"
-      Operation: Add
-      Magnitude:
-        Value: -30.0  # Reduce top speed
-  GrantedTags:
-    - "Surface.Mud"
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+Name: "GE_Biome_Mud"
+DurationPolicy: Infinite
+ApplicationRequiredTags:
+  - "Vehicle"
+Modifiers:
+  - Attribute: "TireGripMultiplier"
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 0.4
+  - Attribute: "MaxSpeed"
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -30.0  # Reduce top speed
+GrantedTags:
+  - "Surface.Mud"
 ---
-Effect:
-  Name: "GE_Biome_Asphalt"
-  DurationPolicy: Infinite
-  ApplicationRequiredTags:
-    - "Vehicle"
-  Modifiers:
-    - Attribute: "TireGripMultiplier"
-      Operation: Override
-      Magnitude:
-        Value: 1.0
-  GrantedTags:
-    - "Surface.Asphalt"
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+Name: "GE_Biome_Asphalt"
+DurationPolicy: Infinite
+ApplicationRequiredTags:
+  - "Vehicle"
+Modifiers:
+  - Attribute: "TireGripMultiplier"
+    Operation: Override
+    Magnitude:
+      Type: ScalableFloat
+      Value: 1.0
+GrantedTags:
+  - "Surface.Asphalt"
 ```
 
 #### Physics Integration
@@ -3045,24 +3058,24 @@ class ItemEquipSystem {
 #### Grid Cell Attributes
 
 ```yaml
-AttributeSet:
-  Name: "PuzzleCellSet"
-  Attributes:
-    - Name: "CellValue"
-      DefaultBaseValue: 0.0
-      Category: Statistic
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/attribute_set.json
+Name: "PuzzleCellSet"
+Attributes:
+  - Name: "CellValue"
+    DefaultBaseValue: 0.0
+    Category: Statistic
 
-    - Name: "GridX"
-      DefaultBaseValue: 0.0
-      Category: Meta
+  - Name: "GridX"
+    DefaultBaseValue: 0.0
+    Category: Meta
 
-    - Name: "GridY"
-      DefaultBaseValue: 0.0
-      Category: Meta
+  - Name: "GridY"
+    DefaultBaseValue: 0.0
+    Category: Meta
 
-    - Name: "MergePriority"
-      DefaultBaseValue: 0.0
-      Category: Meta
+  - Name: "MergePriority"
+    DefaultBaseValue: 0.0
+    Category: Meta
 ```
 
 #### Move Ability with Tasks

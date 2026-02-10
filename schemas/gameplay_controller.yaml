@@ -16,7 +16,7 @@ properties:
       ActorType:
         type: string
         description: Type of the owner actor
-  
+
   AvatarActor:
     type: object
     description: World spatial representation (optional, can be same as Owner)
@@ -27,7 +27,7 @@ properties:
       ActorType:
         type: string
         description: Type of the avatar actor
-  
+
   AttributeSets:
     type: array
     items:
@@ -49,7 +49,7 @@ properties:
                 type: number
     minItems: 1
     description: Registered attribute containers
-  
+
   GrantedAbilities:
     type: array
     items:
@@ -76,7 +76,7 @@ properties:
           default: false
           description: Whether the ability is currently active
     description: All abilities granted to this GC
-  
+
   ActiveEffects:
     type: array
     items:
@@ -110,30 +110,25 @@ properties:
           type: string
           description: Reference to the GC that caused this effect
     description: Currently active effects applied to this GC
-  
+
   OwnedTags:
     type: array
     items:
       type: string
       pattern: "^[A-Z][a-zA-Z0-9]*(\\.[A-Z][a-zA-Z0-9]*)*$"
     description: Current semantic state tags (hierarchical dot notation)
-  
+
   ReplicationMode:
     type: string
     enum: [Minimal, Mixed, Full, None]
     default: Mixed
-    description: |
-      Replication strategy:
-      - Minimal: Only cues & tags (AI entities)
-      - Mixed: Full to owner, minimal to others (player characters)
-      - Full: Complete to all clients (single-player/spectators)
-      - None: No replication (server-only entities)
-  
+    description: "Replication strategy: Minimal (only cues & tags for AI), Mixed (full to owner, minimal to others for players), Full (complete to all for single-player/spectators), None (no replication for server-only)"
+
   bIsActive:
     type: boolean
     default: true
     description: Whether this GC is currently active
-  
+
   Metadata:
     type: object
     description: Optional metadata for display and debugging
