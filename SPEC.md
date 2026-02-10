@@ -1,4 +1,4 @@
-# Universal Gameplay Attribute System Specification
+# Universal Gameplay Ability System Specification
 
 **Version:** 1.0
 **Date:** February 2026
@@ -41,7 +41,7 @@
 
 ### 1.1 Purpose and Scope
 
-The Universal Gameplay Attribute System (UGAS) is an open, engine-agnostic specification designed to standardize gameplay logic across game engines and AI world models. This specification defines the architecture, data structures, and behavioral contracts required to implement a consistent ability system that can be deployed on platforms ranging from traditional engines (Unreal Engine, Unity, Godot) to next-generation generative world models such as Google Genie.
+The Universal Gameplay Ability System (UGAS) is an open, engine-agnostic specification designed to standardize gameplay logic across game engines and AI world models. This specification defines the architecture, data structures, and behavioral contracts required to implement a consistent ability system that can be deployed on platforms ranging from traditional engines (Unreal Engine, Unity, Godot) to next-generation generative world models such as Google Genie.
 
 The scope of this specification includes:
 
