@@ -1,4 +1,4 @@
-# Universal Gameplay Attribute System (UGAS)
+# Universal Gameplay Ability System (UGAS)
 
 > An open, engine-agnostic specification for standardizing gameplay logic across game engines and AI world models.
 
@@ -98,7 +98,7 @@ The specification includes detailed case studies for:
 ```bibtex
 @techreport{bonfill_ugas_2026,
   author = {Mickael Bonfill},
-  title = {Universal Gameplay Attribute System Specification},
+  title = {Universal Gameplay Ability System Specification},
   version = {1.0},
   year = {2026},
   month = {February},

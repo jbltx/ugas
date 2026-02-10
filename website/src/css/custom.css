@@ -1,0 +1,404 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-font-family-base: "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ifm-heading-font-family: "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ifm-color-primary: #3b3b3b;
+  --ifm-color-primary-dark: #2f2f2f;
+  --ifm-color-primary-darker: #2a2a2a;
+  --ifm-color-primary-darkest: #1e1e1e;
+  --ifm-color-primary-light: #4a4a4a;
+  --ifm-color-primary-lighter: #595959;
+  --ifm-color-primary-lightest: #6d6d6d;
+  --ifm-color-emphasis-0: #ffffff;
+  --ifm-color-emphasis-100: #f8f8f8;
+  --ifm-color-emphasis-200: #f0f0f0;
+  --ifm-color-emphasis-300: #e6e6e6;
+  --ifm-color-emphasis-400: #d6d6d6;
+  --ifm-color-emphasis-500: #b8b8b8;
+  --ifm-color-emphasis-600: #8f8f8f;
+  --ifm-color-emphasis-700: #666666;
+  --ifm-color-emphasis-800: #3f3f3f;
+  --ifm-color-emphasis-900: #1e1e1e;
+  --ifm-background-color: #fafafa;
+  --ifm-navbar-background-color: #fafafa;
+  --ifm-footer-background-color: #f3f3f3;
+  --ifm-hero-background-color: transparent;
+  --ifm-global-border-width: 1px;
+  --ifm-global-radius: 12px;
+  --ifm-code-font-size: 92%;
+  --ifm-leading: 1.65;
+  --ifm-button-border-radius: 999px;
+  --ifm-link-color: #1f6fd6;
+  --ifm-link-hover-color: #1356b0;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.06);
+  --ug-glass-bg: rgba(255, 255, 255, 0.92);
+  --ug-glass-border: rgba(0, 0, 0, 0.08);
+  --ug-shadow-elevated: 0 20px 50px rgba(15, 18, 23, 0.08);
+  --ug-shadow-soft: 0 8px 30px rgba(15, 18, 23, 0.08);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #e3e3e3;
+  --ifm-color-primary-dark: #d0d0d0;
+  --ifm-color-primary-darker: #c2c2c2;
+  --ifm-color-primary-darkest: #a9a9a9;
+  --ifm-color-primary-light: #f0f0f0;
+  --ifm-color-primary-lighter: #f5f5f5;
+  --ifm-color-primary-lightest: #fafafa;
+  --ifm-color-emphasis-0: #0b0b0b;
+  --ifm-color-emphasis-100: #111111;
+  --ifm-color-emphasis-200: #1a1a1a;
+  --ifm-color-emphasis-300: #232323;
+  --ifm-color-emphasis-400: #2d2d2d;
+  --ifm-color-emphasis-500: #3a3a3a;
+  --ifm-color-emphasis-600: #4a4a4a;
+  --ifm-color-emphasis-700: #6a6a6a;
+  --ifm-color-emphasis-800: #9a9a9a;
+  --ifm-color-emphasis-900: #dcdcdc;
+  --ifm-background-color: #0b0b0b;
+  --ifm-navbar-background-color: #0b0b0b;
+  --ifm-footer-background-color: #111111;
+  --ifm-link-color: #338bff;
+  --ifm-link-hover-color: #79b3ff;
+  --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.08);
+  --ug-glass-bg: rgba(20, 20, 20, 0.92);
+  --ug-glass-border: rgba(255, 255, 255, 0.12);
+  --ug-shadow-elevated: 0 24px 60px rgba(0, 0, 0, 0.55);
+  --ug-shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+body {
+  color: var(--ifm-color-emphasis-900);
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+
+a {
+  transition: color 180ms ease, text-decoration-color 180ms ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 2rem;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: clamp(2.25rem, 2vw + 1.6rem, 3.1rem);
+  line-height: 1.08;
+  margin-bottom: 1.6rem;
+}
+
+h2 {
+  font-size: clamp(1.75rem, 1.2vw + 1.3rem, 2.35rem);
+  line-height: 1.15;
+  margin-bottom: 1rem;
+}
+
+h3 {
+  font-size: clamp(1.35rem, 0.9vw + 1.1rem, 1.8rem);
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+p,
+li,
+.theme-doc-markdown p,
+.theme-doc-markdown li {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.theme-doc-markdown p + p {
+  margin-top: 1.1rem;
+}
+
+.theme-doc-markdown ul,
+.theme-doc-markdown ol {
+  margin-top: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.theme-doc-markdown code {
+  font-weight: 500;
+}
+
+.navbar {
+  background: rgba(250, 250, 250, 0.9);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme='dark'] .navbar {
+  background: rgba(11, 11, 11, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+@media (min-width: 997px) {
+  .navbar {
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background: rgba(250, 250, 250, 0.5);
+  }
+  [data-theme='dark'] .navbar {
+    background: rgba(11, 11, 11, 0.5);
+  }
+  .navbar__link {
+    border-radius: 999px;
+    padding: 0.35rem 0.75rem;
+    transition: background 180ms ease, color 180ms ease;
+  }
+
+  .navbar__link:hover,
+  .navbar__link--active {
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--ifm-color-emphasis-900);
+  }
+
+  [data-theme='dark'] .navbar__link:hover,
+  [data-theme='dark'] .navbar__link--active {
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+.footer {
+  border-top: 1px solid var(--ug-glass-border);
+}
+
+.card,
+.pagination-nav__link,
+.menu__link,
+.table-of-contents__link,
+.theme-doc-sidebar-item-link,
+.theme-doc-sidebar-item-category {
+  border-radius: var(--ifm-global-radius);
+}
+
+.card,
+.pagination-nav__link {
+  background: var(--ug-glass-bg);
+  border: 1px solid var(--ug-glass-border);
+  box-shadow: var(--ug-shadow-soft);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.card:hover,
+.pagination-nav__link:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--ug-shadow-elevated);
+}
+
+.hero__title,
+.hero__subtitle,
+.card,
+.theme-doc-markdown h1,
+.theme-doc-markdown h2,
+.theme-doc-markdown h3 {
+  animation: ug-fade-up 420ms ease both;
+}
+
+.card {
+  animation-delay: 80ms;
+}
+
+.pagination-nav__link {
+  animation: ug-fade-up 420ms ease both;
+  animation-delay: 120ms;
+}
+
+.menu__link,
+.table-of-contents__link {
+  border-radius: 10px;
+  color: var(--ifm-color-emphasis-700);
+  transition: background 200ms ease, color 200ms ease;
+}
+
+.table-of-contents__link {
+  padding: 0.3rem 0.55rem;
+}
+
+.menu__link:hover,
+.menu__link--active,
+.table-of-contents__link--active,
+.table-of-contents__link:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--ifm-color-emphasis-900);
+}
+
+[data-theme='dark'] .menu__link:hover,
+[data-theme='dark'] .menu__link--active,
+[data-theme='dark'] .table-of-contents__link--active,
+[data-theme='dark'] .table-of-contents__link:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.button {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
+}
+
+[data-theme='dark'] .button {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+.theme-code-block {
+  border-radius: 14px;
+  border: 1px solid var(--ug-glass-border);
+  box-shadow: var(--ug-shadow-soft);
+}
+
+.theme-doc-markdown pre {
+  background: var(--ug-glass-bg);
+}
+
+::selection {
+  background: rgba(0, 0, 0, 0.15);
+  color: inherit;
+}
+
+[data-theme='dark'] ::selection {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+@keyframes ug-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+body:not(.dark):not([data-theme='dark']),
+body[data-theme='light'] {
+  --aa-search-input-height: 44px !important;
+  --aa-input-icon-size: 20px !important;
+  --aa-base-unit: 16 !important;
+  --aa-spacing-factor: 1 !important;
+  --aa-spacing: calc(var(--aa-base-unit) * var(--aa-spacing-factor) * 1px) !important;
+  --aa-spacing-half: calc(var(--aa-spacing) / 2) !important;
+  --aa-panel-max-height: 650px !important;
+  --aa-base-z-index: 9999 !important;
+  --aa-font-size: calc(var(--aa-base-unit) * 1px) !important;
+  --aa-font-family: inherit !important;
+  --aa-font-weight-medium: 500 !important;
+  --aa-font-weight-semibold: 600 !important;
+  --aa-font-weight-bold: 700 !important;
+  --aa-icon-size: 20px !important;
+  --aa-icon-stroke-width: 1.6 !important;
+  --aa-icon-color-rgb: 102, 102, 102 !important;
+  --aa-icon-color-alpha: 1 !important;
+  --aa-action-icon-size: 20px !important;
+  --aa-text-color-rgb: 31, 31, 31 !important;
+  --aa-text-color-alpha: 1 !important;
+  --aa-primary-color-rgb: 31, 111, 214 !important;
+  --aa-primary-color-alpha: 0.2 !important;
+  --aa-muted-color-rgb: 102, 102, 102 !important;
+  --aa-muted-color-alpha: 0.6 !important;
+  --aa-panel-border-color-rgb: 102, 102, 102 !important;
+  --aa-panel-border-color-alpha: 0.2 !important;
+  --aa-input-border-color-rgb: 102, 102, 102 !important;
+  --aa-input-border-color-alpha: 0.45 !important;
+  --aa-input-background-color-rgb: 250, 250, 250 !important;
+  --aa-input-background-color-alpha: 1 !important;
+  --aa-background-color-rgb: 248, 248, 248 !important;
+  --aa-background-color-alpha: 1 !important;
+  --aa-selected-color-rgb: 31, 111, 214 !important;
+  --aa-selected-color-alpha: 0.12 !important;
+  --aa-description-highlight-background-color-rgb: 31, 111, 214 !important;
+  --aa-description-highlight-background-color-alpha: 0.15 !important;
+  --aa-detached-media-query: (max-width: 680px) !important;
+  --aa-detached-modal-media-query: (min-width: 680px) !important;
+  --aa-detached-modal-max-width: 680px !important;
+  --aa-detached-modal-max-height: 500px !important;
+  --aa-overlay-color-rgb: 15, 18, 23 !important;
+  --aa-overlay-color-alpha: 0.18 !important;
+  --aa-icon-color-rgb: 102, 102, 102 !important;
+  --aa-panel-shadow: 0 18px 50px rgba(15, 18, 23, 0.12) !important;
+  --aa-scrollbar-width: 13px !important;
+  --aa-scrollbar-track-background-color-rgb: 230, 230, 230 !important;
+  --aa-scrollbar-track-background-color-alpha: 1 !important;
+  --aa-scrollbar-thumb-background-color-rgb: 248, 248, 248 !important;
+  --aa-scrollbar-thumb-background-color-alpha: 1 !important;
+}
+
+body.dark,
+body[data-theme='dark'] {
+  --aa-search-input-height: 44px !important;
+  --aa-input-icon-size: 20px !important;
+  --aa-base-unit: 16 !important;
+  --aa-spacing-factor: 1 !important;
+  --aa-spacing: calc(var(--aa-base-unit) * var(--aa-spacing-factor) * 1px) !important;
+  --aa-spacing-half: calc(var(--aa-spacing) / 2) !important;
+  --aa-panel-max-height: 650px !important;
+  --aa-base-z-index: 9999 !important;
+  --aa-font-size: calc(var(--aa-base-unit) * 1px) !important;
+  --aa-font-family: inherit !important;
+  --aa-font-weight-medium: 500 !important;
+  --aa-font-weight-semibold: 600 !important;
+  --aa-font-weight-bold: 700 !important;
+  --aa-icon-size: 20px !important;
+  --aa-icon-stroke-width: 1.6 !important;
+  --aa-icon-color-rgb: 154, 154, 154 !important;
+  --aa-icon-color-alpha: 1 !important;
+  --aa-action-icon-size: 20px !important;
+  --aa-text-color-rgb: 220, 220, 220 !important;
+  --aa-text-color-alpha: 1 !important;
+  --aa-primary-color-rgb: 51, 139, 255 !important;
+  --aa-primary-color-alpha: 0.24 !important;
+  --aa-muted-color-rgb: 154, 154, 154 !important;
+  --aa-muted-color-alpha: 0.6 !important;
+  --aa-panel-border-color-rgb: 154, 154, 154 !important;
+  --aa-panel-border-color-alpha: 0.2 !important;
+  --aa-input-border-color-rgb: 154, 154, 154 !important;
+  --aa-input-border-color-alpha: 0.4 !important;
+  --aa-input-background-color-rgb: 12, 12, 12 !important;
+  --aa-input-background-color-alpha: 1 !important;
+  --aa-background-color-rgb: 11, 11, 11 !important;
+  --aa-background-color-alpha: 1 !important;
+  --aa-selected-color-rgb: 51, 139, 255 !important;
+  --aa-selected-color-alpha: 0.22 !important;
+  --aa-description-highlight-background-color-rgb: 51, 139, 255 !important;
+  --aa-description-highlight-background-color-alpha: 0.2 !important;
+  --aa-detached-media-query: (max-width: 680px) !important;
+  --aa-detached-modal-media-query: (min-width: 680px) !important;
+  --aa-detached-modal-max-width: 680px !important;
+  --aa-detached-modal-max-height: 500px !important;
+  --aa-overlay-color-rgb: 0, 0, 0 !important;
+  --aa-overlay-color-alpha: 0.55 !important;
+  --aa-icon-color-rgb: 154, 154, 154 !important;
+  --aa-panel-shadow: 0 24px 60px rgba(0, 0, 0, 0.6) !important;
+  --aa-scrollbar-width: 13px !important;
+  --aa-scrollbar-track-background-color-rgb: 35, 35, 35 !important;
+  --aa-scrollbar-track-background-color-alpha: 1 !important;
+  --aa-scrollbar-thumb-background-color-rgb: 15, 15, 15 !important;
+  --aa-scrollbar-thumb-background-color-alpha: 1 !important;
+}

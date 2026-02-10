@@ -1,0 +1,65 @@
+name: Bump Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to create (e.g., '1.1.0') or bump type ('major', 'minor', 'patch')"
+        required: true
+        type: string
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install website dependencies
+        run: npm ci
+        working-directory: website
+
+      - name: Bump version
+        id: bump
+        run: |
+          python scripts/bump_version.py "${{ github.event.inputs.version }}"
+          VERSION=$(cat website/versions.json | jq -r '.[0]')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: bump docs version to ${{ steps.bump.outputs.version }}"
+          branch: "docs/version-${{ steps.bump.outputs.version }}"
+          delete-branch: true
+          title: "chore: bump docs version to ${{ steps.bump.outputs.version }}"
+          body: |
+            ## Version Bump: ${{ steps.bump.outputs.version }}
+
+            This automated PR:
+            - Creates Docusaurus docs version `${{ steps.bump.outputs.version }}`
+            - Copies SPEC.md and schemas to `website/static/v${{ steps.bump.outputs.version }}/`
+            - Updates `website/versions.json`
+            - Generates versioned docs in `website/versioned_docs/version-${{ steps.bump.outputs.version }}/`
+
+            Triggered by: @${{ github.actor }}
+          labels: |
+            documentation
+            automated
