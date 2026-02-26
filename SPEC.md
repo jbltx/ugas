@@ -41,7 +41,7 @@
 
 ### 1.1 Purpose and Scope
 
-The Universal Gameplay Ability System (UGAS) is an open, engine-agnostic specification designed to standardize gameplay logic across game engines and AI world models. This specification defines the architecture, data structures, and behavioral contracts required to implement a consistent ability system that can be deployed on platforms ranging from traditional engines (Unreal Engine, Unity, Godot) to next-generation generative world models such as Google Genie.
+The Universal Gameplay Ability System (UGAS) is an open, engine-agnostic specification designed to standardize gameplay logic across game engines and runtime environments. This specification defines the architecture, data structures, and behavioral contracts required to implement a consistent ability system that can be deployed on any game engine or custom runtime, including Unreal Engine, Unity, and Godot.
 
 The scope of this specification includes:
 
@@ -74,7 +74,7 @@ All state changes flow through a single mutation layer (Gameplay Effects), ensur
 
 **Cross-Platform Interoperability**
 
-By defining gameplay rules as deterministic, replicable operations on abstract data structures, UGAS enables a unified framework that can be implemented across diverse execution environments. An GC can exist as a C++ component in Unreal Engine, a Data-Oriented Technology Stack (DOTS) entity in Unity, or a latent action sequence in an AI-generated environment.
+By defining gameplay rules as deterministic, replicable operations on abstract data structures, UGAS enables a unified framework that can be implemented across diverse execution environments. A GC can exist as a C++ component in Unreal Engine, a Data-Oriented Technology Stack (DOTS) entity in Unity, or a scripted component in Godot.
 
 ### 1.3 Document Conventions
 
@@ -3523,13 +3523,6 @@ $$\prod_{k=1}^{n} m_k = m_1 \times m_2 \times \cdots \times m_n$$
   urldate = {2026-02-03}
 }
 
-@online{google_genie,
-  author = {{Google DeepMind}},
-  title = {Genie: Generative Interactive Environments},
-  year = {2024},
-  url = {https://sites.google.com/view/genie-2024/home},
-  urldate = {2026-02-03}
-}
 
 @book{gregory_engine,
   author = {Jason Gregory},

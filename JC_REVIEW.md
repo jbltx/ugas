@@ -227,19 +227,9 @@ At minimum, the spec should state that in networked environments, `ApplyGameplay
 
 **Resolution:** `PGCalCase` corrected to `PascalCase` in §7.1.
 
-### 3.7 The AI World Model Claim Needs to Be Scoped or Substantiated
+### 3.7 ~~The AI World Model Claim Needs to Be Scoped or Substantiated~~ ✓ FIXED
 
-**Section 1.1:**
-
-> "...next-generation generative world models such as Google Genie"
-
-The spec repeatedly claims to target AI-generated environments. This is a bold claim that requires justification:
-
-- Neural network inference is fundamentally non-deterministic across hardware vendors and driver versions. The spec's determinism requirements are incompatible with this unless the GC runs in a separate deterministic simulation layer alongside the generative model.
-- "Client-side prediction" assumes a deterministic simulation that can be rolled back and replayed. A generative world model doesn't have this property.
-- What does "network replication" mean when the "server" is a latent diffusion model?
-
-This is forward-looking and philosophically interesting, but at v1.0, the AI world model target is more marketing than technical specification. I'd recommend either removing it or adding a dedicated appendix that honestly outlines the open problems and constraints for that use case.
+**Resolution:** All references to AI-generated environments and Google Genie removed from the spec. §1.1 now scopes UGAS to game engines and custom runtimes (Unreal, Unity, Godot). The Genie bibliography entry has been removed. Remaining uses of "AI" in the spec refer to in-game AI entities (NPCs, enemies), which are legitimate and unchanged.
 
 ---
 
