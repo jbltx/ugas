@@ -550,34 +550,41 @@ The Current Value calculation MUST follow a standardized pipeline to ensure math
 
 The Current Value $V_{current}$ is calculated as:
 
-$$V_{current} = \max\left( V_{min},\ \min\left( V_{max},\ \left( V_{base} + \sum a_i \right) \times \left( 1 + \sum p_j \right) \times \prod m_k + \sum b_l \right) \right)$$
+$$V_{current} = \max\left( V_{min},\ \min\left( V_{max},\ \left( V_{base} + \sum a_i \right) \times \prod_{c \in C} \left(1 + \sum_{k \in c} m_k\right) + \sum b_l \right) \right)$$
 
 Where:
 - $V_{base}$ = Base Value
-- $a_i$ = Pre-multiply flat additive modifiers (`Add` operations, applied before percentage and multiply steps)
-- $p_j$ = Additive percentage modifiers (expressed as decimals, e.g., +10% = 0.1)
-- $m_k$ = Multiplicative factors (`Multiply` operations)
-- $b_l$ = Post-multiply flat additive modifiers (`AddPost` operations, applied after all multiply steps; very rare)
-- $V_{min}$ = Minimum value constraint
-- $V_{max}$ = Maximum value constraint
+- $a_i$ = Pre-multiply flat additive modifiers (`Add` operations)
+- $C$ = the set of distinct Channel values among active `Multiply` modifiers; each modifier without a `Channel` belongs to its own unique implicit singleton channel
+- $m_k$ = signed bonus magnitude for each `Multiply` modifier (e.g., `+0.25` for a +25% bonus, `−0.25` for a 25% penalty)
+- $b_l$ = Post-multiply flat additive modifiers (`AddPost` operations; very rare)
+- $V_{min}$, $V_{max}$ = clamping constraints
 
-Note that clamping is not mandatory, in that case the formula can be simplified as:
+Note that clamping is not mandatory; the simplified form is:
 
-$$V_{current} = \left( V_{base} + \sum a_i \right) \times \left( 1 + \sum p_j \right) \times \prod m_k + \sum b_l$$
+$$V_{current} = \left( V_{base} + \sum a_i \right) \times \prod_{c \in C} \left(1 + \sum_{k \in c} m_k\right) + \sum b_l$$
+
+#### Channel Aggregation
+
+The channel product $\prod_{c \in C}\!\left(1 + \sum_{k \in c} m_k\right)$ is how the "damage bucket" design is expressed at the pipeline level:
+
+- **Same channel → bonuses ADD.** All `Multiply` modifiers sharing a `Channel` value contribute their magnitudes additively. The channel's effective factor is `1 + sum of magnitudes`. Two +20% bonuses in the same channel yield ×1.40, not ×1.44.
+- **Different channels → factors MULTIPLY.** Each channel produces one effective factor; those factors are multiplied together. A ×1.40 channel and a ×1.30 channel yield ×1.82.
+- **No channel → isolated singleton.** A `Multiply` modifier without a `Channel` is in its own implicit channel, so its contribution is `1 + magnitude` — independent of all other modifiers.
+
+This is the primary tool for preventing linear power creep: bonuses from the same source category (e.g., "damage bonuses from gear") are additive within a channel, while bonuses from categorically different sources (e.g., "gear bonuses" vs. "legendary powers") are multiplicative across channels.
 
 #### Order of Operations
 
 The order of operations is CRITICAL for deterministic results:
 
-1. Sum all flat additive modifiers (Add)
-2. Apply flat additions to Base Value
-3. Sum all additive percentage modifiers
-4. Apply percentage modification
-5. Multiply all multiplicative factors together
-6. Apply multiplicative factors
-7. Add the sum of all post-multiply flat additive modifiers (`AddPost` operations; very rare, usually none)
-8. Apply Override modifiers (if any, replacing the result) — see conflict resolution rule below
-9. Apply clamping constraints
+1. Sum all flat additive modifiers (`Add`): `flat = ΣAdd`
+2. Apply flat additions to Base Value: `value = Base + flat`
+3. Group `Multiply` modifiers by `Channel`. For each channel, sum the magnitudes: `channel_factor = 1 + Σm_k`
+4. Multiply all channel factors together and apply: `value *= Π channel_factor`
+5. Add sum of all post-multiply flat additive modifiers (`AddPost`): `value += ΣAddPost`
+6. Apply `Override` modifiers (if any, replacing the result) — see conflict resolution below
+7. Apply clamping constraints
 
 #### Override Conflict Resolution
 
@@ -1290,7 +1297,7 @@ Modifiers:
     Operation: Multiply
     Magnitude:
       Type: ScalableFloat
-      Value: 0.75  # 25% reduction
+      Value: -0.25  # -25% mana cost
 ```
 
 ### 8.6 Cancellation and Interruption
@@ -1461,14 +1468,14 @@ Modifiers:
 
 #### 9.4.1 Operations
 
-| Operation | Semantics | Pipeline Step | Formula |
-|-----------|-----------|---------------|---------|
-| `Add` | Pre-multiply flat additive | Step 2 (before percentage and multiply steps) | `attr += magnitude` |
-| `AddPost` | Post-multiply flat additive | Step 7 (after all multiply steps; very rare) | `attr += magnitude` |
-| `Multiply` | Multiplicative factor | Step 6 | `attr *= magnitude` |
-| `Override` | Replace value | Step 8 | `attr = magnitude` |
+| Operation | Semantics | Pipeline Step | Magnitude convention |
+|-----------|-----------|---------------|----------------------|
+| `Add` | Pre-multiply flat additive | Step 2 | Absolute delta (e.g., `+10` adds 10) |
+| `AddPost` | Post-multiply flat additive | Step 5 (very rare) | Absolute delta |
+| `Multiply` | Channel-aggregated bonus | Step 4 | Signed bonus: `+0.25` = +25%, `−0.25` = −25%. Modifiers in the same `Channel` add their bonuses; channel effective factors multiply across channels. See §5.3 Channel Aggregation. |
+| `Override` | Replace value | Step 6 | Absolute replacement value |
 
-> **Note:** There is no `Divide` operation. Division is expressed as `Multiply` with a reciprocal magnitude (e.g., dividing by 2 is equivalent to `Multiply` with magnitude `0.5`). This eliminates the divide-by-zero edge case while preserving full expressiveness.
+> **Note:** There is no `Divide` operation. A 50% reduction is expressed as `Multiply` with magnitude `−0.5` (i.e., a −50% penalty). This eliminates the divide-by-zero edge case.
 
 ```typescript
 struct Modifier {
@@ -1489,10 +1496,24 @@ struct Modifier {
   Magnitude: MagnitudeDefinition;
 
   /**
-   * Optional named aggregation channel. Modifiers in the same channel sum
-   * together before being applied; modifiers in different channels multiply
-   * against each other. Used to implement damage-bucket systems (see §15.3).
-   * If omitted, the modifier belongs to the default channel.
+   * Optional aggregation channel name for `Multiply` modifiers.
+   *
+   * Semantics (see §5.3 Channel Aggregation for the full formula):
+   * - Modifiers with the SAME Channel add their bonuses together before
+   *   the channel's effective factor (1 + sum) is computed.
+   * - Modifiers in DIFFERENT Channels produce independent factors that
+   *   multiply against each other.
+   * - A modifier with no Channel is in its own implicit singleton channel,
+   *   contributing independently.
+   *
+   * Example — two gear bonuses and one legendary power:
+   *   GE_FireDmg:    Multiply +0.20 Channel:"DamageBonuses"
+   *   GE_EliteDmg:   Multiply +0.15 Channel:"DamageBonuses"
+   *   GE_Legendary:  Multiply +0.50 Channel:"LegendaryPowers"
+   *   → effective factor = (1 + 0.20 + 0.15) × (1 + 0.50) = 1.35 × 1.50 = 2.025
+   *   vs. naive stacking: 1.20 × 1.15 × 1.50 = 2.07  (higher, causes power creep)
+   *
+   * Ignored on `Add`, `AddPost`, and `Override` modifiers.
    */
   Channel?: string;
 }
@@ -1849,6 +1870,13 @@ properties:
             - Override
         Magnitude:
           type: object
+        Channel:
+          type: string
+          description: >
+            Aggregation channel for Multiply modifiers. Modifiers sharing a
+            Channel add their bonuses; channels multiply against each other.
+            Omit to treat this modifier as an isolated singleton channel.
+            Ignored on Add, AddPost, and Override operations.
   GrantedTags:
     type: array
     items:
@@ -2625,7 +2653,7 @@ Modifiers:
     Operation: Multiply
     Magnitude:
       Type: ScalableFloat
-      Value: 1.25  # +25% damage
+      Value: 0.25  # +25% damage
 GrantedTags:
   - "Status.Buff.Strength"
 GameplayCues:
@@ -2897,7 +2925,7 @@ Modifiers:
     Operation: Multiply
     Magnitude:
       Type: ScalableFloat
-      Value: 2.0
+      Value: 1.0  # +100% (doubles size)
   - Attribute: "Health"
     Operation: Add
     Magnitude:
@@ -2955,7 +2983,7 @@ Modifiers:
     Operation: Multiply
     Magnitude:
       Type: ScalableFloat
-      Value: 0.4
+      Value: -0.6  # -60% grip (retains 40% of normal grip)
   - Attribute: "MaxSpeed"
     Operation: Add
     Magnitude:
@@ -3022,43 +3050,96 @@ class ExecCalc_VehicleTraction extends ExecutionCalculation {
 
 #### Damage Bucket Architecture
 
-The "Damage Bucket" system prevents linear power creep by organizing modifiers into multiplicative groups.
+The "Damage Bucket" system prevents linear power creep by organizing `Multiply` modifiers into named channels. Modifiers in the same channel add their bonuses; channels multiply against each other. Because the `Channel` mechanism is built into the modifier pipeline (§5.3), the bucket design is expressed **declaratively** in Effect YAML — no custom calculation code required for the stacking logic itself.
+
+Three canonical buckets:
+
+| Channel | What goes in it | Stacking |
+|---------|-----------------|---------|
+| `"MainStat"` | Stat-derived scaling (e.g. Strength → +damage) | Additive |
+| `"DamageBonuses"` | Conditional damage bonuses (fire, vs. elites, while healthy …) | Additive |
+| `"LegendaryPowers"` | Item set / legendary power multipliers | Additive within, ×MainStat ×DamageBonuses across |
+
+```yaml
+# GE_Weapon_FireSword.yaml — item that grants a fire damage bonus
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+Name: "GE_Weapon_FireSword"
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: "WeaponDamage"
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 0.20        # +20% fire damage
+    Channel: "DamageBonuses"
+```
+
+```yaml
+# GE_Passive_EliteHunter.yaml — passive skill: +15% damage vs. elites
+Name: "GE_Passive_EliteHunter"
+DurationPolicy: Infinite
+ApplicationRequiredTags:
+  - "Status.FightingElite"
+Modifiers:
+  - Attribute: "WeaponDamage"
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 0.15        # +15% damage vs. elites
+    Channel: "DamageBonuses"
+```
+
+```yaml
+# GE_Set_LegendaryPower.yaml — set bonus: +50% damage (its own channel)
+Name: "GE_Set_LegendaryPower"
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: "WeaponDamage"
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 0.50        # +50% legendary multiplier
+    Channel: "LegendaryPowers"
+```
+
+```yaml
+# GE_MainStat_Strength.yaml — applied by the attribute system per point of Strength
+Name: "GE_MainStat_Strength"
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: "WeaponDamage"
+    Operation: Multiply
+    Magnitude:
+      Type: AttributeBased
+      BackingAttribute: "Strength"
+      Source: Source
+      Coefficient: 0.01  # +1% per Strength point
+    Channel: "MainStat"
+```
+
+With all four effects active (Strength 50, fire sword, elite hunter active, legendary set):
+- `MainStat` channel factor: `1 + (0.01 × 50)` = **×1.50**
+- `DamageBonuses` channel factor: `1 + 0.20 + 0.15` = **×1.35**
+- `LegendaryPowers` channel factor: `1 + 0.50` = **×1.50**
+- Final `WeaponDamage` multiplier: `1.50 × 1.35 × 1.50` = **×3.04**
+
+vs. naive unchanelled stacking: `1.50 × 1.20 × 1.15 × 1.50` = **×3.11** — a modest difference at low item counts that compounds severely at higher counts.
+
+**Conditional modifiers** (e.g. the Vulnerability bonus) that depend on target state at hit-time still require an `ExecutionCalculation`, but only for the conditional logic — the stacking math is already handled by the pipeline:
 
 ```typescript
 class ExecCalc_ARPGDamage extends ExecutionCalculation {
   Execute(source, target, context): ModifierResult[] {
-    // Bucket A: Main Stat (additive within bucket)
-    const mainStatBonus = source.Get("Strength") * 0.01;  // +1% per point
+    // All bucket stacking is already resolved in WeaponDamage's Current Value.
+    const weaponDamage = source.Get("WeaponDamage");
 
-    // Bucket B: Additive Damage Bonuses
-    let bucketB = 1.0;
-    bucketB += source.Get("DamageBonus_Fire") || 0;
-    bucketB += source.Get("DamageBonus_Elite") || 0;
-    bucketB += source.Get("DamageBonus_WhileHealthy") || 0;
-
-    // Bucket C: Multiplicative Powers
-    let bucketC = 1.0;
-    bucketC *= source.Get("LegendaryPowerMultiplier") || 1.0;
-    bucketC *= source.Get("SetBonusMultiplier") || 1.0;
-
-    // Vulnerability check
-    let vulnerabilityMultiplier = 1.0;
-    if (target.Tags.MatchesTag("Status.Vulnerable")) {
-      vulnerabilityMultiplier = 1.2;
-    }
-
-    // Final calculation: Buckets multiply each other
-    const baseDamage = source.Get("WeaponDamage");
-    const finalDamage = baseDamage *
-                        (1 + mainStatBonus) *  // Bucket A
-                        bucketB *               // Bucket B
-                        bucketC *               // Bucket C
-                        vulnerabilityMultiplier;
+    // Only conditional logic needs to live here.
+    const vulnerabilityBonus = target.Tags.MatchesTag("Status.Vulnerable") ? 0.20 : 0.0;
 
     return [{
       Attribute: "Health",
       Operation: Add,
-      Magnitude: -finalDamage
+      Magnitude: -weaponDamage * (1 + vulnerabilityBonus)
     }];
   }
 }
