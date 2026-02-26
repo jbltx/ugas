@@ -424,6 +424,12 @@ ApplyGameplayEffectToSelf(
 
 /**
  * Applies an effect to a target GC.
+ *
+ * NETWORKED ENVIRONMENTS: A call originating on a client is speculative.
+ * The server MUST validate instigator authority, ability ownership, target
+ * reachability, and effect-class whitelist before executing the authoritative
+ * application. See §13.7 for the full validation pipeline.
+ *
  * @param target - The target GC
  * @param spec - The effect spec to apply
  * @param predictionKey - Optional prediction key for client-side prediction
@@ -2619,6 +2625,63 @@ function RollbackAndReplay(
 | Static Objects | On Change | Event-based only |
 
 > **High-latency guidance:** On connections with RTT > 150 ms (common on mobile or cross-region play), implementations SHOULD lower the player-character replication rate to 20-30 Hz and increase prediction window depth accordingly. Attribute and Tag state SHOULD be sent at a lower rate than position to prioritise movement responsiveness. Dead-reckoning or interpolation SHOULD be applied on the receiving end.
+
+### 13.7 Effect Application Authorization
+
+`ApplyGameplayEffectToTarget` is the primary mutation surface of the GC pipeline and therefore a critical security boundary in networked environments.
+
+#### Core requirement
+
+In any networked environment, a call to `ApplyGameplayEffectToTarget` that originates on a client MUST be validated by the server before the effect is executed on authoritative state. Clients MUST NOT be permitted to mutate server-authoritative GC state directly.
+
+#### Validation pipeline
+
+The server-side validation step MUST check, at minimum:
+
+1. **Instigator authority** — the instigating GC is owned by the requesting client (or is a server-controlled entity).
+2. **Ability ownership** — the effect is being applied as part of an ability that the instigator has been granted (i.e., the ability spec exists in the instigator's granted-ability list).
+3. **Target reachability** — the target GC is a legitimate target for the instigator at the time of application (range, line-of-sight, or game-rule checks as appropriate to the title).
+4. **Effect class whitelist** — the effect class is one the ability is permitted to apply; implementations SHOULD reject arbitrary `EffectClass` values supplied by the client.
+
+If any check fails, the server MUST reject the application and MAY roll back any prediction the client has already applied locally (via the standard reconciliation path in §13.5).
+
+#### Predicted applications
+
+When a client applies an effect locally as part of a prediction (using a `PredictionKey`), the local application is speculative only. The authoritative application — or its rejection — is determined by the server. Implementations MUST treat predicted effect applications as unconfirmed until the server acknowledges the prediction key.
+
+```typescript
+// Client: speculative application
+const predictionKey = GeneratePredictionKey();
+const specHandle = MakeOutgoingSpec(GE_Damage, level, predictionKey);
+ApplyGameplayEffectToTarget(target.GC, specHandle, predictionKey);
+// Effect is active locally, but flagged as predicted (unconfirmed).
+
+// Server: receives the RPC, validates, then applies authoritatively
+function Server_ApplyEffect(
+  instigatorGC: GameplayController,
+  targetGC: GameplayController,
+  specHandle: EffectSpecHandle,
+  predictionKey: PredictionKey
+): void {
+  // 1. Validate instigator owns the ability that produced this spec
+  if (!ValidateInstigatorAuthority(instigatorGC, specHandle)) {
+    RejectPrediction(predictionKey);
+    return;
+  }
+  // 2. Validate target is reachable / eligible
+  if (!ValidateTarget(instigatorGC, targetGC, specHandle)) {
+    RejectPrediction(predictionKey);
+    return;
+  }
+  // Authoritative application — triggers replication to all clients
+  ApplyGameplayEffectToTarget(targetGC, specHandle);
+  ConfirmPrediction(predictionKey);
+}
+```
+
+#### Authoritative-only effects
+
+Some effects MUST only ever be applied by the server (e.g., spawn effects, death effects, anti-cheat corrections). These effects SHOULD be tagged with `Gameplay.Effect.AuthoritativeOnly` and implementations MUST refuse to apply them on a client even if a prediction key is present.
 
 ---
 

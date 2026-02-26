@@ -191,15 +191,9 @@ Spatial tasks (`WaitOverlap`, `WaitForTarget`) implicitly require per-frame phys
 
 For a spec targeting both small indie games and large-scale multiplayer titles, this needs at least a SHOULD-level recommendation on tick budgeting.
 
-### 3.5 Effect Application Authorization
+### 3.5 ~~Effect Application Authorization~~ ✓ FIXED
 
-`ApplyGameplayEffectToTarget(target, spec)` allows any GC to apply effects to any other GC. In a multiplayer game, this is a security surface: a compromised or exploited client could attempt to apply effects to arbitrary targets. The spec has no mention of:
-
-- Server-side validation that the instigator GC is authorized to affect the target GC
-- Capability/permission system for inter-GC effect application
-- Distinction between client-requested and server-initiated effect application
-
-At minimum, the spec should state that in networked environments, `ApplyGameplayEffectToTarget` called from a client MUST be validated server-side before execution.
+**Resolution:** §13.7 "Effect Application Authorization" added. The new section states the core MUST: client-originated `ApplyGameplayEffectToTarget` calls are speculative only; the server MUST validate (1) instigator authority, (2) ability ownership, (3) target reachability, and (4) effect-class whitelist before executing the authoritative application. A `Server_ApplyEffect` code example shows the validation gate and `RejectPrediction` / `ConfirmPrediction` flow. A note on `Gameplay.Effect.AuthoritativeOnly`-tagged effects (e.g. death, anti-cheat corrections) covers the server-only case. The `ApplyGameplayEffectToTarget` API doc in §4.5 now carries a cross-reference to §13.7.
 
 ### 3.6 ~~"PGCalCase" Is a Typo~~ ✓ FIXED
 
