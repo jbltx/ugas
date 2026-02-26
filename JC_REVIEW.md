@@ -235,15 +235,15 @@ At minimum, the spec should state that in networked environments, `ApplyGameplay
 
 ## Part IV — Minor Issues
 
-| # | Location | Issue |
-|---|----------|-------|
-| 1 | §4.4 | Interface method named `GetAbilitySystemComponent()` returning `AbilitySystemComponent` — naming inconsistency with "GC" (Gameplay Controller) terminology used everywhere else |
-| 2 | §8.1 | `EndAbility(wGCancelled: boolean)` — the `wGC` prefix appears to be an artifact of Unreal's `bWasCancelled` naming convention. In an engine-agnostic spec, this should simply be `wasCancelled: boolean` |
-| 3 | §9.6 | `RunInSequence` use case lists "crowd control chains" but gives no example of how a second stun Effect knows when the first expired to begin its own timer. The mechanism needs elaboration. |
-| 4 | §13.6 | Recommending 60-100 Hz replication for player characters is accurate for LAN/low-latency scenarios. High-latency or mobile contexts should have explicit guidance. |
-| 5 | §14.3 | `OnJumpReleased` checks `VerticalVelocity > 0` to determine if the jump should be cut short. This is simulation state, not GAS state — it correctly demonstrates the Avatar/physics relationship but the check should be via an Attribute, not a direct physics query. |
-| 6 | §15.4 | The 2048 undo system captures full state snapshots rather than using the Effect history for rollback. This undermines the "audit trail" benefit of the Effect layer. A proper undo system would store applied Effect specs and reverse them in order. |
-| 7 | Appendix B | Schema references link to `raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/` — these are `v1.0` hardcoded paths. A spec that evolves will need versioned schema URLs with a stability guarantee. |
+| # | Location | Issue | Status |
+|---|----------|-------|--------|
+| 1 | §4.4 | Interface method named `GetAbilitySystemComponent()` returning `AbilitySystemComponent` — naming inconsistency with "GC" (Gameplay Controller) terminology used everywhere else | ✓ FIXED — renamed to `GetGameplayController(): GameplayController` throughout |
+| 2 | §8.1 | `EndAbility(wGCancelled: boolean)` — the `wGC` prefix appears to be an artifact of Unreal's `bWasCancelled` naming convention. In an engine-agnostic spec, this should simply be `wasCancelled: boolean` | ✓ FIXED — renamed to `wasCancelled` at all three call sites |
+| 3 | §9.6 | `RunInSequence` use case lists "crowd control chains" but gives no example of how a second stun Effect knows when the first expired to begin its own timer. The mechanism needs elaboration. | ✓ FIXED — added paragraph explaining that the GC owns the queue and automatically dequeues the next instance on expiry; `OnEffectApplied`/`OnEffectRemoved` fire per-instance |
+| 4 | §13.6 | Recommending 60-100 Hz replication for player characters is accurate for LAN/low-latency scenarios. High-latency or mobile contexts should have explicit guidance. | ✓ FIXED — table split into LAN and mobile rows (20-30 Hz); added guidance note on prediction window depth and dead-reckoning for RTT > 150 ms |
+| 5 | §14.3 | `OnJumpReleased` checks `VerticalVelocity > 0` to determine if the jump should be cut short. This is simulation state, not GAS state — it correctly demonstrates the Avatar/physics relationship but the check should be via an Attribute, not a direct physics query. | ✓ ALREADY CORRECT — `VerticalVelocity` is a GAS Attribute in the platformer AttributeSet; `GetAttribute("VerticalVelocity")` is a pure GAS query. Added an inline comment to make the intent explicit. |
+| 6 | §15.4 | The 2048 undo system captures full state snapshots rather than using the Effect history for rollback. This undermines the "audit trail" benefit of the Effect layer. A proper undo system would store applied Effect specs and reverse them in order. | ✓ FIXED — `UndoSystem` rewritten: `OnBeforeEffectApplied` hook captures pre-apply attribute values per Effect; `Undo()` replays them via `GE_RestoreValues` Instant Override Effects in reverse; undo state is derived entirely from the Effect pipeline |
+| 7 | Appendix B | Schema references link to `raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/` — these are `v1.0` hardcoded paths. A spec that evolves will need versioned schema URLs with a stability guarantee. | ✓ FIXED — added Schema URL Versioning Policy section to Appendix B: version tag in URL must match spec version; tags are immutable after release; tooling SHOULD validate and SHOULD fail clearly on unreachable schemas |
 
 ---
 

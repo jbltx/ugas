@@ -371,7 +371,7 @@ interface IAbilitySystemInterface {
    * Returns the Gameplay Controllerassociated with this entity.
    * @returns The GC instance, or null if not available
    */
-  GetAbilitySystemComponent(): AbilitySystemComponent | null;
+  GetGameplayController(): GameplayController | null;
 }
 ```
 
@@ -430,7 +430,7 @@ ApplyGameplayEffectToSelf(
  * @returns Handle to the active effect, or invalid handle if application failed
  */
 ApplyGameplayEffectToTarget(
-  target: AbilitySystemComponent,
+  target: GameplayController,
   spec: EffectSpecHandle,
   predictionKey?: PredictionKey
 ): ActiveEffectHandle;
@@ -680,10 +680,10 @@ struct AttributeChangedEvent {
   CausalEffect?: ActiveEffectHandle;
 
   /** Source of the change */
-  Source?: AbilitySystemComponent;
+  Source?: GameplayController;
 
   /** Target of the change */
-  Target: AbilitySystemComponent;
+  Target: GameplayController;
 }
 ```
 
@@ -1163,7 +1163,7 @@ abstract class GameplayAbility {
   abstract ActivateAbility(context: AbilityContext): void;
 
   /** Called when ability ends */
-  abstract EndAbility(wGCancelled: boolean): void;
+  abstract EndAbility(wasCancelled: boolean): void;
 }
 ```
 
@@ -1372,7 +1372,7 @@ function CancelAbility(handle: AbilitySpecHandle): void {
   }
 
   // Call ability's end handler
-  spec.AbilityInstance.EndAbility(true /* wGCancelled */);
+  spec.AbilityInstance.EndAbility(true /* wasCancelled */);
 
   // Cleanup active tasks
   CancelAllAbilityTasks(handle);
@@ -1722,6 +1722,8 @@ Instance 3:                                 ████████████
 
 Use case: Channeled effects, crowd control chains
 
+**Chaining mechanism:** The GC owns the queue for each `RunInSequence` effect class. When the active instance's duration expires (or it is manually removed), the GC automatically dequeues and begins the next instance, resetting the duration timer. Ability authors do not manage this transition; applying the same effect class while one is already active is sufficient to enqueue. The `OnEffectApplied` / `OnEffectRemoved` delegates fire for each instance individually, so callers can observe the moment one stun ends and the next begins.
+
 #### RunInMerge
 
 Multiple applications merge into a single logical instance with combined duration.
@@ -1819,7 +1821,7 @@ struct EffectSpec {
 ```typescript
 struct EffectContext {
   /** GC that created this effect */
-  InstigatorGC: AbilitySystemComponent;
+  InstigatorGC: GameplayController;
 
   /** Actor that caused this effect */
   EffectCauser: Actor;
@@ -2157,7 +2159,7 @@ Tasks are owned by the Ability that created them. When an Ability ends:
 3. Task resources are released
 
 ```typescript
-function EndAbility(wGCancelled: boolean): void {
+function EndAbility(wasCancelled: boolean): void {
   // Cancel all active tasks
   for (const task of this.ActiveTasks) {
     task.Cancel();
@@ -2610,10 +2612,13 @@ function RollbackAndReplay(
 
 | Actor Type | Update Rate | Notes |
 |------------|-------------|-------|
-| Player Character | 60-100 Hz | High frequency for responsive feel |
+| Player Character (LAN / low-latency) | 60-100 Hz | High frequency for responsive feel |
+| Player Character (mobile / high-latency) | 20-30 Hz | Reduce to manage bandwidth; compensate with aggressive client-side prediction |
 | Important AI | 30-60 Hz | Moderate frequency |
 | Distant Actors | 10-20 Hz | Lower frequency acceptable |
 | Static Objects | On Change | Event-based only |
+
+> **High-latency guidance:** On connections with RTT > 150 ms (common on mobile or cross-region play), implementations SHOULD lower the player-character replication rate to 20-30 Hz and increase prediction window depth accordingly. Attribute and Tag state SHOULD be sent at a lower rate than position to prioritise movement responsiveness. Dead-reckoning or interpolation SHOULD be applied on the receiving end.
 
 ---
 
@@ -2642,7 +2647,7 @@ GameplayCues:
 #### Application Flow
 
 ```typescript
-function ApplyDamage(target: AbilitySystemComponent, damage: float): void {
+function ApplyDamage(target: GameplayController, damage: float): void {
   // 1. Create context
   const context = this.GC.MakeEffectContext();
   context.SetEffectCauser(this.Owner);
@@ -2947,7 +2952,9 @@ class GA_Jump extends GameplayAbility {
   }
 
   OnJumpReleased(heldDuration: float): void {
-    // Short press = cut jump short
+    // Short press = cut jump short.
+    // VerticalVelocity is a GAS Attribute kept in sync by the physics Avatar,
+    // so this remains a pure GAS query — no direct physics coupling here.
     if (this.Owner.GetAttribute("VerticalVelocity") > 0) {
       // Apply gravity multiplier for shorter jump
       const cutSpec = MakeOutgoingSpec(GE_JumpCut, 1);
@@ -3363,55 +3370,72 @@ class GA_GridMove extends GameplayAbility {
 }
 ```
 
-#### Undo via Effect History
+#### Undo via Effect Audit Trail
+
+Rather than snapshotting raw cell values, the undo system hooks into the GC Effect application pipeline via `OnBeforeEffectApplied`. Each effect applied during a turn is recorded alongside the pre-apply attribute values it will overwrite. Undoing a turn replays those pre-apply values back through Instant Effects — the undo state is derived entirely from the Effect layer, not from bespoke value captures.
 
 ```typescript
+interface EffectRecord {
+  TargetGC: GameplayController;
+  Spec: EffectSpec;
+  /** Attribute values captured immediately before this Effect was applied. */
+  PreApplyValues: Map<string, number>;
+}
+
+interface TurnRecord {
+  EffectsApplied: EffectRecord[];
+}
+
 class UndoSystem {
-  private EffectHistory: HistoryFrame[] = [];
+  private TurnHistory: TurnRecord[] = [];
+  private CurrentTurn: TurnRecord | null = null;
 
-  RecordFrame(): void {
-    const frame: HistoryFrame = {
-      Timestamp: GetCurrentTime(),
-      CellStates: [],
-      AppliedEffects: []
-    };
+  /** Called by GA_Move at the start of each player turn. */
+  BeginTurn(): void {
+    this.CurrentTurn = { EffectsApplied: [] };
+  }
 
-    // Capture all cell states
-    for (const cell of GetAllCells()) {
-      frame.CellStates.push({
-        ID: cell.ID,
-        Value: cell.GetAttribute("CellValue"),
-        X: cell.GetAttribute("GridX"),
-        Y: cell.GetAttribute("GridY")
-      });
+  /**
+   * Hook registered on each cell GC as OnBeforeEffectApplied.
+   * The GC pipeline calls this immediately before applying an Effect,
+   * giving us a chance to snapshot the attribute values that will change.
+   */
+  OnBeforeEffectApplied(targetGC: GameplayController, spec: EffectSpec): void {
+    if (!this.CurrentTurn) return;
+    const preApplyValues = new Map<string, number>();
+    for (const modifier of spec.EffectClass.Modifiers) {
+      preApplyValues.set(modifier.Attribute, targetGC.GetAttribute(modifier.Attribute));
     }
+    this.CurrentTurn.EffectsApplied.push({ TargetGC: targetGC, Spec: spec, PreApplyValues: preApplyValues });
+  }
 
-    this.EffectHistory.push(frame);
+  /** Called by GA_Move after all effects for the turn have been applied. */
+  CommitTurn(): void {
+    if (this.CurrentTurn) {
+      this.TurnHistory.push(this.CurrentTurn);
+      this.CurrentTurn = null;
+    }
   }
 
   Undo(): void {
-    if (this.EffectHistory.length < 2) return;
+    if (this.TurnHistory.length === 0) return;
+    const lastTurn = this.TurnHistory.pop()!;
 
-    // Remove current frame
-    this.EffectHistory.pop();
-
-    // Get previous frame
-    const previousFrame = this.EffectHistory[this.EffectHistory.length - 1];
-
-    // Restore cell states
-    for (const cellState of previousFrame.CellStates) {
-      const cell = GetCellByID(cellState.ID);
-      if (cell) {
-        const restoreSpec = MakeOutgoingSpec(GE_RestoreState, 1);
-        restoreSpec.SetByCallerMagnitude("Value", cellState.Value);
-        restoreSpec.SetByCallerMagnitude("X", cellState.X);
-        restoreSpec.SetByCallerMagnitude("Y", cellState.Y);
-        ApplyGameplayEffectToTarget(cell.GC, restoreSpec);
+    // Restore pre-apply values in reverse Effect order.
+    // Each restore is itself an Instant Override Effect — undo flows through
+    // the same pipeline as every other state change.
+    for (const record of [...lastTurn.EffectsApplied].reverse()) {
+      const restoreSpec = MakeOutgoingSpec(GE_RestoreValues, 1);
+      for (const [attr, value] of record.PreApplyValues) {
+        restoreSpec.SetByCallerMagnitude(attr, value);
       }
+      ApplyGameplayEffectToTarget(record.TargetGC, restoreSpec);
     }
   }
 }
 ```
+
+`GE_RestoreValues` is an Instant Effect with one `Override` modifier per restored attribute, driven by `SetByCaller` magnitudes. Every undo operation passes through the standard Effect pipeline: it is observable, replicable, and appears in the Effect audit trail exactly like any other state change.
 
 ---
 
@@ -3459,6 +3483,18 @@ $$\prod_{k=1}^{n} m_k = m_1 \times m_2 \times \cdots \times m_n$$
 ---
 
 ## Appendix B: Complete Schema Reference
+
+### Schema URL Versioning Policy
+
+All `$schema` URLs in UGAS data files use the pattern:
+
+```
+https://raw.githubusercontent.com/jbltx/ugas/{version}/schemas/{schema-name}.json
+```
+
+Where `{version}` is the git tag of the UGAS release the data file was authored against (e.g. `v1.0`). Each released version tag MUST maintain stable schema URLs — schemas at a given version tag MUST NOT be modified after release.
+
+Data files SHOULD pin to the exact UGAS version they were authored against. Tooling that processes UGAS data files SHOULD validate against the schema URL declared in `$schema`, and SHOULD fail clearly when the URL is unreachable or the schema is invalid, rather than silently skipping validation.
 
 ### GameplayController Schema Definition
 
