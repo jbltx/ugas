@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/jbltx/ugas/schemas/gameplay_ability.json",
+  "title": "Ability Definition Schema",
+  "description": "Based on UGAS Specification v1.0 - Appendix B",
+  "type": "object",
+  "required": ["Name"],
+  "properties": {
+    "Name": {
+      "type": "string",
+      "description": "Unique identifier for this ability"
+    },
+    "Tags": {
+      "type": "object",
+      "properties": {
+        "AbilityTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tags that describe this ability"
+        },
+        "BlockedByTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tags that prevent this ability from running"
+        },
+        "BlockAbilitiesWithTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "While this ability is active, block abilities with these tags"
+        },
+        "CancelAbilitiesWithTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Cancel abilities with these tags when this ability activates"
+        },
+        "ActivationRequiredTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tags required on the GC to activate this ability"
+        },
+        "ActivationBlockedTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tags that block activation of this ability"
+        },
+        "ActivationOwnedTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tags granted to the GC while this ability is active"
+        }
+      }
+    },
+    "Cost": {
+      "type": "string",
+      "description": "Reference to cost GameplayEffect"
+    },
+    "Cooldown": {
+      "type": "string",
+      "description": "Reference to cooldown GameplayEffect"
+    },
+    "Tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["Type"],
+        "properties": {
+          "Type": {
+            "type": "string",
+            "description": "Task type identifier"
+          },
+          "Params": {
+            "type": "object",
+            "description": "Task-specific parameters"
+          }
+        }
+      }
+    },
+    "Metadata": {
+      "type": "object",
+      "properties": {
+        "DisplayName": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "Icon": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

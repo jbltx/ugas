@@ -1,0 +1,39 @@
+# Example: Fireball Ability
+# Demonstrates an offensive magic ability with tag-based requirements
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_ability.json
+Name: FireballAbility
+Tags:
+  AbilityTags:
+    - Ability.Magic.Fireball
+    - Ability.Offensive
+  BlockedByTags:
+    - State.Dead
+  ActivationRequiredTags:
+    - State.CanCast
+  ActivationBlockedTags:
+    - State.Silenced
+    - State.Stunned
+    - State.Disarmed.Magic
+  ActivationOwnedTags:
+    - State.Casting
+    - State.Busy
+Cost: ManaCostEffect_25
+Cooldown: FireballCooldown_5s
+Tasks:
+  - Type: PlayMontage
+    Params:
+      MontageToPlay: Anim_CastFireball
+      PlayRate: 1.0
+  - Type: WaitGameplayEvent
+    Params:
+      EventTag: Event.Montage.CastPoint
+  - Type: SpawnProjectile
+    Params:
+      ProjectileClass: Projectile_Fireball
+      Speed: 2000.0
+      Gravity: -980.0
+Metadata:
+  DisplayName: Fireball
+  Description: Launch a ball of fire at the target, dealing damage on impact
+  Icon: ui/icons/fireball.png
