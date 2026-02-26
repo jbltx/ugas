@@ -37,6 +37,11 @@
       "enum": ["RunInParallel", "RunInSequence", "RunInMerge"],
       "default": "RunInParallel"
     },
+    "Priority": {
+      "type": "integer",
+      "default": 0,
+      "description": "Override conflict resolution priority. When multiple active effects apply an Override modifier to the same Attribute, the effect with the highest Priority value wins. On equal Priority, last-applied wins (LIFO). Negative values are valid."
+    },
     "Modifiers": {
       "type": "array",
       "items": {
@@ -168,15 +173,15 @@
         },
         "Operation": {
           "type": "string",
-          "enum": ["Add", "Multiply", "Divide", "Override"],
-          "description": "Mathematical operation to apply"
+          "enum": ["Add", "AddPost", "Multiply", "Override"],
+          "description": "Mathematical operation to apply. Add: pre-multiply flat additive (pipeline step 2, before percentage and multiply steps). AddPost: post-multiply flat additive (pipeline step 7, after all multiply steps; very rare). Multiply: multiplicative factor at step 6 — use a reciprocal magnitude (e.g. 0.5) instead of a Divide operation. Override: replaces the computed result at step 8."
         },
         "Magnitude": {
           "$ref": "#/$defs/MagnitudeDefinition"
         },
         "Channel": {
           "type": "string",
-          "description": "Optional modifier channel for organization"
+          "description": "Optional named aggregation channel. Modifiers in the same channel sum together; modifiers in different channels multiply against each other. Used for damage-bucket systems (see §15.3). Defaults to the global channel if omitted."
         }
       }
     }

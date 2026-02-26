@@ -41,7 +41,7 @@
 
 ### 1.1 Purpose and Scope
 
-The Universal Gameplay Ability System (UGAS) is an open, engine-agnostic specification designed to standardize gameplay logic across game engines and AI world models. This specification defines the architecture, data structures, and behavioral contracts required to implement a consistent ability system that can be deployed on platforms ranging from traditional engines (Unreal Engine, Unity, Godot) to next-generation generative world models such as Google Genie.
+The Universal Gameplay Ability System (UGAS) is an open, engine-agnostic specification designed to standardize gameplay logic across game engines and runtime environments. This specification defines the architecture, data structures, and behavioral contracts required to implement a consistent ability system that can be deployed on any game engine or custom runtime, including Unreal Engine, Unity, and Godot.
 
 The scope of this specification includes:
 
@@ -74,7 +74,7 @@ All state changes flow through a single mutation layer (Gameplay Effects), ensur
 
 **Cross-Platform Interoperability**
 
-By defining gameplay rules as deterministic, replicable operations on abstract data structures, UGAS enables a unified framework that can be implemented across diverse execution environments. An GC can exist as a C++ component in Unreal Engine, a Data-Oriented Technology Stack (DOTS) entity in Unity, or a latent action sequence in an AI-generated environment.
+By defining gameplay rules as deterministic, replicable operations on abstract data structures, UGAS enables a unified framework that can be implemented across diverse execution environments. A GC can exist as a C++ component in Unreal Engine, a Data-Oriented Technology Stack (DOTS) entity in Unity, or a scripted component in Godot.
 
 ### 1.3 Document Conventions
 
@@ -127,7 +127,7 @@ This section provides formal definitions for terms used throughout this specific
 : A logical container that groups related Attributes. AttributeSets provide modular composition of Actor capabilities.
 
 **Modifier**
-: A temporary or permanent adjustment to an Attribute's value. Modifiers define an operation (Add, Multiply, Divide, Override) and a magnitude.
+: A temporary or permanent adjustment to an Attribute's value. Modifiers define an operation (Add, AddPost, Multiply, Override) and a magnitude.
 
 **Tag**
 : A hierarchical, unique identifier serving as a conceptual label for Actors, Abilities, and Effects. Tags use dot-notation (e.g., `State.Debuff.Stunned.Magic`).
@@ -211,7 +211,7 @@ The UGAS architecture is predicated on the interaction between four distinct pil
 : Behavioral definitions. Abilities encapsulate the asynchronous, stateful logic of actions Actors can perform. Abilities coordinate with Tasks for complex, multi-stage execution.
 
 **Mutation Layer (Effects)**
-: State change mechanism. Effects are the ONLY authorized mechanism for modifying Attributes or Tags. This restriction ensures all state changes are tracked, predicted, and synchronized.
+: State change mechanism. Effects are the ONLY authorized mechanism for modifying Attributes or Tags. This restriction ensures all state changes are tracked, predicted, and synchronized. Ability implementations MUST NOT call `Tags.AddTag()`, `Tags.RemoveTag()`, or any equivalent direct tag mutation API. All tag state changes MUST flow through a `GameplayEffect` applied via the GC's effect application pipeline. This is a deliberate departure from UE4 GAS (which permits "loose tags") and is the property that makes replication of tag state tractable.
 
 ### 3.2 Component Relationships
 
@@ -371,7 +371,7 @@ interface IAbilitySystemInterface {
    * Returns the Gameplay Controllerassociated with this entity.
    * @returns The GC instance, or null if not available
    */
-  GetAbilitySystemComponent(): AbilitySystemComponent | null;
+  GetGameplayController(): GameplayController | null;
 }
 ```
 
@@ -424,13 +424,19 @@ ApplyGameplayEffectToSelf(
 
 /**
  * Applies an effect to a target GC.
+ *
+ * NETWORKED ENVIRONMENTS: A call originating on a client is speculative.
+ * The server MUST validate instigator authority, ability ownership, target
+ * reachability, and effect-class whitelist before executing the authoritative
+ * application. See §13.7 for the full validation pipeline.
+ *
  * @param target - The target GC
  * @param spec - The effect spec to apply
  * @param predictionKey - Optional prediction key for client-side prediction
  * @returns Handle to the active effect, or invalid handle if application failed
  */
 ApplyGameplayEffectToTarget(
-  target: AbilitySystemComponent,
+  target: GameplayController,
   spec: EffectSpecHandle,
   predictionKey?: PredictionKey
 ): ActiveEffectHandle;
@@ -550,34 +556,52 @@ The Current Value calculation MUST follow a standardized pipeline to ensure math
 
 The Current Value $V_{current}$ is calculated as:
 
-$$V_{current} = \max\left( V_{min},\ \min\left( V_{max},\ \left( V_{base} + \sum a_i \right) \times \left( 1 + \sum p_j \right) \times \prod m_k + \sum b_l \right) \right)$$
+$$V_{current} = \max\left( V_{min},\ \min\left( V_{max},\ \left( V_{base} + \sum a_i \right) \times \prod_{c \in C} \left(1 + \sum_{k \in c} m_k\right) + \sum b_l \right) \right)$$
 
 Where:
 - $V_{base}$ = Base Value
-- $a_i$ = Flat additive modifiers (Add operations)
-- $p_j$ = Additive percentage modifiers (expressed as decimals, e.g., +10% = 0.1)
-- $m_k$ = Multiplicative factors (Multiply operations)
-- $b_l$ = Bonus flat (Add operations)
-- $V_{min}$ = Minimum value constraint
-- $V_{max}$ = Maximum value constraint
+- $a_i$ = Pre-multiply flat additive modifiers (`Add` operations)
+- $C$ = the set of distinct Channel values among active `Multiply` modifiers; each modifier without a `Channel` belongs to its own unique implicit singleton channel
+- $m_k$ = signed bonus magnitude for each `Multiply` modifier (e.g., `+0.25` for a +25% bonus, `−0.25` for a 25% penalty)
+- $b_l$ = Post-multiply flat additive modifiers (`AddPost` operations; very rare)
+- $V_{min}$, $V_{max}$ = clamping constraints
 
-Note that clamping is not mandatory, in that case the formula can be simplified as:
+Note that clamping is not mandatory; the simplified form is:
 
-$$V_{current} = \left( V_{base} + \sum a_i \right) \times \left( 1 + \sum p_j \right) \times \prod m_k + \sum b_l$$
+$$V_{current} = \left( V_{base} + \sum a_i \right) \times \prod_{c \in C} \left(1 + \sum_{k \in c} m_k\right) + \sum b_l$$
+
+#### Channel Aggregation
+
+The channel product $\prod_{c \in C}\!\left(1 + \sum_{k \in c} m_k\right)$ is how the "damage bucket" design is expressed at the pipeline level:
+
+- **Same channel → bonuses ADD.** All `Multiply` modifiers sharing a `Channel` value contribute their magnitudes additively. The channel's effective factor is `1 + sum of magnitudes`. Two +20% bonuses in the same channel yield ×1.40, not ×1.44.
+- **Different channels → factors MULTIPLY.** Each channel produces one effective factor; those factors are multiplied together. A ×1.40 channel and a ×1.30 channel yield ×1.82.
+- **No channel → isolated singleton.** A `Multiply` modifier without a `Channel` is in its own implicit channel, so its contribution is `1 + magnitude` — independent of all other modifiers.
+
+This is the primary tool for preventing linear power creep: bonuses from the same source category (e.g., "damage bonuses from gear") are additive within a channel, while bonuses from categorically different sources (e.g., "gear bonuses" vs. "legendary powers") are multiplicative across channels.
 
 #### Order of Operations
 
 The order of operations is CRITICAL for deterministic results:
 
-1. Sum all flat additive modifiers (Add)
-2. Apply flat additions to Base Value
-3. Sum all additive percentage modifiers
-4. Apply percentage modification
-5. Multiply all multiplicative factors together
-6. Apply multiplicative factors
-7. Add the sum of all flat bonus modifiers (very rare use cases, usually there is none)
-8. Apply Override modifiers (if any, replacing the result)
-9. Apply clamping constraints
+1. Sum all flat additive modifiers (`Add`): `flat = ΣAdd`
+2. Apply flat additions to Base Value: `value = Base + flat`
+3. Group `Multiply` modifiers by `Channel`. For each channel, sum the magnitudes: `channel_factor = 1 + Σm_k`
+4. Multiply all channel factors together and apply: `value *= Π channel_factor`
+5. Add sum of all post-multiply flat additive modifiers (`AddPost`): `value += ΣAddPost`
+6. Apply `Override` modifiers (if any, replacing the result) — see conflict resolution below
+7. Apply clamping constraints
+
+#### Override Conflict Resolution
+
+When multiple active Override modifiers target the same Attribute simultaneously, implementations MUST resolve the conflict deterministically using the following ordered rules:
+
+1. **Priority wins**: The Override modifier from the `GameplayEffect` with the highest `Priority` value replaces the result. Lower-priority Overrides are ignored for that Attribute.
+2. **Last-applied wins on tie**: If two or more competing Override modifiers share the same `Priority`, the one from the most recently applied effect wins (LIFO order, determined by application timestamp).
+
+`Priority` defaults to `0`. Effects intended to be overrideable by other effects should use lower priority values (e.g. `-10`); effects that must always dominate should use higher values (e.g. `100`).
+
+> **Example:** A "Freeze" effect sets `MoveSpeed` Override to `0` at Priority `10`. A "Slow` effect also sets an Override to `50` at Priority `5`. The Freeze wins because `10 > 5`. If a "Root" effect then sets an Override to `0` at Priority `10`, it ties with Freeze — the more recently applied effect's Override is used, but the end result is identical.
 
 #### Example Calculation
 
@@ -662,10 +686,10 @@ struct AttributeChangedEvent {
   CausalEffect?: ActiveEffectHandle;
 
   /** Source of the change */
-  Source?: AbilitySystemComponent;
+  Source?: GameplayController;
 
   /** Target of the change */
-  Target: AbilitySystemComponent;
+  Target: GameplayController;
 }
 ```
 
@@ -902,7 +926,7 @@ Examples:
 
 #### Naming Rules
 
-1. Each segment MUST use PGCalCase
+1. Each segment MUST use PascalCase
 2. Hierarchies SHOULD NOT exceed 5 levels
 3. Leaf tags SHOULD be specific; parent tags SHOULD be categorical
 4. Reserved prefixes:
@@ -918,18 +942,24 @@ A Tag Container is a collection of tags associated with an entity.
 
 #### Internal Representation
 
-Implementations SHOULD use an efficient representation:
+A `TagContainer` MUST maintain **reference counts** per tag, not a simple set. Multiple concurrent Effects can grant the same tag; each grant increments the count; each removal decrements it. The tag is considered present only while its count is greater than zero.
 
 ```typescript
 struct TagContainer {
-  /** Set of explicit tags */
-  ExplicitTags: Set<Tag>;
+  /**
+   * Grant counts for every explicitly-held tag.
+   * A tag is "explicitly present" when its count > 0.
+   * Managed exclusively by the GC Effect application pipeline.
+   */
+  ExplicitTagCounts: Map<Tag, number>;
 
-  /** Cached parent tags (computed from explicit tags) */
-  ParentTags: Set<Tag>;
-
-  /** Combined explicit and parent tags */
-  AllTags: Set<Tag>;
+  /**
+   * Cumulative grant counts for all explicit tags AND their ancestor tags.
+   * Automatically maintained by AddTag/RemoveTag: adding tag T also
+   * increments the count of every ancestor of T; removing T decrements them.
+   * Used to answer MatchesTag queries in O(1).
+   */
+  AllTagCounts: Map<Tag, number>;
 }
 ```
 
@@ -937,32 +967,66 @@ struct TagContainer {
 
 ```typescript
 interface TagContainer {
-  /** Adds a tag to the container */
+  /**
+   * @internal Reserved for the GC Effect application pipeline.
+   * Ability implementations MUST NOT call this directly.
+   * Grant tags via a GameplayEffect with GrantedTags instead.
+   *
+   * Increments the grant count of `tag` in ExplicitTagCounts and the grant
+   * count of every ancestor of `tag` in AllTagCounts.
+   * Dispatches an OnTagChanged event ONLY when the count transitions 0 → 1
+   * (i.e. the tag was previously absent). Subsequent grants of the same tag
+   * by additional Effects increment the count silently.
+   */
   AddTag(tag: Tag): void;
 
-  /** Removes a tag from the container */
+  /**
+   * @internal Reserved for the GC Effect application pipeline.
+   * Ability implementations MUST NOT call this directly.
+   * Remove tags by removing the GameplayEffect that granted them.
+   *
+   * Decrements the grant count of `tag` in ExplicitTagCounts and the grant
+   * count of every ancestor of `tag` in AllTagCounts.
+   * MUST NOT decrement below 0; implementations MUST treat an underflow as
+   * a logic error (assert / log error and skip).
+   * Dispatches an OnTagChanged event ONLY when the count transitions 1 → 0
+   * (i.e. the tag is now fully absent). While the count remains > 1, no
+   * event is dispatched.
+   */
   RemoveTag(tag: Tag): void;
 
-  /** Checks if the container has any tags */
+  /**
+   * Returns the current grant count for `tag` in ExplicitTagCounts.
+   * Useful for "how many stacks of Burning are active?" queries.
+   * Returns 0 if the tag is not present.
+   */
+  GetTagCount(tag: Tag): number;
+
+  /** Returns true if no explicit tags have a count > 0. */
   IsEmpty(): boolean;
 
-  /** Returns the count of explicit tags */
+  /** Returns the number of distinct explicit tags with count > 0. */
   Count(): number;
 
-  /** Clears all tags */
+  /**
+   * @internal Reserved for the GC Effect application pipeline.
+   * Sets all counts to 0 and dispatches OnTagChanged for every tag whose
+   * count was > 0. Used during GC teardown only.
+   */
   Clear(): void;
 }
 ```
 
 ### 7.3 Query Operations
 
-| Operation | Semantics | Example |
-|-----------|-----------|---------|
-| `MatchesTag(T)` | Returns true if T or any child of T is present | Checking for any type of "Stunned" status |
-| `MatchesTagExact(T)` | Returns true only if T exactly is present | Specific immunity to "Stunned.Magic" but not "Stunned.Physical" |
-| `HasAny(Container)` | Returns true if intersection is non-empty | Spell that affects "Undead" OR "Demon" types |
-| `HasAll(Container)` | Returns true if container is a subset | Combo requiring "Chilled" AND "Vulnerable" |
-| `HasNone(Container)` | Returns true if intersection is empty | Ability blocked by any "Immunity" tag |
+| Operation | Map queried | Semantics | Example |
+|-----------|-------------|-----------|---------|
+| `MatchesTag(T)` | `AllTagCounts` | True if `AllTagCounts[T] > 0` — matches T itself or any descendant of T that is present | Checking for any type of "Stunned" status |
+| `MatchesTagExact(T)` | `ExplicitTagCounts` | True if `ExplicitTagCounts[T] > 0` — exact tag only, no hierarchy | Immunity to "Stunned.Magic" but not "Stunned.Physical" |
+| `GetTagCount(T)` | `ExplicitTagCounts` | Returns `ExplicitTagCounts[T]` (0 if absent) | "How many stacks of Burning?" |
+| `HasAny(Container)` | `AllTagCounts` | True if any tag in Container has `AllTagCounts > 0` | Spell that affects "Undead" OR "Demon" |
+| `HasAll(Container)` | `AllTagCounts` | True if every tag in Container has `AllTagCounts > 0` | Combo requiring "Chilled" AND "Vulnerable" |
+| `HasNone(Container)` | `AllTagCounts` | True if no tag in Container has `AllTagCounts > 0` | Ability blocked by any "Immunity" tag |
 
 #### Query Examples
 
@@ -983,18 +1047,39 @@ container.HasAll(["Status.Burning", "Status.Frozen"]) // false
 
 ### 7.4 Tag Inheritance and Implicit Tags
 
-When a tag is added to a container, all parent tags are implicitly present:
+When a tag is added to a container, the grant counts of all ancestor tags in `AllTagCounts` are incremented by the same amount. When a tag is removed, ancestor counts are decremented symmetrically. This means `MatchesTag` on a parent tag is always consistent with the sum of grants on its descendants:
 
 ```
-Adding: State.Debuff.Stunned.Magic
+AddTag("State.Debuff.Stunned.Magic")
+  ExplicitTagCounts["State.Debuff.Stunned.Magic"] = 1
+  AllTagCounts["State.Debuff.Stunned.Magic"]      = 1
+  AllTagCounts["State.Debuff.Stunned"]             = 1  ← propagated
+  AllTagCounts["State.Debuff"]                     = 1  ← propagated
+  AllTagCounts["State"]                            = 1  ← propagated
 
-Implicit parents:
-  - State
-  - State.Debuff
-  - State.Debuff.Stunned
+AddTag("State.Debuff.Stunned.Magic")  # second effect grants same tag
+  ExplicitTagCounts["State.Debuff.Stunned.Magic"] = 2
+  AllTagCounts["State.Debuff.Stunned.Magic"]      = 2
+  AllTagCounts["State.Debuff.Stunned"]             = 2
+  AllTagCounts["State.Debuff"]                     = 2
+  AllTagCounts["State"]                            = 2
+
+RemoveTag("State.Debuff.Stunned.Magic")  # first effect expires
+  ExplicitTagCounts["State.Debuff.Stunned.Magic"] = 1  # still present!
+  AllTagCounts["State.Debuff.Stunned.Magic"]      = 1
+  AllTagCounts["State.Debuff.Stunned"]             = 1
+  ...
+  # MatchesTag("State.Debuff.Stunned") → still true, no event dispatched
+
+RemoveTag("State.Debuff.Stunned.Magic")  # second effect expires
+  ExplicitTagCounts["State.Debuff.Stunned.Magic"] = 0  # now absent
+  AllTagCounts["State.Debuff.Stunned.Magic"]      = 0
+  AllTagCounts["State.Debuff.Stunned"]             = 0
+  ...
+  # OnTagChanged dispatched for the leaf and each ancestor that hit 0
 ```
 
-This enables hierarchical queries where checking for `State.Debuff` matches any debuff type.
+This enables hierarchical queries where `MatchesTag("State.Debuff")` matches any active debuff, and the match remains valid as long as any descendant tag has a count > 0.
 
 ### 7.5 State Representation via Tags
 
@@ -1066,7 +1151,12 @@ abstract class GameplayAbility {
   /** Tags that prevent activation if present */
   ActivationBlockedTags: TagContainer;
 
-  /** Tags applied to owner while ability is active */
+  /**
+   * Tags applied to the owner while this ability is active.
+   * Implementations MUST apply these as an auto-generated Infinite GameplayEffect
+   * on CommitAbility and remove that effect on EndAbility/CancelAbility.
+   * Direct tag mutation is prohibited (see §3.1).
+   */
   ActivationOwnedTags: TagContainer;
 
   /** Cost effect applied on commit */
@@ -1079,7 +1169,7 @@ abstract class GameplayAbility {
   abstract ActivateAbility(context: AbilityContext): void;
 
   /** Called when ability ends */
-  abstract EndAbility(wGCancelled: boolean): void;
+  abstract EndAbility(wasCancelled: boolean): void;
 }
 ```
 
@@ -1104,6 +1194,13 @@ struct AbilitySpec {
 
   /** Is currently active? */
   IsActive: boolean;
+
+  /**
+   * Handle to the auto-generated Infinite Effect that grants ActivationOwnedTags.
+   * Set by CommitAbility; cleared by EndAbility/CancelAbility.
+   * Undefined when the ability is not active.
+   */
+  ActiveOwnedTagsHandle?: ActiveEffectHandle;
 }
 ```
 
@@ -1200,8 +1297,12 @@ function CommitAbility(spec: AbilitySpec): boolean {
     ApplyGameplayEffectToSelf(cooldownSpec);
   }
 
-  // Grant activation tags
-  GC.AddLooseGameplayTags(spec.AbilityClass.ActivationOwnedTags);
+  // Grant activation tags via an auto-generated Infinite Effect.
+  // Direct tag mutation is prohibited (§3.1); all tag state flows through Effects.
+  if (!spec.AbilityClass.ActivationOwnedTags.IsEmpty()) {
+    const ownedTagsSpec = MakeOwnedTagsEffect(spec.AbilityClass.ActivationOwnedTags, spec.Level);
+    spec.ActiveOwnedTagsHandle = ApplyGameplayEffectToSelf(ownedTagsSpec);
+  }
 
   return true;
 }
@@ -1252,7 +1353,7 @@ Modifiers:
     Operation: Multiply
     Magnitude:
       Type: ScalableFloat
-      Value: 0.75  # 25% reduction
+      Value: -0.25  # -25% mana cost
 ```
 
 ### 8.6 Cancellation and Interruption
@@ -1269,11 +1370,15 @@ function CancelAbility(handle: AbilitySpecHandle): void {
   const spec = GetAbilitySpec(handle);
   if (!spec.IsActive) return;
 
-  // Remove activation tags
-  GC.RemoveLooseGameplayTags(spec.AbilityClass.ActivationOwnedTags);
+  // Remove activation tags by removing the Effect that granted them.
+  // Direct tag mutation is prohibited (§3.1).
+  if (spec.ActiveOwnedTagsHandle) {
+    RemoveActiveGameplayEffect(spec.ActiveOwnedTagsHandle);
+    spec.ActiveOwnedTagsHandle = undefined;
+  }
 
   // Call ability's end handler
-  spec.AbilityInstance.EndAbility(true /* wGCancelled */);
+  spec.AbilityInstance.EndAbility(true /* wasCancelled */);
 
   // Cleanup active tasks
   CancelAllAbilityTasks(handle);
@@ -1350,6 +1455,15 @@ struct GameplayEffect {
   /** Execution policy for multiple instances */
   ExecutionPolicy: ExecutionPolicy;
 
+  /**
+   * Override conflict resolution priority.
+   * When multiple active effects apply an Override modifier to the same
+   * Attribute, the effect with the highest Priority value wins.
+   * On equal Priority, last-applied wins (LIFO).
+   * Defaults to 0. Negative values are valid.
+   */
+  Priority: integer;
+
   /** Gameplay cue tags */
   GameplayCues: Tag[];
 }
@@ -1410,25 +1524,53 @@ Modifiers:
 
 #### 9.4.1 Operations
 
-| Operation | Semantics | Formula |
-|-----------|-----------|---------|
-| `Add` | Flat additive | `attr += magnitude` |
-| `Multiply` | Multiplicative factor | `attr *= magnitude` |
-| `Divide` | Division factor | `attr /= magnitude` |
-| `Override` | Replace value | `attr = magnitude` |
+| Operation | Semantics | Pipeline Step | Magnitude convention |
+|-----------|-----------|---------------|----------------------|
+| `Add` | Pre-multiply flat additive | Step 2 | Absolute delta (e.g., `+10` adds 10) |
+| `AddPost` | Post-multiply flat additive | Step 5 (very rare) | Absolute delta |
+| `Multiply` | Channel-aggregated bonus | Step 4 | Signed bonus: `+0.25` = +25%, `−0.25` = −25%. Modifiers in the same `Channel` add their bonuses; channel effective factors multiply across channels. See §5.3 Channel Aggregation. |
+| `Override` | Replace value | Step 6 | Absolute replacement value |
+
+> **Note:** There is no `Divide` operation. A 50% reduction is expressed as `Multiply` with magnitude `−0.5` (i.e., a −50% penalty). This eliminates the divide-by-zero edge case.
 
 ```typescript
 struct Modifier {
   /** Target attribute */
   Attribute: AttributeReference;
 
-  /** Modification operation */
+  /**
+   * Modification operation.
+   * - Add:      Pre-multiply flat additive (pipeline step 2)
+   * - AddPost:  Post-multiply flat additive (pipeline step 7; very rare)
+   * - Multiply: Multiplicative factor (pipeline step 6)
+
+   * - Override: Replace the computed value entirely (pipeline step 8)
+   */
   Operation: ModifierOperation;
 
   /** Magnitude calculation */
   Magnitude: MagnitudeDefinition;
 
-  /** Channel for modifier aggregation */
+  /**
+   * Optional aggregation channel name for `Multiply` modifiers.
+   *
+   * Semantics (see §5.3 Channel Aggregation for the full formula):
+   * - Modifiers with the SAME Channel add their bonuses together before
+   *   the channel's effective factor (1 + sum) is computed.
+   * - Modifiers in DIFFERENT Channels produce independent factors that
+   *   multiply against each other.
+   * - A modifier with no Channel is in its own implicit singleton channel,
+   *   contributing independently.
+   *
+   * Example — two gear bonuses and one legendary power:
+   *   GE_FireDmg:    Multiply +0.20 Channel:"DamageBonuses"
+   *   GE_EliteDmg:   Multiply +0.15 Channel:"DamageBonuses"
+   *   GE_Legendary:  Multiply +0.50 Channel:"LegendaryPowers"
+   *   → effective factor = (1 + 0.20 + 0.15) × (1 + 0.50) = 1.35 × 1.50 = 2.025
+   *   vs. naive stacking: 1.20 × 1.15 × 1.50 = 2.07  (higher, causes power creep)
+   *
+   * Ignored on `Add`, `AddPost`, and `Override` modifiers.
+   */
   Channel?: string;
 }
 ```
@@ -1586,6 +1728,8 @@ Instance 3:                                 ████████████
 
 Use case: Channeled effects, crowd control chains
 
+**Chaining mechanism:** The GC owns the queue for each `RunInSequence` effect class. When the active instance's duration expires (or it is manually removed), the GC automatically dequeues and begins the next instance, resetting the duration timer. Ability authors do not manage this transition; applying the same effect class while one is already active is sufficient to enqueue. The `OnEffectApplied` / `OnEffectRemoved` delegates fire for each instance individually, so callers can observe the moment one stun ends and the next begins.
+
 #### RunInMerge
 
 Multiple applications merge into a single logical instance with combined duration.
@@ -1624,14 +1768,16 @@ Modifiers:
 ```
 
 When the Effect is applied:
-1. Granted Tags are added to target's Tag Container
-2. Tag change events are dispatched
-3. Relevant Gameplay Cues are triggered
+1. `AddTag` is called for each Granted Tag — grant counts increment
+2. `OnTagChanged` is dispatched **only** for tags whose count transitions `0 → 1`
+3. Gameplay Cues are triggered only on that same `0 → 1` transition
 
 When the Effect is removed (duration expires or manual removal):
-1. Granted Tags are removed from target's Tag Container
-2. Tag change events are dispatched
-3. Looping Gameplay Cues are stopped
+1. `RemoveTag` is called for each Granted Tag — grant counts decrement
+2. `OnTagChanged` is dispatched **only** for tags whose count transitions `1 → 0`
+3. Looping Gameplay Cues are stopped only on that same `1 → 0` transition
+
+**Consequence for concurrent Effects:** if two Effects both grant `State.Debuff.Burning`, the tag's count reaches 2. Removing the first Effect decrements to 1 — no event, no Cue change, the character remains visually on fire. Only removing the second Effect decrements to 0, dispatches `OnTagChanged`, and stops the looping Cue. This is the correct behaviour and falls out automatically from ref-counting.
 
 ### 9.8 Ability Grants
 
@@ -1681,7 +1827,7 @@ struct EffectSpec {
 ```typescript
 struct EffectContext {
   /** GC that created this effect */
-  InstigatorGC: AbilitySystemComponent;
+  InstigatorGC: GameplayController;
 
   /** Actor that caused this effect */
   EffectCauser: Actor;
@@ -1760,6 +1906,10 @@ properties:
       - RunInSequence
       - RunInMerge
     default: RunInParallel
+  Priority:
+    type: integer
+    default: 0
+    description: Override conflict priority. Highest value wins when multiple Override modifiers target the same Attribute. Equal priority resolves by last-applied (LIFO).
   Modifiers:
     type: array
     items:
@@ -1775,11 +1925,18 @@ properties:
           type: string
           enum:
             - Add
+            - AddPost
             - Multiply
-            - Divide
             - Override
         Magnitude:
           type: object
+        Channel:
+          type: string
+          description: >
+            Aggregation channel for Multiply modifiers. Modifiers sharing a
+            Channel add their bonuses; channels multiply against each other.
+            Omit to treat this modifier as an isolated singleton channel.
+            Ignored on Add, AddPost, and Override operations.
   GrantedTags:
     type: array
     items:
@@ -2008,12 +2165,20 @@ Tasks are owned by the Ability that created them. When an Ability ends:
 3. Task resources are released
 
 ```typescript
-function EndAbility(wGCancelled: boolean): void {
+function EndAbility(wasCancelled: boolean): void {
   // Cancel all active tasks
   for (const task of this.ActiveTasks) {
     task.Cancel();
   }
   this.ActiveTasks.Clear();
+
+  // Remove activation-owned tags by removing the Effect that granted them.
+  // This is the normal (non-cancelled) end path; CancelAbility handles the cancel path.
+  const spec = GC.GetAbilitySpec(this.Handle);
+  if (spec?.ActiveOwnedTagsHandle) {
+    GC.RemoveActiveGameplayEffect(spec.ActiveOwnedTagsHandle);
+    spec.ActiveOwnedTagsHandle = undefined;
+  }
 
   // Continue with ability end logic...
 }
@@ -2453,10 +2618,70 @@ function RollbackAndReplay(
 
 | Actor Type | Update Rate | Notes |
 |------------|-------------|-------|
-| Player Character | 60-100 Hz | High frequency for responsive feel |
+| Player Character (LAN / low-latency) | 60-100 Hz | High frequency for responsive feel |
+| Player Character (mobile / high-latency) | 20-30 Hz | Reduce to manage bandwidth; compensate with aggressive client-side prediction |
 | Important AI | 30-60 Hz | Moderate frequency |
 | Distant Actors | 10-20 Hz | Lower frequency acceptable |
 | Static Objects | On Change | Event-based only |
+
+> **High-latency guidance:** On connections with RTT > 150 ms (common on mobile or cross-region play), implementations SHOULD lower the player-character replication rate to 20-30 Hz and increase prediction window depth accordingly. Attribute and Tag state SHOULD be sent at a lower rate than position to prioritise movement responsiveness. Dead-reckoning or interpolation SHOULD be applied on the receiving end.
+
+### 13.7 Effect Application Authorization
+
+`ApplyGameplayEffectToTarget` is the primary mutation surface of the GC pipeline and therefore a critical security boundary in networked environments.
+
+#### Core requirement
+
+In any networked environment, a call to `ApplyGameplayEffectToTarget` that originates on a client MUST be validated by the server before the effect is executed on authoritative state. Clients MUST NOT be permitted to mutate server-authoritative GC state directly.
+
+#### Validation pipeline
+
+The server-side validation step MUST check, at minimum:
+
+1. **Instigator authority** — the instigating GC is owned by the requesting client (or is a server-controlled entity).
+2. **Ability ownership** — the effect is being applied as part of an ability that the instigator has been granted (i.e., the ability spec exists in the instigator's granted-ability list).
+3. **Target reachability** — the target GC is a legitimate target for the instigator at the time of application (range, line-of-sight, or game-rule checks as appropriate to the title).
+4. **Effect class whitelist** — the effect class is one the ability is permitted to apply; implementations SHOULD reject arbitrary `EffectClass` values supplied by the client.
+
+If any check fails, the server MUST reject the application and MAY roll back any prediction the client has already applied locally (via the standard reconciliation path in §13.5).
+
+#### Predicted applications
+
+When a client applies an effect locally as part of a prediction (using a `PredictionKey`), the local application is speculative only. The authoritative application — or its rejection — is determined by the server. Implementations MUST treat predicted effect applications as unconfirmed until the server acknowledges the prediction key.
+
+```typescript
+// Client: speculative application
+const predictionKey = GeneratePredictionKey();
+const specHandle = MakeOutgoingSpec(GE_Damage, level, predictionKey);
+ApplyGameplayEffectToTarget(target.GC, specHandle, predictionKey);
+// Effect is active locally, but flagged as predicted (unconfirmed).
+
+// Server: receives the RPC, validates, then applies authoritatively
+function Server_ApplyEffect(
+  instigatorGC: GameplayController,
+  targetGC: GameplayController,
+  specHandle: EffectSpecHandle,
+  predictionKey: PredictionKey
+): void {
+  // 1. Validate instigator owns the ability that produced this spec
+  if (!ValidateInstigatorAuthority(instigatorGC, specHandle)) {
+    RejectPrediction(predictionKey);
+    return;
+  }
+  // 2. Validate target is reachable / eligible
+  if (!ValidateTarget(instigatorGC, targetGC, specHandle)) {
+    RejectPrediction(predictionKey);
+    return;
+  }
+  // Authoritative application — triggers replication to all clients
+  ApplyGameplayEffectToTarget(targetGC, specHandle);
+  ConfirmPrediction(predictionKey);
+}
+```
+
+#### Authoritative-only effects
+
+Some effects MUST only ever be applied by the server (e.g., spawn effects, death effects, anti-cheat corrections). These effects SHOULD be tagged with `Gameplay.Effect.AuthoritativeOnly` and implementations MUST refuse to apply them on a client even if a prediction key is present.
 
 ---
 
@@ -2485,7 +2710,7 @@ GameplayCues:
 #### Application Flow
 
 ```typescript
-function ApplyDamage(target: AbilitySystemComponent, damage: float): void {
+function ApplyDamage(target: GameplayController, damage: float): void {
   // 1. Create context
   const context = this.GC.MakeEffectContext();
   context.SetEffectCauser(this.Owner);
@@ -2548,7 +2773,7 @@ Modifiers:
     Operation: Multiply
     Magnitude:
       Type: ScalableFloat
-      Value: 1.25  # +25% damage
+      Value: 0.25  # +25% damage
 GrantedTags:
   - "Status.Buff.Strength"
 GameplayCues:
@@ -2757,6 +2982,11 @@ Attributes:
 
 ```typescript
 class GA_Jump extends GameplayAbility {
+  // Handle to the Infinite Effect that grants State.InAir while airborne.
+  // State.Grounded is managed by the physics subsystem via its own Effect,
+  // not by this ability — tag ownership follows responsibility.
+  private inAirHandle: ActiveEffectHandle;
+
   ActivateAbility(context: AbilityContext): void {
     // Check grounded OR coyote time
     if (!this.Owner.Tags.MatchesTag("State.Grounded") &&
@@ -2765,9 +2995,12 @@ class GA_Jump extends GameplayAbility {
       return;
     }
 
-    // Apply jump impulse
-    this.Owner.Tags.AddTag("State.InAir");
-    this.Owner.Tags.RemoveTag("State.Grounded");
+    // Grant State.InAir via an Effect — direct tag mutation is prohibited (§3.1).
+    // GE_InAir is an Infinite Effect with GrantedTags: ["State.InAir"].
+    // The physics subsystem independently removes its GE_Grounded effect
+    // when it detects the character is no longer on the ground.
+    const inAirSpec = MakeOutgoingSpec(GE_InAir, 1);
+    this.inAirHandle = ApplyGameplayEffectToSelf(inAirSpec);
 
     const jumpVelocity = this.Owner.GetAttribute("JumpVelocity");
     ApplyImpulse(Vector3.Up * jumpVelocity);
@@ -2782,7 +3015,9 @@ class GA_Jump extends GameplayAbility {
   }
 
   OnJumpReleased(heldDuration: float): void {
-    // Short press = cut jump short
+    // Short press = cut jump short.
+    // VerticalVelocity is a GAS Attribute kept in sync by the physics Avatar,
+    // so this remains a pure GAS query — no direct physics coupling here.
     if (this.Owner.GetAttribute("VerticalVelocity") > 0) {
       // Apply gravity multiplier for shorter jump
       const cutSpec = MakeOutgoingSpec(GE_JumpCut, 1);
@@ -2791,8 +3026,9 @@ class GA_Jump extends GameplayAbility {
   }
 
   OnLanded(): void {
-    this.Owner.Tags.RemoveTag("State.InAir");
-    this.Owner.Tags.AddTag("State.Grounded");
+    // Remove State.InAir by removing the Effect that granted it.
+    // The physics subsystem re-applies its GE_Grounded effect on landing.
+    RemoveActiveGameplayEffect(this.inAirHandle);
     EndAbility(false);
   }
 }
@@ -2811,7 +3047,7 @@ Modifiers:
     Operation: Multiply
     Magnitude:
       Type: ScalableFloat
-      Value: 2.0
+      Value: 1.0  # +100% (doubles size)
   - Attribute: "Health"
     Operation: Add
     Magnitude:
@@ -2869,7 +3105,7 @@ Modifiers:
     Operation: Multiply
     Magnitude:
       Type: ScalableFloat
-      Value: 0.4
+      Value: -0.6  # -60% grip (retains 40% of normal grip)
   - Attribute: "MaxSpeed"
     Operation: Add
     Magnitude:
@@ -2936,43 +3172,96 @@ class ExecCalc_VehicleTraction extends ExecutionCalculation {
 
 #### Damage Bucket Architecture
 
-The "Damage Bucket" system prevents linear power creep by organizing modifiers into multiplicative groups.
+The "Damage Bucket" system prevents linear power creep by organizing `Multiply` modifiers into named channels. Modifiers in the same channel add their bonuses; channels multiply against each other. Because the `Channel` mechanism is built into the modifier pipeline (§5.3), the bucket design is expressed **declaratively** in Effect YAML — no custom calculation code required for the stacking logic itself.
+
+Three canonical buckets:
+
+| Channel | What goes in it | Stacking |
+|---------|-----------------|---------|
+| `"MainStat"` | Stat-derived scaling (e.g. Strength → +damage) | Additive |
+| `"DamageBonuses"` | Conditional damage bonuses (fire, vs. elites, while healthy …) | Additive |
+| `"LegendaryPowers"` | Item set / legendary power multipliers | Additive within, ×MainStat ×DamageBonuses across |
+
+```yaml
+# GE_Weapon_FireSword.yaml — item that grants a fire damage bonus
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+Name: "GE_Weapon_FireSword"
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: "WeaponDamage"
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 0.20        # +20% fire damage
+    Channel: "DamageBonuses"
+```
+
+```yaml
+# GE_Passive_EliteHunter.yaml — passive skill: +15% damage vs. elites
+Name: "GE_Passive_EliteHunter"
+DurationPolicy: Infinite
+ApplicationRequiredTags:
+  - "Status.FightingElite"
+Modifiers:
+  - Attribute: "WeaponDamage"
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 0.15        # +15% damage vs. elites
+    Channel: "DamageBonuses"
+```
+
+```yaml
+# GE_Set_LegendaryPower.yaml — set bonus: +50% damage (its own channel)
+Name: "GE_Set_LegendaryPower"
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: "WeaponDamage"
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 0.50        # +50% legendary multiplier
+    Channel: "LegendaryPowers"
+```
+
+```yaml
+# GE_MainStat_Strength.yaml — applied by the attribute system per point of Strength
+Name: "GE_MainStat_Strength"
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: "WeaponDamage"
+    Operation: Multiply
+    Magnitude:
+      Type: AttributeBased
+      BackingAttribute: "Strength"
+      Source: Source
+      Coefficient: 0.01  # +1% per Strength point
+    Channel: "MainStat"
+```
+
+With all four effects active (Strength 50, fire sword, elite hunter active, legendary set):
+- `MainStat` channel factor: `1 + (0.01 × 50)` = **×1.50**
+- `DamageBonuses` channel factor: `1 + 0.20 + 0.15` = **×1.35**
+- `LegendaryPowers` channel factor: `1 + 0.50` = **×1.50**
+- Final `WeaponDamage` multiplier: `1.50 × 1.35 × 1.50` = **×3.04**
+
+vs. naive unchanelled stacking: `1.50 × 1.20 × 1.15 × 1.50` = **×3.11** — a modest difference at low item counts that compounds severely at higher counts.
+
+**Conditional modifiers** (e.g. the Vulnerability bonus) that depend on target state at hit-time still require an `ExecutionCalculation`, but only for the conditional logic — the stacking math is already handled by the pipeline:
 
 ```typescript
 class ExecCalc_ARPGDamage extends ExecutionCalculation {
   Execute(source, target, context): ModifierResult[] {
-    // Bucket A: Main Stat (additive within bucket)
-    const mainStatBonus = source.Get("Strength") * 0.01;  // +1% per point
+    // All bucket stacking is already resolved in WeaponDamage's Current Value.
+    const weaponDamage = source.Get("WeaponDamage");
 
-    // Bucket B: Additive Damage Bonuses
-    let bucketB = 1.0;
-    bucketB += source.Get("DamageBonus_Fire") || 0;
-    bucketB += source.Get("DamageBonus_Elite") || 0;
-    bucketB += source.Get("DamageBonus_WhileHealthy") || 0;
-
-    // Bucket C: Multiplicative Powers
-    let bucketC = 1.0;
-    bucketC *= source.Get("LegendaryPowerMultiplier") || 1.0;
-    bucketC *= source.Get("SetBonusMultiplier") || 1.0;
-
-    // Vulnerability check
-    let vulnerabilityMultiplier = 1.0;
-    if (target.Tags.MatchesTag("Status.Vulnerable")) {
-      vulnerabilityMultiplier = 1.2;
-    }
-
-    // Final calculation: Buckets multiply each other
-    const baseDamage = source.Get("WeaponDamage");
-    const finalDamage = baseDamage *
-                        (1 + mainStatBonus) *  // Bucket A
-                        bucketB *               // Bucket B
-                        bucketC *               // Bucket C
-                        vulnerabilityMultiplier;
+    // Only conditional logic needs to live here.
+    const vulnerabilityBonus = target.Tags.MatchesTag("Status.Vulnerable") ? 0.20 : 0.0;
 
     return [{
       Attribute: "Health",
       Operation: Add,
-      Magnitude: -finalDamage
+      Magnitude: -weaponDamage * (1 + vulnerabilityBonus)
     }];
   }
 }
@@ -3118,8 +3407,10 @@ class GA_GridMove extends GameplayAbility {
       const mergeSpec = MakeOutgoingSpec(GE_CellMerge, 1);
       ApplyGameplayEffectToTarget(merge.TargetCell.GC, mergeSpec);
 
-      // Mark source for destruction
-      merge.SourceCell.Tags.AddTag("Status.PendingDestroy");
+      // Mark source for destruction via an Effect — direct tag mutation is prohibited (§3.1).
+      // GE_PendingDestroy is an Infinite Effect with GrantedTags: ["Status.PendingDestroy"].
+      const destroySpec = MakeOutgoingSpec(GE_PendingDestroy, 1);
+      ApplyGameplayEffectToTarget(merge.SourceCell.GC, destroySpec);
     }
 
     // Wait for animations
@@ -3142,55 +3433,72 @@ class GA_GridMove extends GameplayAbility {
 }
 ```
 
-#### Undo via Effect History
+#### Undo via Effect Audit Trail
+
+Rather than snapshotting raw cell values, the undo system hooks into the GC Effect application pipeline via `OnBeforeEffectApplied`. Each effect applied during a turn is recorded alongside the pre-apply attribute values it will overwrite. Undoing a turn replays those pre-apply values back through Instant Effects — the undo state is derived entirely from the Effect layer, not from bespoke value captures.
 
 ```typescript
+interface EffectRecord {
+  TargetGC: GameplayController;
+  Spec: EffectSpec;
+  /** Attribute values captured immediately before this Effect was applied. */
+  PreApplyValues: Map<string, number>;
+}
+
+interface TurnRecord {
+  EffectsApplied: EffectRecord[];
+}
+
 class UndoSystem {
-  private EffectHistory: HistoryFrame[] = [];
+  private TurnHistory: TurnRecord[] = [];
+  private CurrentTurn: TurnRecord | null = null;
 
-  RecordFrame(): void {
-    const frame: HistoryFrame = {
-      Timestamp: GetCurrentTime(),
-      CellStates: [],
-      AppliedEffects: []
-    };
+  /** Called by GA_Move at the start of each player turn. */
+  BeginTurn(): void {
+    this.CurrentTurn = { EffectsApplied: [] };
+  }
 
-    // Capture all cell states
-    for (const cell of GetAllCells()) {
-      frame.CellStates.push({
-        ID: cell.ID,
-        Value: cell.GetAttribute("CellValue"),
-        X: cell.GetAttribute("GridX"),
-        Y: cell.GetAttribute("GridY")
-      });
+  /**
+   * Hook registered on each cell GC as OnBeforeEffectApplied.
+   * The GC pipeline calls this immediately before applying an Effect,
+   * giving us a chance to snapshot the attribute values that will change.
+   */
+  OnBeforeEffectApplied(targetGC: GameplayController, spec: EffectSpec): void {
+    if (!this.CurrentTurn) return;
+    const preApplyValues = new Map<string, number>();
+    for (const modifier of spec.EffectClass.Modifiers) {
+      preApplyValues.set(modifier.Attribute, targetGC.GetAttribute(modifier.Attribute));
     }
+    this.CurrentTurn.EffectsApplied.push({ TargetGC: targetGC, Spec: spec, PreApplyValues: preApplyValues });
+  }
 
-    this.EffectHistory.push(frame);
+  /** Called by GA_Move after all effects for the turn have been applied. */
+  CommitTurn(): void {
+    if (this.CurrentTurn) {
+      this.TurnHistory.push(this.CurrentTurn);
+      this.CurrentTurn = null;
+    }
   }
 
   Undo(): void {
-    if (this.EffectHistory.length < 2) return;
+    if (this.TurnHistory.length === 0) return;
+    const lastTurn = this.TurnHistory.pop()!;
 
-    // Remove current frame
-    this.EffectHistory.pop();
-
-    // Get previous frame
-    const previousFrame = this.EffectHistory[this.EffectHistory.length - 1];
-
-    // Restore cell states
-    for (const cellState of previousFrame.CellStates) {
-      const cell = GetCellByID(cellState.ID);
-      if (cell) {
-        const restoreSpec = MakeOutgoingSpec(GE_RestoreState, 1);
-        restoreSpec.SetByCallerMagnitude("Value", cellState.Value);
-        restoreSpec.SetByCallerMagnitude("X", cellState.X);
-        restoreSpec.SetByCallerMagnitude("Y", cellState.Y);
-        ApplyGameplayEffectToTarget(cell.GC, restoreSpec);
+    // Restore pre-apply values in reverse Effect order.
+    // Each restore is itself an Instant Override Effect — undo flows through
+    // the same pipeline as every other state change.
+    for (const record of [...lastTurn.EffectsApplied].reverse()) {
+      const restoreSpec = MakeOutgoingSpec(GE_RestoreValues, 1);
+      for (const [attr, value] of record.PreApplyValues) {
+        restoreSpec.SetByCallerMagnitude(attr, value);
       }
+      ApplyGameplayEffectToTarget(record.TargetGC, restoreSpec);
     }
   }
 }
 ```
+
+`GE_RestoreValues` is an Instant Effect with one `Override` modifier per restored attribute, driven by `SetByCaller` magnitudes. Every undo operation passes through the standard Effect pipeline: it is observable, replicable, and appears in the Effect audit trail exactly like any other state change.
 
 ---
 
@@ -3238,6 +3546,18 @@ $$\prod_{k=1}^{n} m_k = m_1 \times m_2 \times \cdots \times m_n$$
 ---
 
 ## Appendix B: Complete Schema Reference
+
+### Schema URL Versioning Policy
+
+All `$schema` URLs in UGAS data files use the pattern:
+
+```
+https://raw.githubusercontent.com/jbltx/ugas/{version}/schemas/{schema-name}.json
+```
+
+Where `{version}` is the git tag of the UGAS release the data file was authored against (e.g. `v1.0`). Each released version tag MUST maintain stable schema URLs — schemas at a given version tag MUST NOT be modified after release.
+
+Data files SHOULD pin to the exact UGAS version they were authored against. Tooling that processes UGAS data files SHOULD validate against the schema URL declared in `$schema`, and SHOULD fail clearly when the URL is unreachable or the schema is invalid, rather than silently skipping validation.
 
 ### GameplayController Schema Definition
 
@@ -3302,13 +3622,6 @@ $$\prod_{k=1}^{n} m_k = m_1 \times m_2 \times \cdots \times m_n$$
   urldate = {2026-02-03}
 }
 
-@online{google_genie,
-  author = {{Google DeepMind}},
-  title = {Genie: Generative Interactive Environments},
-  year = {2024},
-  url = {https://sites.google.com/view/genie-2024/home},
-  urldate = {2026-02-03}
-}
 
 @book{gregory_engine,
   author = {Jason Gregory},
