@@ -1,0 +1,79 @@
+name: Publish docs on release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout source (release tag)
+        uses: actions/checkout@v4
+        with:
+          path: source
+
+      - name: Checkout docs branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs
+          path: docs
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Convert SPEC.md to HTML
+        run: |
+          sudo apt-get install -y pandoc
+          pandoc source/SPEC.md \
+            --standalone \
+            --katex \
+            --metadata title="UGAS Specification v${{ steps.version.outputs.version }}" \
+            -o source/index.html
+
+      - name: Copy files to docs branch
+        run: |
+          DEST="docs/v${{ steps.version.outputs.version }}"
+          mkdir -p "${DEST}/schemas"
+          cp -r source/schemas/* "${DEST}/schemas/"
+          cp source/SPEC.md "${DEST}/SPEC.md"
+          cp source/index.html "${DEST}/index.html"
+
+      - name: Create PR to docs branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          BRANCH="docs/v${VERSION}"
+
+          cd docs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+
+          git checkout -b "${BRANCH}"
+          git commit -m "docs: publish v${VERSION}"
+          git push -u origin "${BRANCH}" --force
+
+          EXISTING_PR=$(gh pr list --base docs --head "${BRANCH}" --json number --jq '.[0].number')
+          if [ -n "${EXISTING_PR}" ]; then
+            echo "PR #${EXISTING_PR} already exists, updated with force push"
+          else
+            gh pr create \
+              --base docs \
+              --head "${BRANCH}" \
+              --title "docs: publish v${VERSION}" \
+              --body "Automated PR to publish docs for release v${VERSION}.
+
+          - \`SPEC.md\` → \`v${VERSION}/SPEC.md\`
+          - \`SPEC.md\` → \`v${VERSION}/index.html\` (HTML with KaTeX)
+          - \`schemas/**/*\` → \`v${VERSION}/schemas/\`"
+          fi
