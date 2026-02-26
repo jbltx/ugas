@@ -936,18 +936,24 @@ A Tag Container is a collection of tags associated with an entity.
 
 #### Internal Representation
 
-Implementations SHOULD use an efficient representation:
+A `TagContainer` MUST maintain **reference counts** per tag, not a simple set. Multiple concurrent Effects can grant the same tag; each grant increments the count; each removal decrements it. The tag is considered present only while its count is greater than zero.
 
 ```typescript
 struct TagContainer {
-  /** Set of explicit tags */
-  ExplicitTags: Set<Tag>;
+  /**
+   * Grant counts for every explicitly-held tag.
+   * A tag is "explicitly present" when its count > 0.
+   * Managed exclusively by the GC Effect application pipeline.
+   */
+  ExplicitTagCounts: Map<Tag, number>;
 
-  /** Cached parent tags (computed from explicit tags) */
-  ParentTags: Set<Tag>;
-
-  /** Combined explicit and parent tags */
-  AllTags: Set<Tag>;
+  /**
+   * Cumulative grant counts for all explicit tags AND their ancestor tags.
+   * Automatically maintained by AddTag/RemoveTag: adding tag T also
+   * increments the count of every ancestor of T; removing T decrements them.
+   * Used to answer MatchesTag queries in O(1).
+   */
+  AllTagCounts: Map<Tag, number>;
 }
 ```
 
@@ -959,6 +965,12 @@ interface TagContainer {
    * @internal Reserved for the GC Effect application pipeline.
    * Ability implementations MUST NOT call this directly.
    * Grant tags via a GameplayEffect with GrantedTags instead.
+   *
+   * Increments the grant count of `tag` in ExplicitTagCounts and the grant
+   * count of every ancestor of `tag` in AllTagCounts.
+   * Dispatches an OnTagChanged event ONLY when the count transitions 0 → 1
+   * (i.e. the tag was previously absent). Subsequent grants of the same tag
+   * by additional Effects increment the count silently.
    */
   AddTag(tag: Tag): void;
 
@@ -966,18 +978,34 @@ interface TagContainer {
    * @internal Reserved for the GC Effect application pipeline.
    * Ability implementations MUST NOT call this directly.
    * Remove tags by removing the GameplayEffect that granted them.
+   *
+   * Decrements the grant count of `tag` in ExplicitTagCounts and the grant
+   * count of every ancestor of `tag` in AllTagCounts.
+   * MUST NOT decrement below 0; implementations MUST treat an underflow as
+   * a logic error (assert / log error and skip).
+   * Dispatches an OnTagChanged event ONLY when the count transitions 1 → 0
+   * (i.e. the tag is now fully absent). While the count remains > 1, no
+   * event is dispatched.
    */
   RemoveTag(tag: Tag): void;
 
-  /** Checks if the container has any tags */
+  /**
+   * Returns the current grant count for `tag` in ExplicitTagCounts.
+   * Useful for "how many stacks of Burning are active?" queries.
+   * Returns 0 if the tag is not present.
+   */
+  GetTagCount(tag: Tag): number;
+
+  /** Returns true if no explicit tags have a count > 0. */
   IsEmpty(): boolean;
 
-  /** Returns the count of explicit tags */
+  /** Returns the number of distinct explicit tags with count > 0. */
   Count(): number;
 
   /**
    * @internal Reserved for the GC Effect application pipeline.
-   * Ability implementations MUST NOT call this directly.
+   * Sets all counts to 0 and dispatches OnTagChanged for every tag whose
+   * count was > 0. Used during GC teardown only.
    */
   Clear(): void;
 }
@@ -985,13 +1013,14 @@ interface TagContainer {
 
 ### 7.3 Query Operations
 
-| Operation | Semantics | Example |
-|-----------|-----------|---------|
-| `MatchesTag(T)` | Returns true if T or any child of T is present | Checking for any type of "Stunned" status |
-| `MatchesTagExact(T)` | Returns true only if T exactly is present | Specific immunity to "Stunned.Magic" but not "Stunned.Physical" |
-| `HasAny(Container)` | Returns true if intersection is non-empty | Spell that affects "Undead" OR "Demon" types |
-| `HasAll(Container)` | Returns true if container is a subset | Combo requiring "Chilled" AND "Vulnerable" |
-| `HasNone(Container)` | Returns true if intersection is empty | Ability blocked by any "Immunity" tag |
+| Operation | Map queried | Semantics | Example |
+|-----------|-------------|-----------|---------|
+| `MatchesTag(T)` | `AllTagCounts` | True if `AllTagCounts[T] > 0` — matches T itself or any descendant of T that is present | Checking for any type of "Stunned" status |
+| `MatchesTagExact(T)` | `ExplicitTagCounts` | True if `ExplicitTagCounts[T] > 0` — exact tag only, no hierarchy | Immunity to "Stunned.Magic" but not "Stunned.Physical" |
+| `GetTagCount(T)` | `ExplicitTagCounts` | Returns `ExplicitTagCounts[T]` (0 if absent) | "How many stacks of Burning?" |
+| `HasAny(Container)` | `AllTagCounts` | True if any tag in Container has `AllTagCounts > 0` | Spell that affects "Undead" OR "Demon" |
+| `HasAll(Container)` | `AllTagCounts` | True if every tag in Container has `AllTagCounts > 0` | Combo requiring "Chilled" AND "Vulnerable" |
+| `HasNone(Container)` | `AllTagCounts` | True if no tag in Container has `AllTagCounts > 0` | Ability blocked by any "Immunity" tag |
 
 #### Query Examples
 
@@ -1012,18 +1041,39 @@ container.HasAll(["Status.Burning", "Status.Frozen"]) // false
 
 ### 7.4 Tag Inheritance and Implicit Tags
 
-When a tag is added to a container, all parent tags are implicitly present:
+When a tag is added to a container, the grant counts of all ancestor tags in `AllTagCounts` are incremented by the same amount. When a tag is removed, ancestor counts are decremented symmetrically. This means `MatchesTag` on a parent tag is always consistent with the sum of grants on its descendants:
 
 ```
-Adding: State.Debuff.Stunned.Magic
+AddTag("State.Debuff.Stunned.Magic")
+  ExplicitTagCounts["State.Debuff.Stunned.Magic"] = 1
+  AllTagCounts["State.Debuff.Stunned.Magic"]      = 1
+  AllTagCounts["State.Debuff.Stunned"]             = 1  ← propagated
+  AllTagCounts["State.Debuff"]                     = 1  ← propagated
+  AllTagCounts["State"]                            = 1  ← propagated
 
-Implicit parents:
-  - State
-  - State.Debuff
-  - State.Debuff.Stunned
+AddTag("State.Debuff.Stunned.Magic")  # second effect grants same tag
+  ExplicitTagCounts["State.Debuff.Stunned.Magic"] = 2
+  AllTagCounts["State.Debuff.Stunned.Magic"]      = 2
+  AllTagCounts["State.Debuff.Stunned"]             = 2
+  AllTagCounts["State.Debuff"]                     = 2
+  AllTagCounts["State"]                            = 2
+
+RemoveTag("State.Debuff.Stunned.Magic")  # first effect expires
+  ExplicitTagCounts["State.Debuff.Stunned.Magic"] = 1  # still present!
+  AllTagCounts["State.Debuff.Stunned.Magic"]      = 1
+  AllTagCounts["State.Debuff.Stunned"]             = 1
+  ...
+  # MatchesTag("State.Debuff.Stunned") → still true, no event dispatched
+
+RemoveTag("State.Debuff.Stunned.Magic")  # second effect expires
+  ExplicitTagCounts["State.Debuff.Stunned.Magic"] = 0  # now absent
+  AllTagCounts["State.Debuff.Stunned.Magic"]      = 0
+  AllTagCounts["State.Debuff.Stunned"]             = 0
+  ...
+  # OnTagChanged dispatched for the leaf and each ancestor that hit 0
 ```
 
-This enables hierarchical queries where checking for `State.Debuff` matches any debuff type.
+This enables hierarchical queries where `MatchesTag("State.Debuff")` matches any active debuff, and the match remains valid as long as any descendant tag has a count > 0.
 
 ### 7.5 State Representation via Tags
 
@@ -1710,14 +1760,16 @@ Modifiers:
 ```
 
 When the Effect is applied:
-1. Granted Tags are added to target's Tag Container
-2. Tag change events are dispatched
-3. Relevant Gameplay Cues are triggered
+1. `AddTag` is called for each Granted Tag — grant counts increment
+2. `OnTagChanged` is dispatched **only** for tags whose count transitions `0 → 1`
+3. Gameplay Cues are triggered only on that same `0 → 1` transition
 
 When the Effect is removed (duration expires or manual removal):
-1. Granted Tags are removed from target's Tag Container
-2. Tag change events are dispatched
-3. Looping Gameplay Cues are stopped
+1. `RemoveTag` is called for each Granted Tag — grant counts decrement
+2. `OnTagChanged` is dispatched **only** for tags whose count transitions `1 → 0`
+3. Looping Gameplay Cues are stopped only on that same `1 → 0` transition
+
+**Consequence for concurrent Effects:** if two Effects both grant `State.Debuff.Burning`, the tag's count reaches 2. Removing the first Effect decrements to 1 — no event, no Cue change, the character remains visually on fire. Only removing the second Effect decrements to 0, dispatches `OnTagChanged`, and stops the looping Cue. This is the correct behaviour and falls out automatically from ref-counting.
 
 ### 9.8 Ability Grants
 
