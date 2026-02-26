@@ -148,13 +148,12 @@ $defs:
           - Add
           - AddPost
           - Multiply
-          - Divide
           - Override
         description: >
           Mathematical operation to apply.
           Add: pre-multiply flat additive (pipeline step 2, before percentage and multiply steps).
           AddPost: post-multiply flat additive (pipeline step 7, after all multiply steps; very rare).
-          Multiply/Divide: multiplicative factors applied at step 6.
+          Multiply: multiplicative factor at step 6 — use a reciprocal magnitude (e.g. 0.5) instead of a Divide operation.
           Override: replaces the computed result at step 8.
       Magnitude:
         $ref: "#/$defs/MagnitudeDefinition"

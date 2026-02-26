@@ -71,18 +71,9 @@ V_current = (V_base + Σa_i) × (1 + Σp_j) × Πm_k + Σb_l
 
 **Resolution:** A distinct `AddPost` operation was introduced alongside the existing `Add` operation. The formula legend, the Order of Operations step 7, the §9.4.1 operations table, and both JSON and YAML schemas (`gameplay_effect.json` / `gameplay_effect.yaml`) have been updated. `Add` now unambiguously maps to the pre-multiply `a_i` bucket (pipeline step 2); `AddPost` maps to the post-multiply `b_l` bucket (pipeline step 7). The `Channel` field on `Modifier` has also been documented — it controls named aggregation channels for damage-bucket systems (§15.3), which is a separate concern from pre/post-multiply ordering.
 
-### 2.2 Division by Zero Is Unaddressed
+### 2.2 ~~Division by Zero Is Unaddressed~~ ✓ FIXED
 
-**Section 9.4.1:**
-
-The `Divide` operation is defined as `attr /= magnitude` with no guard against `magnitude = 0`. In any production game, effects come from external data (YAML/JSON config, procedural generation, network messages). A zero-valued magnitude will produce `NaN` or `Infinity`, propagating silently through the entire attribute pipeline.
-
-Either:
-- Mandate that implementations clamp `Divide` magnitude to a minimum non-zero value (e.g., `max(magnitude, 0.0001)`)
-- Specify that a zero Divide magnitude is a no-op
-- Or document that `Divide` is redundant with `Multiply(1/x)` and remove it entirely
-
-The `Divide` operation adds implementation complexity for zero marginal design value. `Multiply` with a reciprocal achieves the same result without the edge case.
+**Resolution:** The `Divide` operation has been removed entirely from the spec and both schemas. Division is now expressed as `Multiply` with a reciprocal magnitude (e.g., dividing by 2 = `Multiply` with magnitude `0.5`). This eliminates the divide-by-zero edge case with zero added complexity — `Multiply` already handles the full space of multiplicative transformations.
 
 ### 2.3 Override Modifier Conflict Resolution Is Undefined
 

@@ -127,7 +127,7 @@ This section provides formal definitions for terms used throughout this specific
 : A logical container that groups related Attributes. AttributeSets provide modular composition of Actor capabilities.
 
 **Modifier**
-: A temporary or permanent adjustment to an Attribute's value. Modifiers define an operation (Add, Multiply, Divide, Override) and a magnitude.
+: A temporary or permanent adjustment to an Attribute's value. Modifiers define an operation (Add, AddPost, Multiply, Override) and a magnitude.
 
 **Tag**
 : A hierarchical, unique identifier serving as a conceptual label for Actors, Abilities, and Effects. Tags use dot-notation (e.g., `State.Debuff.Stunned.Magic`).
@@ -1415,8 +1415,9 @@ Modifiers:
 | `Add` | Pre-multiply flat additive | Step 2 (before percentage and multiply steps) | `attr += magnitude` |
 | `AddPost` | Post-multiply flat additive | Step 7 (after all multiply steps; very rare) | `attr += magnitude` |
 | `Multiply` | Multiplicative factor | Step 6 | `attr *= magnitude` |
-| `Divide` | Division factor | Step 6 | `attr /= magnitude` |
 | `Override` | Replace value | Step 8 | `attr = magnitude` |
+
+> **Note:** There is no `Divide` operation. Division is expressed as `Multiply` with a reciprocal magnitude (e.g., dividing by 2 is equivalent to `Multiply` with magnitude `0.5`). This eliminates the divide-by-zero edge case while preserving full expressiveness.
 
 ```typescript
 struct Modifier {
@@ -1428,7 +1429,7 @@ struct Modifier {
    * - Add:      Pre-multiply flat additive (pipeline step 2)
    * - AddPost:  Post-multiply flat additive (pipeline step 7; very rare)
    * - Multiply: Multiplicative factor (pipeline step 6)
-   * - Divide:   Division factor (pipeline step 6)
+
    * - Override: Replace the computed value entirely (pipeline step 8)
    */
   Operation: ModifierOperation;
@@ -1788,8 +1789,8 @@ properties:
           type: string
           enum:
             - Add
+            - AddPost
             - Multiply
-            - Divide
             - Override
         Magnitude:
           type: object
