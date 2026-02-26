@@ -576,8 +576,19 @@ The order of operations is CRITICAL for deterministic results:
 5. Multiply all multiplicative factors together
 6. Apply multiplicative factors
 7. Add the sum of all post-multiply flat additive modifiers (`AddPost` operations; very rare, usually none)
-8. Apply Override modifiers (if any, replacing the result)
+8. Apply Override modifiers (if any, replacing the result) — see conflict resolution rule below
 9. Apply clamping constraints
+
+#### Override Conflict Resolution
+
+When multiple active Override modifiers target the same Attribute simultaneously, implementations MUST resolve the conflict deterministically using the following ordered rules:
+
+1. **Priority wins**: The Override modifier from the `GameplayEffect` with the highest `Priority` value replaces the result. Lower-priority Overrides are ignored for that Attribute.
+2. **Last-applied wins on tie**: If two or more competing Override modifiers share the same `Priority`, the one from the most recently applied effect wins (LIFO order, determined by application timestamp).
+
+`Priority` defaults to `0`. Effects intended to be overrideable by other effects should use lower priority values (e.g. `-10`); effects that must always dominate should use higher values (e.g. `100`).
+
+> **Example:** A "Freeze" effect sets `MoveSpeed` Override to `0` at Priority `10`. A "Slow` effect also sets an Override to `50` at Priority `5`. The Freeze wins because `10 > 5`. If a "Root" effect then sets an Override to `0` at Priority `10`, it ties with Freeze — the more recently applied effect's Override is used, but the end result is identical.
 
 #### Example Calculation
 
@@ -1350,6 +1361,15 @@ struct GameplayEffect {
   /** Execution policy for multiple instances */
   ExecutionPolicy: ExecutionPolicy;
 
+  /**
+   * Override conflict resolution priority.
+   * When multiple active effects apply an Override modifier to the same
+   * Attribute, the effect with the highest Priority value wins.
+   * On equal Priority, last-applied wins (LIFO).
+   * Defaults to 0. Negative values are valid.
+   */
+  Priority: integer;
+
   /** Gameplay cue tags */
   GameplayCues: Tag[];
 }
@@ -1774,6 +1794,10 @@ properties:
       - RunInSequence
       - RunInMerge
     default: RunInParallel
+  Priority:
+    type: integer
+    default: 0
+    description: Override conflict priority. Highest value wins when multiple Override modifiers target the same Attribute. Equal priority resolves by last-applied (LIFO).
   Modifiers:
     type: array
     items:

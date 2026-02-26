@@ -37,6 +37,11 @@
       "enum": ["RunInParallel", "RunInSequence", "RunInMerge"],
       "default": "RunInParallel"
     },
+    "Priority": {
+      "type": "integer",
+      "default": 0,
+      "description": "Override conflict resolution priority. When multiple active effects apply an Override modifier to the same Attribute, the effect with the highest Priority value wins. On equal Priority, last-applied wins (LIFO). Negative values are valid."
+    },
     "Modifiers": {
       "type": "array",
       "items": {

@@ -75,18 +75,14 @@ V_current = (V_base + Σa_i) × (1 + Σp_j) × Πm_k + Σb_l
 
 **Resolution:** The `Divide` operation has been removed entirely from the spec and both schemas. Division is now expressed as `Multiply` with a reciprocal magnitude (e.g., dividing by 2 = `Multiply` with magnitude `0.5`). This eliminates the divide-by-zero edge case with zero added complexity — `Multiply` already handles the full space of multiplicative transformations.
 
-### 2.3 Override Modifier Conflict Resolution Is Undefined
+### 2.3 ~~Override Modifier Conflict Resolution Is Undefined~~ ✓ FIXED
 
-**Section 5.3, step 8:** "Apply Override modifiers (if any, replacing the result)"
+**Resolution:** A `Priority: integer` field (default `0`, negative values valid) has been added to `GameplayEffect`. The Override conflict resolution rule is now formally specified in §5.3:
 
-What happens when two effects simultaneously apply an `Override` modifier to the same attribute? The spec does not specify:
+1. **Highest Priority wins** — the Override from the effect with the largest `Priority` value replaces the result; lower-priority Overrides for the same Attribute are ignored.
+2. **Equal Priority → last-applied wins (LIFO)** — deterministic by application timestamp, independent of network arrival order.
 
-- Last-applied wins?
-- Highest value wins?
-- Lowest value wins?
-- First-applied wins?
-
-In networked games where effects can arrive out of order, "last-applied" is non-deterministic. This needs a defined resolution policy (a priority field on Override modifiers, or a specified ordering rule) to guarantee deterministic results across implementations.
+The `Priority` field has been added to the `GameplayEffect` struct (§9.1), the Appendix B inline YAML schema, `gameplay_effect.json`, and `gameplay_effect.yaml`.
 
 ### 2.4 Loose Tags Break the Core Principle
 
