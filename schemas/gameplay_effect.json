@@ -168,15 +168,15 @@
         },
         "Operation": {
           "type": "string",
-          "enum": ["Add", "Multiply", "Divide", "Override"],
-          "description": "Mathematical operation to apply"
+          "enum": ["Add", "AddPost", "Multiply", "Divide", "Override"],
+          "description": "Mathematical operation to apply. Add: pre-multiply flat additive (pipeline step 2, before percentage and multiply steps). AddPost: post-multiply flat additive (pipeline step 7, after all multiply steps; very rare). Multiply/Divide: multiplicative factors applied at step 6. Override: replaces the computed result at step 8."
         },
         "Magnitude": {
           "$ref": "#/$defs/MagnitudeDefinition"
         },
         "Channel": {
           "type": "string",
-          "description": "Optional modifier channel for organization"
+          "description": "Optional named aggregation channel. Modifiers in the same channel sum together; modifiers in different channels multiply against each other. Used for damage-bucket systems. Defaults to the global channel if omitted."
         }
       }
     }

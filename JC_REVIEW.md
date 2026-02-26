@@ -59,7 +59,7 @@ Treating ability costs and cooldowns as Gameplay Effects (rather than separate s
 
 ## Part II — Critical Issues
 
-### 2.1 The Attribute Formula Has an Ambiguous Term
+### 2.1 ~~The Attribute Formula Has an Ambiguous Term~~ ✓ FIXED
 
 **Section 5.3, Formula:**
 
@@ -67,13 +67,9 @@ Treating ability costs and cooldowns as Gameplay Effects (rather than separate s
 V_current = (V_base + Σa_i) × (1 + Σp_j) × Πm_k + Σb_l
 ```
 
-The spec defines both `a_i` as "Flat additive modifiers (Add operations)" and `b_l` as "Bonus flat (Add operations)." Both are described as `Add` operations but are mathematically distinct — `a_i` is applied before multiplication, `b_l` is applied after. There is no field in the `Modifier` struct or schema that distinguishes between pre-multiply and post-multiply Add operations.
+~~The spec defines both `a_i` as "Flat additive modifiers (Add operations)" and `b_l` as "Bonus flat (Add operations)." Both are described as `Add` operations but are mathematically distinct — `a_i` is applied before multiplication, `b_l` is applied after. There is no field in the `Modifier` struct or schema that distinguishes between pre-multiply and post-multiply Add operations.~~
 
-If a designer authors a modifier with `Operation: Add`, which bucket does it land in? Pre-multiply `a_i` or post-multiply `b_l`? The spec says `b_l` is for "very rare use cases" but provides no mechanism to target it. This is a spec inconsistency that will cause divergent implementations.
-
-**The fix:** Either add a `Channel` enum to `Modifier` (e.g., `PreMultiply` vs `PostMultiply` for Add operations), or remove `Σb_l` from the formula entirely and document it as achievable via `ExecutionCalculation` for the rare cases that need it.
-
-Also: the existing `Channel?: string` field on `Modifier` is defined but never explained in the formula or pipeline. This looks like a placeholder for the above fix that was never connected.
+**Resolution:** A distinct `AddPost` operation was introduced alongside the existing `Add` operation. The formula legend, the Order of Operations step 7, the §9.4.1 operations table, and both JSON and YAML schemas (`gameplay_effect.json` / `gameplay_effect.yaml`) have been updated. `Add` now unambiguously maps to the pre-multiply `a_i` bucket (pipeline step 2); `AddPost` maps to the post-multiply `b_l` bucket (pipeline step 7). The `Channel` field on `Modifier` has also been documented — it controls named aggregation channels for damage-bucket systems (§15.3), which is a separate concern from pre/post-multiply ordering.
 
 ### 2.2 Division by Zero Is Unaddressed
 

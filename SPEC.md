@@ -554,10 +554,10 @@ $$V_{current} = \max\left( V_{min},\ \min\left( V_{max},\ \left( V_{base} + \sum
 
 Where:
 - $V_{base}$ = Base Value
-- $a_i$ = Flat additive modifiers (Add operations)
+- $a_i$ = Pre-multiply flat additive modifiers (`Add` operations, applied before percentage and multiply steps)
 - $p_j$ = Additive percentage modifiers (expressed as decimals, e.g., +10% = 0.1)
-- $m_k$ = Multiplicative factors (Multiply operations)
-- $b_l$ = Bonus flat (Add operations)
+- $m_k$ = Multiplicative factors (`Multiply` operations)
+- $b_l$ = Post-multiply flat additive modifiers (`AddPost` operations, applied after all multiply steps; very rare)
 - $V_{min}$ = Minimum value constraint
 - $V_{max}$ = Maximum value constraint
 
@@ -575,7 +575,7 @@ The order of operations is CRITICAL for deterministic results:
 4. Apply percentage modification
 5. Multiply all multiplicative factors together
 6. Apply multiplicative factors
-7. Add the sum of all flat bonus modifiers (very rare use cases, usually there is none)
+7. Add the sum of all post-multiply flat additive modifiers (`AddPost` operations; very rare, usually none)
 8. Apply Override modifiers (if any, replacing the result)
 9. Apply clamping constraints
 
@@ -1410,25 +1410,38 @@ Modifiers:
 
 #### 9.4.1 Operations
 
-| Operation | Semantics | Formula |
-|-----------|-----------|---------|
-| `Add` | Flat additive | `attr += magnitude` |
-| `Multiply` | Multiplicative factor | `attr *= magnitude` |
-| `Divide` | Division factor | `attr /= magnitude` |
-| `Override` | Replace value | `attr = magnitude` |
+| Operation | Semantics | Pipeline Step | Formula |
+|-----------|-----------|---------------|---------|
+| `Add` | Pre-multiply flat additive | Step 2 (before percentage and multiply steps) | `attr += magnitude` |
+| `AddPost` | Post-multiply flat additive | Step 7 (after all multiply steps; very rare) | `attr += magnitude` |
+| `Multiply` | Multiplicative factor | Step 6 | `attr *= magnitude` |
+| `Divide` | Division factor | Step 6 | `attr /= magnitude` |
+| `Override` | Replace value | Step 8 | `attr = magnitude` |
 
 ```typescript
 struct Modifier {
   /** Target attribute */
   Attribute: AttributeReference;
 
-  /** Modification operation */
+  /**
+   * Modification operation.
+   * - Add:      Pre-multiply flat additive (pipeline step 2)
+   * - AddPost:  Post-multiply flat additive (pipeline step 7; very rare)
+   * - Multiply: Multiplicative factor (pipeline step 6)
+   * - Divide:   Division factor (pipeline step 6)
+   * - Override: Replace the computed value entirely (pipeline step 8)
+   */
   Operation: ModifierOperation;
 
   /** Magnitude calculation */
   Magnitude: MagnitudeDefinition;
 
-  /** Channel for modifier aggregation */
+  /**
+   * Optional named aggregation channel. Modifiers in the same channel sum
+   * together before being applied; modifiers in different channels multiply
+   * against each other. Used to implement damage-bucket systems (see §15.3).
+   * If omitted, the modifier belongs to the default channel.
+   */
   Channel?: string;
 }
 ```
