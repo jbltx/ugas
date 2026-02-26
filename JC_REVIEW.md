@@ -159,35 +159,13 @@ Without this, "save anywhere" functionality in single-player games, and reconnec
 
 ## Part III — Design Concerns and Missed Opportunities
 
-### 3.1 The Attribute Formula Needs a Priority System for Real Games
+### 3.1 ~~The Attribute Formula Needs a Priority System for Real Games~~ ✓ FIXED
 
-The current formula aggregates all modifiers of the same type into flat sums and products. Real games need modifier priority/ordering. Examples from shipped titles:
+**Resolution:** §5.3 "Channel Aggregation" added. `Multiply` modifiers now carry an optional `Channel` field. Modifiers in the same channel add their bonuses before the channel factor (`1 + Σm_k`) is computed; channel factors multiply across channels; a modifier without a `Channel` is an implicit singleton. This is the "damage bucket" design that prevents linear power creep. The Modifier interface in §5.4 is updated with the `Channel` field, and §5.3 provides the full two-tier formula and a worked example (gear bonuses vs. legendary powers).
 
-- **Diablo 4:** "Vulnerable" multiplier applies after all other damage buckets. It is not interchangeable with other multiplicative modifiers.
-- **Path of Exile:** Modifier order matters for "more" vs "increased" — these are semantically the same `Multiply` operation in UGAS's model but produce different results depending on grouping.
-- **World of Warcraft:** Some haste effects stack multiplicatively with each other; others stack additively.
+### 3.2 ~~Tag Count Semantics Are Underspecified~~ ✓ FIXED
 
-The spec's formula is mathematically clean but collapses all multiplications into a single product `Πm_k`. Real games need at least a `Channel` system (referenced but undefined) that allows modifiers to be grouped into named buckets that combine differently. The Diablo-style damage bucket example in Section 15.3 works around this with an `ExecutionCalculation`, but the base formula doesn't support it natively.
-
-**Recommendation:** Define `Channel` on `Modifier` and specify that modifiers in different channels multiply against each other while modifiers in the same channel add together. This is the "bucket" design that prevents linear power creep.
-
-### 3.2 Tag Count Semantics Are Underspecified
-
-**Section 7.6:**
-
-```yaml
-AllowMultiple: boolean  # Can multiple instances exist? (default: false)
-```
-
-`AllowMultiple: true` allows multiple instances of the same tag — but what does this mean for queries? If `State.Debuff.Stunned` has count=2 (applied by two different effects), does `RemoveTag` decrement the count or remove all instances? Does `MatchesTag` return true at count=0 if `AllowMultiple` is set?
-
-This needs a full reference-counting semantic definition. The common correct behavior is:
-- Tags are reference-counted
-- `AddTag` increments the count
-- `RemoveTag` decrements the count, removing only when count reaches zero
-- All query operations treat count > 0 as "tag is present"
-
-Without this, removing one stun effect accidentally unstuns a target that should remain stunned from a second concurrent stun effect.
+**Resolution:** §7.x `TagContainer` now specifies reference-count semantics in full: `ExplicitTagCounts` and `AllTagCounts` maps; `AddTag` increments, `RemoveTag` decrements (tag absent only when count reaches zero); `MatchesTag` / `HasTag` operate on count > 0; `GetTagCount` is a first-class API. The double-stun scenario (two concurrent Effects granting `State.Debuff.Stunned`) is now correctly handled — removing one effect decrements the count to 1, leaving the target stunned.
 
 ### 3.3 Ability Cancellation During Validation Is a Race Condition
 
