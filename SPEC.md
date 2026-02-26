@@ -920,7 +920,7 @@ Examples:
 
 #### Naming Rules
 
-1. Each segment MUST use PGCalCase
+1. Each segment MUST use PascalCase
 2. Hierarchies SHOULD NOT exceed 5 levels
 3. Leaf tags SHOULD be specific; parent tags SHOULD be categorical
 4. Reserved prefixes:

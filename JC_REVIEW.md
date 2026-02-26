@@ -223,13 +223,9 @@ For a spec targeting both small indie games and large-scale multiplayer titles, 
 
 At minimum, the spec should state that in networked environments, `ApplyGameplayEffectToTarget` called from a client MUST be validated server-side before execution.
 
-### 3.6 "PGCalCase" Is a Typo
+### 3.6 ~~"PGCalCase" Is a Typo~~ ✓ FIXED
 
-**Section 7.1:**
-
-> "Each segment MUST use PGCalCase"
-
-This should be `PascalCase`. A minor issue but notable in a formal spec document.
+**Resolution:** `PGCalCase` corrected to `PascalCase` in §7.1.
 
 ### 3.7 The AI World Model Claim Needs to Be Scoped or Substantiated
 
