@@ -211,7 +211,7 @@ The UGAS architecture is predicated on the interaction between four distinct pil
 : Behavioral definitions. Abilities encapsulate the asynchronous, stateful logic of actions Actors can perform. Abilities coordinate with Tasks for complex, multi-stage execution.
 
 **Mutation Layer (Effects)**
-: State change mechanism. Effects are the ONLY authorized mechanism for modifying Attributes or Tags. This restriction ensures all state changes are tracked, predicted, and synchronized.
+: State change mechanism. Effects are the ONLY authorized mechanism for modifying Attributes or Tags. This restriction ensures all state changes are tracked, predicted, and synchronized. Ability implementations MUST NOT call `Tags.AddTag()`, `Tags.RemoveTag()`, or any equivalent direct tag mutation API. All tag state changes MUST flow through a `GameplayEffect` applied via the GC's effect application pipeline. This is a deliberate departure from UE4 GAS (which permits "loose tags") and is the property that makes replication of tag state tractable.
 
 ### 3.2 Component Relationships
 
@@ -948,10 +948,18 @@ struct TagContainer {
 
 ```typescript
 interface TagContainer {
-  /** Adds a tag to the container */
+  /**
+   * @internal Reserved for the GC Effect application pipeline.
+   * Ability implementations MUST NOT call this directly.
+   * Grant tags via a GameplayEffect with GrantedTags instead.
+   */
   AddTag(tag: Tag): void;
 
-  /** Removes a tag from the container */
+  /**
+   * @internal Reserved for the GC Effect application pipeline.
+   * Ability implementations MUST NOT call this directly.
+   * Remove tags by removing the GameplayEffect that granted them.
+   */
   RemoveTag(tag: Tag): void;
 
   /** Checks if the container has any tags */
@@ -960,7 +968,10 @@ interface TagContainer {
   /** Returns the count of explicit tags */
   Count(): number;
 
-  /** Clears all tags */
+  /**
+   * @internal Reserved for the GC Effect application pipeline.
+   * Ability implementations MUST NOT call this directly.
+   */
   Clear(): void;
 }
 ```
@@ -1077,7 +1088,12 @@ abstract class GameplayAbility {
   /** Tags that prevent activation if present */
   ActivationBlockedTags: TagContainer;
 
-  /** Tags applied to owner while ability is active */
+  /**
+   * Tags applied to the owner while this ability is active.
+   * Implementations MUST apply these as an auto-generated Infinite GameplayEffect
+   * on CommitAbility and remove that effect on EndAbility/CancelAbility.
+   * Direct tag mutation is prohibited (see §3.1).
+   */
   ActivationOwnedTags: TagContainer;
 
   /** Cost effect applied on commit */
@@ -1115,6 +1131,13 @@ struct AbilitySpec {
 
   /** Is currently active? */
   IsActive: boolean;
+
+  /**
+   * Handle to the auto-generated Infinite Effect that grants ActivationOwnedTags.
+   * Set by CommitAbility; cleared by EndAbility/CancelAbility.
+   * Undefined when the ability is not active.
+   */
+  ActiveOwnedTagsHandle?: ActiveEffectHandle;
 }
 ```
 
@@ -1211,8 +1234,12 @@ function CommitAbility(spec: AbilitySpec): boolean {
     ApplyGameplayEffectToSelf(cooldownSpec);
   }
 
-  // Grant activation tags
-  GC.AddLooseGameplayTags(spec.AbilityClass.ActivationOwnedTags);
+  // Grant activation tags via an auto-generated Infinite Effect.
+  // Direct tag mutation is prohibited (§3.1); all tag state flows through Effects.
+  if (!spec.AbilityClass.ActivationOwnedTags.IsEmpty()) {
+    const ownedTagsSpec = MakeOwnedTagsEffect(spec.AbilityClass.ActivationOwnedTags, spec.Level);
+    spec.ActiveOwnedTagsHandle = ApplyGameplayEffectToSelf(ownedTagsSpec);
+  }
 
   return true;
 }
@@ -1280,8 +1307,12 @@ function CancelAbility(handle: AbilitySpecHandle): void {
   const spec = GetAbilitySpec(handle);
   if (!spec.IsActive) return;
 
-  // Remove activation tags
-  GC.RemoveLooseGameplayTags(spec.AbilityClass.ActivationOwnedTags);
+  // Remove activation tags by removing the Effect that granted them.
+  // Direct tag mutation is prohibited (§3.1).
+  if (spec.ActiveOwnedTagsHandle) {
+    RemoveActiveGameplayEffect(spec.ActiveOwnedTagsHandle);
+    spec.ActiveOwnedTagsHandle = undefined;
+  }
 
   // Call ability's end handler
   spec.AbilityInstance.EndAbility(true /* wGCancelled */);
@@ -2053,6 +2084,14 @@ function EndAbility(wGCancelled: boolean): void {
   }
   this.ActiveTasks.Clear();
 
+  // Remove activation-owned tags by removing the Effect that granted them.
+  // This is the normal (non-cancelled) end path; CancelAbility handles the cancel path.
+  const spec = GC.GetAbilitySpec(this.Handle);
+  if (spec?.ActiveOwnedTagsHandle) {
+    GC.RemoveActiveGameplayEffect(spec.ActiveOwnedTagsHandle);
+    spec.ActiveOwnedTagsHandle = undefined;
+  }
+
   // Continue with ability end logic...
 }
 ```
@@ -2795,6 +2834,11 @@ Attributes:
 
 ```typescript
 class GA_Jump extends GameplayAbility {
+  // Handle to the Infinite Effect that grants State.InAir while airborne.
+  // State.Grounded is managed by the physics subsystem via its own Effect,
+  // not by this ability — tag ownership follows responsibility.
+  private inAirHandle: ActiveEffectHandle;
+
   ActivateAbility(context: AbilityContext): void {
     // Check grounded OR coyote time
     if (!this.Owner.Tags.MatchesTag("State.Grounded") &&
@@ -2803,9 +2847,12 @@ class GA_Jump extends GameplayAbility {
       return;
     }
 
-    // Apply jump impulse
-    this.Owner.Tags.AddTag("State.InAir");
-    this.Owner.Tags.RemoveTag("State.Grounded");
+    // Grant State.InAir via an Effect — direct tag mutation is prohibited (§3.1).
+    // GE_InAir is an Infinite Effect with GrantedTags: ["State.InAir"].
+    // The physics subsystem independently removes its GE_Grounded effect
+    // when it detects the character is no longer on the ground.
+    const inAirSpec = MakeOutgoingSpec(GE_InAir, 1);
+    this.inAirHandle = ApplyGameplayEffectToSelf(inAirSpec);
 
     const jumpVelocity = this.Owner.GetAttribute("JumpVelocity");
     ApplyImpulse(Vector3.Up * jumpVelocity);
@@ -2829,8 +2876,9 @@ class GA_Jump extends GameplayAbility {
   }
 
   OnLanded(): void {
-    this.Owner.Tags.RemoveTag("State.InAir");
-    this.Owner.Tags.AddTag("State.Grounded");
+    // Remove State.InAir by removing the Effect that granted it.
+    // The physics subsystem re-applies its GE_Grounded effect on landing.
+    RemoveActiveGameplayEffect(this.inAirHandle);
     EndAbility(false);
   }
 }
@@ -3156,8 +3204,10 @@ class GA_GridMove extends GameplayAbility {
       const mergeSpec = MakeOutgoingSpec(GE_CellMerge, 1);
       ApplyGameplayEffectToTarget(merge.TargetCell.GC, mergeSpec);
 
-      // Mark source for destruction
-      merge.SourceCell.Tags.AddTag("Status.PendingDestroy");
+      // Mark source for destruction via an Effect — direct tag mutation is prohibited (§3.1).
+      // GE_PendingDestroy is an Infinite Effect with GrantedTags: ["Status.PendingDestroy"].
+      const destroySpec = MakeOutgoingSpec(GE_PendingDestroy, 1);
+      ApplyGameplayEffectToTarget(merge.SourceCell.GC, destroySpec);
     }
 
     // Wait for animations

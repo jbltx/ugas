@@ -84,34 +84,21 @@ V_current = (V_base + Σa_i) × (1 + Σp_j) × Πm_k + Σb_l
 
 The `Priority` field has been added to the `GameplayEffect` struct (§9.1), the Appendix B inline YAML schema, `gameplay_effect.json`, and `gameplay_effect.yaml`.
 
-### 2.4 Loose Tags Break the Core Principle
+### 2.4 ~~Loose Tags Break the Core Principle~~ ✓ FIXED
 
-**Sections 8.4 and 15.1 directly contradict Section 3.1:**
+**Resolution:** Direct tag mutation has been prohibited everywhere. The fix chooses option 2 — the harder but correct path — making UGAS cleaner than UE4 GAS on this point.
 
-Section 3.1 states: *"Effects are the ONLY authorized mechanism for modifying Attributes or Tags."*
+Specific changes:
 
-Section 8.4 `CommitAbility` does this:
-```typescript
-GC.AddLooseGameplayTags(spec.AbilityClass.ActivationOwnedTags);
-```
-
-Section 15.1 `GA_Jump` does this:
-```typescript
-this.Owner.Tags.AddTag("State.InAir");
-this.Owner.Tags.RemoveTag("State.Grounded");
-```
-
-These are direct tag mutations that bypass the Effect layer entirely. This means:
-- They are not tracked in the effect history
-- They are not automatically replicated via the standard pipeline
-- They cannot be rolled back during client-side prediction without special-case code
-- They break the "single choke point" guarantee
-
-The spec needs to either:
-1. Define `LooseGameplayTags` as a formal, explicitly-replicated primitive with documented replication behavior, OR
-2. Remove direct tag manipulation and require all tag changes to flow through Effects
-
-UE4 GAS has the same loose tag problem and it causes real bugs. This spec has an opportunity to be cleaner.
+- **§3.1 Mutation Layer** — strengthened with an explicit MUST NOT: ability implementations are prohibited from calling `Tags.AddTag()`, `Tags.RemoveTag()`, or any equivalent direct tag mutation API. All tag changes MUST flow through a `GameplayEffect`. The rationale (replication tractability) is stated inline.
+- **`TagContainer` interface** — `AddTag`, `RemoveTag`, and `Clear` marked `@internal`, reserved for the GC Effect application pipeline.
+- **`ActivationOwnedTags`** — JSDoc updated: implementations MUST apply these as an auto-generated Infinite Effect on `CommitAbility` and remove it on `EndAbility`/`CancelAbility`.
+- **`AbilitySpec`** — added `ActiveOwnedTagsHandle?: ActiveEffectHandle` to carry the handle for that auto-generated Effect.
+- **`CommitAbility`** — `GC.AddLooseGameplayTags(...)` replaced with `MakeOwnedTagsEffect(...)` + `ApplyGameplayEffectToSelf(...)`.
+- **`CancelAbility`** — `GC.RemoveLooseGameplayTags(...)` replaced with `RemoveActiveGameplayEffect(spec.ActiveOwnedTagsHandle)`.
+- **`EndAbility`** — also clears `ActiveOwnedTagsHandle` via `RemoveActiveGameplayEffect`.
+- **`GA_Jump` (§15.1)** — `Tags.AddTag("State.InAir")` replaced with applying `GE_InAir` (Infinite, GrantedTags: ["State.InAir"]); `Tags.RemoveTag("State.InAir")` on landing replaced with `RemoveActiveGameplayEffect(inAirHandle)`. `State.Grounded` ownership correctly delegated to the physics subsystem's own Effect.
+- **Puzzle case study (§15.4)** — `Tags.AddTag("Status.PendingDestroy")` replaced with applying `GE_PendingDestroy` (Infinite, GrantedTags: ["Status.PendingDestroy"]) via `ApplyGameplayEffectToTarget`.
 
 ### 2.5 The Networking Model Is Dangerously Underspecified
 
