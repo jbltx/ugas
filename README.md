@@ -49,7 +49,7 @@ The central hub managing an Actor's gameplay state. The GC is the authoritative 
 
 Numeric values representing quantitative state (Health, Mana, Strength). Implements the dual-value pattern:
 
-$$V_{current} = \max\left( V_{min},\ \min\left( V_{max},\ \left( V_{base} + \sum a_i \right) \times \left( 1 + \sum p_j \right) \times \prod m_k + \sum b_l \right) \right)$$
+$$V_{current} = \max\left( V_{min},\ \min\left( V_{max},\ \left( V_{base} + \sum a_i \right) \times \prod_{c \in C} \left(1 + \sum_{k \in c} m_k\right) + \sum b_l \right) \right)$$
 
 
 ### Gameplay Tags
@@ -72,7 +72,7 @@ The ONLY authorized mechanism for modifying attributes or tags. Three duration p
 
 ### Gameplay Abilities
 
-Asynchronous, stateful action units with lifecycle: Grant -> TryActivate -> Commit -> Execute -> End/Cancel
+Asynchronous, stateful action units with lifecycle: Grant -> TryActivate -> Activating (Validating) -> Commit -> Active (Executing) -> End/Cancel -> Ending
 
 ## Quick Start
 
