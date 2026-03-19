@@ -112,13 +112,13 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 This section provides formal definitions for terms used throughout this specification.
 
 **Actor**
-: An entity within the game world that can possess an Gameplay Entity. Actors MAY have spatial representation, AI behavior, or player control.
+: An entity within the game world that can possess a Gameplay Controller. Actors MAY have spatial representation, AI behavior, or player control.
 
 **Avatar**
-: The world representation (visual, physical) associated with an Gameplay Entity. The Avatar is the entity that exists in game space and interacts with the physics and rendering systems.
+: The world representation (visual, physical) associated with a Gameplay Controller. The Avatar is the entity that exists in game space and interacts with the physics and rendering systems.
 
 **Owner**
-: The logical owner of an Gameplay Entity. The Owner is responsible for the persistence and lifecycle of the GC. In networked games, the Owner typically corresponds to the authoritative controller of the entity.
+: The logical owner of a Gameplay Controller. The Owner is responsible for the persistence and lifecycle of the GC. In networked games, the Owner typically corresponds to the authoritative controller of the entity.
 
 **Attribute**
 : A named, typed value representing a quantitative aspect of an Actor's state. Attributes implement the dual-value pattern with Base Value and Current Value.
@@ -162,7 +162,7 @@ This section provides formal definitions for terms used throughout this specific
 **CueManager**
 : Client-side system responsible for instantiating and managing Cue resources.
 
-**GC (Gameplay Entity)**
+**GC (Gameplay Controller)**
 : The central component managing an Actor's Attributes, Tags, Abilities, and Effects. The GC is the authoritative state container for gameplay logic.
 
 ---
