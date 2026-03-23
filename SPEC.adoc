@@ -12,6 +12,7 @@ Mickael Bonfill <jbltx>
 :icons: font
 :sectanchors:
 :sectlinks:
+:docinfo: shared
 
 
 
