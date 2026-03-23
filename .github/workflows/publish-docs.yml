@@ -3,6 +3,12 @@ name: Publish docs on release
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (with or without leading v)"
+        required: true
+        type: string
 
 jobs:
   publish-docs:
@@ -11,7 +17,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - name: Checkout source (release tag)
+      - name: Checkout source
         uses: actions/checkout@v4
         with:
           path: source
@@ -22,11 +28,21 @@ jobs:
           ref: docs
           path: docs
 
-      - name: Extract version from tag
+      - name: Resolve version
         id: version
         run: |
-          TAG="${GITHUB_REF_NAME}"
-          VERSION="${TAG#v}"
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            RAW_VERSION="${{ github.event.inputs.version }}"
+          else
+            RAW_VERSION="${GITHUB_REF_NAME}"
+          fi
+
+          VERSION="${RAW_VERSION#v}"
+          if [ -z "${VERSION}" ]; then
+            echo "Version is empty. Provide a valid release tag or workflow_dispatch input." >&2
+            exit 1
+          fi
+
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Resolve version placeholders in schemas
