@@ -1,7 +1,7 @@
 # Example: Health Attribute
 # Demonstrates a Resource type attribute with clamping
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/attribute.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/attribute.json
 Name: Health
 DefaultBaseValue: 100.0
 Category: Resource

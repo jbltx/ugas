@@ -1,45 +1,26 @@
-# Universal Gameplay Ability System Specification
+= Universal Gameplay Ability System Specification
+Mickael Bonfill <jbltx>
+:revnumber: 1.0
+:revdate: February 2026
+:ugas-version: v1.0
+:doctype: book
+:toc: left
+:toc-title: Table of Contents
+:toclevels: 4
+:stem: latexmath
+:source-highlighter: highlight.js
+:icons: font
+:sectanchors:
+:sectlinks:
+:docinfo: shared
 
-**Version:** 0.1
-**Date:** February 2026
-**Author:** Mickael Bonfill (jbltx)
 
----
 
-## Table of Contents
+== Part I: Foundations
 
-- [Part I: Foundations](#part-i-foundations)
-  - [1. Introduction](#1-introduction)
-  - [2. Terminology](#2-terminology)
-  - [3. Architectural Overview](#3-architectural-overview)
-- [Part II: Core Components](#part-ii-core-components)
-  - [4. Gameplay Controller(GC)](#4-ability-system-component-GC)
-  - [5. Attributes](#5-attributes)
-  - [6. Attribute Sets](#6-attribute-sets)
-  - [7. Gameplay Tags](#7-gameplay-tags)
-  - [8. Gameplay Abilities](#8-gameplay-abilities)
-  - [9. Gameplay Effects](#9-gameplay-effects)
-- [Part III: Asynchronous Execution](#part-iii-asynchronous-execution)
-  - [10. Ability Tasks](#10-ability-tasks)
-  - [11. Input Integration](#11-input-integration)
-- [Part IV: Feedback and Networking](#part-iv-feedback-and-networking)
-  - [12. Gameplay Cues](#12-gameplay-cues)
-  - [13. Network Replication](#13-network-replication)
-- [Part V: Reference Implementation](#part-v-reference-implementation)
-  - [14. Implementation Examples](#14-implementation-examples)
-  - [15. Case Studies](#15-case-studies)
-- [Appendices](#appendices)
-  - [Appendix A: Mathematical Notation](#appendix-a-mathematical-notation)
-  - [Appendix B: Complete Schema Reference](#appendix-b-complete-schema-reference)
-  - [Appendix C: References and Citations](#appendix-c-references-and-citations)
+=== 1. Introduction
 
----
-
-# Part I: Foundations
-
-## 1. Introduction
-
-### 1.1 Purpose and Scope
+==== 1.1 Purpose and Scope
 
 The Universal Gameplay Ability System (UGAS) is an open, engine-agnostic specification designed to standardize gameplay logic across game engines and runtime environments. This specification defines the architecture, data structures, and behavioral contracts required to implement a consistent ability system that can be deployed on any game engine or custom runtime, including Unreal Engine, Unity, and Godot.
 
@@ -60,120 +41,129 @@ This specification does NOT define:
 - Platform-specific memory management
 - User interface implementation
 
-### 1.2 Design Philosophy
+==== 1.2 Design Philosophy
 
 The UGAS specification is founded on three core principles:
 
-**Decoupled Gameplay Logic**
+_Decoupled Gameplay Logic_
 
 Traditional gameplay programming relies on imperative state changes within character classes, leading to tightly coupled code where a single modification to a health variable must manually notify UI elements, sound systems, and networking layers. UGAS shifts this paradigm toward a reactive, data-driven architecture where the Actor is merely an avatar—a spatial representation—while the Gameplay Controller(GC) serves as the authoritative state container.
 
-**Reactive, Data-Driven Architecture**
+_Reactive, Data-Driven Architecture_
 
 All state changes flow through a single mutation layer (Gameplay Effects), ensuring that every modification to the game state is tracked, predicted, and synchronized. This approach eliminates expensive per-frame polling of UI elements or AI state machines in favor of event-driven notifications.
 
-**Cross-Platform Interoperability**
+_Cross-Platform Interoperability_
 
 By defining gameplay rules as deterministic, replicable operations on abstract data structures, UGAS enables a unified framework that can be implemented across diverse execution environments. A GC can exist as a C++ component in Unreal Engine, a Data-Oriented Technology Stack (DOTS) entity in Unity, or a scripted component in Godot.
 
-### 1.3 Document Conventions
+==== 1.3 Document Conventions
 
-#### Notation
+===== Notation
 
 This specification uses the following notational conventions:
 
-- **Mathematical Notation**: Standard mathematical symbols for summation (Σ), product (Π), and set operations (∈, ⊆, ∩, ∪)
-- **Pseudocode**: Language-agnostic pseudocode for algorithm descriptions
-- **Interface Definitions**: Abstract interface declarations using TypeScript-like syntax
+- _Mathematical Notation_: Standard mathematical symbols for summation (Σ), product (Π), and set operations (∈, ⊆, ∩, ∪)
+- _Pseudocode_: Language-agnostic pseudocode for algorithm descriptions
+- _Interface Definitions_: Abstract interface declarations using TypeScript-like syntax
 
-#### Requirement Levels
+===== Requirement Levels
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119.
 
-| Keyword | Meaning |
-|---------|---------|
-| MUST / REQUIRED / SHALL | Absolute requirement of the specification |
-| MUST NOT / SHALL NOT | Absolute prohibition |
-| SHOULD / RECOMMENDED | Valid reasons may exist to ignore, but implications must be understood |
-| SHOULD NOT / NOT RECOMMENDED | Valid reasons may exist to implement, but implications must be understood |
-| MAY / OPTIONAL | Truly optional; interoperability must be ensured |
+[cols="2,2",options="header"]
+|===
+| Keyword
+| Meaning
 
-### 1.4 Normative References
+| MUST / REQUIRED / SHALL
+| Absolute requirement of the specification
+| MUST NOT / SHALL NOT
+| Absolute prohibition
+| SHOULD / RECOMMENDED
+| Valid reasons may exist to ignore, but implications must be understood
+| SHOULD NOT / NOT RECOMMENDED
+| Valid reasons may exist to implement, but implications must be understood
+| MAY / OPTIONAL
+| Truly optional; interoperability must be ensured
+|===
+
+==== 1.4 Normative References
 
 - RFC 2119: Key words for use in RFCs to Indicate Requirement Levels
 - IEEE 754: Standard for Floating-Point Arithmetic
 - JSON Schema: Draft 2020-12
 - YAML 1.2 Specification
 
----
+'''
 
-## 2. Terminology
+=== 2. Terminology
 
 This section provides formal definitions for terms used throughout this specification.
 
-**Actor**
-: An entity within the game world that can possess a Gameplay Controller. Actors MAY have spatial representation, AI behavior, or player control.
+Actor::
+  An entity within the game world that can possess a Gameplay Controller. Actors MAY have spatial representation, AI behavior, or player control.
 
-**Avatar**
-: The world representation (visual, physical) associated with a Gameplay Controller. The Avatar is the entity that exists in game space and interacts with the physics and rendering systems.
+Avatar::
+  The world representation (visual, physical) associated with a Gameplay Controller. The Avatar is the entity that exists in game space and interacts with the physics and rendering systems.
 
-**Owner**
-: The logical owner of a Gameplay Controller. The Owner is responsible for the persistence and lifecycle of the GC. In networked games, the Owner typically corresponds to the authoritative controller of the entity.
+Owner::
+  The logical owner of a Gameplay Controller. The Owner is responsible for the persistence and lifecycle of the GC. In networked games, the Owner typically corresponds to the authoritative controller of the entity.
 
-**Attribute**
-: A named, typed value representing a quantitative aspect of an Actor's state. Attributes implement the dual-value pattern with Base Value and Current Value.
+Attribute::
+  A named, typed value representing a quantitative aspect of an Actor's state. Attributes implement the dual-value pattern with Base Value and Current Value.
 
-**AttributeSet**
-: A logical container that groups related Attributes. AttributeSets provide modular composition of Actor capabilities.
+AttributeSet::
+  A logical container that groups related Attributes. AttributeSets provide modular composition of Actor capabilities.
 
-**Modifier**
-: A temporary or permanent adjustment to an Attribute's value. Modifiers define an operation (Add, AddPost, Multiply, Override) and a magnitude.
+Modifier::
+  A temporary or permanent adjustment to an Attribute's value. Modifiers define an operation (Add, AddPost, Multiply, Override) and a magnitude.
 
-**Tag**
-: A hierarchical, unique identifier serving as a conceptual label for Actors, Abilities, and Effects. Tags use dot-notation (e.g., `State.Debuff.Stunned.Magic`).
+Tag::
+  A hierarchical, unique identifier serving as a conceptual label for Actors, Abilities, and Effects. Tags use dot-notation (e.g., `State.Debuff.Stunned.Magic`).
 
-**TagContainer**
-: A collection of Tags associated with an entity. TagContainers support efficient query operations.
+TagContainer::
+  A collection of Tags associated with an entity. TagContainers support efficient query operations.
 
-**TagQuery**
-: A predicate expression evaluated against a TagContainer to determine matches.
+TagQuery::
+  A predicate expression evaluated against a TagContainer to determine matches.
 
-**Ability**
-: A self-contained unit of logic defining an action an Actor can perform. Abilities are asynchronous, stateful objects with defined lifecycles.
+Ability::
+  A self-contained unit of logic defining an action an Actor can perform. Abilities are asynchronous, stateful objects with defined lifecycles.
 
-**AbilitySpec**
-: Instance data for a granted Ability, including level, input binding, and runtime parameters.
+AbilitySpec::
+  Instance data for a granted Ability, including level, input binding, and runtime parameters.
 
-**AbilityTask**
-: An asynchronous operation within an Ability that pauses execution until a specific trigger condition is met.
+AbilityTask::
+  An asynchronous operation within an Ability that pauses execution until a specific trigger condition is met.
 
-**Effect**
-: The mechanism by which Attributes and Tags are modified. Effects are the ONLY authorized mechanism for mutating gameplay state.
+Effect::
+  The mechanism by which Attributes and Tags are modified. Effects are the ONLY authorized mechanism for mutating gameplay state.
 
-**EffectSpec**
-: Lightweight application data for applying an Effect, containing magnitude, level, and context information.
+EffectSpec::
+  Lightweight application data for applying an Effect, containing magnitude, level, and context information.
 
-**EffectContext**
-: Runtime context for Effect application, including source Actor, target Actor, hit location, and causal chain information.
+EffectContext::
+  Runtime context for Effect application, including source Actor, target Actor, hit location, and causal chain information.
 
-**Cue**
-: A client-side feedback element (VFX, SFX, camera effects) triggered by Tags or Effects. Cues are purely cosmetic and do not affect gameplay logic.
+Cue::
+  A client-side feedback element (VFX, SFX, camera effects) triggered by Tags or Effects. Cues are purely cosmetic and do not affect gameplay logic.
 
-**CueManager**
-: Client-side system responsible for instantiating and managing Cue resources.
+CueManager::
+  Client-side system responsible for instantiating and managing Cue resources.
 
-**GC (Gameplay Controller)**
-: The central component managing an Actor's Attributes, Tags, Abilities, and Effects. The GC is the authoritative state container for gameplay logic.
+GC (Gameplay Controller)::
+  The central component managing an Actor's Attributes, Tags, Abilities, and Effects. The GC is the authoritative state container for gameplay logic.
 
----
+'''
 
-## 3. Architectural Overview
+=== 3. Architectural Overview
 
-### 3.1 Four-Pillar Model
+==== 3.1 Four-Pillar Model
 
 The UGAS architecture is predicated on the interaction between four distinct pillars:
 
-```
+----
 ┌─────────────────────────────────────────────────────────────────┐
 │                       GAMEPLAY CONTROLLER                       │
 ├─────────────────────────────────────────────────────────────────┤
@@ -199,23 +189,23 @@ The UGAS architecture is predicated on the interaction between four distinct pil
 │              └────────────────────────┘                         │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
-```
+----
 
-**Data Layer (Attributes)**
-: Numeric state representation. Attributes store quantitative values such as Health, Mana, Strength, and Speed. All numeric gameplay state MUST be represented through Attributes.
+Data Layer (Attributes)::
+  Numeric state representation. Attributes store quantitative values such as Health, Mana, Strength, and Speed. All numeric gameplay state MUST be represented through Attributes.
 
-**Semantic Layer (Tags)**
-: Qualitative state representation. Tags describe "what kind" or "in what state" an Actor exists. Tags enable logic gating, ability requirements, and state queries without coupling to specific implementations.
+Semantic Layer (Tags)::
+  Qualitative state representation. Tags describe "what kind" or "in what state" an Actor exists. Tags enable logic gating, ability requirements, and state queries without coupling to specific implementations.
 
-**Logic Layer (Abilities)**
-: Behavioral definitions. Abilities encapsulate the asynchronous, stateful logic of actions Actors can perform. Abilities coordinate with Tasks for complex, multi-stage execution.
+Logic Layer (Abilities)::
+  Behavioral definitions. Abilities encapsulate the asynchronous, stateful logic of actions Actors can perform. Abilities coordinate with Tasks for complex, multi-stage execution.
 
-**Mutation Layer (Effects)**
-: State change mechanism. Effects are the ONLY authorized mechanism for modifying Attributes or Tags. This restriction ensures all state changes are tracked, predicted, and synchronized. Ability implementations MUST NOT call `Tags.AddTag()`, `Tags.RemoveTag()`, or any equivalent direct tag mutation API. All tag state changes MUST flow through a `GameplayEffect` applied via the GC's effect application pipeline. This is a deliberate departure from UE4 GAS (which permits "loose tags") and is the property that makes replication of tag state tractable.
+Mutation Layer (Effects)::
+  State change mechanism. Effects are the ONLY authorized mechanism for modifying Attributes or Tags. This restriction ensures all state changes are tracked, predicted, and synchronized. Ability implementations MUST NOT call `Tags.AddTag()`, `Tags.RemoveTag()`, or any equivalent direct tag mutation API. All tag state changes MUST flow through a `GameplayEffect` applied via the GC's effect application pipeline. This is a deliberate departure from UE4 GAS (which permits "loose tags") and is the property that makes replication of tag state tractable.
 
-### 3.2 Component Relationships
+==== 3.2 Component Relationships
 
-```
+----
                               ┌─────────────┐
                               │   ACTOR     │
                               │  (Avatar)   │
@@ -239,45 +229,45 @@ The UGAS architecture is predicated on the interaction between four distinct pil
              ┌───────────┐                    ┌───────────┐
              │   TASKS   │                    │ MODIFIERS │
              └───────────┘                    └───────────┘
-```
+----
 
-### 3.3 Execution Model
+==== 3.3 Execution Model
 
 The UGAS execution model follows a deterministic sequence for processing gameplay logic:
 
-1. **Input Processing**: Hardware inputs are mapped to Input Actions, which trigger Ability activation attempts.
+1. _Input Processing_: Hardware inputs are mapped to Input Actions, which trigger Ability activation attempts.
 
-2. **Ability Activation**: The GC validates activation requirements (Tags, Costs, Cooldowns) before committing the Ability.
+2. _Ability Activation_: The GC validates activation requirements (Tags, Costs, Cooldowns) before committing the Ability.
 
-3. **Effect Application**: Abilities apply Effects to Targets. Effects create Modifiers on Attributes and grant/remove Tags.
+3. _Effect Application_: Abilities apply Effects to Targets. Effects create Modifiers on Attributes and grant/remove Tags.
 
-4. **Attribute Recalculation**: Affected Attributes recalculate their Current Values based on active Modifiers.
+4. _Attribute Recalculation_: Affected Attributes recalculate their Current Values based on active Modifiers.
 
-5. **Event Dispatch**: OnAttributeChanged events propagate to registered observers.
+5. _Event Dispatch_: OnAttributeChanged events propagate to registered observers.
 
-6. **Cue Triggering**: Tag changes trigger appropriate Gameplay Cues on clients.
+6. _Cue Triggering_: Tag changes trigger appropriate Gameplay Cues on clients.
 
-7. **Replication**: State changes are replicated to networked clients according to the configured replication mode.
+7. _Replication_: State changes are replicated to networked clients according to the configured replication mode.
 
-### 3.4 Threading Considerations
+==== 3.4 Threading Considerations
 
 Implementations SHOULD consider the following threading guidelines:
 
-- **Main Thread**: Ability activation, Effect application, and Attribute modification SHOULD occur on the main game thread to ensure deterministic ordering.
+- _Main Thread_: Ability activation, Effect application, and Attribute modification SHOULD occur on the main game thread to ensure deterministic ordering.
 
-- **Async Tasks**: AbilityTasks MAY spawn background work but MUST return results to the main thread for state modification.
+- _Async Tasks_: AbilityTasks MAY spawn background work but MUST return results to the main thread for state modification.
 
-- **Replication**: Network replication MAY occur on dedicated networking threads but MUST synchronize with the main thread for state application.
+- _Replication_: Network replication MAY occur on dedicated networking threads but MUST synchronize with the main thread for state application.
 
-- **Cues**: Gameplay Cue instantiation MAY occur on rendering threads but MUST NOT modify gameplay state.
+- _Cues_: Gameplay Cue instantiation MAY occur on rendering threads but MUST NOT modify gameplay state.
 
----
+'''
 
-# Part II: Core Components
+== Part II: Core Components
 
-## 4. Gameplay Controller(GC)
+=== 4. Gameplay Controller(GC)
 
-### 4.1 Responsibilities
+==== 4.1 Responsibilities
 
 The Gameplay Controlleris the central hub for all gameplay ability logic. An GC implementation MUST:
 
@@ -288,27 +278,27 @@ The Gameplay Controlleris the central hub for all gameplay ability logic. An GC 
 5. Dispatch events for state changes
 6. Support network replication (if applicable)
 
-### 4.2 Ownership Model
+==== 4.2 Ownership Model
 
 The GC implements a dual-actor ownership model:
 
-**Owner Actor**
-: The logical owner of the GC. The Owner is responsible for:
+Owner Actor::
+  The logical owner of the GC. The Owner is responsible for:
 - GC lifecycle management
 - Network authority
 - Persistence across possession changes
 
-**Avatar Actor**
-: The world representation associated with the GC. The Avatar provides:
+Avatar Actor::
+  The world representation associated with the GC. The Avatar provides:
 - Spatial position for targeting
 - Animation and physics integration
 - Visual representation
 
-#### Same-Actor Configuration
+===== Same-Actor Configuration
 
 For simple entities (AI-controlled enemies, destructible objects), the Owner and Avatar MAY be the same Actor:
 
-```
+----
 ┌─────────────────────────────┐
 │         AI ENEMY            │
 │  ┌───────────────────────┐  │
@@ -317,13 +307,13 @@ For simple entities (AI-controlled enemies, destructible objects), the Owner and
 │  │   Avatar: this        │  │
 │  └───────────────────────┘  │
 └─────────────────────────────┘
-```
+----
 
-#### Split-Actor Configuration
+===== Split-Actor Configuration
 
 For player-controlled characters in networked games, the Owner and Avatar SHOULD be separate to ensure GC persistence across respawns:
 
-```
+----
 ┌─────────────────────────────┐        ┌─────────────────────────────┐
 │       PLAYER STATE          │        │      PLAYER CHARACTER       │
 │  (Persists entire session)  │        │  (Destroyed on death)       │
@@ -332,11 +322,11 @@ For player-controlled characters in networked games, the Owner and Avatar SHOULD
 │  │   Owner: this         │  │        │                             │
 │  └───────────────────────┘  │        └─────────────────────────────┘
 └─────────────────────────────┘
-```
+----
 
-### 4.3 Lifecycle
+==== 4.3 Lifecycle
 
-#### Initialization Sequence
+===== Initialization Sequence
 
 1. GC is instantiated on Owner Actor
 2. AttributeSets are registered with GC
@@ -345,7 +335,7 @@ For player-controlled characters in networked games, the Owner and Avatar SHOULD
 5. Initial Effects are applied
 6. Replication is configured (if networked)
 
-#### Possession Handling
+===== Possession Handling
 
 When Avatar possession changes:
 
@@ -354,18 +344,19 @@ When Avatar possession changes:
 3. New Avatar reference is set
 4. Avatar-dependent Abilities are re-validated
 
-#### Destruction Cleanup
+===== Destruction Cleanup
 
 1. All active Effects are removed
 2. All granted Abilities are revoked
 3. Event subscriptions are cleared
 4. Network replication is terminated
 
-### 4.4 Interface Specification
+==== 4.4 Interface Specification
 
 Implementations SHOULD provide an interface for GC discovery:
 
-```typescript
+[source,typescript]
+----
 interface IAbilitySystemInterface {
   /**
    * Returns the Gameplay Controllerassociated with this entity.
@@ -373,27 +364,29 @@ interface IAbilitySystemInterface {
    */
   GetGameplayController(): GameplayController | null;
 }
-```
+----
 
 Actors participating in the ability system MUST implement this interface or provide an equivalent discovery mechanism.
 
-### 4.5 Public API
+==== 4.5 Public API
 
 The following methods define the core GC interface:
 
-#### Effect Context Creation
+===== Effect Context Creation
 
-```typescript
+[source,typescript]
+----
 /**
  * Creates a new Effect Context for outgoing effects.
  * @returns A handle to the new context
  */
 MakeEffectContext(): EffectContextHandle;
-```
+----
 
-#### Effect Spec Creation
+===== Effect Spec Creation
 
-```typescript
+[source,typescript]
+----
 /**
  * Creates an Effect Spec for application.
  * @param effectClass - The Effect definition to instantiate
@@ -406,11 +399,12 @@ MakeOutgoingSpec(
   level: number,
   context: EffectContextHandle
 ): EffectSpecHandle;
-```
+----
 
-#### Effect Application
+===== Effect Application
 
-```typescript
+[source,typescript]
+----
 /**
  * Applies an effect to this GC's owner.
  * @param spec - The effect spec to apply
@@ -440,11 +434,12 @@ ApplyGameplayEffectToTarget(
   spec: EffectSpecHandle,
   predictionKey?: PredictionKey
 ): ActiveEffectHandle;
-```
+----
 
-#### Effect Removal
+===== Effect Removal
 
-```typescript
+[source,typescript]
+----
 /**
  * Removes an active effect.
  * @param handle - Handle to the active effect
@@ -455,11 +450,12 @@ RemoveActiveGameplayEffect(
   handle: ActiveEffectHandle,
   stacksToRemove: number = -1
 ): boolean;
-```
+----
 
-#### Ability Management
+===== Ability Management
 
-```typescript
+[source,typescript]
+----
 /**
  * Grants an ability to this GC.
  * @param abilityClass - The ability class to grant
@@ -479,17 +475,18 @@ GrantAbility(
  * @returns True if activation succeeded
  */
 TryActivateAbility(handle: AbilitySpecHandle): boolean;
-```
+----
 
----
+'''
 
-## 5. Attributes
+=== 5. Attributes
 
-### 5.1 Attribute Data Structure
+==== 5.1 Attribute Data Structure
 
 An Attribute MUST implement the following data structure:
 
-```typescript
+[source,typescript]
+----
 struct Attribute {
   /** Permanent value, modified only by Instant effects */
   BaseValue: float;
@@ -531,56 +528,71 @@ enum AttributeCategory {
   /** Meta-attributes used for calculations only */
   Meta
 }
-```
+----
 
-### 5.2 Dual-Value Pattern
+==== 5.2 Dual-Value Pattern
 
 Every Attribute MUST implement the dual-value pattern consisting of Base Value and Current Value. This distinction is the primary mechanism for handling temporary modifications.
 
-**Base Value**
-: The permanent, persistent value of the Attribute. Base Values are modified ONLY by Instant effects and represent permanent changes such as leveling, permanent upgrades, or instant damage/healing.
+Base Value::
+  The permanent, persistent value of the Attribute. Base Values are modified ONLY by Instant effects and represent permanent changes such as leveling, permanent upgrades, or instant damage/healing.
 
-**Current Value**
-: The dynamically calculated result of the Base Value plus all active temporary Modifiers. Current Values are ephemeral and automatically recalculated when Modifiers are added or removed.
+Current Value::
+  The dynamically calculated result of the Base Value plus all active temporary Modifiers. Current Values are ephemeral and automatically recalculated when Modifiers are added or removed.
 
-| Component | Modification Source | Persistence |
-|-----------|---------------------|-------------|
-| Base Value | Instant Effects only | Persistent (saved) |
-| Current Value | All Modifier types | Ephemeral (calculated) |
+[cols="2,4,2",options="header"]
+|===
+| Component
+| Modification Source
+| Persistence
 
-### 5.3 Modifier Pipeline
+| Base Value
+| Instant Effects only
+| Persistent (saved)
+| Current Value
+| All Modifier types
+| Ephemeral (calculated)
+|===
+
+==== 5.3 Modifier Pipeline
 
 The Current Value calculation MUST follow a standardized pipeline to ensure mathematical consistency across implementations.
 
-#### Formula
+===== Formula
 
-The Current Value $V_{current}$ is calculated as:
+The Current Value stem:[V_{current}] is calculated as:
 
-$$V_{current} = \max\left( V_{min},\ \min\left( V_{max},\ \left( V_{base} + \sum a_i \right) \times \prod_{c \in C} \left(1 + \sum_{k \in c} m_k\right) + \sum b_l \right) \right)$$
+[stem]
+++++
+V_{current} = \max\left( V_{min},\ \min\left( V_{max},\ \left( V_{base} + \sum a_i \right) \times \prod_{c \in C} \left(1 + \sum_{k \in c} m_k\right) + \sum b_l \right) \right)
+++++
 
 Where:
-- $V_{base}$ = Base Value
-- $a_i$ = Pre-multiply flat additive modifiers (`Add` operations)
-- $C$ = the set of distinct Channel values among active `Multiply` modifiers; each modifier without a `Channel` belongs to its own unique implicit singleton channel
-- $m_k$ = signed bonus magnitude for each `Multiply` modifier (e.g., `+0.25` for a +25% bonus, `−0.25` for a 25% penalty)
-- $b_l$ = Post-multiply flat additive modifiers (`AddPost` operations; very rare)
-- $V_{min}$, $V_{max}$ = clamping constraints
+- stem:[V_{base}] = Base Value
+- stem:[a_i] = Pre-multiply flat additive modifiers (`Add` operations)
+- stem:[C] = the set of distinct Channel values among active `Multiply` modifiers; each modifier without a `Channel` belongs to its own unique implicit singleton channel
+- stem:[m_k] = signed bonus magnitude for each `Multiply` modifier (e.g., `+0.25` for a +25% bonus, `−0.25` for a 25% penalty)
+- stem:[b_l] = Post-multiply flat additive modifiers (`AddPost` operations; very rare)
+- stem:[V_{min}], stem:[V_{max}] = clamping constraints
 
 Note that clamping is not mandatory; the simplified form is:
 
-$$V_{current} = \left( V_{base} + \sum a_i \right) \times \prod_{c \in C} \left(1 + \sum_{k \in c} m_k\right) + \sum b_l$$
+[stem]
+++++
+V_{current} = \left( V_{base} + \sum a_i \right) \times \prod_{c \in C} \left(1 + \sum_{k \in c} m_k\right) + \sum b_l
+++++
 
-#### Channel Aggregation
+===== Channel Aggregation
 
-The channel product $\prod_{c \in C}\!\left(1 + \sum_{k \in c} m_k\right)$ is how the "damage bucket" design is expressed at the pipeline level:
+The channel product stem:[\prod_{c \in C}\!\left(1 + \sum_{k \in c} m_k\right)] is how the "damage bucket" design is expressed at the pipeline level:
 
-- **Same channel → bonuses ADD.** All `Multiply` modifiers sharing a `Channel` value contribute their magnitudes additively. The channel's effective factor is `1 + sum of magnitudes`. Two +20% bonuses in the same channel yield ×1.40, not ×1.44.
-- **Different channels → factors MULTIPLY.** Each channel produces one effective factor; those factors are multiplied together. A ×1.40 channel and a ×1.30 channel yield ×1.82.
-- **No channel → isolated singleton.** A `Multiply` modifier without a `Channel` is in its own implicit channel, so its contribution is `1 + magnitude` — independent of all other modifiers.
+- _Same channel → bonuses ADD._ All `Multiply` modifiers sharing a `Channel` value contribute their magnitudes additively. The channel's effective factor is `1 + sum of magnitudes`. Two +20% bonuses in the same channel yield ×1.40, not ×1.44.
+- _Different channels → factors MULTIPLY._ Each channel produces one effective factor; those factors are multiplied together. A ×1.40 channel and a ×1.30 channel yield ×1.82.
+- _No channel → isolated singleton._ A `Multiply` modifier without a `Channel` is in its own implicit channel, so its contribution is `1 + magnitude` — independent of all other modifiers.
 
 This is the primary tool for preventing linear power creep: bonuses from the same source category (e.g., "damage bonuses from gear") are additive within a channel, while bonuses from categorically different sources (e.g., "gear bonuses" vs. "legendary powers") are multiplicative across channels.
 
-#### Order of Operations
+===== Order of Operations
 
 The order of operations is CRITICAL for deterministic results:
 
@@ -592,18 +604,18 @@ The order of operations is CRITICAL for deterministic results:
 6. Apply `Override` modifiers (if any, replacing the result) — see conflict resolution below
 7. Apply clamping constraints
 
-#### Override Conflict Resolution
+===== Override Conflict Resolution
 
 When multiple active Override modifiers target the same Attribute simultaneously, implementations MUST resolve the conflict deterministically using the following ordered rules:
 
-1. **Priority wins**: The Override modifier from the `GameplayEffect` with the highest `Priority` value replaces the result. Lower-priority Overrides are ignored for that Attribute.
-2. **Last-applied wins on tie**: If two or more competing Override modifiers share the same `Priority`, the one from the most recently applied effect wins (LIFO order, determined by application timestamp).
+1. _Priority wins_: The Override modifier from the `GameplayEffect` with the highest `Priority` value replaces the result. Lower-priority Overrides are ignored for that Attribute.
+2. _Last-applied wins on tie_: If two or more competing Override modifiers share the same `Priority`, the one from the most recently applied effect wins (LIFO order, determined by application timestamp).
 
 `Priority` defaults to `0`. Effects intended to be overrideable by other effects should use lower priority values (e.g. `-10`); effects that must always dominate should use higher values (e.g. `100`).
 
-> **Example:** A "Freeze" effect sets `MoveSpeed` Override to `0` at Priority `10`. A "Slow` effect also sets an Override to `50` at Priority `5`. The Freeze wins because `10 > 5`. If a "Root" effect then sets an Override to `0` at Priority `10`, it ties with Freeze — the more recently applied effect's Override is used, but the end result is identical.
+> _Example:_ A "Freeze" effect sets `MoveSpeed` Override to `0` at Priority `10`. A "Slow` effect also sets an Override to `50` at Priority `5`. The Freeze wins because `10 > 5`. If a "Root" effect then sets an Override to `0` at Priority `10`, it ties with Freeze — the more recently applied effect's Override is used, but the end result is identical.
 
-#### Example Calculation
+===== Example Calculation
 
 Given:
 - Base Value: 100
@@ -616,62 +628,65 @@ Given:
 - No Bonus Flat
 
 Calculation:
-```
+----
 Step 1-2: 100 + 20 + 10 = 130
 Step 3-4: 130 × (1 + 0.1 + 0.15) = 130 × 1.25 = 162.5
 Step 5-6: 162.5 × 1.5 × 2.0 = 487.5
-```
+----
 
 Current Value = 487.5
 
-### 5.4 Clamping and Bounds
+==== 5.4 Clamping and Bounds
 
 Attributes MAY define minimum and maximum constraints. Constraints can be:
 
-**Static Values**
-: Fixed numeric bounds that do not change.
+Static Values::
+  Fixed numeric bounds that do not change.
 
-```yaml
+[source,yaml]
+----
 Clamping:
   Min: 0.0
   Max: 100.0
-```
+----
 
-**Dependent Attribute References**
-: Bounds referencing other Attributes, enabling dynamic constraints.
+Dependent Attribute References::
+  Bounds referencing other Attributes, enabling dynamic constraints.
 
-```yaml
+[source,yaml]
+----
 Clamping:
   Min: 0.0
   Max: "MaxHealth"  # References another attribute
-```
+----
 
 When a constraint references another Attribute:
 1. The referenced Attribute's Current Value is used as the bound
 2. Changes to the referenced Attribute trigger recalculation of dependent Attributes
 3. Circular dependencies MUST NOT be created
 
-### 5.5 Attribute Metadata
+==== 5.5 Attribute Metadata
 
 Attribute Metadata defines static configuration:
 
-**Category**
+_Category_
 - `Resource`: Consumable values that are spent and recovered (Health, Mana, Stamina)
 - `Statistic`: Derived values used in calculations (Damage, Defense, CritChance)
 - `Meta`: Internal values used only for calculations, not displayed to players
 
-**Replication Flags**
+_Replication Flags_
 - `None`: Not replicated
 - `OwnerOnly`: Replicated only to owning client
 - `All`: Replicated to all clients
 
-### 5.6 OnAttributeChanged Event
+==== 5.6 OnAttributeChanged Event
 
 Any change to an Attribute—whether to Base Value or Current Value—MUST trigger an OnAttributeChanged event.
 
-#### Event Payload
+===== Event Payload
 
-```typescript
+[source,typescript]
+----
 struct AttributeChangedEvent {
   /** The attribute that changed */
   Attribute: AttributeReference;
@@ -691,13 +706,14 @@ struct AttributeChangedEvent {
   /** Target of the change */
   Target: GameplayController;
 }
-```
+----
 
-#### Subscription Model
+===== Subscription Model
 
 Observers SHOULD register for attribute change notifications:
 
-```typescript
+[source,typescript]
+----
 interface IAttributeChangeObserver {
   OnAttributeChanged(event: AttributeChangedEvent): void;
 }
@@ -713,11 +729,12 @@ GC.UnregisterAttributeChangeObserver(
   attribute: AttributeReference,
   observer: IAttributeChangeObserver
 ): void;
-```
+----
 
-### 5.7 Schema Definition
+==== 5.7 Schema Definition
 
-```yaml
+[source,yaml]
+----
 Attribute:
   Name: string              # Required: Unique identifier
   DefaultBaseValue: float   # Required: Initial base value
@@ -730,26 +747,27 @@ Attribute:
     DisplayName: string     # Human-readable name
     Description: string     # Tooltip description
     UICategory: string      # UI grouping
-```
+----
 
----
+'''
 
-## 6. Attribute Sets
+=== 6. Attribute Sets
 
-### 6.1 Purpose and Composition
+==== 6.1 Purpose and Composition
 
 An Attribute Set is a logical container grouping related Attributes. Attribute Sets provide:
 
-- **Modularity**: Actors can mix and match sets based on capabilities
-- **Organization**: Related Attributes are defined together
-- **Reusability**: Common sets can be shared across Actor types
-- **Serialization Boundary**: Sets define units for save/load operations
+- _Modularity_: Actors can mix and match sets based on capabilities
+- _Organization_: Related Attributes are defined together
+- _Reusability_: Common sets can be shared across Actor types
+- _Serialization Boundary_: Sets define units for save/load operations
 
-### 6.2 Set Registration with GC
+==== 6.2 Set Registration with GC
 
 Attribute Sets MUST be registered with an GC before use:
 
-```typescript
+[source,typescript]
+----
 /**
  * Registers an attribute set with this GC.
  * @param attributeSet - The set to register
@@ -767,14 +785,15 @@ GC.UnregisterAttributeSet(attributeSet: AttributeSet): void;
  * @returns The attribute set, or null if not registered
  */
 GC.GetAttributeSet<T extends AttributeSet>(): T | null;
-```
+----
 
-### 6.3 Modular Design Patterns
+==== 6.3 Modular Design Patterns
 
-#### Combat Attribute Set
+===== Combat Attribute Set
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/attribute_set.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/attribute_set.json
 Name: "CombatAttributeSet"
 Attributes:
   - Name: "Health"
@@ -810,12 +829,13 @@ Attributes:
   - Name: "Defense"
     DefaultBaseValue: 5.0
     Category: Statistic
-```
+----
 
-#### Movement Attribute Set
+===== Movement Attribute Set
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/attribute_set.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/attribute_set.json
 Name: "MovementAttributeSet"
 Attributes:
   - Name: "MoveSpeed"
@@ -838,12 +858,13 @@ Attributes:
     Clamping:
       Min: 0.0
       Max: 1.0
-```
+----
 
-#### Vehicle Attribute Set
+===== Vehicle Attribute Set
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/attribute_set.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/attribute_set.json
 Name: "VehicleAttributeSet"
 Attributes:
   - Name: "EngineTorque"
@@ -868,14 +889,15 @@ Attributes:
   - Name: "MaxFuel"
     DefaultBaseValue: 100.0
     Category: Statistic
-```
+----
 
-### 6.4 Cross-Set Dependencies
+==== 6.4 Cross-Set Dependencies
 
 Attributes MAY reference Attributes from other registered sets:
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/attribute_set.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/attribute_set.json
 Name: "DerivedStatsSet"
 Dependencies:
   - "CombatAttributeSet"
@@ -885,7 +907,7 @@ Attributes:
     Category: Meta
     DerivedFrom:
       Expression: "Health * (1 + Defense / 100)"
-```
+----
 
 Cross-set references are resolved at runtime. Implementations MUST:
 
@@ -893,9 +915,10 @@ Cross-set references are resolved at runtime. Implementations MUST:
 2. Ensure proper recalculation order when dependencies change
 3. Prevent circular dependency chains
 
-### 6.5 Schema Definition
+==== 6.5 Schema Definition
 
-```yaml
+[source,yaml]
+----
 AttributeSet:
   Name: string                    # Required: Unique set identifier
   Dependencies: [string]          # Optional: Required attribute sets
@@ -903,19 +926,19 @@ AttributeSet:
   Metadata:                       # Optional: Additional configuration
     DisplayName: string
     Description: string
-```
+----
 
----
+'''
 
-## 7. Gameplay Tags
+=== 7. Gameplay Tags
 
-### 7.1 Hierarchical Naming Convention
+==== 7.1 Hierarchical Naming Convention
 
 Gameplay Tags use hierarchical dot-notation to represent semantic categories:
 
-```
+----
 Category.Subcategory.Leaf
-```
+----
 
 Examples:
 - `State.Debuff.Stunned.Magic`
@@ -924,7 +947,7 @@ Examples:
 - `Cooldown.Ability.Fireball`
 - `GameplayCue.Impact.Fire`
 
-#### Naming Rules
+===== Naming Rules
 
 1. Each segment MUST use PascalCase
 2. Hierarchies SHOULD NOT exceed 5 levels
@@ -936,15 +959,16 @@ Examples:
    - `Ability.*` - Ability classification tags
    - `DamageType.*` - Damage classification tags
 
-### 7.2 Tag Container
+==== 7.2 Tag Container
 
 A Tag Container is a collection of tags associated with an entity.
 
-#### Internal Representation
+===== Internal Representation
 
-A `TagContainer` MUST maintain **reference counts** per tag, not a simple set. Multiple concurrent Effects can grant the same tag; each grant increments the count; each removal decrements it. The tag is considered present only while its count is greater than zero.
+A `TagContainer` MUST maintain _reference counts_ per tag, not a simple set. Multiple concurrent Effects can grant the same tag; each grant increments the count; each removal decrements it. The tag is considered present only while its count is greater than zero.
 
-```typescript
+[source,typescript]
+----
 struct TagContainer {
   /**
    * Grant counts for every explicitly-held tag.
@@ -961,11 +985,12 @@ struct TagContainer {
    */
   AllTagCounts: Map<Tag, number>;
 }
-```
+----
 
-#### Operations
+===== Operations
 
-```typescript
+[source,typescript]
+----
 interface TagContainer {
   /**
    * @internal Reserved for the GC Effect application pipeline.
@@ -1015,22 +1040,47 @@ interface TagContainer {
    */
   Clear(): void;
 }
-```
+----
 
-### 7.3 Query Operations
+==== 7.3 Query Operations
 
-| Operation | Map queried | Semantics | Example |
-|-----------|-------------|-----------|---------|
-| `MatchesTag(T)` | `AllTagCounts` | True if `AllTagCounts[T] > 0` — matches T itself or any descendant of T that is present | Checking for any type of "Stunned" status |
-| `MatchesTagExact(T)` | `ExplicitTagCounts` | True if `ExplicitTagCounts[T] > 0` — exact tag only, no hierarchy | Immunity to "Stunned.Magic" but not "Stunned.Physical" |
-| `GetTagCount(T)` | `ExplicitTagCounts` | Returns `ExplicitTagCounts[T]` (0 if absent) | "How many stacks of Burning?" |
-| `HasAny(Container)` | `AllTagCounts` | True if any tag in Container has `AllTagCounts > 0` | Spell that affects "Undead" OR "Demon" |
-| `HasAll(Container)` | `AllTagCounts` | True if every tag in Container has `AllTagCounts > 0` | Combo requiring "Chilled" AND "Vulnerable" |
-| `HasNone(Container)` | `AllTagCounts` | True if no tag in Container has `AllTagCounts > 0` | Ability blocked by any "Immunity" tag |
+[cols="2,2,2,2",options="header"]
+|===
+| Operation
+| Map queried
+| Semantics
+| Example
 
-#### Query Examples
+| `MatchesTag(T)`
+| `AllTagCounts`
+| True if `AllTagCounts[T] > 0` — matches T itself or any descendant of T that is present
+| Checking for any type of "Stunned" status
+| `MatchesTagExact(T)`
+| `ExplicitTagCounts`
+| True if `ExplicitTagCounts[T] > 0` — exact tag only, no hierarchy
+| Immunity to "Stunned.Magic" but not "Stunned.Physical"
+| `GetTagCount(T)`
+| `ExplicitTagCounts`
+| Returns `ExplicitTagCounts[T]` (0 if absent)
+| "How many stacks of Burning?"
+| `HasAny(Container)`
+| `AllTagCounts`
+| True if any tag in Container has `AllTagCounts > 0`
+| Spell that affects "Undead" OR "Demon"
+| `HasAll(Container)`
+| `AllTagCounts`
+| True if every tag in Container has `AllTagCounts > 0`
+| Combo requiring "Chilled" AND "Vulnerable"
+| `HasNone(Container)`
+| `AllTagCounts`
+| True if no tag in Container has `AllTagCounts > 0`
+| Ability blocked by any "Immunity" tag
+|===
 
-```typescript
+===== Query Examples
+
+[source,typescript]
+----
 // Container has: State.Debuff.Stunned.Magic, Status.Burning
 
 container.MatchesTag("State.Debuff.Stunned")     // true (parent match)
@@ -1043,13 +1093,13 @@ container.MatchesTagExact("State.Debuff.Stunned.Magic") // true
 container.HasAny(["Status.Frozen", "Status.Burning"]) // true
 container.HasAll(["State.Debuff.Stunned.Magic", "Status.Burning"]) // true
 container.HasAll(["Status.Burning", "Status.Frozen"]) // false
-```
+----
 
-### 7.4 Tag Inheritance and Implicit Tags
+==== 7.4 Tag Inheritance and Implicit Tags
 
 When a tag is added to a container, the grant counts of all ancestor tags in `AllTagCounts` are incremented by the same amount. When a tag is removed, ancestor counts are decremented symmetrically. This means `MatchesTag` on a parent tag is always consistent with the sum of grants on its descendants:
 
-```
+----
 AddTag("State.Debuff.Stunned.Magic")
   ExplicitTagCounts["State.Debuff.Stunned.Magic"] = 1
   AllTagCounts["State.Debuff.Stunned.Magic"]      = 1
@@ -1077,39 +1127,42 @@ RemoveTag("State.Debuff.Stunned.Magic")  # second effect expires
   AllTagCounts["State.Debuff.Stunned"]             = 0
   ...
   # OnTagChanged dispatched for the leaf and each ancestor that hit 0
-```
+----
 
 This enables hierarchical queries where `MatchesTag("State.Debuff")` matches any active debuff, and the match remains valid as long as any descendant tag has a count > 0.
 
-### 7.5 State Representation via Tags
+==== 7.5 State Representation via Tags
 
 Tags are the primary method for representing Actor states. Instead of boolean flags:
 
-```typescript
+[source,typescript]
+----
 // Avoid this pattern
 if (actor.isStunned && !actor.isImmune) { ... }
 
 // Use tag queries
 if (actor.Tags.MatchesTag("State.Debuff.Stunned") &&
     !actor.Tags.MatchesTag("Status.Immune.Stun")) { ... }
-```
+----
 
 This decouples the "How" of a state (animation, logic freeze) from the "What" of the state (the Tag).
 
-### 7.6 Schema Definition
+==== 7.6 Schema Definition
 
-```yaml
+[source,yaml]
+----
 TagDefinition:
   Tag: string                     # Full hierarchical tag name
   Description: string             # Human-readable description
   AllowMultiple: boolean          # Can multiple instances exist? (default: false)
   DevComment: string              # Developer notes
-```
+----
 
 Tag definitions MAY be collected in a tag registry:
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_tag.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_tag.json
 Tags:
   - Tag: "State.Debuff.Stunned"
     Description: "Actor is unable to perform actions"
@@ -1122,19 +1175,20 @@ Tags:
 
   - Tag: "Status.Immune.Stun"
     Description: "Actor is immune to stun effects"
-```
+----
 
----
+'''
 
-## 8. Gameplay Abilities
+=== 8. Gameplay Abilities
 
-### 8.1 Ability Definition
+==== 8.1 Ability Definition
 
 A Gameplay Ability is a self-contained unit of logic defining an action an Actor can perform. Unlike simple function calls, Abilities are asynchronous, stateful objects with defined lifecycles.
 
-#### Ability Class Structure
+===== Ability Class Structure
 
-```typescript
+[source,typescript]
+----
 abstract class GameplayAbility {
   /** Tags describing this ability */
   AbilityTags: TagContainer;
@@ -1171,11 +1225,12 @@ abstract class GameplayAbility {
   /** Called when ability ends */
   abstract EndAbility(wasCancelled: boolean): void;
 }
-```
+----
 
-#### AbilitySpec (Instance Data)
+===== AbilitySpec (Instance Data)
 
-```typescript
+[source,typescript]
+----
 struct AbilitySpec {
   /** Reference to the ability class */
   AbilityClass: GameplayAbilityClass;
@@ -1202,11 +1257,11 @@ struct AbilitySpec {
    */
   ActiveOwnedTagsHandle?: ActiveEffectHandle;
 }
-```
+----
 
-### 8.2 Lifecycle State Machine
+==== 8.2 Lifecycle State Machine
 
-```
+----
                     ┌──────────────┐
                     │  NotGranted  │
                     └──────┬───────┘
@@ -1233,20 +1288,21 @@ struct AbilitySpec {
         │           ┌──────────────┐           │
         └───────────│   Ending     │───────────┘
                     └──────────────┘
-```
+----
 
-### 8.3 Activation Requirements
+==== 8.3 Activation Requirements
 
 Before an Ability can activate, the following checks MUST pass:
 
-1. **Granted Check**: Ability must be granted to the GC
-2. **Not Already Active**: Ability must not currently be active (unless configured for multiple instances)
-3. **Required Tags**: Owner must have all tags in `ActivationRequiredTags`
-4. **Blocked Tags**: Owner must NOT have any tags in `ActivationBlockedTags`
-5. **Cost Verification**: If CostEffect is defined, owner must have sufficient resources
-6. **Cooldown Verification**: Cooldown tag must not be present
+1. _Granted Check_: Ability must be granted to the GC
+2. _Not Already Active_: Ability must not currently be active (unless configured for multiple instances)
+3. _Required Tags_: Owner must have all tags in `ActivationRequiredTags`
+4. _Blocked Tags_: Owner must NOT have any tags in `ActivationBlockedTags`
+5. _Cost Verification_: If CostEffect is defined, owner must have sufficient resources
+6. _Cooldown Verification_: Cooldown tag must not be present
 
-```typescript
+[source,typescript]
+----
 function CanActivateAbility(spec: AbilitySpec): boolean {
   const ownerTags = GC.GetOwnedTags();
 
@@ -1272,9 +1328,9 @@ function CanActivateAbility(spec: AbilitySpec): boolean {
 
   return true;
 }
-```
+----
 
-### 8.4 Commit Phase
+==== 8.4 Commit Phase
 
 The Commit phase is the point of no return where resources are consumed and cooldowns begin. Once committed:
 
@@ -1283,7 +1339,8 @@ The Commit phase is the point of no return where resources are consumed and cool
 3. Activation Owned Tags are granted
 4. Ability proceeds to execution
 
-```typescript
+[source,typescript]
+----
 function CommitAbility(spec: AbilitySpec): boolean {
   // Apply cost
   if (spec.AbilityClass.CostEffect) {
@@ -1306,16 +1363,17 @@ function CommitAbility(spec: AbilitySpec): boolean {
 
   return true;
 }
-```
+----
 
-### 8.5 Costs and Cooldowns as Effects
+==== 8.5 Costs and Cooldowns as Effects
 
 Costs and Cooldowns are NOT separate variables but are implemented as specialized Gameplay Effects.
 
-#### Cost Effect Pattern
+===== Cost Effect Pattern
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_Fireball_Cost"
 DurationPolicy: Instant
 Modifiers:
@@ -1324,12 +1382,13 @@ Modifiers:
     Magnitude:
       Type: ScalableFloat
       Value: -50.0  # Negative to subtract
-```
+----
 
-#### Cooldown Effect Pattern
+===== Cooldown Effect Pattern
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_Fireball_Cooldown"
 DurationPolicy: HasDuration
 Duration:
@@ -1337,12 +1396,13 @@ Duration:
   Value: 5.0  # 5 second cooldown
 GrantedTags:
   - "Cooldown.Ability.Fireball"
-```
+----
 
 This pattern enables external modification of costs and cooldowns. For example, a "Mana Efficiency" buff could apply a multiplier to all cost effects:
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_ManaEfficiency_Buff"
 DurationPolicy: HasDuration
 Duration:
@@ -1354,18 +1414,19 @@ Modifiers:
     Magnitude:
       Type: ScalableFloat
       Value: -0.25  # -25% mana cost
-```
+----
 
-### 8.6 Cancellation and Interruption
+==== 8.6 Cancellation and Interruption
 
 Abilities may be cancelled by:
 
-1. **Self-Cancellation**: Ability logic calls EndAbility(true)
-2. **External Cancel**: Another system calls CancelAbility on the GC
-3. **Cancel Tags**: An Effect grants a tag in the Ability's `CancelAbilitiesWithTags` set
-4. **Owner Death**: Owner's Health reaches zero
+1. _Self-Cancellation_: Ability logic calls EndAbility(true)
+2. _External Cancel_: Another system calls CancelAbility on the GC
+3. _Cancel Tags_: An Effect grants a tag in the Ability's `CancelAbilitiesWithTags` set
+4. _Owner Death_: Owner's Health reaches zero
 
-```typescript
+[source,typescript]
+----
 function CancelAbility(handle: AbilitySpecHandle): void {
   const spec = GetAbilitySpec(handle);
   if (!spec.IsActive) return;
@@ -1385,11 +1446,12 @@ function CancelAbility(handle: AbilitySpecHandle): void {
 
   spec.IsActive = false;
 }
-```
+----
 
-### 8.7 Schema Definition
+==== 8.7 Schema Definition
 
-```yaml
+[source,yaml]
+----
 Ability:
   Name: string                    # Required: Unique identifier
 
@@ -1413,17 +1475,18 @@ Ability:
     DisplayName: string
     Description: string
     Icon: string
-```
+----
 
----
+'''
 
-## 9. Gameplay Effects
+=== 9. Gameplay Effects
 
-### 9.1 Effect Structure
+==== 9.1 Effect Structure
 
 A Gameplay Effect defines a modification to an Actor's state. Effects are data-only definitions that SHOULD NOT be subclassed.
 
-```typescript
+[source,typescript]
+----
 struct GameplayEffect {
   /** Unique identifier */
   Name: string;
@@ -1467,30 +1530,46 @@ struct GameplayEffect {
   /** Gameplay cue tags */
   GameplayCues: Tag[];
 }
-```
+----
 
-### 9.2 Duration Policies
+==== 9.2 Duration Policies
 
-| Policy | Base Value | Current Value | Persistence |
-|--------|------------|---------------|-------------|
-| `Instant` | Modified | Recalculated | Permanent change |
-| `HasDuration` | Unchanged | Modified | Temporary (until expiry) |
-| `Infinite` | Unchanged | Modified | Temporary (until removed) |
+[cols="2,2,3,2",options="header"]
+|===
+| Policy
+| Base Value
+| Current Value
+| Persistence
 
-**Instant Effects**
-: Modify the Base Value immediately and permanently. The Effect does not remain "active" after application. Classic examples: damage, healing, permanent stat increases.
+| `Instant`
+| Modified
+| Recalculated
+| Permanent change
+| `HasDuration`
+| Unchanged
+| Modified
+| Temporary (until expiry)
+| `Infinite`
+| Unchanged
+| Modified
+| Temporary (until removed)
+|===
 
-**HasDuration Effects**
-: Modify the Current Value for a specified duration. When the timer expires, the modifier is removed and the attribute reverts. Classic examples: buffs, debuffs, temporary bonuses.
+Instant Effects::
+  Modify the Base Value immediately and permanently. The Effect does not remain "active" after application. Classic examples: damage, healing, permanent stat increases.
 
-**Infinite Effects**
-: Modify the Current Value indefinitely until explicitly removed. Classic examples: passive auras, equipment bonuses, persistent status effects.
+HasDuration Effects::
+  Modify the Current Value for a specified duration. When the timer expires, the modifier is removed and the attribute reverts. Classic examples: buffs, debuffs, temporary bonuses.
 
-### 9.3 Periodic Execution
+Infinite Effects::
+  Modify the Current Value indefinitely until explicitly removed. Classic examples: passive auras, equipment bonuses, persistent status effects.
+
+==== 9.3 Periodic Execution
 
 Effects with duration (HasDuration or Infinite) MAY execute periodically:
 
-```typescript
+[source,typescript]
+----
 struct PeriodicSettings {
   /** Time between executions */
   Period: float;
@@ -1498,12 +1577,13 @@ struct PeriodicSettings {
   /** Execute immediately on application? */
   ExecuteOnApplication: boolean;
 }
-```
+----
 
 Periodic effects behave like repeated Instant effects within a duration container:
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_Poison"
 DurationPolicy: HasDuration
 Duration:
@@ -1518,22 +1598,41 @@ Modifiers:
     Magnitude:
       Type: ScalableFloat
       Value: -5.0  # 5 damage per second
-```
+----
 
-### 9.4 Modifier Specification
+==== 9.4 Modifier Specification
 
-#### 9.4.1 Operations
+===== 9.4.1 Operations
 
-| Operation | Semantics | Pipeline Step | Magnitude convention |
-|-----------|-----------|---------------|----------------------|
-| `Add` | Pre-multiply flat additive | Step 2 | Absolute delta (e.g., `+10` adds 10) |
-| `AddPost` | Post-multiply flat additive | Step 5 (very rare) | Absolute delta |
-| `Multiply` | Channel-aggregated bonus | Step 4 | Signed bonus: `+0.25` = +25%, `−0.25` = −25%. Modifiers in the same `Channel` add their bonuses; channel effective factors multiply across channels. See §5.3 Channel Aggregation. |
-| `Override` | Replace value | Step 6 | Absolute replacement value |
+[cols="2,2,3,4",options="header"]
+|===
+| Operation
+| Semantics
+| Pipeline Step
+| Magnitude convention
 
-> **Note:** There is no `Divide` operation. A 50% reduction is expressed as `Multiply` with magnitude `−0.5` (i.e., a −50% penalty). This eliminates the divide-by-zero edge case.
+| `Add`
+| Pre-multiply flat additive
+| Step 2
+| Absolute delta (e.g., `+10` adds 10)
+| `AddPost`
+| Post-multiply flat additive
+| Step 5 (very rare)
+| Absolute delta
+| `Multiply`
+| Channel-aggregated bonus
+| Step 4
+| Signed bonus: `+0.25` = +25%, `−0.25` = −25%. Modifiers in the same `Channel` add their bonuses; channel effective factors multiply across channels. See §5.3 Channel Aggregation.
+| `Override`
+| Replace value
+| Step 6
+| Absolute replacement value
+|===
 
-```typescript
+> _Note:_ There is no `Divide` operation. A 50% reduction is expressed as `Multiply` with magnitude `−0.5` (i.e., a −50% penalty). This eliminates the divide-by-zero edge case.
+
+[source,typescript]
+----
 struct Modifier {
   /** Target attribute */
   Attribute: AttributeReference;
@@ -1573,26 +1672,28 @@ struct Modifier {
    */
   Channel?: string;
 }
-```
+----
 
-#### 9.4.2 Magnitude Calculation Types
+===== 9.4.2 Magnitude Calculation Types
 
-**ScalableFloat**
-: Static or curve-based value.
+ScalableFloat::
+  Static or curve-based value.
 
-```yaml
+[source,yaml]
+----
 Magnitude:
   Type: ScalableFloat
   Value: 25.0                 # Static value
   # OR
   Curve: "DamageCurve"        # Curve lookup
   CurveInput: "Level"         # Curve x-axis
-```
+----
 
-**AttributeBased**
-: Derived from another attribute.
+AttributeBased::
+  Derived from another attribute.
 
-```yaml
+[source,yaml]
+----
 Magnitude:
   Type: AttributeBased
   BackingAttribute: "Strength"
@@ -1601,38 +1702,42 @@ Magnitude:
   PreMultiplyAdditive: 0.0
   PostMultiplyAdditive: 10.0
   # Result = (AttributeValue + PreAdd) * Coefficient + PostAdd
-```
+----
 
-**CustomCalculation**
-: Custom Modifier Magnitude Calculator (MMC).
+CustomCalculation::
+  Custom Modifier Magnitude Calculator (MMC).
 
-```yaml
+[source,yaml]
+----
 Magnitude:
   Type: CustomCalculation
   CalculatorClass: "MMC_CriticalDamage"
-```
+----
 
-**SetByCaller**
-: Runtime-provided value via EffectSpec.
+SetByCaller::
+  Runtime-provided value via EffectSpec.
 
-```yaml
+[source,yaml]
+----
 Magnitude:
   Type: SetByCaller
   DataTag: "Damage.Base"      # Lookup key
-```
+----
 
 Usage:
-```typescript
+[source,typescript]
+----
 const spec = MakeOutgoingSpec(damageEffect, level);
 spec.SetByCallerMagnitude("Damage.Base", calculatedDamage);
 ApplyGameplayEffectToTarget(target, spec);
-```
+----
 
-### 9.5 Execution Calculations
+==== 9.5 Execution Calculations
 
 Execution Calculations provide full access to source and target attributes for complex, multi-attribute logic.
 
-```typescript
+[source,typescript]
+----
 abstract class ExecutionCalculation {
   /** Attributes to capture from source */
   SourceCaptureDefinitions: AttributeCapture[];
@@ -1652,16 +1757,17 @@ struct AttributeCapture {
   Attribute: AttributeReference;
   CaptureTime: CaptureTime;  // OnApplication | OnExecution
 }
-```
+----
 
-**Capture vs Snapshot Semantics**
+_Capture vs Snapshot Semantics_
 
 - `OnApplication`: Attribute value is captured when Effect is first applied
 - `OnExecution`: Attribute value is captured each time Effect executes
 
 Example: Armor Penetration Calculation
 
-```typescript
+[source,typescript]
+----
 class ExecCalc_PhysicalDamage extends ExecutionCalculation {
   SourceCaptureDefinitions = [
     { Attribute: "AttackPower", CaptureTime: OnExecution },
@@ -1688,69 +1794,77 @@ class ExecCalc_PhysicalDamage extends ExecutionCalculation {
     }];
   }
 }
-```
+----
 
-### 9.6 Execution Policies
+==== 9.6 Execution Policies
 
 Execution Policies define how multiple instances of the same Effect interact. This model replaces traditional "stacking" concepts with clearer behavioral semantics.
 
-| Policy | Behavior |
-|--------|----------|
-| `RunInParallel` | All instances execute simultaneously; magnitude stacks N times |
-| `RunInSequence` | Instances queue; executes one after another |
-| `RunInMerge` | Single logical instance; durations merge (earliest start to latest end) |
+[cols="2,2",options="header"]
+|===
+| Policy
+| Behavior
 
-#### RunInParallel
+| `RunInParallel`
+| All instances execute simultaneously; magnitude stacks N times
+| `RunInSequence`
+| Instances queue; executes one after another
+| `RunInMerge`
+| Single logical instance; durations merge (earliest start to latest end)
+|===
+
+===== RunInParallel
 
 Each instance of the effect runs simultaneously, applying N times the magnitude.
 
-```
+----
 Time ───────────────────────────────────▶
 Instance 1: ████████████████
 Instance 2:     ████████████████
 Instance 3:         ████████████████
 
 Combined magnitude at t=5: 3× base
-```
+----
 
 Use case: Stackable damage-over-time effects, multiple buff sources
 
-#### RunInSequence
+===== RunInSequence
 
 Instances queue and execute one after another.
 
-```
+----
 Time ───────────────────────────────────▶
 Instance 1: ████████████████
 Instance 2:                 ████████████████
 Instance 3:                                 ████████████████
-```
+----
 
 Use case: Channeled effects, crowd control chains
 
-**Chaining mechanism:** The GC owns the queue for each `RunInSequence` effect class. When the active instance's duration expires (or it is manually removed), the GC automatically dequeues and begins the next instance, resetting the duration timer. Ability authors do not manage this transition; applying the same effect class while one is already active is sufficient to enqueue. The `OnEffectApplied` / `OnEffectRemoved` delegates fire for each instance individually, so callers can observe the moment one stun ends and the next begins.
+_Chaining mechanism:_ The GC owns the queue for each `RunInSequence` effect class. When the active instance's duration expires (or it is manually removed), the GC automatically dequeues and begins the next instance, resetting the duration timer. Ability authors do not manage this transition; applying the same effect class while one is already active is sufficient to enqueue. The `OnEffectApplied` / `OnEffectRemoved` delegates fire for each instance individually, so callers can observe the moment one stun ends and the next begins.
 
-#### RunInMerge
+===== RunInMerge
 
 Multiple applications merge into a single logical instance with combined duration.
 
-```
+----
 Time ───────────────────────────────────▶
 Instance 1: ████████████████
 Instance 2:     ████████████████
 Instance 3:         ████████████████
 
 Merged:     ████████████████████████████
-```
+----
 
 Use case: Buff refreshing, grace periods
 
-### 9.7 Tag Grants
+==== 9.7 Tag Grants
 
 Effects MAY grant Tags while active:
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_Burning"
 DurationPolicy: HasDuration
 Duration:
@@ -1765,26 +1879,27 @@ Modifiers:
     Magnitude:
       Type: ScalableFloat
       Value: -10.0
-```
+----
 
 When the Effect is applied:
 1. `AddTag` is called for each Granted Tag — grant counts increment
-2. `OnTagChanged` is dispatched **only** for tags whose count transitions `0 → 1`
+2. `OnTagChanged` is dispatched _only_ for tags whose count transitions `0 → 1`
 3. Gameplay Cues are triggered only on that same `0 → 1` transition
 
 When the Effect is removed (duration expires or manual removal):
 1. `RemoveTag` is called for each Granted Tag — grant counts decrement
-2. `OnTagChanged` is dispatched **only** for tags whose count transitions `1 → 0`
+2. `OnTagChanged` is dispatched _only_ for tags whose count transitions `1 → 0`
 3. Looping Gameplay Cues are stopped only on that same `1 → 0` transition
 
-**Consequence for concurrent Effects:** if two Effects both grant `State.Debuff.Burning`, the tag's count reaches 2. Removing the first Effect decrements to 1 — no event, no Cue change, the character remains visually on fire. Only removing the second Effect decrements to 0, dispatches `OnTagChanged`, and stops the looping Cue. This is the correct behaviour and falls out automatically from ref-counting.
+_Consequence for concurrent Effects:_ if two Effects both grant `State.Debuff.Burning`, the tag's count reaches 2. Removing the first Effect decrements to 1 — no event, no Cue change, the character remains visually on fire. Only removing the second Effect decrements to 0, dispatches `OnTagChanged`, and stops the looping Cue. This is the correct behaviour and falls out automatically from ref-counting.
 
-### 9.8 Ability Grants
+==== 9.8 Ability Grants
 
 Effects MAY grant Abilities while active:
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_FireSword_Equipped"
 DurationPolicy: Infinite
 GrantedAbilities:
@@ -1792,15 +1907,16 @@ GrantedAbilities:
     Level: 1
     InputID: "Ability.Weapon.Special"
     RemoveOnEffectRemoval: true
-```
+----
 
 This pattern enables equipment-based abilities where unequipping the item removes the Effect and consequently the granted Ability.
 
-### 9.9 EffectSpec and EffectContext
+==== 9.9 EffectSpec and EffectContext
 
-#### EffectSpec Structure
+===== EffectSpec Structure
 
-```typescript
+[source,typescript]
+----
 struct EffectSpec {
   /** Reference to effect definition */
   EffectClass: GameplayEffectClass;
@@ -1820,11 +1936,12 @@ struct EffectSpec {
   /** Period override (if any) */
   PeriodOverride?: float;
 }
-```
+----
 
-#### EffectContext Structure
+===== EffectContext Structure
 
-```typescript
+[source,typescript]
+----
 struct EffectContext {
   /** GC that created this effect */
   InstigatorGC: GameplayController;
@@ -1844,13 +1961,14 @@ struct EffectContext {
   /** World location for positional effects */
   WorldOrigin?: Vector3;
 }
-```
+----
 
-#### Handle Patterns
+===== Handle Patterns
 
 Handles provide lightweight references to specs and active effects:
 
-```typescript
+[source,typescript]
+----
 struct EffectSpecHandle {
   Data: SharedPtr<EffectSpec>;
 }
@@ -1859,11 +1977,12 @@ struct ActiveEffectHandle {
   Handle: number;
   bPassedFiltersAndWasExecuted: boolean;
 }
-```
+----
 
-### 9.10 Schema Definition
+==== 9.10 Schema Definition
 
-```yaml
+[source,yaml]
+----
 # GameplayEffect Definition Schema
 type: object
 required:
@@ -1960,23 +2079,23 @@ properties:
     type: array
     items:
       type: string
-```
+----
 
----
+'''
 
-# Part III: Asynchronous Execution
+== Part III: Asynchronous Execution
 
-## 10. Ability Tasks
+=== 10. Ability Tasks
 
-### 10.1 Purpose and Design
+==== 10.1 Purpose and Design
 
 Ability Tasks are specialized asynchronous nodes that pause ability execution until a specific trigger condition is met. Tasks enable complex, multi-stage abilities to be written in a linear, readable fashion while executing asynchronously across frames or network ticks.
 
 Tasks leverage the Observer design pattern for efficiency. Instead of polling a condition every frame, the ability registers a task and goes dormant. When the trigger condition is met, the task "wakes up" the ability and execution continues.
 
-### 10.2 Task Lifecycle
+==== 10.2 Task Lifecycle
 
-```
+----
          ┌─────────────┐
          │  Inactive   │
          └──────┬──────┘
@@ -2001,30 +2120,48 @@ Tasks leverage the Observer design pattern for efficiency. Instead of polling a 
     │    ┌─────────────┐
     └────│  Cancelled  │
          └─────────────┘
-```
+----
 
-**Instantiation**: Task is created with configuration parameters
-**Activation**: Task registers with relevant systems (timers, events, physics)
-**Tick** (optional): Some tasks require per-frame updates
-**Completion**: Trigger condition met; ability execution resumes
-**Cancellation**: Task is aborted (ability cancelled, owner died)
+_Instantiation_: Task is created with configuration parameters
+_Activation_: Task registers with relevant systems (timers, events, physics)
+_Tick_ (optional): Some tasks require per-frame updates
+_Completion_: Trigger condition met; ability execution resumes
+_Cancellation_: Task is aborted (ability cancelled, owner died)
 
-### 10.3 Predefined Task Categories
+==== 10.3 Predefined Task Categories
 
-| Category | Trigger | Example Tasks |
-|----------|---------|---------------|
-| Temporal | Timer expiry | WaitDelay, WaitGameTime |
-| Event-Based | Gameplay event | WaitGameplayEvent, WaitTagChanged |
-| Input-Based | Input state change | WaitInputRelease, WaitInputPressed |
-| State-Based | Tag change | WaitTagAdded, WaitTagRemoved |
-| Spatial | Collision/overlap | WaitOverlap, WaitForTarget |
-| Animation | Montage notify | WaitAnimationEvent, WaitMontageEnded |
+[cols="2,2,3",options="header"]
+|===
+| Category
+| Trigger
+| Example Tasks
 
-#### WaitDelay
+| Temporal
+| Timer expiry
+| WaitDelay, WaitGameTime
+| Event-Based
+| Gameplay event
+| WaitGameplayEvent, WaitTagChanged
+| Input-Based
+| Input state change
+| WaitInputRelease, WaitInputPressed
+| State-Based
+| Tag change
+| WaitTagAdded, WaitTagRemoved
+| Spatial
+| Collision/overlap
+| WaitOverlap, WaitForTarget
+| Animation
+| Montage notify
+| WaitAnimationEvent, WaitMontageEnded
+|===
+
+===== WaitDelay
 
 Waits for a specified duration.
 
-```typescript
+[source,typescript]
+----
 class WaitDelay extends AbilityTask {
   Duration: float;
 
@@ -2037,13 +2174,14 @@ class WaitDelay extends AbilityTask {
     this.EndTask();
   }
 }
-```
+----
 
-#### WaitGameplayEvent
+===== WaitGameplayEvent
 
 Waits for a gameplay event with a matching tag.
 
-```typescript
+[source,typescript]
+----
 class WaitGameplayEvent extends AbilityTask {
   EventTag: Tag;
   OnlyTriggerOnce: boolean;
@@ -2059,13 +2197,14 @@ class WaitGameplayEvent extends AbilityTask {
     }
   }
 }
-```
+----
 
-#### WaitInputRelease
+===== WaitInputRelease
 
 Waits for an input action to be released.
 
-```typescript
+[source,typescript]
+----
 class WaitInputRelease extends AbilityTask {
   InputID: InputID;
 
@@ -2078,13 +2217,14 @@ class WaitInputRelease extends AbilityTask {
     this.EndTask();
   }
 }
-```
+----
 
-#### WaitTagAdded
+===== WaitTagAdded
 
 Waits for a specific tag to be added to the owner.
 
-```typescript
+[source,typescript]
+----
 class WaitTagAdded extends AbilityTask {
   WaitTag: Tag;
 
@@ -2104,9 +2244,9 @@ class WaitTagAdded extends AbilityTask {
     }
   }
 }
-```
+----
 
-### 10.4 Custom Task Implementation
+==== 10.4 Custom Task Implementation
 
 Custom tasks MUST:
 
@@ -2116,7 +2256,8 @@ Custom tasks MUST:
 4. Provide delegate/event outputs for ability continuation
 5. Handle cancellation gracefully
 
-```typescript
+[source,typescript]
+----
 class WaitForHealthThreshold extends AbilityTask {
   Threshold: float;
   Comparison: ComparisonType;  // LessThan | LessEqual | Greater | GreaterEqual
@@ -2154,9 +2295,9 @@ class WaitForHealthThreshold extends AbilityTask {
     this.Owner.OnAttributeChanged.Unsubscribe("Health", this.OnHealthChanged);
   }
 }
-```
+----
 
-### 10.5 Task Ownership and Cleanup
+==== 10.5 Task Ownership and Cleanup
 
 Tasks are owned by the Ability that created them. When an Ability ends:
 
@@ -2164,7 +2305,8 @@ Tasks are owned by the Ability that created them. When an Ability ends:
 2. Task event subscriptions are cleared
 3. Task resources are released
 
-```typescript
+[source,typescript]
+----
 function EndAbility(wasCancelled: boolean): void {
   // Cancel all active tasks
   for (const task of this.ActiveTasks) {
@@ -2182,13 +2324,13 @@ function EndAbility(wasCancelled: boolean): void {
 
   // Continue with ability end logic...
 }
-```
+----
 
----
+'''
 
-## 11. Input Integration
+=== 11. Input Integration
 
-### 11.1 Command Pattern Overview
+==== 11.1 Command Pattern Overview
 
 The UGAS input system implements the Command pattern to decouple hardware inputs from ability execution. This separation enables:
 
@@ -2197,7 +2339,7 @@ The UGAS input system implements the Command pattern to decouple hardware inputs
 - Input buffering and queuing
 - Combo system integration
 
-```
+----
 ┌──────────────┐      ┌──────────────┐      ┌──────────────┐
 │   Hardware   │─────▶│    Input     │─────▶│    Input     │
 │    Input     │      │   Action     │      │     ID       │
@@ -2208,13 +2350,14 @@ The UGAS input system implements the Command pattern to decouple hardware inputs
                                             │   Ability    │
                                             │  Activation  │
                                             └──────────────┘
-```
+----
 
-### 11.2 Input Action to Ability Mapping
+==== 11.2 Input Action to Ability Mapping
 
 Abilities are bound to Input IDs, which are mapped from Input Actions:
 
-```yaml
+[source,yaml]
+----
 InputMapping:
   Actions:
     - Action: "IA_PrimaryAttack"
@@ -2234,23 +2377,25 @@ InputMapping:
       KeyBindings:
         - Key: "Q"
         - Key: "GamepadFaceLeft"
-```
+----
 
 Ability grants include optional Input ID binding:
 
-```typescript
+[source,typescript]
+----
 GC.GrantAbility(
   abilityClass: GA_Fireball,
   level: 1,
   inputID: "Ability.Slot.1"
 );
-```
+----
 
-### 11.3 Input Buffering
+==== 11.3 Input Buffering
 
 Input buffering allows players to queue inputs during animations or recovery frames:
 
-```typescript
+[source,typescript]
+----
 struct InputBufferConfig {
   /** Enable input buffering */
   Enabled: boolean;
@@ -2261,7 +2406,7 @@ struct InputBufferConfig {
   /** Maximum buffered inputs */
   MaxBufferSize: number;
 }
-```
+----
 
 When input buffering is enabled:
 
@@ -2270,7 +2415,8 @@ When input buffering is enabled:
 3. When block ends, buffered inputs are processed in order
 4. Expired inputs (beyond buffer window) are discarded
 
-```typescript
+[source,typescript]
+----
 function ProcessBufferedInputs(): void {
   const now = GetCurrentTime();
 
@@ -2288,13 +2434,14 @@ function ProcessBufferedInputs(): void {
 
   this.InputBuffer.Clear();
 }
-```
+----
 
-### 11.4 Remapping Support
+==== 11.4 Remapping Support
 
 Input mappings SHOULD be externalizable and modifiable at runtime:
 
-```typescript
+[source,typescript]
+----
 interface IInputMapper {
   /** Get InputID for an action */
   GetInputIDForAction(action: InputAction): InputID;
@@ -2311,29 +2458,30 @@ interface IInputMapper {
   /** Load saved mappings */
   LoadMappings(): void;
 }
-```
+----
 
----
+'''
 
-# Part IV: Feedback and Networking
+== Part IV: Feedback and Networking
 
-## 12. Gameplay Cues
+=== 12. Gameplay Cues
 
-### 12.1 Design Philosophy
+==== 12.1 Design Philosophy
 
 Gameplay Cues enforce strict separation between Mechanics and Aesthetics. This separation provides:
 
-- **Server Optimization**: Headless servers load no visual/audio resources
-- **Client Customization**: Visual settings don't affect gameplay
-- **Network Efficiency**: Cues are not replicated; only trigger tags are
-- **Platform Adaptation**: Different platforms can have different cue implementations
+- _Server Optimization_: Headless servers load no visual/audio resources
+- _Client Customization_: Visual settings don't affect gameplay
+- _Network Efficiency_: Cues are not replicated; only trigger tags are
+- _Platform Adaptation_: Different platforms can have different cue implementations
 
-### 12.2 Cue Trigger Mechanism
+==== 12.2 Cue Trigger Mechanism
 
 Cues are triggered by Tags following the `GameplayCue.*` convention:
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_FireDamage"
 DurationPolicy: Instant
 Modifiers:
@@ -2344,31 +2492,33 @@ Modifiers:
       Value: -25.0
 GameplayCues:
   - "GameplayCue.Impact.Fire"
-```
+----
 
 When the Effect is applied:
 1. Server applies the Effect and modifies attributes
 2. `GameplayCue.Impact.Fire` tag is communicated to clients
 3. Clients' Cue Managers instantiate the fire impact VFX/SFX
 
-### 12.3 Cue Types
+==== 12.3 Cue Types
 
-**Burst Cues** (Fire-and-Forget)
+_Burst Cues_ (Fire-and-Forget)
 : Triggered once, play to completion, clean themselves up.
 
-```typescript
+[source,typescript]
+----
 class GC_Impact_Fire extends GameplayCueBurst {
   OnExecute(context: CueContext): void {
     SpawnParticleSystem("PS_FireImpact", context.HitLocation);
     PlaySound("SFX_FireImpact", context.HitLocation);
   }
 }
-```
+----
 
-**Looping Cues** (Duration-Bound)
+_Looping Cues_ (Duration-Bound)
 : Persist while the triggering Effect is active.
 
-```typescript
+[source,typescript]
+----
 class GC_Status_Burning extends GameplayCueLooping {
   private ParticleComponent: ParticleSystem;
 
@@ -2382,9 +2532,9 @@ class GC_Status_Burning extends GameplayCueLooping {
     StopLoopingSound("SFX_BurningLoop");
   }
 }
-```
+----
 
-### 12.4 Cue Manager
+==== 12.4 Cue Manager
 
 The Cue Manager is a client-side system responsible for:
 
@@ -2393,7 +2543,8 @@ The Cue Manager is a client-side system responsible for:
 3. Instantiating and managing Cue resources
 4. Pooling frequently-used Cues for performance
 
-```typescript
+[source,typescript]
+----
 class GameplayCueManager {
   private CueRegistry: Map<Tag, GameplayCueClass>;
   private ActiveLoopingCues: Map<ActiveEffectHandle, GameplayCue[]>;
@@ -2424,9 +2575,9 @@ class GameplayCueManager {
     }
   }
 }
-```
+----
 
-### 12.5 Server Optimization
+==== 12.5 Server Optimization
 
 On headless servers:
 
@@ -2437,18 +2588,19 @@ On headless servers:
 
 Implementations SHOULD support a headless mode flag:
 
-```typescript
+[source,typescript]
+----
 if (!IsHeadlessServer()) {
   this.CueManager = new GameplayCueManager();
   this.CueManager.LoadCueAssets();
 }
-```
+----
 
----
+'''
 
-## 13. Network Replication
+=== 13. Network Replication
 
-### 13.1 Replication Architecture
+==== 13.1 Replication Architecture
 
 UGAS defines a client-server replication model where:
 
@@ -2457,7 +2609,7 @@ UGAS defines a client-server replication model where:
 - Clients may predict state changes locally
 - Server reconciles predicted state with authoritative state
 
-```
+----
 ┌──────────────────┐            ┌──────────────────┐
 │      SERVER      │            │      CLIENT      │
 │                  │            │                  │
@@ -2472,32 +2624,56 @@ UGAS defines a client-server replication model where:
 │                  │ Reconcile  │                  │
 │                  │───────────▶│                  │
 └──────────────────┘            └──────────────────┘
-```
+----
 
-### 13.2 Replication Modes
+==== 13.2 Replication Modes
 
-| Mode | Effects | Cues | Tags | Attributes | Use Case |
-|------|---------|------|------|------------|----------|
-| `Minimal` | None | All | All | None | AI entities, distant actors |
-| `Mixed` | Owner only | All | All | Owner only | Player characters |
-| `Full` | All | All | All | All | Single-player, debugging |
+[cols="1,2,1,1,2,2",options="header"]
+|===
+| Mode
+| Effects
+| Cues
+| Tags
+| Attributes
+| Use Case
 
-**Minimal Mode**
-: Only Cue triggers and Tag changes are replicated. Effects and Attributes are server-only. Suitable for AI entities where clients don't need full state.
+| `Minimal`
+| None
+| All
+| All
+| None
+| AI entities, distant actors
+| `Mixed`
+| Owner only
+| All
+| All
+| Owner only
+| Player characters
+| `Full`
+| All
+| All
+| All
+| All
+| Single-player, debugging
+|===
 
-**Mixed Mode**
-: Full replication to the owning client; minimal replication to others. The standard mode for player characters in multiplayer games.
+Minimal Mode::
+  Only Cue triggers and Tag changes are replicated. Effects and Attributes are server-only. Suitable for AI entities where clients don't need full state.
 
-**Full Mode**
-: Complete replication to all clients. Used for single-player games or debugging. Higher bandwidth cost.
+Mixed Mode::
+  Full replication to the owning client; minimal replication to others. The standard mode for player characters in multiplayer games.
 
-### 13.3 Bandwidth Optimization
+Full Mode::
+  Complete replication to all clients. Used for single-player games or debugging. Higher bandwidth cost.
 
-#### Delta Compression
+==== 13.3 Bandwidth Optimization
+
+===== Delta Compression
 
 Only changed values are transmitted:
 
-```typescript
+[source,typescript]
+----
 struct ReplicatedAttributeSet {
   /** Bitmask of changed attributes since last update */
   DirtyMask: uint32;
@@ -2505,13 +2681,14 @@ struct ReplicatedAttributeSet {
   /** Only changed attribute values */
   ChangedValues: float[];
 }
-```
+----
 
-#### Dirty Bit Tracking
+===== Dirty Bit Tracking
 
 Attributes track their dirty state:
 
-```typescript
+[source,typescript]
+----
 function SetBaseValue(attribute: Attribute, newValue: float): void {
   if (attribute.BaseValue !== newValue) {
     attribute.BaseValue = newValue;
@@ -2519,24 +2696,26 @@ function SetBaseValue(attribute: Attribute, newValue: float): void {
     this.DirtyAttributes.add(attribute);
   }
 }
-```
+----
 
-#### Quantization
+===== Quantization
 
 For bandwidth-critical scenarios, attribute values MAY be quantized:
 
-```typescript
+[source,typescript]
+----
 struct QuantizedHealth {
   /** 0-255 representing 0-100% health */
   HealthPercent: uint8;
 }
-```
+----
 
-### 13.4 Client-Side Prediction
+==== 13.4 Client-Side Prediction
 
 To eliminate network latency perception, clients predict ability outcomes locally:
 
-```typescript
+[source,typescript]
+----
 function TryActivateAbility_Predicted(handle: AbilitySpecHandle): void {
   // Generate prediction key
   const predictionKey = GeneratePredictionKey();
@@ -2556,13 +2735,14 @@ function TryActivateAbility_Predicted(handle: AbilitySpecHandle): void {
     Server_TryActivateAbility(handle, predictionKey);
   }
 }
-```
+----
 
-### 13.5 Server Reconciliation
+==== 13.5 Server Reconciliation
 
 When server response differs from prediction:
 
-```typescript
+[source,typescript]
+----
 function OnServerActivationResponse(
   predictionKey: PredictionKey,
   serverSuccess: boolean,
@@ -2582,9 +2762,9 @@ function OnServerActivationResponse(
 
   this.PredictedActivations.delete(predictionKey);
 }
-```
+----
 
-#### Rollback and Replay
+===== Rollback and Replay
 
 For significant discrepancies:
 
@@ -2592,7 +2772,8 @@ For significant discrepancies:
 2. Re-apply all inputs that occurred since that state
 3. Blend visually to avoid jarring corrections
 
-```typescript
+[source,typescript]
+----
 function RollbackAndReplay(
   authoritativeState: GameplayState,
   inputHistory: Input[]
@@ -2612,44 +2793,60 @@ function RollbackAndReplay(
     StartVisualBlend(currentVisual, newSimulatedState);
   }
 }
-```
+----
 
-### 13.6 Replication Frequency Recommendations
+==== 13.6 Replication Frequency Recommendations
 
-| Actor Type | Update Rate | Notes |
-|------------|-------------|-------|
-| Player Character (LAN / low-latency) | 60-100 Hz | High frequency for responsive feel |
-| Player Character (mobile / high-latency) | 20-30 Hz | Reduce to manage bandwidth; compensate with aggressive client-side prediction |
-| Important AI | 30-60 Hz | Moderate frequency |
-| Distant Actors | 10-20 Hz | Lower frequency acceptable |
-| Static Objects | On Change | Event-based only |
+[cols="2,2,1",options="header"]
+|===
+| Actor Type
+| Update Rate
+| Notes
 
-> **High-latency guidance:** On connections with RTT > 150 ms (common on mobile or cross-region play), implementations SHOULD lower the player-character replication rate to 20-30 Hz and increase prediction window depth accordingly. Attribute and Tag state SHOULD be sent at a lower rate than position to prioritise movement responsiveness. Dead-reckoning or interpolation SHOULD be applied on the receiving end.
+| Player Character (LAN / low-latency)
+| 60-100 Hz
+| High frequency for responsive feel
+| Player Character (mobile / high-latency)
+| 20-30 Hz
+| Reduce to manage bandwidth; compensate with aggressive client-side prediction
+| Important AI
+| 30-60 Hz
+| Moderate frequency
+| Distant Actors
+| 10-20 Hz
+| Lower frequency acceptable
+| Static Objects
+| On Change
+| Event-based only
+|===
 
-### 13.7 Effect Application Authorization
+> _High-latency guidance:_ On connections with RTT > 150 ms (common on mobile or cross-region play), implementations SHOULD lower the player-character replication rate to 20-30 Hz and increase prediction window depth accordingly. Attribute and Tag state SHOULD be sent at a lower rate than position to prioritise movement responsiveness. Dead-reckoning or interpolation SHOULD be applied on the receiving end.
+
+==== 13.7 Effect Application Authorization
 
 `ApplyGameplayEffectToTarget` is the primary mutation surface of the GC pipeline and therefore a critical security boundary in networked environments.
 
-#### Core requirement
+===== Core requirement
 
 In any networked environment, a call to `ApplyGameplayEffectToTarget` that originates on a client MUST be validated by the server before the effect is executed on authoritative state. Clients MUST NOT be permitted to mutate server-authoritative GC state directly.
 
-#### Validation pipeline
+===== Validation pipeline
 
 The server-side validation step MUST check, at minimum:
 
-1. **Instigator authority** — the instigating GC is owned by the requesting client (or is a server-controlled entity).
-2. **Ability ownership** — the effect is being applied as part of an ability that the instigator has been granted (i.e., the ability spec exists in the instigator's granted-ability list).
-3. **Target reachability** — the target GC is a legitimate target for the instigator at the time of application (range, line-of-sight, or game-rule checks as appropriate to the title).
-4. **Effect class whitelist** — the effect class is one the ability is permitted to apply; implementations SHOULD reject arbitrary `EffectClass` values supplied by the client.
+1. _Instigator authority_ — the instigating GC is owned by the requesting client (or is a server-controlled entity).
+2. _Ability ownership_ — the effect is being applied as part of an ability that the instigator has been granted (i.e., the ability spec exists in the instigator's granted-ability list).
+3. _Target reachability_ — the target GC is a legitimate target for the instigator at the time of application (range, line-of-sight, or game-rule checks as appropriate to the title).
+4. _Effect class whitelist_ — the effect class is one the ability is permitted to apply; implementations SHOULD reject arbitrary `EffectClass` values supplied by the client.
 
 If any check fails, the server MUST reject the application and MAY roll back any prediction the client has already applied locally (via the standard reconciliation path in §13.5).
 
-#### Predicted applications
+===== Predicted applications
 
 When a client applies an effect locally as part of a prediction (using a `PredictionKey`), the local application is speculative only. The authoritative application — or its rejection — is determined by the server. Implementations MUST treat predicted effect applications as unconfirmed until the server acknowledges the prediction key.
 
-```typescript
+[source,typescript]
+----
 // Client: speculative application
 const predictionKey = GeneratePredictionKey();
 const specHandle = MakeOutgoingSpec(GE_Damage, level, predictionKey);
@@ -2677,24 +2874,25 @@ function Server_ApplyEffect(
   ApplyGameplayEffectToTarget(targetGC, specHandle);
   ConfirmPrediction(predictionKey);
 }
-```
+----
 
-#### Authoritative-only effects
+===== Authoritative-only effects
 
 Some effects MUST only ever be applied by the server (e.g., spawn effects, death effects, anti-cheat corrections). These effects SHOULD be tagged with `Gameplay.Effect.AuthoritativeOnly` and implementations MUST refuse to apply them on a client even if a prediction key is present.
 
----
+'''
 
-# Part V: Reference Implementation
+== Part V: Reference Implementation
 
-## 14. Implementation Examples
+=== 14. Implementation Examples
 
-### 14.1 Basic Damage Application
+==== 14.1 Basic Damage Application
 
-#### Effect Definition
+===== Effect Definition
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_BasicDamage"
 DurationPolicy: Instant
 Modifiers:
@@ -2705,11 +2903,12 @@ Modifiers:
       DataTag: "Damage.Amount"
 GameplayCues:
   - "GameplayCue.Impact.Generic"
-```
+----
 
-#### Application Flow
+===== Application Flow
 
-```typescript
+[source,typescript]
+----
 function ApplyDamage(target: GameplayController, damage: float): void {
   // 1. Create context
   const context = this.GC.MakeEffectContext();
@@ -2729,11 +2928,12 @@ function ApplyDamage(target: GameplayController, damage: float): void {
     OnDamageApplied(target, damage);
   }
 }
-```
+----
 
-#### Attribute Change Handling
+===== Attribute Change Handling
 
-```typescript
+[source,typescript]
+----
 class HealthObserver implements IAttributeChangeObserver {
   OnAttributeChanged(event: AttributeChangedEvent): void {
     const oldValue = event.OldValue;
@@ -2754,14 +2954,15 @@ class HealthObserver implements IAttributeChangeObserver {
     }
   }
 }
-```
+----
 
-### 14.2 Buff/Debuff with Duration
+==== 14.2 Buff/Debuff with Duration
 
-#### Temporary Modifier
+===== Temporary Modifier
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_StrengthBuff"
 DurationPolicy: HasDuration
 Duration:
@@ -2778,11 +2979,12 @@ GrantedTags:
   - "Status.Buff.Strength"
 GameplayCues:
   - "GameplayCue.Status.StrengthBuff"
-```
+----
 
-#### Visual Cue Integration
+===== Visual Cue Integration
 
-```typescript
+[source,typescript]
+----
 class GC_Status_StrengthBuff extends GameplayCueLooping {
   private AuraEffect: ParticleSystem;
   private BuffIcon: UIWidget;
@@ -2808,11 +3010,12 @@ class GC_Status_StrengthBuff extends GameplayCueLooping {
     PlaySound("SFX_BuffExpire");
   }
 }
-```
+----
 
-### 14.3 Ability with Cast Time
+==== 14.3 Ability with Cast Time
 
-```yaml
+[source,yaml]
+----
 Ability:
   Name: "GA_Fireball"
 
@@ -2829,11 +3032,12 @@ Ability:
 
   Cost: "GE_Fireball_Cost"
   Cooldown: "GE_Fireball_Cooldown"
-```
+----
 
-#### Task-Based Implementation
+===== Task-Based Implementation
 
-```typescript
+[source,typescript]
+----
 class GA_Fireball extends GameplayAbility {
   CastTime: float = 1.5;
   ProjectileClass: ProjectileClass;
@@ -2875,11 +3079,12 @@ class GA_Fireball extends GameplayAbility {
     EndAbility(true);
   }
 }
-```
+----
 
-### 14.4 Complex Calculation (Armor Penetration)
+==== 14.4 Complex Calculation (Armor Penetration)
 
-```typescript
+[source,typescript]
+----
 class ExecCalc_ArmorPenetration extends ExecutionCalculation {
   SourceCaptureDefinitions = [
     { Attribute: "AttackPower", CaptureTime: OnExecution },
@@ -2932,18 +3137,19 @@ class ExecCalc_ArmorPenetration extends ExecutionCalculation {
     }];
   }
 }
-```
+----
 
----
+'''
 
-## 15. Case Studies
+=== 15. Case Studies
 
-### 15.1 Platformer (Mario-style)
+==== 15.1 Platformer (Mario-style)
 
-#### Movement Attributes
+===== Movement Attributes
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/attribute_set.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/attribute_set.json
 Name: "PlatformerMovementSet"
 Attributes:
   - Name: "GravityScale"
@@ -2976,11 +3182,12 @@ Attributes:
   - Name: "HorizontalSpeed"
     DefaultBaseValue: 600.0
     Category: Statistic
-```
+----
 
-#### Jump Ability with Variable Height
+===== Jump Ability with Variable Height
 
-```typescript
+[source,typescript]
+----
 class GA_Jump extends GameplayAbility {
   // Handle to the Infinite Effect that grants State.InAir while airborne.
   // State.Grounded is managed by the physics subsystem via its own Effect,
@@ -3032,12 +3239,13 @@ class GA_Jump extends GameplayAbility {
     EndAbility(false);
   }
 }
-```
+----
 
-#### Power-Up Effects
+===== Power-Up Effects
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_SuperMushroom"
 DurationPolicy: Infinite
 GrantedTags:
@@ -3055,14 +3263,15 @@ Modifiers:
       Value: 1.0  # Gain 1 hit point
 GameplayCues:
   - "GameplayCue.PowerUp.Super"
-```
+----
 
-### 15.2 Racing (Forza-style)
+==== 15.2 Racing (Forza-style)
 
-#### Vehicle Attribute Sets
+===== Vehicle Attribute Sets
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/attribute_set.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/attribute_set.json
 Name: "VehiclePerformanceSet"
 Attributes:
   - Name: "EngineTorque"
@@ -3090,12 +3299,13 @@ Attributes:
     Clamping:
       Min: 20.0
       Max: 150.0
-```
+----
 
-#### Biome-Based Area Effects
+===== Biome-Based Area Effects
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_Biome_Mud"
 DurationPolicy: Infinite
 ApplicationRequiredTags:
@@ -3114,7 +3324,7 @@ Modifiers:
 GrantedTags:
   - "Surface.Mud"
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_Biome_Asphalt"
 DurationPolicy: Infinite
 ApplicationRequiredTags:
@@ -3127,11 +3337,12 @@ Modifiers:
       Value: 1.0
 GrantedTags:
   - "Surface.Asphalt"
-```
+----
 
-#### Physics Integration
+===== Physics Integration
 
-```typescript
+[source,typescript]
+----
 class ExecCalc_VehicleTraction extends ExecutionCalculation {
   SourceCaptureDefinitions = [
     { Attribute: "TireGripMultiplier", CaptureTime: OnExecution },
@@ -3166,25 +3377,37 @@ class ExecCalc_VehicleTraction extends ExecutionCalculation {
     }];
   }
 }
-```
+----
 
-### 15.3 ARPG (Diablo-style)
+==== 15.3 ARPG (Diablo-style)
 
-#### Damage Bucket Architecture
+===== Damage Bucket Architecture
 
-The "Damage Bucket" system prevents linear power creep by organizing `Multiply` modifiers into named channels. Modifiers in the same channel add their bonuses; channels multiply against each other. Because the `Channel` mechanism is built into the modifier pipeline (§5.3), the bucket design is expressed **declaratively** in Effect YAML — no custom calculation code required for the stacking logic itself.
+The "Damage Bucket" system prevents linear power creep by organizing `Multiply` modifiers into named channels. Modifiers in the same channel add their bonuses; channels multiply against each other. Because the `Channel` mechanism is built into the modifier pipeline (§5.3), the bucket design is expressed _declaratively_ in Effect YAML — no custom calculation code required for the stacking logic itself.
 
 Three canonical buckets:
 
-| Channel | What goes in it | Stacking |
-|---------|-----------------|---------|
-| `"MainStat"` | Stat-derived scaling (e.g. Strength → +damage) | Additive |
-| `"DamageBonuses"` | Conditional damage bonuses (fire, vs. elites, while healthy …) | Additive |
-| `"LegendaryPowers"` | Item set / legendary power multipliers | Additive within, ×MainStat ×DamageBonuses across |
+[cols="2,3,2",options="header"]
+|===
+| Channel
+| What goes in it
+| Stacking
 
-```yaml
+| `"MainStat"`
+| Stat-derived scaling (e.g. Strength → +damage)
+| Additive
+| `"DamageBonuses"`
+| Conditional damage bonuses (fire, vs. elites, while healthy …)
+| Additive
+| `"LegendaryPowers"`
+| Item set / legendary power multipliers
+| Additive within, ×MainStat ×DamageBonuses across
+|===
+
+[source,yaml,subs="+attributes"]
+----
 # GE_Weapon_FireSword.yaml — item that grants a fire damage bonus
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_Weapon_FireSword"
 DurationPolicy: Infinite
 Modifiers:
@@ -3194,9 +3417,10 @@ Modifiers:
       Type: ScalableFloat
       Value: 0.20        # +20% fire damage
     Channel: "DamageBonuses"
-```
+----
 
-```yaml
+[source,yaml]
+----
 # GE_Passive_EliteHunter.yaml — passive skill: +15% damage vs. elites
 Name: "GE_Passive_EliteHunter"
 DurationPolicy: Infinite
@@ -3209,9 +3433,10 @@ Modifiers:
       Type: ScalableFloat
       Value: 0.15        # +15% damage vs. elites
     Channel: "DamageBonuses"
-```
+----
 
-```yaml
+[source,yaml]
+----
 # GE_Set_LegendaryPower.yaml — set bonus: +50% damage (its own channel)
 Name: "GE_Set_LegendaryPower"
 DurationPolicy: Infinite
@@ -3222,9 +3447,10 @@ Modifiers:
       Type: ScalableFloat
       Value: 0.50        # +50% legendary multiplier
     Channel: "LegendaryPowers"
-```
+----
 
-```yaml
+[source,yaml]
+----
 # GE_MainStat_Strength.yaml — applied by the attribute system per point of Strength
 Name: "GE_MainStat_Strength"
 DurationPolicy: Infinite
@@ -3237,19 +3463,20 @@ Modifiers:
       Source: Source
       Coefficient: 0.01  # +1% per Strength point
     Channel: "MainStat"
-```
+----
 
 With all four effects active (Strength 50, fire sword, elite hunter active, legendary set):
-- `MainStat` channel factor: `1 + (0.01 × 50)` = **×1.50**
-- `DamageBonuses` channel factor: `1 + 0.20 + 0.15` = **×1.35**
-- `LegendaryPowers` channel factor: `1 + 0.50` = **×1.50**
-- Final `WeaponDamage` multiplier: `1.50 × 1.35 × 1.50` = **×3.04**
+- `MainStat` channel factor: `1 + (0.01 × 50)` = _×1.50_
+- `DamageBonuses` channel factor: `1 + 0.20 + 0.15` = _×1.35_
+- `LegendaryPowers` channel factor: `1 + 0.50` = _×1.50_
+- Final `WeaponDamage` multiplier: `1.50 × 1.35 × 1.50` = _×3.04_
 
-vs. naive unchanelled stacking: `1.50 × 1.20 × 1.15 × 1.50` = **×3.11** — a modest difference at low item counts that compounds severely at higher counts.
+vs. naive unchanelled stacking: `1.50 × 1.20 × 1.15 × 1.50` = _×3.11_ — a modest difference at low item counts that compounds severely at higher counts.
 
-**Conditional modifiers** (e.g. the Vulnerability bonus) that depend on target state at hit-time still require an `ExecutionCalculation`, but only for the conditional logic — the stacking math is already handled by the pipeline:
+_Conditional modifiers_ (e.g. the Vulnerability bonus) that depend on target state at hit-time still require an `ExecutionCalculation`, but only for the conditional logic — the stacking math is already handled by the pipeline:
 
-```typescript
+[source,typescript]
+----
 class ExecCalc_ARPGDamage extends ExecutionCalculation {
   Execute(source, target, context): ModifierResult[] {
     // All bucket stacking is already resolved in WeaponDamage's Current Value.
@@ -3265,11 +3492,12 @@ class ExecCalc_ARPGDamage extends ExecutionCalculation {
     }];
   }
 }
-```
+----
 
-#### Combat Tag Queries
+===== Combat Tag Queries
 
-```typescript
+[source,typescript]
+----
 class GA_Whirlwind extends GameplayAbility {
   ActivateAbility(context: AbilityContext): void {
     // This ability tags
@@ -3298,11 +3526,12 @@ class GA_Whirlwind extends GameplayAbility {
     }
   }
 }
-```
+----
 
-#### Procedural Item Effects
+===== Procedural Item Effects
 
-```typescript
+[source,typescript]
+----
 class ItemEquipSystem {
   EquipItem(item: Item): void {
     // Create infinite effect for item stats
@@ -3340,14 +3569,15 @@ class ItemEquipSystem {
     return MakeOutgoingSpec(effect, 1, MakeEffectContext());
   }
 }
-```
+----
 
-### 15.4 Puzzle (2048-style)
+==== 15.4 Puzzle (2048-style)
 
-#### Grid Cell Attributes
+===== Grid Cell Attributes
 
-```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/attribute_set.json
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/attribute_set.json
 Name: "PuzzleCellSet"
 Attributes:
   - Name: "CellValue"
@@ -3365,11 +3595,12 @@ Attributes:
   - Name: "MergePriority"
     DefaultBaseValue: 0.0
     Category: Meta
-```
+----
 
-#### Move Ability with Tasks
+===== Move Ability with Tasks
 
-```typescript
+[source,typescript]
+----
 class GA_GridMove extends GameplayAbility {
   Direction: Vector2;
 
@@ -3431,13 +3662,14 @@ class GA_GridMove extends GameplayAbility {
     EndAbility(false);
   }
 }
-```
+----
 
-#### Undo via Effect Audit Trail
+===== Undo via Effect Audit Trail
 
 Rather than snapshotting raw cell values, the undo system hooks into the GC Effect application pipeline via `OnBeforeEffectApplied`. Each effect applied during a turn is recorded alongside the pre-apply attribute values it will overwrite. Undoing a turn replays those pre-apply values back through Instant Effects — the undo state is derived entirely from the Effect layer, not from bespoke value captures.
 
-```typescript
+[source,typescript]
+----
 interface EffectRecord {
   TargetGC: GameplayController;
   Spec: EffectSpec;
@@ -3496,100 +3728,164 @@ class UndoSystem {
     }
   }
 }
-```
+----
 
 `GE_RestoreValues` is an Instant Effect with one `Override` modifier per restored attribute, driven by `SetByCaller` magnitudes. Every undo operation passes through the standard Effect pipeline: it is observable, replicable, and appears in the Effect audit trail exactly like any other state change.
 
----
+'''
 
-# Appendices
 
-## Appendix A: Mathematical Notation
+[appendix]
+=== Mathematical Notation
 
-### Variable Naming Conventions
+==== Variable Naming Conventions
 
-| Symbol | Meaning |
-|--------|---------|
-| $V$ | Value (generic) |
-| $V_{base}$ | Base Value of an Attribute |
-| $V_{current}$ | Current Value of an Attribute |
-| $V_{min}$, $V_{max}$ | Minimum/Maximum bounds |
-| $a$ | Additive modifier magnitude |
-| $p$ | Percentage modifier magnitude |
-| $m$ | Multiplicative factor |
-| $t$ | Time variable |
-| $\Delta_t$ | Time delta |
-| $n$ | Count/index variable |
+[cols="2,2",options="header"]
+|===
+| Symbol
+| Meaning
 
-### Summation and Product Notation
+| stem:[V]
+| Value (generic)
+| stem:[V_{base}]
+| Base Value of an Attribute
+| stem:[V_{current}]
+| Current Value of an Attribute
+| stem:[V_{min}], stem:[V_{max}]
+| Minimum/Maximum bounds
+| stem:[a]
+| Additive modifier magnitude
+| stem:[p]
+| Percentage modifier magnitude
+| stem:[m]
+| Multiplicative factor
+| stem:[t]
+| Time variable
+| stem:[\Delta_t]
+| Time delta
+| stem:[n]
+| Count/index variable
+|===
 
-**Summation** ($\sum$): Sum of values over an index range
+==== Summation and Product Notation
 
-$$\sum_{i=1}^{n} a_i = a_1 + a_2 + \cdots + a_n$$
+_Summation_ (stem:[\sum]): Sum of values over an index range
 
-**Product** ($\prod$): Product of values over an index range
+[stem]
+++++
+\sum_{i=1}^{n} a_i = a_1 + a_2 + \cdots + a_n
+++++
 
-$$\prod_{k=1}^{n} m_k = m_1 \times m_2 \times \cdots \times m_n$$
+_Product_ (stem:[\prod]): Product of values over an index range
 
-### Set Theory Notation for Tags
+[stem]
+++++
+\prod_{k=1}^{n} m_k = m_1 \times m_2 \times \cdots \times m_n
+++++
 
-| Notation | Meaning |
-|----------|---------|
-| T | A single Tag |
-| C | A TagContainer (set of Tags) |
-| T ∈ C | Tag T is a member of Container C |
-| C₁ ⊆ C₂ | Container C₁ is a subset of C₂ |
-| C₁ ∩ C₂ | Intersection of two containers |
-| C₁ ∪ C₂ | Union of two containers |
-| C₁ ∩ C₂ ≠ ∅ | Containers have at least one common element |
+==== Set Theory Notation for Tags
 
----
+[cols="2,2",options="header"]
+|===
+| Notation
+| Meaning
 
-## Appendix B: Complete Schema Reference
+| T
+| A single Tag
+| C
+| A TagContainer (set of Tags)
+| T ∈ C
+| Tag T is a member of Container C
+| C₁ ⊆ C₂
+| Container C₁ is a subset of C₂
+| C₁ ∩ C₂
+| Intersection of two containers
+| C₁ ∪ C₂
+| Union of two containers
+| C₁ ∩ C₂ ≠ ∅
+| Containers have at least one common element
+|===
 
-### Schema URL Versioning Policy
+'''
+
+[appendix]
+=== Complete Schema Reference
+
+==== Schema URL Versioning Policy
 
 All `$schema` URLs in UGAS data files use the pattern:
 
-```
+----
 https://raw.githubusercontent.com/jbltx/ugas/{version}/schemas/{schema-name}.json
-```
+----
 
-Where `{version}` is the git tag of the UGAS release the data file was authored against (e.g. `v0.1`). Each released version tag MUST maintain stable schema URLs — schemas at a given version tag MUST NOT be modified after release.
+Where `{version}` is the git tag of the UGAS release the data file was authored against (e.g. `{ugas-version}`). Each released version tag MUST maintain stable schema URLs — schemas at a given version tag MUST NOT be modified after release.
 
 Data files SHOULD pin to the exact UGAS version they were authored against. Tooling that processes UGAS data files SHOULD validate against the schema URL declared in `$schema`, and SHOULD fail clearly when the URL is unreachable or the schema is invalid, rather than silently skipping validation.
 
-### GameplayController Schema Definition
+==== GameplayController Schema Definition
 
-[schemas/gameplay_controller.yaml](schemas/gameplay_controller.yaml)
 
-### Attribute Schema Definition
+[source,yaml]
+----
+include::schemas/gameplay_controller.yaml[]
+----
 
-[schemas/attribute.yaml](schemas/attribute.yaml)
 
-### AttributeSet Schema Definition
+==== Attribute Schema Definition
 
-[schemas/attribute_set.yaml](schemas/attribute_set.yaml)
 
-### Ability Schema Definition
+[source,yaml]
+----
+include::schemas/attribute.yaml[]
+----
 
-[schemas/gameplay_ability.yaml](schemas/gameplay_ability.yaml)
 
-### Effect Schema Definition
+==== AttributeSet Schema Definition
 
-[schemas/gameplay_effect.yaml](schemas/gameplay_effect.yaml)
 
-### Tag Schema Definition
+[source,yaml]
+----
+include::schemas/attribute_set.yaml[]
+----
 
-[schemas/gameplay_tag.yaml](schemas/gameplay_tag.yaml)
 
----
+==== Ability Schema Definition
 
-## Appendix C: References and Citations
 
-### BibTeX Entries
+[source,yaml]
+----
+include::schemas/gameplay_ability.yaml[]
+----
 
-```bibtex
+
+==== Effect Schema Definition
+
+
+[source,yaml]
+----
+include::schemas/gameplay_effect.yaml[]
+----
+
+
+==== Tag Schema Definition
+
+
+[source,yaml]
+----
+include::schemas/gameplay_tag.yaml[]
+----
+
+
+'''
+
+[appendix]
+=== References and Citations
+
+==== BibTeX Entries
+
+[source,bibtex]
+----
 @online{epicgames_gas,
   author = {{Epic Games}},
   title = {Understanding the Unreal Engine Gameplay Ability System},
@@ -3647,16 +3943,25 @@ Data files SHOULD pin to the exact UGAS version they were authored against. Tool
   url = {https://gafferongames.com/post/state_synchronization/},
   urldate = {2026-02-03}
 }
-```
+----
 
----
+'''
 
-## Document History
+=== Document History
 
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 0.1 | February 2026 | Mickael Bonfill | Initial specification |
+[cols="2,1,2,2",options="header"]
+|===
+| Version
+| Date
+| Author
+| Changes
 
----
+| 1.0
+| February 2026
+| Mickael Bonfill
+| Initial specification
+|===
 
-*End of Specification*
+'''
+
+_End of Specification_
