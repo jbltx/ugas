@@ -2,7 +2,10 @@ name: Preview docs on pull request
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: "preview-docs-${{ github.event.pull_request.number }}"
+  cancel-in-progress: true
 
 jobs:
   preview-docs:
