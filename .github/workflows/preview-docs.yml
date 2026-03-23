@@ -19,7 +19,7 @@ jobs:
       deployments: write
     environment:
       name: pull-request
-      url: ${{ steps.deploy.outputs.deployment-url }}
+      url: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
