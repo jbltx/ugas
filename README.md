@@ -108,7 +108,7 @@ The specification includes detailed case studies for:
 
 ## License
 
-TBD
+MIT
 
 ## Author
 
