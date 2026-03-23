@@ -1,7 +1,7 @@
 # Example: Damage Effect
 # Demonstrates an instant effect that reduces health
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
 Name: SimpleDamageEffect
 DurationPolicy: Instant
 Modifiers:

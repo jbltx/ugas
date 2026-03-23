@@ -1,7 +1,7 @@
 # Example: Tag Registry
 # Demonstrates hierarchical tag definitions for a game
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_tag.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_tag.json
 Tags:
   # State tags
   - Tag: State.Alive

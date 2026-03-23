@@ -1,6 +1,6 @@
 # Universal Gameplay Ability System Specification
 
-**Version:** 1.0
+**Version:** 0.1
 **Date:** February 2026
 **Author:** Mickael Bonfill (jbltx)
 
@@ -774,7 +774,7 @@ GC.GetAttributeSet<T extends AttributeSet>(): T | null;
 #### Combat Attribute Set
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/attribute_set.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/attribute_set.json
 Name: "CombatAttributeSet"
 Attributes:
   - Name: "Health"
@@ -815,7 +815,7 @@ Attributes:
 #### Movement Attribute Set
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/attribute_set.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/attribute_set.json
 Name: "MovementAttributeSet"
 Attributes:
   - Name: "MoveSpeed"
@@ -843,7 +843,7 @@ Attributes:
 #### Vehicle Attribute Set
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/attribute_set.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/attribute_set.json
 Name: "VehicleAttributeSet"
 Attributes:
   - Name: "EngineTorque"
@@ -875,7 +875,7 @@ Attributes:
 Attributes MAY reference Attributes from other registered sets:
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/attribute_set.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/attribute_set.json
 Name: "DerivedStatsSet"
 Dependencies:
   - "CombatAttributeSet"
@@ -1109,7 +1109,7 @@ TagDefinition:
 Tag definitions MAY be collected in a tag registry:
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_tag.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_tag.json
 Tags:
   - Tag: "State.Debuff.Stunned"
     Description: "Actor is unable to perform actions"
@@ -1315,7 +1315,7 @@ Costs and Cooldowns are NOT separate variables but are implemented as specialize
 #### Cost Effect Pattern
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
 Name: "GE_Fireball_Cost"
 DurationPolicy: Instant
 Modifiers:
@@ -1329,7 +1329,7 @@ Modifiers:
 #### Cooldown Effect Pattern
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
 Name: "GE_Fireball_Cooldown"
 DurationPolicy: HasDuration
 Duration:
@@ -1342,7 +1342,7 @@ GrantedTags:
 This pattern enables external modification of costs and cooldowns. For example, a "Mana Efficiency" buff could apply a multiplier to all cost effects:
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
 Name: "GE_ManaEfficiency_Buff"
 DurationPolicy: HasDuration
 Duration:
@@ -1503,7 +1503,7 @@ struct PeriodicSettings {
 Periodic effects behave like repeated Instant effects within a duration container:
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
 Name: "GE_Poison"
 DurationPolicy: HasDuration
 Duration:
@@ -1750,7 +1750,7 @@ Use case: Buff refreshing, grace periods
 Effects MAY grant Tags while active:
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
 Name: "GE_Burning"
 DurationPolicy: HasDuration
 Duration:
@@ -1784,7 +1784,7 @@ When the Effect is removed (duration expires or manual removal):
 Effects MAY grant Abilities while active:
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
 Name: "GE_FireSword_Equipped"
 DurationPolicy: Infinite
 GrantedAbilities:
@@ -2333,7 +2333,7 @@ Gameplay Cues enforce strict separation between Mechanics and Aesthetics. This s
 Cues are triggered by Tags following the `GameplayCue.*` convention:
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
 Name: "GE_FireDamage"
 DurationPolicy: Instant
 Modifiers:
@@ -2694,7 +2694,7 @@ Some effects MUST only ever be applied by the server (e.g., spawn effects, death
 #### Effect Definition
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
 Name: "GE_BasicDamage"
 DurationPolicy: Instant
 Modifiers:
@@ -2761,7 +2761,7 @@ class HealthObserver implements IAttributeChangeObserver {
 #### Temporary Modifier
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
 Name: "GE_StrengthBuff"
 DurationPolicy: HasDuration
 Duration:
@@ -2943,7 +2943,7 @@ class ExecCalc_ArmorPenetration extends ExecutionCalculation {
 #### Movement Attributes
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/attribute_set.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/attribute_set.json
 Name: "PlatformerMovementSet"
 Attributes:
   - Name: "GravityScale"
@@ -3037,7 +3037,7 @@ class GA_Jump extends GameplayAbility {
 #### Power-Up Effects
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
 Name: "GE_SuperMushroom"
 DurationPolicy: Infinite
 GrantedTags:
@@ -3062,7 +3062,7 @@ GameplayCues:
 #### Vehicle Attribute Sets
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/attribute_set.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/attribute_set.json
 Name: "VehiclePerformanceSet"
 Attributes:
   - Name: "EngineTorque"
@@ -3095,7 +3095,7 @@ Attributes:
 #### Biome-Based Area Effects
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
 Name: "GE_Biome_Mud"
 DurationPolicy: Infinite
 ApplicationRequiredTags:
@@ -3114,7 +3114,7 @@ Modifiers:
 GrantedTags:
   - "Surface.Mud"
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
 Name: "GE_Biome_Asphalt"
 DurationPolicy: Infinite
 ApplicationRequiredTags:
@@ -3184,7 +3184,7 @@ Three canonical buckets:
 
 ```yaml
 # GE_Weapon_FireSword.yaml — item that grants a fire damage bonus
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_effect.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_effect.json
 Name: "GE_Weapon_FireSword"
 DurationPolicy: Infinite
 Modifiers:
@@ -3347,7 +3347,7 @@ class ItemEquipSystem {
 #### Grid Cell Attributes
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/attribute_set.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/attribute_set.json
 Name: "PuzzleCellSet"
 Attributes:
   - Name: "CellValue"
@@ -3555,7 +3555,7 @@ All `$schema` URLs in UGAS data files use the pattern:
 https://raw.githubusercontent.com/jbltx/ugas/{version}/schemas/{schema-name}.json
 ```
 
-Where `{version}` is the git tag of the UGAS release the data file was authored against (e.g. `v1.0`). Each released version tag MUST maintain stable schema URLs — schemas at a given version tag MUST NOT be modified after release.
+Where `{version}` is the git tag of the UGAS release the data file was authored against (e.g. `v0.1`). Each released version tag MUST maintain stable schema URLs — schemas at a given version tag MUST NOT be modified after release.
 
 Data files SHOULD pin to the exact UGAS version they were authored against. Tooling that processes UGAS data files SHOULD validate against the schema URL declared in `$schema`, and SHOULD fail clearly when the URL is unreachable or the schema is invalid, rather than silently skipping validation.
 
@@ -3655,7 +3655,7 @@ Data files SHOULD pin to the exact UGAS version they were authored against. Tool
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0 | February 2026 | Mickael Bonfill | Initial specification |
+| 0.1 | February 2026 | Mickael Bonfill | Initial specification |
 
 ---
 

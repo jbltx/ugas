@@ -1,7 +1,7 @@
 # Example: Fireball Ability
 # Demonstrates an offensive magic ability with tag-based requirements
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0/schemas/gameplay_ability.json
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v0.1/schemas/gameplay_ability.json
 Name: FireballAbility
 Tags:
   AbilityTags:
