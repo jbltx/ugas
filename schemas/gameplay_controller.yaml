@@ -1,5 +1,5 @@
 # Gameplay Controller Interface Schema Definition
-# Based on UGAS Specification v1.0 - Section 4
+# Based on UGAS Specification %%UGAS_VERSION%% - Section 4
 
 type: object
 required:

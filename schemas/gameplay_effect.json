@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/jbltx/ugas/schemas/gameplay_effect.json",
   "title": "GameplayEffect Definition Schema",
-  "description": "Based on UGAS Specification v1.0 - Appendix B",
+  "description": "Based on UGAS Specification %%UGAS_VERSION%% - Appendix B",
   "type": "object",
   "required": ["Name", "DurationPolicy"],
   "properties": {

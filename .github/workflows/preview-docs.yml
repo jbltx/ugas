@@ -1,0 +1,98 @@
+name: Preview docs on pull request
+
+on:
+  pull_request:
+  push:
+    branches:
+      - develop
+
+concurrency:
+  group: "preview-docs-${{ github.event.pull_request.number }}"
+  cancel-in-progress: true
+
+jobs:
+  preview-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      deployments: write
+    environment:
+      name: pull-request
+      url: ${{ steps.deploy.outputs.deployment-url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compute preview version
+        id: ver
+        run: |
+          SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          echo "version=dev-${SHA:0:7}" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve version placeholders in schemas
+        run: |
+          find schemas -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
+            -exec sed -i "s/%%UGAS_VERSION%%/${{ steps.ver.outputs.version }}/g" {} +
+
+      - name: Build SPEC.adoc with AsciiDoctor
+        run: |
+          sudo gem install asciidoctor
+          mkdir -p dist
+          asciidoctor \
+            -a revnumber="${{ steps.ver.outputs.version }}" \
+            -a ugas-version="${{ steps.ver.outputs.version }}" \
+            -a stem=latexmath \
+            SPEC.adoc \
+            -o dist/index.html
+
+      - name: Deploy to Cloudflare Pages (preview)
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=ugas --branch=pr-${{ github.event.pull_request.number }}
+
+      - name: Post preview URL as PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = '${{ steps.deploy.outputs.deployment-url }}';
+            if (!url) {
+              core.warning('No deployment URL found; skipping PR comment.');
+              return;
+            }
+            const sha  = '${{ github.event.pull_request.head.sha }}'.slice(0, 7);
+            const body = `## 📄 Spec preview\n\n` +
+              `Deployed from commit \`${sha}\`\n\n` +
+              `**→ ${url}**`;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            // Match by the GitHub Actions bot user ID (41898282) — stable across renames
+            const existing = comments.find(c =>
+              c.user.type === 'Bot' &&
+              c.user.id === 41898282 &&
+              c.body.startsWith('## 📄 Spec preview')
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo:  context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo:  context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
