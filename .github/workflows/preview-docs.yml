@@ -7,7 +7,7 @@ on:
       - develop
 
 concurrency:
-  group: "preview-docs-${{ github.event.pull_request.number }}"
+  group: "preview-docs-${{ github.event.pull_request.number || github.ref_name }}"
   cancel-in-progress: true
 
 jobs:
@@ -49,13 +49,16 @@ jobs:
       - name: Deploy to Cloudflare Pages (preview)
         id: deploy
         uses: cloudflare/wrangler-action@v3
+        env:
+          CF_PAGES_BRANCH: ${{ github.event.pull_request.number && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=ugas --branch=pr-${{ github.event.pull_request.number }}
+          command: pages deploy dist --project-name=ugas --branch=$CF_PAGES_BRANCH
 
       - name: Post preview URL as PR comment
         uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
         with:
           script: |
             const url = '${{ steps.deploy.outputs.deployment-url }}';
