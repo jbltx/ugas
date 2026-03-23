@@ -3734,7 +3734,7 @@ class UndoSystem {
 
 
 [appendix]
-=== Appendix A: Mathematical Notation
+=== Mathematical Notation
 
 ==== Variable Naming Conventions
 
@@ -3807,7 +3807,7 @@ _Product_ (stem:[\prod]): Product of values over an index range
 '''
 
 [appendix]
-=== Appendix B: Complete Schema Reference
+=== Complete Schema Reference
 
 ==== Schema URL Versioning Policy
 
@@ -3878,7 +3878,7 @@ include::schemas/gameplay_tag.yaml[]
 '''
 
 [appendix]
-=== Appendix C: References and Citations
+=== References and Citations
 
 ==== BibTeX Entries
 
