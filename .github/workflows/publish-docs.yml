@@ -29,13 +29,13 @@ jobs:
           VERSION="${TAG#v}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
-      - name: Convert SPEC.md to HTML
+      - name: Build SPEC.adoc with AsciiDoctor
         run: |
-          sudo apt-get install -y pandoc
-          pandoc source/SPEC.md \
-            --standalone \
-            --katex \
-            --metadata title="UGAS Specification v${{ steps.version.outputs.version }}" \
+          sudo gem install asciidoctor
+          asciidoctor \
+            -a revnumber="${{ steps.version.outputs.version }}" \
+            -a stem=latexmath \
+            source/SPEC.adoc \
             -o source/index.html
 
       - name: Copy files to docs branch
@@ -43,7 +43,7 @@ jobs:
           DEST="docs/v${{ steps.version.outputs.version }}"
           mkdir -p "${DEST}/schemas"
           cp -r source/schemas/* "${DEST}/schemas/"
-          cp source/SPEC.md "${DEST}/SPEC.md"
+          cp source/SPEC.adoc "${DEST}/SPEC.adoc"
           cp source/index.html "${DEST}/index.html"
 
       - name: Create PR to docs branch
@@ -73,7 +73,7 @@ jobs:
               --title "docs: publish v${VERSION}" \
               --body "Automated PR to publish docs for release v${VERSION}.
 
-          - \`SPEC.md\` → \`v${VERSION}/SPEC.md\`
-          - \`SPEC.md\` → \`v${VERSION}/index.html\` (HTML with KaTeX)
+          - \`SPEC.adoc\` → \`v${VERSION}/SPEC.adoc\`
+          - \`SPEC.adoc\` → \`v${VERSION}/index.html\` (HTML with AsciiDoctor)
           - \`schemas/**/*\` → \`v${VERSION}/schemas/\`"
           fi
