@@ -7,7 +7,7 @@ on:
       - develop
 
 concurrency:
-  group: "preview-docs-${{ github.event.pull_request.number }}"
+  group: "preview-docs-${{ github.event.pull_request.number || github.ref_name }}"
   cancel-in-progress: true
 
 jobs:
@@ -19,16 +19,22 @@ jobs:
       deployments: write
     environment:
       name: pull-request
-      url: ${{ steps.deploy.outputs.deployment-url }}
+      url: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Compute preview version
+      - name: Compute preview metadata
         id: ver
         run: |
           SHA="${{ github.event.pull_request.head.sha || github.sha }}"
           echo "version=dev-${SHA:0:7}" >> "$GITHUB_OUTPUT"
+          PR_NUM="${{ github.event.pull_request.number }}"
+          if [ -n "$PR_NUM" ]; then
+            echo "branch=pr-${PR_NUM}" >> "$GITHUB_OUTPUT"
+          else
+            echo "branch=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Resolve version placeholders in schemas
         run: |
@@ -52,10 +58,11 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=ugas --branch=pr-${{ github.event.pull_request.number }}
+          command: pages deploy dist --project-name=ugas --branch=${{ steps.ver.outputs.branch }}
 
       - name: Post preview URL as PR comment
         uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
         with:
           script: |
             const url = '${{ steps.deploy.outputs.deployment-url }}';
