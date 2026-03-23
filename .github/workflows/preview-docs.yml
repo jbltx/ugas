@@ -24,12 +24,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Compute preview version
+        id: ver
+        run: |
+          SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          echo "version=dev-${SHA:0:7}" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve version placeholders in schemas
+        run: |
+          find schemas -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
+            -exec sed -i "s/%%UGAS_VERSION%%/${{ steps.ver.outputs.version }}/g" {} +
+
       - name: Build SPEC.adoc with AsciiDoctor
         run: |
           sudo gem install asciidoctor
           mkdir -p dist
           asciidoctor \
-            -a revnumber="${{ github.event.pull_request.head.sha }}" \
+            -a revnumber="${{ steps.ver.outputs.version }}" \
+            -a ugas-version="${{ steps.ver.outputs.version }}" \
             -a stem=latexmath \
             SPEC.adoc \
             -o dist/index.html

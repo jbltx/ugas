@@ -19,7 +19,7 @@ UGAS defines a unified architecture for implementing gameplay abilities, attribu
 
 | Document           | Description                              |
 |--------------------|------------------------------------------|
-| [SPEC.md](SPEC.md) | Full technical specification (UGAS v1.0) |
+| [SPEC.md](SPEC.md) | Full technical specification             |
 
 ## Schema Definitions
 

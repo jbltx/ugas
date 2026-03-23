@@ -29,11 +29,18 @@ jobs:
           VERSION="${TAG#v}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve version placeholders in schemas
+        run: |
+          VERSION="v${{ steps.version.outputs.version }}"
+          find source/schemas -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
+            -exec sed -i "s/%%UGAS_VERSION%%/${VERSION}/g" {} +
+
       - name: Build SPEC.adoc with AsciiDoctor
         run: |
           sudo gem install asciidoctor
           asciidoctor \
             -a revnumber="${{ steps.version.outputs.version }}" \
+            -a ugas-version="v${{ steps.version.outputs.version }}" \
             -a stem=latexmath \
             source/SPEC.adoc \
             -o source/index.html
