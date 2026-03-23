@@ -24,11 +24,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Compute preview version
+      - name: Compute preview metadata
         id: ver
         run: |
           SHA="${{ github.event.pull_request.head.sha || github.sha }}"
           echo "version=dev-${SHA:0:7}" >> "$GITHUB_OUTPUT"
+          PR_NUM="${{ github.event.pull_request.number }}"
+          if [ -n "$PR_NUM" ]; then
+            echo "branch=pr-${PR_NUM}" >> "$GITHUB_OUTPUT"
+          else
+            echo "branch=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Resolve version placeholders in schemas
         run: |
@@ -49,12 +55,10 @@ jobs:
       - name: Deploy to Cloudflare Pages (preview)
         id: deploy
         uses: cloudflare/wrangler-action@v3
-        env:
-          CF_PAGES_BRANCH: ${{ github.event.pull_request.number && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=ugas --branch=$CF_PAGES_BRANCH
+          command: pages deploy dist --project-name=ugas --branch=${{ steps.ver.outputs.branch }}
 
       - name: Post preview URL as PR comment
         uses: actions/github-script@v7
