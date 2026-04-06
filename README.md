@@ -99,7 +99,7 @@ The specification includes detailed case studies for:
 @techreport{bonfill_ugas_2026,
   author = {Mickael Bonfill},
   title = {Universal Gameplay Ability System Specification},
-  version = {0.1},
+  version = {0.1.0},
   year = {2026},
   month = {February},
   url = {https://github.com/jbltx/ugas}
