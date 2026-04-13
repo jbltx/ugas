@@ -1,0 +1,172 @@
+# GameplayEffect Definition Schema
+# Based on UGAS Specification v1.0.0-draft.1 - Appendix B
+
+type: object
+required:
+  - Name
+  - DurationPolicy
+properties:
+  Name:
+    type: string
+    description: Unique effect identifier
+  DurationPolicy:
+    type: string
+    enum:
+      - Instant
+      - HasDuration
+      - Infinite
+  Duration:
+    $ref: "#/$defs/MagnitudeDefinition"
+  Period:
+    type: object
+    properties:
+      Period:
+        type: number
+        minimum: 0
+        description: Time interval for periodic execution
+      ExecuteOnApplication:
+        type: boolean
+        default: false
+        description: Whether to execute immediately on application
+  ExecutionPolicy:
+    type: string
+    enum:
+      - RunInParallel
+      - RunInSequence
+      - RunInMerge
+    default: RunInParallel
+  Priority:
+    type: integer
+    default: 0
+    description: >-
+      Override conflict resolution priority. When multiple active effects apply an Override
+      modifier to the same Attribute, the effect with the highest Priority value wins.
+      On equal Priority, last-applied wins (LIFO). Negative values are valid.
+  Modifiers:
+    type: array
+    items:
+      $ref: "#/$defs/Modifier"
+  Executions:
+    type: array
+    items:
+      type: object
+      properties:
+        CalculatorClass:
+          type: string
+          description: Custom calculation class reference
+  GrantedTags:
+    type: array
+    items:
+      type: string
+    description: Tags granted while this effect is active
+  ApplicationRequiredTags:
+    type: array
+    items:
+      type: string
+    description: Tags required on target for effect to apply
+  GrantedAbilities:
+    type: array
+    items:
+      type: object
+      properties:
+        AbilityClass:
+          type: string
+          description: Ability class to grant
+        Level:
+          type: integer
+          default: 1
+          description: Level of the granted ability
+        InputID:
+          type: string
+          description: Optional input binding
+        RemoveOnEffectRemoval:
+          type: boolean
+          default: true
+          description: Remove ability when effect expires
+  GameplayCues:
+    type: array
+    items:
+      type: string
+    description: Visual/audio cues to trigger
+
+$defs:
+  MagnitudeDefinition:
+    type: object
+    required:
+      - Type
+    properties:
+      Type:
+        type: string
+        enum:
+          - ScalableFloat
+          - AttributeBased
+          - CustomCalculation
+          - SetByCaller
+      Value:
+        type: number
+        description: Static value for ScalableFloat
+      Curve:
+        type: string
+        description: Curve table reference
+      CurveInput:
+        type: string
+        description: Input parameter for curve evaluation
+      BackingAttribute:
+        type: string
+        description: Attribute to use for AttributeBased magnitude
+      Source:
+        type: string
+        enum:
+          - Source
+          - Target
+        description: Which GC to read the backing attribute from
+      Coefficient:
+        type: number
+        default: 1
+        description: Multiplicative coefficient
+      PreMultiplyAdditive:
+        type: number
+        default: 0
+        description: Value added before multiplication
+      PostMultiplyAdditive:
+        type: number
+        default: 0
+        description: Value added after multiplication
+      CalculatorClass:
+        type: string
+        description: Custom calculation class for CustomCalculation type
+      DataTag:
+        type: string
+        description: Tag for SetByCaller data lookup
+
+  Modifier:
+    type: object
+    required:
+      - Attribute
+      - Operation
+      - Magnitude
+    properties:
+      Attribute:
+        type: string
+        description: Target attribute to modify
+      Operation:
+        type: string
+        enum:
+          - Add
+          - AddPost
+          - Multiply
+          - Override
+        description: >-
+          Mathematical operation to apply.
+          Add: pre-multiply flat additive (pipeline step 2, before percentage and multiply steps).
+          AddPost: post-multiply flat additive (pipeline step 7, after all multiply steps; very rare).
+          Multiply: multiplicative factor at step 6 — use a reciprocal magnitude (e.g. 0.5) instead of a Divide operation.
+          Override: replaces the computed result at step 8.
+      Magnitude:
+        $ref: "#/$defs/MagnitudeDefinition"
+      Channel:
+        type: string
+        description: >-
+          Optional named aggregation channel. Modifiers in the same channel sum together;
+          modifiers in different channels multiply against each other. Used for damage-bucket
+          systems (see §15.3). Defaults to the global channel if omitted.

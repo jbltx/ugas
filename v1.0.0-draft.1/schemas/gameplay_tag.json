@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/jbltx/ugas/schemas/gameplay_tag.json",
+  "title": "Tag Registry Schema",
+  "description": "Based on UGAS Specification v1.0.0-draft.1 - Appendix B",
+  "type": "object",
+  "properties": {
+    "Tags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["Tag"],
+        "properties": {
+          "Tag": {
+            "type": "string",
+            "pattern": "^[A-Z][a-zA-Z0-9]*(\\.[A-Z][a-zA-Z0-9]*)*$",
+            "description": "Hierarchical tag in dot notation (e.g., State.Debuff.Stunned)"
+          },
+          "Description": {
+            "type": "string"
+          },
+          "AllowMultiple": {
+            "type": "boolean",
+            "default": false
+          },
+          "DevComment": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

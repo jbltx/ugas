@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/jbltx/ugas/schemas/attribute.json",
+  "title": "Attribute Definition Schema",
+  "description": "Based on UGAS Specification v1.0.0-draft.1 - Appendix B",
+  "type": "object",
+  "required": [
+    "Name",
+    "DefaultBaseValue"
+  ],
+  "properties": {
+    "Name": {
+      "type": "string",
+      "description": "Unique identifier for this attribute"
+    },
+    "DefaultBaseValue": {
+      "type": "number",
+      "description": "Initial base value"
+    },
+    "Category": {
+      "type": "string",
+      "enum": ["Resource", "Statistic", "Meta"],
+      "default": "Statistic"
+    },
+    "Clamping": {
+      "type": "object",
+      "properties": {
+        "Min": {
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "description": "Attribute reference"
+            }
+          ]
+        },
+        "Max": {
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "description": "Attribute reference"
+            }
+          ]
+        }
+      }
+    },
+    "ReplicationMode": {
+      "type": "string",
+      "enum": ["None", "OwnerOnly", "All"],
+      "default": "All"
+    },
+    "Metadata": {
+      "type": "object",
+      "properties": {
+        "DisplayName": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "UICategory": {
+          "type": "string"
+        },
+        "Icon": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

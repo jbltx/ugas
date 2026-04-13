@@ -1,0 +1,40 @@
+# Example: Tag Registry
+# Demonstrates hierarchical tag definitions for a game
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.1/schemas/gameplay_tag.json
+Tags:
+  # State tags
+  - Tag: State.Alive
+    Description: Entity is alive and active
+    AllowMultiple: false
+
+  - Tag: State.Dead
+    Description: Entity is dead
+    AllowMultiple: false
+
+  - Tag: State.Combat
+    Description: Entity is in combat
+    AllowMultiple: false
+
+  # Debuff tags
+  - Tag: State.Debuff.Stunned
+    Description: Entity is stunned and cannot act
+    AllowMultiple: false
+
+  - Tag: State.Debuff.Silenced
+    Description: Entity cannot cast spells
+    AllowMultiple: false
+
+  # Buff tags
+  - Tag: State.Buff.Regenerating
+    Description: Entity is regenerating health over time
+    AllowMultiple: false
+
+  # Ability tags
+  - Tag: Ability.Magic.Fireball
+    Description: Fireball spell ability
+    AllowMultiple: false
+
+  - Tag: Ability.Offensive
+    Description: Ability that deals damage
+    AllowMultiple: true
