@@ -10,6 +10,10 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   publish-docs:
     runs-on: ubuntu-latest
@@ -74,7 +78,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          BRANCH="docs/v${VERSION}"
+          BRANCH="docs-pr/v${VERSION}"
 
           cd docs
           git config user.name "github-actions[bot]"
