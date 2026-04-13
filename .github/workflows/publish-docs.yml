@@ -73,6 +73,63 @@ jobs:
           cp source/SPEC.adoc "${DEST}/SPEC.adoc"
           cp source/index.html "${DEST}/index.html"
 
+      - name: Generate docs landing page
+        run: |
+          cd docs
+
+          # Collect and sort version directories (newest first)
+          mapfile -t versions < <(
+            find . -maxdepth 1 -type d -name "v*" -printf '%f\n' | sort -V -r
+          )
+
+          if [ ${#versions[@]} -eq 0 ]; then
+            echo "No version directories found, skipping README generation"
+            exit 0
+          fi
+
+          # Detect latest stable release (no pre-release suffix)
+          latest=""
+          for v in "${versions[@]}"; do
+            if [[ ! "${v#v}" =~ ^[0-9]+\.[0-9]+\.[0-9]+-.+ ]]; then
+              latest="$v"
+              break
+            fi
+          done
+
+          # Generate README.md
+          {
+            cat <<'HEADER'
+          # Universal Gameplay Ability System (UGAS)
+
+          > An open, engine-agnostic specification for standardizing gameplay logic across game engines and AI world models.
+
+          ## Published Versions
+
+          | Version | Status | Specification | Schemas |
+          |---------|--------|---------------|---------|
+          HEADER
+
+            for v in "${versions[@]}"; do
+              if [[ "$v" == "$latest" ]]; then
+                status="**Latest**"
+              elif [[ "${v#v}" =~ ^[0-9]+\.[0-9]+\.[0-9]+-.+ ]]; then
+                status="Pre-release"
+              else
+                status="Release"
+              fi
+              echo "| [$v]($v/) | $status | [Spec]($v/index.html) | [Schemas]($v/schemas/) |"
+            done
+
+            cat <<'FOOTER'
+
+          ## About
+
+          UGAS defines a unified architecture for gameplay abilities, attributes, effects, and state management that works across traditional game engines (Unreal, Unity, Godot) and AI world models.
+
+          For the full project overview, source code, and contribution guidelines, see the [main repository](https://github.com/jbltx/ugas).
+          FOOTER
+          } > README.md
+
       - name: Create PR to docs branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
