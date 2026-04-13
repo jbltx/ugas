@@ -74,7 +74,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          BRANCH="docs/v${VERSION}"
+          BRANCH="docs-pr/v${VERSION}"
 
           cd docs
           git config user.name "github-actions[bot]"
