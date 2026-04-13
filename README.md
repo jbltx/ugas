@@ -19,7 +19,7 @@ UGAS defines a unified architecture for implementing gameplay abilities, attribu
 
 | Document           | Description                              |
 |--------------------|------------------------------------------|
-| [SPEC.md](SPEC.md) | Full technical specification             |
+| [SPEC.adoc](SPEC.adoc) | Full technical specification             |
 
 ## Schema Definitions
 
@@ -82,7 +82,7 @@ Asynchronous, stateful action units with lifecycle: Grant -> TryActivate -> Acti
 4. Grant Abilities to Actors
 5. Apply Effects through Abilities or directly via GC
 
-See [SPEC.md](SPEC.md) Section 14 for implementation examples.
+See [SPEC.adoc](SPEC.adoc) Section 14 for implementation examples.
 
 ## Case Studies
 
