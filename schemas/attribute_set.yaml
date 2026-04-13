@@ -1,0 +1,71 @@
+# AttributeSet Definition Schema
+# Based on UGAS Specification %%UGAS_VERSION%% - Appendix B
+
+type: object
+required:
+  - Name
+  - Attributes
+properties:
+  Name:
+    type: string
+    description: Unique set identifier
+  Dependencies:
+    type: array
+    items:
+      type: string
+    description: Required attribute sets
+  Attributes:
+    type: array
+    items:
+      $ref: "#/definitions/Attribute"
+  Metadata:
+    type: object
+    properties:
+      DisplayName:
+        type: string
+      Description:
+        type: string
+
+definitions:
+  Attribute:
+    type: object
+    required:
+      - Name
+      - DefaultBaseValue
+    properties:
+      Name:
+        type: string
+        description: Unique identifier for this attribute
+      DefaultBaseValue:
+        type: number
+        description: Initial base value
+      Category:
+        type: string
+        enum: [Resource, Statistic, Meta]
+        default: Statistic
+      Clamping:
+        type: object
+        properties:
+          Min:
+            oneOf:
+              - type: number
+              - type: string
+          Max:
+            oneOf:
+              - type: number
+              - type: string
+      ReplicationMode:
+        type: string
+        enum: [None, OwnerOnly, All]
+        default: All
+      Metadata:
+        type: object
+        properties:
+          DisplayName:
+            type: string
+          Description:
+            type: string
+          UICategory:
+            type: string
+          Icon:
+            type: string

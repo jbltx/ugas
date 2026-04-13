@@ -1,0 +1,23 @@
+{
+  "skill_name": "ugas-schema-author",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "I'm designing a vampire character for an ARPG. It has a lifesteal melee attack: each hit does 30 physical damage and heals the vampire for 20% of damage dealt. The attack has a 0.5s cooldown. When the vampire is below 25% health, it enters a \"Blood Frenzy\" state that increases attack speed by 50% and lifesteal by an additional 10%. Create all the UGAS entities I need — attributes, attribute sets, effects, abilities, tags — as YAML files. Make sure everything cross-references correctly.",
+      "expected_output": "Complete set of YAML files: attribute set with Health/MaxHealth/AttackSpeed/LifestealPercent, damage effect, heal effect (AttributeBased magnitude from damage dealt), cooldown effect, the melee ability with proper tag gating, Blood Frenzy buff effect with Multiply on AttackSpeed and Add on LifestealPercent, tag registry entries, and possibly a threshold-triggered passive. All files should be valid against UGAS schemas and cross-reference each other consistently.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "Review the existing UGAS schema examples in schemas/examples/ and the schema definitions in schemas/. I want a thorough audit: find any inconsistencies between the spec and schemas, issues in the examples, missing fields, and give me concrete suggestions. Also check if the schemas themselves have internal inconsistencies (like using different JSON Schema keywords for the same thing).",
+      "expected_output": "Should identify real issues: Divide operation mentioned in spec but not in schemas (replaced by Multiply with reciprocal), $defs vs definitions inconsistency in JSON schemas, tag pattern not enforced in ability/effect schemas, BlockedByTags vs ActivationBlockedTags ambiguity, stacking fields missing from effect schema, missing Metadata on effects, and suggestions for fixes.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I have a tank character with 200 HP, 100 MaxHP (wait, that's wrong — 200 MaxHP), and 30 Armor. The character gets hit by: (1) a poison DOT that does 8 damage/second for 12 seconds, (2) at t=3s an armor-shredding debuff that reduces armor by 40% for 8 seconds, (3) at t=5s a healing-over-time that restores 15 HP every 2 seconds for 10 seconds. Simulate this and tell me: does the tank survive? When is health at its lowest? What would happen if the heal started 2 seconds earlier?",
+      "expected_output": "Should produce a simulation config YAML, run the simulate.py script, present the results table, and interpret the data — identifying the health minimum, whether the character survives, and then re-run with the heal starting at t=3 for comparison. Should provide actionable balancing insight.",
+      "files": []
+    }
+  ]
+}

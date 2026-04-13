@@ -1,0 +1,102 @@
+name: Publish docs on release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (with or without leading v)"
+        required: true
+        type: string
+
+jobs:
+  publish-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          path: source
+
+      - name: Checkout docs branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs
+          path: docs
+
+      - name: Resolve version
+        id: version
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            RAW_VERSION="${{ github.event.inputs.version }}"
+          else
+            RAW_VERSION="${GITHUB_REF_NAME}"
+          fi
+
+          VERSION="${RAW_VERSION#v}"
+          if [ -z "${VERSION}" ]; then
+            echo "Version is empty. Provide a valid release tag or workflow_dispatch input." >&2
+            exit 1
+          fi
+
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve version placeholders in schemas
+        run: |
+          VERSION="v${{ steps.version.outputs.version }}"
+          find source/schemas -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
+            -exec sed -i "s/%%UGAS_VERSION%%/${VERSION}/g" {} +
+
+      - name: Build SPEC.adoc with AsciiDoctor
+        run: |
+          sudo gem install asciidoctor
+          asciidoctor \
+            -a revnumber="${{ steps.version.outputs.version }}" \
+            -a ugas-version="v${{ steps.version.outputs.version }}" \
+            -a stem=latexmath \
+            source/SPEC.adoc \
+            -o source/index.html
+
+      - name: Copy files to docs branch
+        run: |
+          DEST="docs/v${{ steps.version.outputs.version }}"
+          mkdir -p "${DEST}/schemas"
+          cp -r source/schemas/* "${DEST}/schemas/"
+          cp source/SPEC.adoc "${DEST}/SPEC.adoc"
+          cp source/index.html "${DEST}/index.html"
+
+      - name: Create PR to docs branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          BRANCH="docs/v${VERSION}"
+
+          cd docs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+
+          git checkout -b "${BRANCH}"
+          git commit -m "docs: publish v${VERSION}"
+          git push -u origin "${BRANCH}" --force
+
+          EXISTING_PR=$(gh pr list --base docs --head "${BRANCH}" --json number --jq '.[0].number')
+          if [ -n "${EXISTING_PR}" ]; then
+            echo "PR #${EXISTING_PR} already exists, updated with force push"
+          else
+            gh pr create \
+              --base docs \
+              --head "${BRANCH}" \
+              --title "docs: publish v${VERSION}" \
+              --body "Automated PR to publish docs for release v${VERSION}.
+
+          - \`SPEC.adoc\` → \`v${VERSION}/SPEC.adoc\`
+          - \`SPEC.adoc\` → \`v${VERSION}/index.html\` (HTML with AsciiDoctor)
+          - \`schemas/**/*\` → \`v${VERSION}/schemas/\`"
+          fi

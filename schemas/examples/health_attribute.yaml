@@ -1,0 +1,16 @@
+# Example: Health Attribute
+# Demonstrates a Resource type attribute with clamping
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/attribute.json
+Name: Health
+DefaultBaseValue: 100.0
+Category: Resource
+Clamping:
+  Min: 0
+  Max: MaxHealth  # Reference to MaxHealth attribute
+ReplicationMode: All
+Metadata:
+  DisplayName: Health Points
+  Description: Character's current life force
+  UICategory: Vital Stats
+  Icon: ui/icons/health.png

@@ -1,0 +1,16 @@
+# Example: Damage Effect
+# Demonstrates an instant effect that reduces health
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: SimpleDamageEffect
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Health
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -25.0
+GrantedTags:
+  - State.Damaged
+GameplayCues:
+  - GameplayCue.Character.Damage

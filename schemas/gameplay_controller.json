@@ -1,0 +1,183 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/jbltx/ugas/schemas/gameplay_controller.json",
+  "title": "Gameplay Controller Interface Schema Definition",
+  "description": "Based on UGAS Specification %%UGAS_VERSION%% - Section 4",
+  "type": "object",
+  "required": ["OwnerActor", "AttributeSets"],
+  "properties": {
+    "OwnerActor": {
+      "type": "object",
+      "description": "Logical owner of the GC (responsible for lifecycle, network authority, persistence)",
+      "properties": {
+        "ActorID": {
+          "type": "string",
+          "description": "Unique identifier for the owner actor"
+        },
+        "ActorType": {
+          "type": "string",
+          "description": "Type of the owner actor"
+        }
+      }
+    },
+    "AvatarActor": {
+      "type": "object",
+      "description": "World spatial representation (optional, can be same as Owner)",
+      "properties": {
+        "ActorID": {
+          "type": "string",
+          "description": "Unique identifier for the avatar actor"
+        },
+        "ActorType": {
+          "type": "string",
+          "description": "Type of the avatar actor"
+        }
+      }
+    },
+    "AttributeSets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "description": "AttributeSet identifier"
+          },
+          "Attributes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "Name": {
+                  "type": "string"
+                },
+                "BaseValue": {
+                  "type": "number"
+                },
+                "CurrentValue": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      },
+      "minItems": 1,
+      "description": "Registered attribute containers"
+    },
+    "GrantedAbilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["AbilityClass"],
+        "properties": {
+          "AbilityClass": {
+            "type": "string",
+            "description": "Ability class identifier"
+          },
+          "Level": {
+            "type": "integer",
+            "default": 1,
+            "minimum": 1,
+            "description": "Ability level"
+          },
+          "InputID": {
+            "type": "string",
+            "description": "Optional input binding identifier"
+          },
+          "Handle": {
+            "type": "string",
+            "description": "Unique handle for this granted ability instance"
+          },
+          "bIsActive": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether the ability is currently active"
+          }
+        }
+      },
+      "description": "All abilities granted to this GC"
+    },
+    "ActiveEffects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["Handle", "EffectClass"],
+        "properties": {
+          "Handle": {
+            "type": "string",
+            "description": "Unique identifier for this active effect"
+          },
+          "EffectClass": {
+            "type": "string",
+            "description": "GameplayEffect class reference"
+          },
+          "Duration": {
+            "type": "number",
+            "description": "Remaining duration in seconds (-1 for infinite)"
+          },
+          "Stacks": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1,
+            "description": "Number of effect stacks"
+          },
+          "StartTime": {
+            "type": "number",
+            "description": "Timestamp when effect was applied"
+          },
+          "Level": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          },
+          "InstigatorGC": {
+            "type": "string",
+            "description": "Reference to the GC that caused this effect"
+          }
+        }
+      },
+      "description": "Currently active effects applied to this GC"
+    },
+    "OwnedTags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z][a-zA-Z0-9]*(\\.[A-Z][a-zA-Z0-9]*)*$"
+      },
+      "description": "Current semantic state tags (hierarchical dot notation)"
+    },
+    "ReplicationMode": {
+      "type": "string",
+      "enum": ["Minimal", "Mixed", "Full", "None"],
+      "default": "Mixed",
+      "description": "Replication strategy: Minimal (only cues & tags for AI), Mixed (full to owner, minimal to others for players), Full (complete to all for single-player/spectators), None (no replication for server-only)"
+    },
+    "bIsActive": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this GC is currently active"
+    },
+    "Metadata": {
+      "type": "object",
+      "description": "Optional metadata for display and debugging",
+      "properties": {
+        "DisplayName": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "Tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "DebugCategory": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
