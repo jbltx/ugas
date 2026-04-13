@@ -3,6 +3,16 @@ name: Publish docs on release
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (with or without leading v)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   publish-docs:
@@ -11,7 +21,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - name: Checkout source (release tag)
+      - name: Checkout source
         uses: actions/checkout@v4
         with:
           path: source
@@ -22,20 +32,37 @@ jobs:
           ref: docs
           path: docs
 
-      - name: Extract version from tag
+      - name: Resolve version
         id: version
         run: |
-          TAG="${GITHUB_REF_NAME}"
-          VERSION="${TAG#v}"
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            RAW_VERSION="${{ github.event.inputs.version }}"
+          else
+            RAW_VERSION="${GITHUB_REF_NAME}"
+          fi
+
+          VERSION="${RAW_VERSION#v}"
+          if [ -z "${VERSION}" ]; then
+            echo "Version is empty. Provide a valid release tag or workflow_dispatch input." >&2
+            exit 1
+          fi
+
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
-      - name: Convert SPEC.md to HTML
+      - name: Resolve version placeholders in schemas
         run: |
-          sudo apt-get install -y pandoc
-          pandoc source/SPEC.md \
-            --standalone \
-            --katex \
-            --metadata title="UGAS Specification v${{ steps.version.outputs.version }}" \
+          VERSION="v${{ steps.version.outputs.version }}"
+          find source/schemas -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
+            -exec sed -i "s/%%UGAS_VERSION%%/${VERSION}/g" {} +
+
+      - name: Build SPEC.adoc with AsciiDoctor
+        run: |
+          sudo gem install asciidoctor
+          asciidoctor \
+            -a revnumber="${{ steps.version.outputs.version }}" \
+            -a ugas-version="v${{ steps.version.outputs.version }}" \
+            -a stem=latexmath \
+            source/SPEC.adoc \
             -o source/index.html
 
       - name: Copy files to docs branch
@@ -43,7 +70,7 @@ jobs:
           DEST="docs/v${{ steps.version.outputs.version }}"
           mkdir -p "${DEST}/schemas"
           cp -r source/schemas/* "${DEST}/schemas/"
-          cp source/SPEC.md "${DEST}/SPEC.md"
+          cp source/SPEC.adoc "${DEST}/SPEC.adoc"
           cp source/index.html "${DEST}/index.html"
 
       - name: Create PR to docs branch
@@ -51,7 +78,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          BRANCH="docs/v${VERSION}"
+          BRANCH="docs-pr/v${VERSION}"
 
           cd docs
           git config user.name "github-actions[bot]"
@@ -73,7 +100,7 @@ jobs:
               --title "docs: publish v${VERSION}" \
               --body "Automated PR to publish docs for release v${VERSION}.
 
-          - \`SPEC.md\` → \`v${VERSION}/SPEC.md\`
-          - \`SPEC.md\` → \`v${VERSION}/index.html\` (HTML with KaTeX)
+          - \`SPEC.adoc\` → \`v${VERSION}/SPEC.adoc\`
+          - \`SPEC.adoc\` → \`v${VERSION}/index.html\` (HTML with AsciiDoctor)
           - \`schemas/**/*\` → \`v${VERSION}/schemas/\`"
           fi

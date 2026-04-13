@@ -19,7 +19,7 @@ UGAS defines a unified architecture for implementing gameplay abilities, attribu
 
 | Document           | Description                              |
 |--------------------|------------------------------------------|
-| [SPEC.md](SPEC.md) | Full technical specification (UGAS v1.0) |
+| [SPEC.adoc](SPEC.adoc) | Full technical specification             |
 
 ## Schema Definitions
 
@@ -49,7 +49,7 @@ The central hub managing an Actor's gameplay state. The GC is the authoritative 
 
 Numeric values representing quantitative state (Health, Mana, Strength). Implements the dual-value pattern:
 
-$$V_{current} = \max\left( V_{min},\ \min\left( V_{max},\ \left( V_{base} + \sum a_i \right) \times \left( 1 + \sum p_j \right) \times \prod m_k + \sum b_l \right) \right)$$
+$$V_{current} = \max\left( V_{min},\ \min\left( V_{max},\ \left( V_{base} + \sum a_i \right) \times \prod_{c \in C} \left(1 + \sum_{k \in c} m_k\right) + \sum b_l \right) \right)$$
 
 
 ### Gameplay Tags
@@ -72,7 +72,7 @@ The ONLY authorized mechanism for modifying attributes or tags. Three duration p
 
 ### Gameplay Abilities
 
-Asynchronous, stateful action units with lifecycle: Grant -> TryActivate -> Commit -> Execute -> End/Cancel
+Asynchronous, stateful action units with lifecycle: Grant -> TryActivate -> Activating (Validating) -> Commit -> Active (Executing) -> End/Cancel -> Ending
 
 ## Quick Start
 
@@ -82,7 +82,7 @@ Asynchronous, stateful action units with lifecycle: Grant -> TryActivate -> Comm
 4. Grant Abilities to Actors
 5. Apply Effects through Abilities or directly via GC
 
-See [SPEC.md](SPEC.md) Section 14 for implementation examples.
+See [SPEC.adoc](SPEC.adoc) Section 14 for implementation examples.
 
 ## Case Studies
 
@@ -99,7 +99,7 @@ The specification includes detailed case studies for:
 @techreport{bonfill_ugas_2026,
   author = {Mickael Bonfill},
   title = {Universal Gameplay Ability System Specification},
-  version = {1.0},
+  version = {0.1},
   year = {2026},
   month = {February},
   url = {https://github.com/jbltx/ugas}
@@ -108,7 +108,7 @@ The specification includes detailed case studies for:
 
 ## License
 
-TBD
+MIT
 
 ## Author
 

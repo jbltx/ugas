@@ -185,7 +185,7 @@ YAML files can be validated by loading them and comparing against the schema str
 
 ## Specification Reference
 
-These schemas are based on the **Universal Gameplay Ability System Specification v1.0**, particularly:
+These schemas are based on the **Universal Gameplay Ability System Specification %%UGAS_VERSION%%**, particularly:
 
 - **Section 4**: Gameplay Controller - `gameplay_controller.{json,yaml}`
 - **Section 5**: Attributes - `attribute.{json,yaml}`
