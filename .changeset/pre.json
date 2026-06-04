@@ -1,0 +1,8 @@
+{
+  "mode": "pre",
+  "tag": "draft",
+  "initialVersions": {
+    "ugas": "1.0.0-draft.1"
+  },
+  "changesets": []
+}
