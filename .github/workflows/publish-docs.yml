@@ -22,12 +22,12 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: source
 
       - name: Checkout docs branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: docs
           path: docs
