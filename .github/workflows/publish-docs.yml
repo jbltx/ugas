@@ -71,6 +71,7 @@ jobs:
           mkdir -p "${DEST}/schemas"
           cp -r source/schemas/* "${DEST}/schemas/"
           cp source/SPEC.adoc "${DEST}/SPEC.adoc"
+          cp -r source/spec "${DEST}/spec"
           cp source/index.html "${DEST}/index.html"
 
       - name: Create PR to docs branch
