@@ -65,6 +65,12 @@ properties:
         Params:
           type: object
           description: Task-specific parameters
+        TickInterval:
+          type: number
+          description: Seconds between task ticks; 0 means every frame. Only meaningful for ticking tasks.
+        Priority:
+          type: integer
+          description: Tick scheduling priority when the per-frame tick budget is exhausted; higher ticks first.
   Metadata:
     type: object
     properties:
