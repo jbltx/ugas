@@ -36,14 +36,19 @@ jobs:
             echo "branch=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Resolve version placeholders in schemas
+      - name: Resolve version placeholders
         run: |
           find schemas -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
             -exec sed -i "s/%%UGAS_VERSION%%/${{ steps.ver.outputs.version }}/g" {} +
+          sed -i "s/%%UGAS_VERSION%%/${{ steps.ver.outputs.version }}/g" llms.txt
+
+      - name: Install Asciidoctor and Pandoc
+        run: |
+          sudo gem install asciidoctor
+          sudo apt-get update -qq && sudo apt-get install -y -qq pandoc
 
       - name: Build SPEC.adoc with AsciiDoctor
         run: |
-          sudo gem install asciidoctor
           mkdir -p dist
           asciidoctor \
             -a revnumber="${{ steps.ver.outputs.version }}" \
@@ -51,6 +56,11 @@ jobs:
             -a stem=latexmath \
             SPEC.adoc \
             -o dist/index.html
+
+      - name: Generate LLM files
+        run: |
+          bash scripts/generate-llm-files.sh . dist "${{ steps.ver.outputs.version }}"
+          cp llms.txt dist/llms.txt
 
       - name: Deploy to Cloudflare Pages (preview)
         id: deploy

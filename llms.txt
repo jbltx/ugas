@@ -1,0 +1,32 @@
+# Universal Gameplay Ability System (UGAS)
+
+> UGAS is an open, engine-agnostic specification for standardizing gameplay abilities, attributes, effects, and tags across game engines (Unreal, Unity, Godot) and AI world models. It defines a portable, data-driven architecture for gameplay logic.
+
+The specification covers four pillars: Attributes (numeric state with a modifier pipeline), Gameplay Tags (hierarchical semantic labels), Gameplay Abilities (asynchronous stateful actions), and Gameplay Effects (the sole mutation mechanism for attributes and tags).
+
+## Specification
+
+- [UGAS Specification (Markdown)](%%UGAS_VERSION%%/SPEC.md): The full technical specification in Markdown format
+- [UGAS Specification (HTML)](%%UGAS_VERSION%%/index.html): The full technical specification rendered as HTML
+- [UGAS Specification (AsciiDoc)](%%UGAS_VERSION%%/SPEC.adoc): The full technical specification in AsciiDoc source format
+- [Complete LLM context file](llms-full.txt): The entire specification plus all schema definitions and examples in a single file
+
+## Schema Definitions
+
+- [Gameplay Controller Schema](%%UGAS_VERSION%%/schemas/gameplay_controller.yaml): Central hub managing abilities, effects, attributes, and tags
+- [Attribute Schema](%%UGAS_VERSION%%/schemas/attribute.yaml): Individual attribute definitions with base values, clamping, replication
+- [Attribute Set Schema](%%UGAS_VERSION%%/schemas/attribute_set.yaml): Logical groupings of related attributes
+- [Gameplay Effect Schema](%%UGAS_VERSION%%/schemas/gameplay_effect.yaml): Effects that modify attributes and grant tags/abilities
+- [Gameplay Ability Schema](%%UGAS_VERSION%%/schemas/gameplay_ability.yaml): Ability definitions with tag-based activation rules
+- [Gameplay Tag Schema](%%UGAS_VERSION%%/schemas/gameplay_tag.yaml): Tag registry for hierarchical semantic state labels
+
+## Examples
+
+- [Health Attribute](%%UGAS_VERSION%%/schemas/examples/health_attribute.yaml): Resource attribute with clamping
+- [Damage Effect](%%UGAS_VERSION%%/schemas/examples/damage_effect.yaml): Instant effect that modifies Health
+- [Fireball Ability](%%UGAS_VERSION%%/schemas/examples/fireball_ability.yaml): Offensive ability with tag requirements
+- [Tag Registry](%%UGAS_VERSION%%/schemas/examples/tag_registry.yaml): Example tag hierarchy
+
+## Optional
+
+- [Schema README](%%UGAS_VERSION%%/schemas/README.md): Documentation for schema usage and validation

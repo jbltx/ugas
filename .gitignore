@@ -3,3 +3,8 @@ __pycache__/
 *.pyc
 .DS_Store
 node_modules/
+
+# Generated LLM files
+SPEC.md
+SPEC.xml
+llms-full.txt
