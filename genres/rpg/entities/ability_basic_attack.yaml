@@ -1,0 +1,26 @@
+# Default single-target weapon strike. Free (no cost), short montage, applies weapon damage.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+Name: GA_BasicAttack
+Tags:
+  AbilityTags:
+    - Ability.Type.Melee
+    - DamageType.Physical
+  ActivationBlockedTags:
+    - State.Dead
+    - State.Debuff.Stunned
+Tasks:
+  - Type: PlayMontage
+    Params:
+      MontageToPlay: Anim_BasicAttack
+      PlayRate: 1.0
+  - Type: WaitGameplayEvent
+    Params:
+      EventTag: Event.Montage.HitWindow
+  - Type: ApplyEffectToTarget
+    Params:
+      EffectClass: GE_BasicAttackDamage
+Metadata:
+  DisplayName: Basic Attack
+  Description: Strike a single target for weapon damage
+  Icon: ui/icons/basic_attack.png

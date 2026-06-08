@@ -57,3 +57,4 @@ assistant skill) can load a pack's `entities/` directly as a starting point and 
 | Pack | Status | Spec |
 |------|--------|------|
 | `_template` | Skeleton (reference only) | [`_template/spec.adoc`](_template/spec.adoc) |
+| `rpg` | Role-Playing (RPG) — seeded by the ARPG case study | [`rpg/spec.adoc`](rpg/spec.adoc) |

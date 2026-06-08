@@ -1,0 +1,16 @@
+# Instant damage dealt by a weapon strike: subtracts the source's fully-aggregated
+# WeaponDamage (after all damage-bucket channels resolve) from the target's Health.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_BasicAttackDamage
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Health
+    Operation: Add
+    Magnitude:
+      Type: AttributeBased
+      BackingAttribute: WeaponDamage
+      Source: Source
+      Coefficient: -1.0
+GameplayCues:
+  - GameplayCue.Character.Damage
