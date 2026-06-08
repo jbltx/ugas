@@ -8,6 +8,9 @@ two **additive** artifacts per genre:
    Attributes, Tags, Abilities, and Effects; and
 2. a **template**: ready-to-use, schema-conformant entity files.
 
+See the [genre taxonomy](taxonomy.adoc) for the full map of genres/subgenres and how the
+prioritized packs are positioned within the broader space.
+
 ## Layout contract
 
 Each pack is one self-contained directory under `genres/`, named in kebab-case:

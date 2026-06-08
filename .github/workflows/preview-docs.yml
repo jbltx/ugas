@@ -71,6 +71,18 @@ jobs:
               -o "dist/genres/${genre}/index.html"
           done
 
+      - name: Build genre taxonomy with AsciiDoctor
+        run: |
+          if [ -f genres/taxonomy.adoc ]; then
+            mkdir -p dist/genres
+            asciidoctor \
+              -a revnumber="${{ steps.ver.outputs.version }}" \
+              -a ugas-version="${{ steps.ver.outputs.version }}" \
+              -a stem=latexmath \
+              genres/taxonomy.adoc \
+              -o dist/genres/taxonomy.html
+          fi
+
       - name: Generate LLM files
         run: |
           bash scripts/generate-llm-files.sh . dist "${{ steps.ver.outputs.version }}"
