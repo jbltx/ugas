@@ -74,5 +74,32 @@ for example_file in "${SOURCE_DIR}"/schemas/examples/*.yaml; do
   printf '```\n' >> "${OUTPUT_DIR}/llms-full.txt"
 done
 
+if compgen -G "${SOURCE_DIR}/genres/*/entities/*.yaml" > /dev/null; then
+  cat >> "${OUTPUT_DIR}/llms-full.txt" <<'HEADER'
+
+---
+
+# Genre Pack Templates
+
+The following YAML files are schema-conformant template entities from the genre packs. Copy a pack's entities as a starting point for a new game in that genre.
+
+HEADER
+
+  for genre_dir in "${SOURCE_DIR}"/genres/*/; do
+    genre="$(basename "${genre_dir}")"
+    case "${genre}" in _*) continue ;; esac
+    [ -d "${genre_dir}entities" ] || continue
+    compgen -G "${genre_dir}entities/*.yaml" > /dev/null || continue
+    printf '\n## Genre Pack: %s\n' "${genre}" >> "${OUTPUT_DIR}/llms-full.txt"
+    for entity_file in "${genre_dir}entities"/*.yaml; do
+      filename="$(basename "${entity_file}")"
+      pretty_name="$(echo "${filename%.yaml}" | tr '_' ' ' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)}1')"
+      printf '\n### %s\n\n```yaml\n' "${pretty_name}" >> "${OUTPUT_DIR}/llms-full.txt"
+      cat "${entity_file}" >> "${OUTPUT_DIR}/llms-full.txt"
+      printf '```\n' >> "${OUTPUT_DIR}/llms-full.txt"
+    done
+  done
+fi
+
 echo "Generated: ${OUTPUT_DIR}/SPEC.md"
 echo "Generated: ${OUTPUT_DIR}/llms-full.txt"

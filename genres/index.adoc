@@ -1,0 +1,78 @@
+= UGAS Genre Packs
+Mickael Bonfill <jbltx>
+:revnumber: 1.0.0-draft.1
+:ugas-version: v1.0.0-draft.1
+:doctype: book
+:toc: left
+:toc-title: Table of Contents
+:toclevels: 4
+:stem: latexmath
+:source-highlighter: highlight.js
+:icons: font
+:sectanchors:
+:sectlinks:
+:docinfo: shared
+
+[[overview]]
+== Overview
+
+The core link:../index.html[UGAS specification] is deliberately genre-agnostic. A *genre
+pack* makes it practical to bootstrap a real game — by humans or AI agents — by bundling two
+*additive* artifacts per genre:
+
+. an *additional spec* that extends (never replaces) the core spec with genre-specific
+  Attributes, Tags, Abilities, and Effects; and
+. a *template*: ready-to-use, schema-conformant entity files under the pack's `entities/`
+  directory.
+
+This page is the navigable index of the packs published with this version. For the full map
+of genres and subgenres — and how the prioritized packs are positioned within the broader
+space — see the link:taxonomy.html[genre taxonomy].
+
+[IMPORTANT]
+====
+This index and the genre packs it links are *additive companions* to the core
+specification. A genre `spec.adoc` extends the core spec with genre-specific definitions; it
+MUST NOT redefine, override, or contradict any concept in the
+link:../index.html[core UGAS specification]. The link:taxonomy.html[taxonomy] itself is
+*non-normative*.
+====
+
+[[available-packs]]
+== Available packs
+
+Each pack is a self-contained directory: a rendered genre spec plus a `entities/` folder of
+schema-conformant template files you can copy and extend.
+
+[cols="1,2,1",options="header"]
+|===
+| Pack | Scope | Template entities
+
+| link:rpg/index.html[*RPG*]
+| Role-Playing — seeded by the Action-RPG case study
+| `rpg/entities/`
+
+| link:racing/index.html[*Racing*]
+| Racing (Forza-style) — seeded by the Racing case study
+| `racing/entities/`
+
+| link:action/index.html[*Action / Action-Adventure*]
+| Platformer-led action — seeded by the Platformer case study
+| `action/entities/`
+|===
+
+[[using-a-pack]]
+== Using a pack
+
+. Open a pack's rendered spec (the *Pack* column above) to understand its Attributes, Tags,
+  Abilities, and Effects.
+. Copy that pack's `entities/` directory into your project as a starting point, then keep,
+  rename, or extend the entities — they are schema-conformant and validate against the same
+  `schemas/*.json` as the core spec.
+. Add new states as `State.*` tags granted by Effects (never mutate tags directly), and new
+  mechanics as Effects + Abilities.
+
+Users and AI agents (e.g. the `ugas-schema-author` skill) can load a pack's `entities/`
+directly. For machine consumption, the site root publishes `llms.txt` (a discoverability
+index) and `llms-full.txt` (the complete context: the spec plus every schema, example, and
+genre-pack entity in one file).
