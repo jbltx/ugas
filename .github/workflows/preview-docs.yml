@@ -38,7 +38,7 @@ jobs:
 
       - name: Resolve version placeholders
         run: |
-          find schemas -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
+          find schemas genres -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
             -exec sed -i "s/%%UGAS_VERSION%%/${{ steps.ver.outputs.version }}/g" {} +
           sed -i "s/%%UGAS_VERSION%%/${{ steps.ver.outputs.version }}/g" llms.txt
 
@@ -56,6 +56,20 @@ jobs:
             -a stem=latexmath \
             SPEC.adoc \
             -o dist/index.html
+
+      - name: Build genre packs with AsciiDoctor
+        run: |
+          for spec in genres/*/spec.adoc; do
+            [ -f "$spec" ] || continue
+            genre="$(basename "$(dirname "$spec")")"
+            mkdir -p "dist/genres/${genre}"
+            asciidoctor \
+              -a revnumber="${{ steps.ver.outputs.version }}" \
+              -a ugas-version="${{ steps.ver.outputs.version }}" \
+              -a stem=latexmath \
+              "$spec" \
+              -o "dist/genres/${genre}/index.html"
+          done
 
       - name: Generate LLM files
         run: |
