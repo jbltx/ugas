@@ -4,5 +4,16 @@
   "initialVersions": {
     "ugas": "1.0.0-draft.1"
   },
-  "changesets": []
+  "changesets": [
+    "gameplay-creator-assistant-skill",
+    "genre-pack-action",
+    "genre-pack-racing",
+    "genre-pack-rpg",
+    "genre-pack-shooter",
+    "genre-pack-structure",
+    "genre-taxonomy",
+    "gentle-clocks-hum",
+    "link-templates-docs",
+    "llm-discoverability"
+  ]
 }
