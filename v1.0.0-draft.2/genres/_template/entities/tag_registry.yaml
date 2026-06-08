@@ -1,0 +1,24 @@
+# Template entity: Gameplay Tag registry
+# Replace with the hierarchical tags this genre pack introduces.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.2/schemas/gameplay_tag.json
+Tags:
+  - Tag: State.CanAct
+    Description: Entity is able to act
+    AllowMultiple: false
+
+  - Tag: State.Busy
+    Description: Entity is mid-action
+    AllowMultiple: false
+
+  - Tag: State.Stunned
+    Description: Entity is stunned and cannot act
+    AllowMultiple: false
+
+  - Tag: State.Damaged
+    Description: Entity recently took damage
+    AllowMultiple: false
+
+  - Tag: Ability.Example
+    Description: Example ability classification tag
+    AllowMultiple: true

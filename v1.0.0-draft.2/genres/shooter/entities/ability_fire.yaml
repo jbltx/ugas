@@ -1,0 +1,30 @@
+# Primary fire: trace under the crosshair and apply ballistic damage to the hit target.
+# Costs one round (GE_FireCost: Ammo -1) - the cost gate is what prevents firing on an empty
+# magazine - and goes on a per-shot cooldown (GE_FireCooldown, duration = 1 / FireRate) that paces
+# the automatic fire rate. Cannot fire mid-reload. GE_FireCost and GE_FireCooldown are trivial
+# (a flat resource cost and a cooldown tag) and are referenced by name rather than shipped as files.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.2/schemas/gameplay_ability.json
+Name: GA_Fire
+Tags:
+  AbilityTags:
+    - Ability.Type.Fire
+    - DamageType.Ballistic
+  ActivationRequiredTags:
+    - Weapon.Equipped
+  ActivationBlockedTags:
+    - State.Reloading
+Cost: GE_FireCost
+Cooldown: GE_FireCooldown
+Tasks:
+  - Type: WaitTargetData
+    Params:
+      TargetingMethod: HitscanTrace
+      MaxRange: 200.0
+  - Type: ApplyEffectToTarget
+    Params:
+      EffectClass: GE_BallisticDamage
+Metadata:
+  DisplayName: Fire
+  Description: Fire the equipped weapon at the target under the crosshair
+  Icon: ui/icons/fire.png

@@ -1,0 +1,14 @@
+# Template entity: Gameplay Effect
+# Replace with a genre-specific effect. The only authorized way to mutate attributes/tags.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.2/schemas/gameplay_effect.json
+Name: ExampleDamageEffect
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Health
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -10.0
+GrantedTags:
+  - State.Damaged

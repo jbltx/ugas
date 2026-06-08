@@ -1,0 +1,15 @@
+# Variable-height jump cut: applied when the jump button is released while still rising.
+# Raises gravity (the §15.1 "gravity multiplier for shorter jump") so the character falls
+# sooner. GA_Jump removes it on landing alongside GE_InAir.
+# Channel JumpControl uses the additive-within-channel convention: factor = 1 + 1.5 = 2.5x gravity.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.2/schemas/gameplay_effect.json
+Name: GE_JumpCut
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: GravityScale
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 1.5
+    Channel: JumpControl

@@ -1,0 +1,61 @@
+= UGAS Genre Pack: <Genre Name>
+Mickael Bonfill <jbltx>
+:revnumber: 1.0.0-draft.1
+:ugas-version: v1.0.0-draft.1
+:doctype: book
+:toc: left
+:toc-title: Table of Contents
+:toclevels: 4
+:stem: latexmath
+:source-highlighter: highlight.js
+:icons: font
+:sectanchors:
+:sectlinks:
+:docinfo: shared
+
+// This is the skeleton for a UGAS "genre pack" additional specification.
+// Copy the genres/_template/ directory to genres/<your-genre>/ and fill it in.
+// A genre pack EXTENDS the core spec — it must never contradict or override it.
+
+[[overview]]
+== Overview
+
+// TODO: One paragraph describing the genre, the kind of games it targets, and
+// which UGAS pillars it leans on most. Link the matching core case study, e.g.
+// the Platformer / Racing / ARPG / Puzzle studies in
+// link:../../SPEC.adoc[the core specification] (Section 15, Case Studies).
+
+[[relationship-to-core-spec]]
+== Relationship to the core specification
+
+This document is *additive*. It defines genre-specific Attributes, Tags, Abilities,
+and Effects on top of the core Universal Gameplay Ability System specification.
+
+* It MUST NOT redefine, override, or contradict any concept in the core spec.
+* All entities in `entities/` validate against the same `schemas/*.yaml` as the core.
+* Refer to the core spec for the four pillars and the Gameplay Controller:
+  link:../../SPEC.adoc[UGAS Specification].
+
+[[genre-attributes]]
+== Genre Attributes
+
+// TODO: Describe the attributes this genre introduces (e.g. movement, resources).
+// Provide the canonical definitions in entities/ (see entities/attribute.yaml).
+
+[[genre-tags]]
+== Genre Tags
+
+// TODO: Describe the gameplay tag hierarchy this genre relies on.
+// Provide the registry in entities/ (see entities/tag_registry.yaml).
+
+[[genre-abilities]]
+== Genre Abilities
+
+// TODO: Describe the signature abilities of this genre and their lifecycles.
+// Provide the definitions in entities/ (see entities/ability.yaml).
+
+[[genre-effects]]
+== Genre Effects
+
+// TODO: Describe the gameplay effects this genre uses to mutate state.
+// Provide the definitions in entities/ (see entities/effect.yaml).
