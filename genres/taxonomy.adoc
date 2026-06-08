@@ -77,6 +77,19 @@ Combines action mechanics with exploration, puzzle-solving, and progression.
 * Metroidvania
 * Open-world action-adventure
 
+[[family-combat]]
+=== Combat
+
+Direct, skill-based confrontation between characters — the dueling/fighting core that the
+*Combat* pack targets. Closely related to the fighting and beat-'em-up subgenres under
+<<family-action>>, but treated as its own pack because its mechanics (movesets, blocking,
+combos, hit trades) differ markedly from projectile-centric shooters.
+
+* Fighting (1v1, arena)
+* Beat 'em up / brawler
+* Hack-and-slash
+* Sports-based fighting
+
 [[family-adventure]]
 === Adventure
 
@@ -233,16 +246,3 @@ first packs.
 combined player-reach and revenue ranking. Simulation remains a first-class family (see
 <<family-simulation>>) and a candidate for a later pack.
 ====
-
-[[family-combat]]
-=== Combat
-
-Direct, skill-based confrontation between characters — the dueling/fighting core that the
-*Combat* pack targets. Closely related to the fighting and beat-'em-up subgenres under
-<<family-action>>, but treated as its own pack because its mechanics (movesets, blocking,
-combos, hit trades) differ markedly from projectile-centric shooters.
-
-* Fighting (1v1, arena)
-* Beat 'em up / brawler
-* Hack-and-slash
-* Sports-based fighting
