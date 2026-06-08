@@ -107,6 +107,51 @@ def validate_document(
         errors.append(f"{source}: {path}: {error.message}")
 
 
+def validate_example_file(
+    path: Path,
+    validators: Dict[str, Draft7Validator],
+    required_fields: Dict[str, List[str]],
+    errors: List[str],
+) -> int:
+    try:
+        if path.suffix.lower() == ".json":
+            docs = [load_json(path)]
+        else:
+            with path.open("r", encoding="utf-8") as handle:
+                docs = list(yaml.safe_load_all(handle))
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"{path}: failed to parse ({exc})")
+        return 0
+
+    validated = 0
+    for index, doc in enumerate(docs, start=1):
+        if doc is None:
+            continue
+        schema_key = schema_key_from_schema_id(doc.get("$schema"))
+        if schema_key is None:
+            errors.append(f"{path}: missing or unknown $schema for document {index}")
+            continue
+
+        payload = {key: value for key, value in doc.items() if key != "$schema"}
+        if schema_key not in validators:
+            errors.append(f"{path}: missing schema for {schema_key}")
+            continue
+
+        if has_placeholder(payload):
+            errors.append(f"{path}: placeholder values found in document {index}")
+            continue
+
+        required = required_fields.get(schema_key, [])
+        if required and not all(key in payload for key in required):
+            errors.append(f"{path}: missing required fields in document {index}")
+            continue
+
+        source = f"{path} (doc {index})"
+        validate_document(validators[schema_key], payload, source, errors)
+        validated += 1
+    return validated
+
+
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     schemas_root = root / "schemas"
@@ -133,50 +178,17 @@ def main() -> int:
     validated_count = 0
     skipped_spec = 0
 
-    # Validate examples folder
-    examples_root = schemas_root / "examples"
-    if examples_root.exists():
+    # Validate example/template folders: core examples + genre packs
+    example_roots = [schemas_root / "examples", root / "genres"]
+    for examples_root in example_roots:
+        if not examples_root.exists():
+            continue
         for path in sorted(examples_root.rglob("*")):
             if path.suffix.lower() not in {".yaml", ".yml", ".json"}:
                 continue
-            try:
-                if path.suffix.lower() == ".json":
-                    data = load_json(path)
-                    docs = [data]
-                else:
-                    with path.open("r", encoding="utf-8") as handle:
-                        docs = list(yaml.safe_load_all(handle))
-            except Exception as exc:  # noqa: BLE001
-                errors.append(f"{path}: failed to parse ({exc})")
-                continue
-
-            for index, doc in enumerate(docs, start=1):
-                if doc is None:
-                    continue
-                schema_key = schema_key_from_schema_id(doc.get("$schema"))
-                if schema_key is None:
-                    errors.append(
-                        f"{path}: missing or unknown $schema for document {index}"
-                    )
-                    continue
-
-                payload = {key: value for key, value in doc.items() if key != "$schema"}
-                if schema_key not in validators:
-                    errors.append(f"{path}: missing schema for {schema_key}")
-                    continue
-
-                if has_placeholder(payload):
-                    errors.append(f"{path}: placeholder values found in document {index}")
-                    continue
-
-                required = required_fields.get(schema_key, [])
-                if required and not all(key in payload for key in required):
-                    errors.append(f"{path}: missing required fields in document {index}")
-                    continue
-
-                source = f"{path} (doc {index})"
-                validate_document(validators[schema_key], payload, source, errors)
-                validated_count += 1
+            validated_count += validate_example_file(
+                path, validators, required_fields, errors
+            )
 
     # Validate SPEC.md code blocks
     if spec_path.exists():

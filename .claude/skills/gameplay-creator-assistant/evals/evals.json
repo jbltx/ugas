@@ -1,0 +1,46 @@
+{
+  "skill_name": "gameplay-creator-assistant",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "I want to build a first-person shooter. Help me set up the whole gameplay data — I'm not sure exactly what I need yet.",
+      "expected_output": "Should run GUIDED mode: discover the genre packs under genres/, present a menu, and recognize this maps to the shooter pack. Should read genres/shooter/spec.adoc and load genres/shooter/entities/, then ask a tight round of brief questions (player/enemies, which abilities to keep, resources and starting values, win/lose). Then scaffold the four pillars (Attributes+Set, tag registry, Abilities, Effects) plus a Gameplay Controller for the player into schemas/examples/<game>/, delegating per-entity YAML to ugas-schema-author. Every file carries the %%UGAS_VERSION%% $schema placeholder. Finishes by running python scripts/validate_schema_examples.py, fixing errors, and summarizing the player loop and the ExecCalc_* engine seams (ExecCalc_MagazineReload, ExecCalc_HitResolution) to implement.",
+      "files": [],
+      "assertions": [
+        {"id": "A1", "text": "All produced entities are schema-valid (validate_dir.py reports all_valid with zero failures)."},
+        {"id": "A2", "text": "Defines all four pillars plus a Gameplay Controller: an attribute set, a tag registry, at least one ability, at least one effect, and at least one gameplay_controller."},
+        {"id": "A3", "text": "Anchored on the matching shooter pack: reuses the pack's tag vocabulary and entity structure rather than inventing a from-scratch taxonomy."},
+        {"id": "A4", "text": "All cross-references resolve — ability Cost/Cooldown point at real effects, modifier attributes exist in the attribute set, and every referenced tag is declared in the registry or owned by the core registry."},
+        {"id": "A5", "text": "Preserves the FPS signature mechanic: ballistic hit-resolution, aim-down-sights, and magazine reload."},
+        {"id": "A6", "text": "Names ExecCalc_* engine seams for non-declarative math instead of faking it in data (e.g. ExecCalc_HitResolution / ExecCalc_MagazineReload)."},
+        {"id": "A7", "text": "Stays additive to the core spec — does NOT redeclare the core lifecycle tags (State.Alive / State.Combat / State.Dead) that the core registry already owns."}
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "build a kart racer: 4 players, drift-to-boost, item pickups, first to 3 laps wins. Give me the whole thing in one go, no questions.",
+      "expected_output": "Should run ONE-SHOT mode: fuzzy-match 'kart racer' to the racing pack (the nearest available pack), load genres/racing/entities/ as the base, and scaffold a complete schema-valid game definition without interactive Q&A — four pillars plus a Gameplay Controller — inferring sensible defaults for anything the brief omits. Should extend additively (drift-to-boost and item pickups as new Effects + Abilities + State.* tags granted by Effects, reusing the racing pack's traction calc). Writes to schemas/examples/<game>/ with %%UGAS_VERSION%% $schema on every file, validates with scripts/validate_schema_examples.py, and returns a short note of the assumptions made and the ExecCalc_* seams to implement. The lap-count win condition should map to real state/attributes.",
+      "files": [],
+      "assertions": [
+        {"id": "A1", "text": "All produced entities are schema-valid (validate_dir.py reports all_valid with zero failures)."},
+        {"id": "A2", "text": "Defines all four pillars plus a Gameplay Controller: an attribute set, a tag registry, at least one ability, at least one effect, and at least one gameplay_controller."},
+        {"id": "A3", "text": "Anchored on the matching racing pack: reuses the pack's Vehicle.* / Surface.* vocabulary and entity structure rather than inventing a from-scratch taxonomy."},
+        {"id": "A4", "text": "All cross-references resolve — ability Cost/Cooldown point at real effects, modifier attributes exist in the attribute set, and every referenced tag is declared in the registry or owned by the core registry."},
+        {"id": "A5", "text": "Preserves the kart signature mechanic: drift-to-boost (charge then release) built on the racing pack's traction model, reusing ExecCalc_VehicleTraction rather than reinventing the grip pipeline."},
+        {"id": "A6", "text": "Names ExecCalc_* engine seams for non-declarative math instead of faking it in data (e.g. ExecCalc_VehicleTraction, lap/standings resolution)."},
+        {"id": "A7", "text": "Stays additive to the core spec — does NOT redeclare the core lifecycle tags (State.Alive / State.Combat / State.Dead) that the core registry already owns."}
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Just write me a single poison damage-over-time effect that does 8 damage per second for 10 seconds.",
+      "expected_output": "Should recognize this is a SINGLE-ENTITY request, not whole-game scaffolding, and defer to the ugas-schema-author skill rather than running the genre-first whole-game workflow. Should not discover genre packs or scaffold four pillars for a lone effect.",
+      "files": [],
+      "assertions": [
+        {"id": "B1", "text": "Produces exactly one GameplayEffect and no whole-game scaffold (no attribute set, tag registry, abilities, or controller)."},
+        {"id": "B2", "text": "Encodes the poison DOT correctly: DurationPolicy HasDuration, Period 1.0s, Duration 10.0s, and a single Add modifier of -8 to Health."},
+        {"id": "B3", "text": "Routes the request to the ugas-schema-author skill rather than running the genre-first whole-game workflow."}
+      ]
+    }
+  ]
+}

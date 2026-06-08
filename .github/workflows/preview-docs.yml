@@ -22,7 +22,7 @@ jobs:
       url: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Compute preview metadata
         id: ver
@@ -36,14 +36,19 @@ jobs:
             echo "branch=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Resolve version placeholders in schemas
+      - name: Resolve version placeholders
         run: |
-          find schemas -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
+          find schemas genres -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
             -exec sed -i "s/%%UGAS_VERSION%%/${{ steps.ver.outputs.version }}/g" {} +
+          sed -i "s/%%UGAS_VERSION%%/${{ steps.ver.outputs.version }}/g" llms.txt
+
+      - name: Install Asciidoctor and Pandoc
+        run: |
+          sudo gem install asciidoctor
+          sudo apt-get update -qq && sudo apt-get install -y -qq pandoc
 
       - name: Build SPEC.adoc with AsciiDoctor
         run: |
-          sudo gem install asciidoctor
           mkdir -p dist
           asciidoctor \
             -a revnumber="${{ steps.ver.outputs.version }}" \
@@ -52,16 +57,59 @@ jobs:
             SPEC.adoc \
             -o dist/index.html
 
+      - name: Build genre packs with AsciiDoctor
+        run: |
+          for spec in genres/*/spec.adoc; do
+            [ -f "$spec" ] || continue
+            genre="$(basename "$(dirname "$spec")")"
+            mkdir -p "dist/genres/${genre}"
+            asciidoctor \
+              -a revnumber="${{ steps.ver.outputs.version }}" \
+              -a ugas-version="${{ steps.ver.outputs.version }}" \
+              -a stem=latexmath \
+              "$spec" \
+              -o "dist/genres/${genre}/index.html"
+          done
+
+      - name: Build genre taxonomy with AsciiDoctor
+        run: |
+          if [ -f genres/taxonomy.adoc ]; then
+            mkdir -p dist/genres
+            asciidoctor \
+              -a revnumber="${{ steps.ver.outputs.version }}" \
+              -a ugas-version="${{ steps.ver.outputs.version }}" \
+              -a stem=latexmath \
+              genres/taxonomy.adoc \
+              -o dist/genres/taxonomy.html
+          fi
+
+      - name: Build genre packs index with AsciiDoctor
+        run: |
+          if [ -f genres/index.adoc ]; then
+            mkdir -p dist/genres
+            asciidoctor \
+              -a revnumber="${{ steps.ver.outputs.version }}" \
+              -a ugas-version="${{ steps.ver.outputs.version }}" \
+              -a stem=latexmath \
+              genres/index.adoc \
+              -o dist/genres/index.html
+          fi
+
+      - name: Generate LLM files
+        run: |
+          bash scripts/generate-llm-files.sh . dist "${{ steps.ver.outputs.version }}"
+          cp llms.txt dist/llms.txt
+
       - name: Deploy to Cloudflare Pages (preview)
         id: deploy
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist --project-name=ugas --branch=${{ steps.ver.outputs.branch }}
 
       - name: Post preview URL as PR comment
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         if: github.event_name == 'pull_request'
         with:
           script: |

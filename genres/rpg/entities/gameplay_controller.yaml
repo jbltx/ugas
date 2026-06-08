@@ -1,0 +1,55 @@
+# Worked example: a Diablo-style Barbarian hero, mid-build.
+# WeaponDamage shows the damage-bucket result of the two active effects below:
+#   base 10  x MainStat(1 + 0.01*50 = 1.50)  x DamageBonuses(1 + 0.20 = 1.20)  = 18.0
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_controller.json
+OwnerActor:
+  ActorID: Hero_Barbarian_01
+  ActorType: PlayerCharacter
+AttributeSets:
+  - Name: RPGCoreAttributes
+    Attributes:
+      - Name: Strength
+        BaseValue: 50.0
+        CurrentValue: 50.0
+      - Name: Vitality
+        BaseValue: 20.0
+        CurrentValue: 20.0
+      - Name: MaxHealth
+        BaseValue: 200.0
+        CurrentValue: 200.0
+      - Name: Health
+        BaseValue: 200.0
+        CurrentValue: 200.0
+      - Name: WeaponDamage
+        BaseValue: 10.0
+        CurrentValue: 18.0
+      - Name: Level
+        BaseValue: 5.0
+        CurrentValue: 5.0
+GrantedAbilities:
+  - AbilityClass: GA_BasicAttack
+    Level: 1
+    InputID: BasicAttack
+  - AbilityClass: GA_Whirlwind
+    Level: 5
+    InputID: Ability1
+ActiveEffects:
+  - Handle: eff-mainstat-strength
+    EffectClass: GE_MainStat_Strength
+    Duration: -1
+  - Handle: eff-weapon-firesword
+    EffectClass: GE_Weapon_FireSword
+    Duration: -1
+OwnedTags:
+  - State.Alive
+  - State.Combat
+  - Class.Barbarian
+  - Item.Equipped.Weapon
+  - Item.Type.Sword
+ReplicationMode: Mixed
+bIsActive: true
+Metadata:
+  DisplayName: Barbarian (Level 5)
+  Description: Worked-example hero showing damage-bucket aggregation on WeaponDamage
+  DebugCategory: rpg-pack-example

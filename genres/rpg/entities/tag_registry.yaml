@@ -1,0 +1,71 @@
+# RPG genre tag taxonomy. ADDITIVE: this registry introduces genre-specific tags only.
+# It does not redefine core State.* / Ability.* tags — those are referenced, not declared here.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_tag.json
+Tags:
+  # --- Damage types (used by abilities, immunities, and conditional effects) ---
+  - Tag: DamageType.Physical
+    Description: Physical (weapon) damage
+    AllowMultiple: false
+  - Tag: DamageType.Fire
+    Description: Fire elemental damage
+    AllowMultiple: false
+  - Tag: DamageType.Cold
+    Description: Cold elemental damage
+    AllowMultiple: false
+  - Tag: DamageType.Lightning
+    Description: Lightning elemental damage
+    AllowMultiple: false
+  - Tag: DamageType.Poison
+    Description: Poison damage, typically applied over time
+    AllowMultiple: false
+
+  # --- Ability classification ---
+  - Tag: Ability.Type.Melee
+    Description: Close-range physical ability
+    AllowMultiple: false
+  - Tag: Ability.Type.Ranged
+    Description: Projectile or distance physical ability
+    AllowMultiple: false
+  - Tag: Ability.Type.Spell
+    Description: Magic ability that consumes mana
+    AllowMultiple: false
+
+  # --- Combat status (drive conditional damage buckets and immunities) ---
+  - Tag: Status.Vulnerable
+    Description: Target takes increased damage while present
+    AllowMultiple: false
+  - Tag: Status.FightingElite
+    Description: Source is engaged with an elite enemy
+    AllowMultiple: false
+  - Tag: Immunity.Physical
+    Description: Target ignores incoming physical damage
+    AllowMultiple: false
+  - Tag: Immunity.Fire
+    Description: Target ignores incoming fire damage
+    AllowMultiple: false
+
+  # --- Items (granted by equip effects) ---
+  - Tag: Item.Equipped.Weapon
+    Description: A weapon is equipped in the main hand
+    AllowMultiple: false
+  - Tag: Item.Equipped.Armor
+    Description: A body armor piece is equipped
+    AllowMultiple: false
+  - Tag: Item.Type.Sword
+    Description: Item is a sword
+    AllowMultiple: false
+  - Tag: Item.Rarity.Legendary
+    Description: Item is of legendary rarity
+    AllowMultiple: false
+
+  # --- Character classes ---
+  - Tag: Class.Barbarian
+    Description: Strength-based melee class
+    AllowMultiple: false
+  - Tag: Class.Sorcerer
+    Description: Intelligence-based caster class
+    AllowMultiple: false
+  - Tag: Class.Rogue
+    Description: Dexterity-based skirmisher class
+    AllowMultiple: false

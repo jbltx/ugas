@@ -1,0 +1,13 @@
+{
+  "name": "ugas",
+  "version": "1.0.0-draft.2",
+  "private": true,
+  "description": "Universal Gameplay Ability System Specification",
+  "scripts": {
+    "changeset": "changeset",
+    "version": "changeset version && python3 scripts/sync_version.py"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.0"
+  }
+}

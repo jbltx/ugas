@@ -1,0 +1,57 @@
+name: Version
+
+on:
+  push:
+    branches:
+      - develop
+
+concurrency:
+  group: version-${{ github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      # Mint a GitHub App installation token so the Version PR (and its branch
+      # push) is authored by the App, not GITHUB_TOKEN. Events from GITHUB_TOKEN
+      # don't trigger other workflows, which is why the release PR's CI never ran.
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Create or update Release PR
+        uses: changesets/action@v1
+        with:
+          version: npm run version
+          title: "chore: release"
+          commit: "chore: version packages"
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

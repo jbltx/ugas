@@ -20,6 +20,7 @@ UGAS defines a unified architecture for implementing gameplay abilities, attribu
 | Document           | Description                              |
 |--------------------|------------------------------------------|
 | [SPEC.adoc](SPEC.adoc) | Full technical specification             |
+| [genres/](genres/README.md) | Genre packs: per-genre additional specs + ready-to-use templates |
 
 ## Schema Definitions
 
@@ -99,7 +100,7 @@ The specification includes detailed case studies for:
 @techreport{bonfill_ugas_2026,
   author = {Mickael Bonfill},
   title = {Universal Gameplay Ability System Specification},
-  version = {0.1},
+  version = {1.0.0-draft.2},
   year = {2026},
   month = {February},
   url = {https://github.com/jbltx/ugas}

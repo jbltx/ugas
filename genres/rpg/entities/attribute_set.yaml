@@ -1,0 +1,124 @@
+# RPG core attribute set: primary stats, derived combat stats, vitals, and progression.
+# Extends the core spec's attribute model (no core attribute is redefined here).
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/attribute_set.json
+Name: RPGCoreAttributes
+Attributes:
+  # --- Primary attributes (player-allocated, drive everything else) ---
+  - Name: Strength
+    DefaultBaseValue: 10.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Strength
+      Description: Increases physical weapon damage via the MainStat channel
+      UICategory: Primary
+  - Name: Dexterity
+    DefaultBaseValue: 10.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Dexterity
+      Description: Increases attack speed and critical hit chance
+      UICategory: Primary
+  - Name: Intelligence
+    DefaultBaseValue: 10.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Intelligence
+      Description: Increases spell damage and maximum mana
+      UICategory: Primary
+  - Name: Vitality
+    DefaultBaseValue: 10.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Vitality
+      Description: Increases maximum health
+      UICategory: Primary
+
+  # --- Vitals (resources, clamped to their derived maxima) ---
+  - Name: MaxHealth
+    DefaultBaseValue: 100.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Maximum Health
+      UICategory: Vitals
+  - Name: Health
+    DefaultBaseValue: 100.0
+    Category: Resource
+    Clamping:
+      Min: 0
+      Max: MaxHealth
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Health
+      Description: Current life; reaching 0 kills the character
+      UICategory: Vitals
+  - Name: MaxMana
+    DefaultBaseValue: 50.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Maximum Mana
+      UICategory: Vitals
+  - Name: Mana
+    DefaultBaseValue: 50.0
+    Category: Resource
+    Clamping:
+      Min: 0
+      Max: MaxMana
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Mana
+      Description: Resource spent to activate abilities
+      UICategory: Vitals
+
+  # --- Derived combat statistics ---
+  - Name: WeaponDamage
+    DefaultBaseValue: 10.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Weapon Damage
+      Description: Aggregated outgoing damage; target of the damage-bucket channels (see spec section 4)
+      UICategory: Combat
+  - Name: Armor
+    DefaultBaseValue: 0.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Armor
+      Description: Flat physical damage reduction
+      UICategory: Combat
+  - Name: CritChance
+    DefaultBaseValue: 0.05
+    Category: Statistic
+    Clamping:
+      Min: 0
+      Max: 1
+    Metadata:
+      DisplayName: Critical Hit Chance
+      Description: Probability (0..1) that an attack critically strikes
+      UICategory: Combat
+  - Name: CritDamage
+    DefaultBaseValue: 1.5
+    Category: Statistic
+    Metadata:
+      DisplayName: Critical Hit Damage
+      Description: Multiplier applied on a critical strike
+      UICategory: Combat
+
+  # --- Progression ---
+  - Name: Level
+    DefaultBaseValue: 1.0
+    Category: Meta
+    Metadata:
+      DisplayName: Character Level
+      UICategory: Progression
+  - Name: Experience
+    DefaultBaseValue: 0.0
+    Category: Resource
+    Clamping:
+      Min: 0
+    Metadata:
+      DisplayName: Experience
+      Description: Accumulates toward the next level
+      UICategory: Progression
+Metadata:
+  DisplayName: RPG Core Attributes
+  Description: Primary stats, vitals, derived combat stats, and progression for an action-RPG character

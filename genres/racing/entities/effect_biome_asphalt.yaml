@@ -1,0 +1,17 @@
+# Surface area effect: dry asphalt. Overrides the Surface-channel grip to the clean 1.0 baseline,
+# clearing any prior off-track penalty. Infinite while the vehicle is on the surface.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_Biome_Asphalt
+DurationPolicy: Infinite
+ApplicationRequiredTags:
+  - Vehicle
+Modifiers:
+  - Attribute: TireGripMultiplier
+    Operation: Override
+    Magnitude:
+      Type: ScalableFloat
+      Value: 1.0
+    Channel: Surface
+GrantedTags:
+  - Surface.Asphalt

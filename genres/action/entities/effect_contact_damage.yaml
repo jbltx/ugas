@@ -1,0 +1,15 @@
+# Contact damage: one hit point removed on touch. Used both ways - by hazards/enemies striking
+# the player, and by GA_GroundPound striking enemies. Targets holding Immunity.Contact are
+# skipped by the applying ability (see GA_GroundPound).
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_ContactDamage
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Health
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -1.0
+GameplayCues:
+  - GameplayCue.Character.Hit

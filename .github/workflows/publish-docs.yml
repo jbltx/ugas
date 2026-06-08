@@ -22,12 +22,12 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: source
 
       - name: Checkout docs branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: docs
           path: docs
@@ -49,15 +49,20 @@ jobs:
 
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
-      - name: Resolve version placeholders in schemas
+      - name: Resolve version placeholders
         run: |
           VERSION="v${{ steps.version.outputs.version }}"
-          find source/schemas -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
+          find source/schemas source/genres -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
             -exec sed -i "s/%%UGAS_VERSION%%/${VERSION}/g" {} +
+          sed -i "s/%%UGAS_VERSION%%/${VERSION}/g" source/llms.txt
+
+      - name: Install Asciidoctor and Pandoc
+        run: |
+          sudo gem install asciidoctor
+          sudo apt-get update -qq && sudo apt-get install -y -qq pandoc
 
       - name: Build SPEC.adoc with AsciiDoctor
         run: |
-          sudo gem install asciidoctor
           asciidoctor \
             -a revnumber="${{ steps.version.outputs.version }}" \
             -a ugas-version="v${{ steps.version.outputs.version }}" \
@@ -65,13 +70,91 @@ jobs:
             source/SPEC.adoc \
             -o source/index.html
 
+      - name: Build genre packs with AsciiDoctor
+        run: |
+          for spec in source/genres/*/spec.adoc; do
+            [ -f "$spec" ] || continue
+            genre="$(basename "$(dirname "$spec")")"
+            asciidoctor \
+              -a revnumber="${{ steps.version.outputs.version }}" \
+              -a ugas-version="v${{ steps.version.outputs.version }}" \
+              -a stem=latexmath \
+              "$spec" \
+              -o "source/genres/${genre}/index.html"
+          done
+
+      - name: Build genre taxonomy with AsciiDoctor
+        run: |
+          if [ -f source/genres/taxonomy.adoc ]; then
+            asciidoctor \
+              -a revnumber="${{ steps.version.outputs.version }}" \
+              -a ugas-version="v${{ steps.version.outputs.version }}" \
+              -a stem=latexmath \
+              source/genres/taxonomy.adoc \
+              -o source/genres/taxonomy.html
+          fi
+
+      - name: Build genre packs index with AsciiDoctor
+        run: |
+          if [ -f source/genres/index.adoc ]; then
+            asciidoctor \
+              -a revnumber="${{ steps.version.outputs.version }}" \
+              -a ugas-version="v${{ steps.version.outputs.version }}" \
+              -a stem=latexmath \
+              source/genres/index.adoc \
+              -o source/genres/index.html
+          fi
+
+      - name: Generate LLM files
+        run: |
+          bash source/scripts/generate-llm-files.sh source source "v${{ steps.version.outputs.version }}"
+
       - name: Copy files to docs branch
         run: |
-          DEST="docs/v${{ steps.version.outputs.version }}"
+          VERSION="${{ steps.version.outputs.version }}"
+          DEST="docs/v${VERSION}"
           mkdir -p "${DEST}/schemas"
           cp -r source/schemas/* "${DEST}/schemas/"
           cp source/SPEC.adoc "${DEST}/SPEC.adoc"
+          cp -r source/spec "${DEST}/spec"
+          [ -d source/genres ] && cp -r source/genres "${DEST}/genres"
           cp source/index.html "${DEST}/index.html"
+          cp source/SPEC.md "${DEST}/SPEC.md"
+          cp source/llms.txt docs/llms.txt
+          cp source/llms-full.txt docs/llms-full.txt
+
+      - name: Update README version table
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          DATE="$(date -u +%Y-%m-%d)"
+
+          # Seed the marker if the README doesn't have one yet (one-time migration)
+          if ! grep -q '<!-- NEW_VERSION -->' docs/README.md; then
+          cat > docs/README.md <<'EOF'
+          # Universal Gameplay Ability System (UGAS)
+
+          > An open, engine-agnostic specification for standardizing gameplay logic across game engines and AI world models.
+
+          ## Published Versions
+
+          | Version | Date | Status | Specification | Schemas |
+          |---------|------|--------|---------------|---------|
+          <!-- NEW_VERSION -->
+
+          ## About
+
+          UGAS defines a unified architecture for gameplay abilities, attributes, effects, and state management that works across traditional game engines (Unreal, Unity, Godot) and AI world models.
+
+          For the full project overview, source code, and contribution guidelines, see the [main repository](https://github.com/jbltx/ugas).
+          EOF
+          fi
+
+          if grep -qF "[v${VERSION}]" docs/README.md; then
+            echo "Version v${VERSION} already in README, skipping"
+          else
+            ROW="| [v${VERSION}](v${VERSION}/) | ${DATE} | Pre-release | [Spec](v${VERSION}/index.html) · [MD](v${VERSION}/SPEC.md) · [Templates](v${VERSION}/genres/) | [Schemas](v${VERSION}/schemas/) |"
+            sed -i "s|<!-- NEW_VERSION -->|${ROW}\n<!-- NEW_VERSION -->|" docs/README.md
+          fi
 
       - name: Generate docs landing page
         run: |
@@ -159,5 +242,9 @@ jobs:
 
           - \`SPEC.adoc\` → \`v${VERSION}/SPEC.adoc\`
           - \`SPEC.adoc\` → \`v${VERSION}/index.html\` (HTML with AsciiDoctor)
-          - \`schemas/**/*\` → \`v${VERSION}/schemas/\`"
+          - \`SPEC.adoc\` → \`v${VERSION}/SPEC.md\` (Markdown via Pandoc)
+          - \`schemas/**/*\` → \`v${VERSION}/schemas/\`
+          - \`genres/**\` → \`v${VERSION}/genres/\` (genre pack templates + rendered specs, index, taxonomy)
+          - \`llms.txt\` → root (LLM discoverability)
+          - \`llms-full.txt\` → root (complete LLM context)"
           fi
