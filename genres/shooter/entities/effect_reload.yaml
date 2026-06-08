@@ -1,0 +1,10 @@
+# Magazine transfer, applied instantly at the end of the reload. The amount moved depends on the
+# live Ammo, MagazineSize, and ReserveAmmo, so it cannot be a static modifier - it runs through a
+# custom Execution that tops the magazine up to MagazineSize and decrements ReserveAmmo by the
+# rounds loaded (capped by what's left in reserve).
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_Reload
+DurationPolicy: Instant
+Executions:
+  - CalculatorClass: ExecCalc_MagazineReload
