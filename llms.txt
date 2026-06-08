@@ -27,6 +27,16 @@ The specification covers four pillars: Attributes (numeric state with a modifier
 - [Fireball Ability](%%UGAS_VERSION%%/schemas/examples/fireball_ability.yaml): Offensive ability with tag requirements
 - [Tag Registry](%%UGAS_VERSION%%/schemas/examples/tag_registry.yaml): Example tag hierarchy
 
+## Genre Packs (templates)
+
+Additive, copy-and-extend starter kits per genre: a genre spec that extends (never replaces) the core spec, plus schema-conformant template entities you can load directly.
+
+- [Genre Packs index](%%UGAS_VERSION%%/genres/index.html): Navigable landing page listing every published genre pack
+- [Genre taxonomy](%%UGAS_VERSION%%/genres/taxonomy.html): Non-normative map of game genres/subgenres that scopes the pack work
+- [RPG pack spec](%%UGAS_VERSION%%/genres/rpg/spec.adoc): Role-Playing genre extension; template entities under %%UGAS_VERSION%%/genres/rpg/entities/
+- [Racing pack spec](%%UGAS_VERSION%%/genres/racing/spec.adoc): Racing (Forza-style) genre extension; template entities under %%UGAS_VERSION%%/genres/racing/entities/
+- [Action pack spec](%%UGAS_VERSION%%/genres/action/spec.adoc): Action / Action-Adventure genre extension; template entities under %%UGAS_VERSION%%/genres/action/entities/
+
 ## Optional
 
 - [Schema README](%%UGAS_VERSION%%/schemas/README.md): Documentation for schema usage and validation

@@ -83,6 +83,18 @@ jobs:
               -o dist/genres/taxonomy.html
           fi
 
+      - name: Build genre packs index with AsciiDoctor
+        run: |
+          if [ -f genres/index.adoc ]; then
+            mkdir -p dist/genres
+            asciidoctor \
+              -a revnumber="${{ steps.ver.outputs.version }}" \
+              -a ugas-version="${{ steps.ver.outputs.version }}" \
+              -a stem=latexmath \
+              genres/index.adoc \
+              -o dist/genres/index.html
+          fi
+
       - name: Generate LLM files
         run: |
           bash scripts/generate-llm-files.sh . dist "${{ steps.ver.outputs.version }}"

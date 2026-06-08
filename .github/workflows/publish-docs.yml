@@ -94,6 +94,17 @@ jobs:
               -o source/genres/taxonomy.html
           fi
 
+      - name: Build genre packs index with AsciiDoctor
+        run: |
+          if [ -f source/genres/index.adoc ]; then
+            asciidoctor \
+              -a revnumber="${{ steps.version.outputs.version }}" \
+              -a ugas-version="v${{ steps.version.outputs.version }}" \
+              -a stem=latexmath \
+              source/genres/index.adoc \
+              -o source/genres/index.html
+          fi
+
       - name: Generate LLM files
         run: |
           bash source/scripts/generate-llm-files.sh source source "v${{ steps.version.outputs.version }}"
@@ -141,7 +152,7 @@ jobs:
           if grep -qF "[v${VERSION}]" docs/README.md; then
             echo "Version v${VERSION} already in README, skipping"
           else
-            ROW="| [v${VERSION}](v${VERSION}/) | ${DATE} | Pre-release | [Spec](v${VERSION}/index.html) · [MD](v${VERSION}/SPEC.md) | [Schemas](v${VERSION}/schemas/) |"
+            ROW="| [v${VERSION}](v${VERSION}/) | ${DATE} | Pre-release | [Spec](v${VERSION}/index.html) · [MD](v${VERSION}/SPEC.md) · [Templates](v${VERSION}/genres/) | [Schemas](v${VERSION}/schemas/) |"
             sed -i "s|<!-- NEW_VERSION -->|${ROW}\n<!-- NEW_VERSION -->|" docs/README.md
           fi
 
@@ -176,6 +187,7 @@ jobs:
           - \`SPEC.adoc\` → \`v${VERSION}/index.html\` (HTML with AsciiDoctor)
           - \`SPEC.adoc\` → \`v${VERSION}/SPEC.md\` (Markdown via Pandoc)
           - \`schemas/**/*\` → \`v${VERSION}/schemas/\`
+          - \`genres/**\` → \`v${VERSION}/genres/\` (genre pack templates + rendered specs, index, taxonomy)
           - \`llms.txt\` → root (LLM discoverability)
           - \`llms-full.txt\` → root (complete LLM context)"
           fi
