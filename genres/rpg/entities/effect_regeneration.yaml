@@ -1,0 +1,20 @@
+# Timed health regeneration buff: restores 5 Health every second for 5 seconds.
+# Demonstrates HasDuration + periodic execution.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_Regeneration
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 5.0
+Period:
+  Period: 1.0
+  ExecuteOnApplication: false
+Modifiers:
+  - Attribute: Health
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 5.0
+GrantedTags:
+  - State.Buff.Regenerating

@@ -1,0 +1,35 @@
+# Signature melee AoE: spins, striking every enemy in radius with the basic-attack damage effect.
+# Models the GA_Whirlwind tag-query example from the core spec (section 15.3).
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+Name: GA_Whirlwind
+Tags:
+  AbilityTags:
+    - Ability.Type.Melee
+    - DamageType.Physical
+  ActivationRequiredTags:
+    - State.Combat
+  ActivationBlockedTags:
+    - State.Dead
+    - State.Debuff.Stunned
+  ActivationOwnedTags:
+    - State.Combat
+Cost: GE_WhirlwindCost
+Cooldown: GE_WhirlwindCooldown
+Tasks:
+  - Type: PlayMontage
+    Params:
+      MontageToPlay: Anim_Whirlwind
+      PlayRate: 1.0
+  - Type: WaitGameplayEvent
+    Params:
+      EventTag: Event.Montage.HitWindow
+  - Type: ApplyEffectToActorsInRadius
+    Params:
+      Radius: 500.0
+      EffectClass: GE_BasicAttackDamage
+      IgnoreTargetsWithTag: Immunity.Physical
+Metadata:
+  DisplayName: Whirlwind
+  Description: Spin in place, striking all nearby enemies for weapon damage
+  Icon: ui/icons/whirlwind.png

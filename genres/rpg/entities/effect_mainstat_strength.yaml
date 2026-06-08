@@ -1,0 +1,15 @@
+# MainStat scaling: each point of Strength adds +1% WeaponDamage in the "MainStat" channel.
+# Mirrors the ARPG damage-bucket design in the core spec (section 15.3).
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_MainStat_Strength
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: WeaponDamage
+    Operation: Multiply
+    Magnitude:
+      Type: AttributeBased
+      BackingAttribute: Strength
+      Source: Source
+      Coefficient: 0.01
+    Channel: MainStat

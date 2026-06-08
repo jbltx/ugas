@@ -1,0 +1,17 @@
+# Equippable item effect: a Fire Sword that grants +20% damage in the "DamageBonuses" channel.
+# Infinite duration while equipped; grants item/element tags consumed by other systems.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_Weapon_FireSword
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: WeaponDamage
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 0.20
+    Channel: DamageBonuses
+GrantedTags:
+  - Item.Equipped.Weapon
+  - Item.Type.Sword
+  - DamageType.Fire
