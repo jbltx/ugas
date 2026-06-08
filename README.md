@@ -20,6 +20,7 @@ UGAS defines a unified architecture for implementing gameplay abilities, attribu
 | Document           | Description                              |
 |--------------------|------------------------------------------|
 | [SPEC.adoc](SPEC.adoc) | Full technical specification             |
+| [genres/](genres/README.md) | Genre packs: per-genre additional specs + ready-to-use templates |
 
 ## Schema Definitions
 

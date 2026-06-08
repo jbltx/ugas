@@ -52,7 +52,7 @@ jobs:
       - name: Resolve version placeholders
         run: |
           VERSION="v${{ steps.version.outputs.version }}"
-          find source/schemas -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
+          find source/schemas source/genres -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
             -exec sed -i "s/%%UGAS_VERSION%%/${VERSION}/g" {} +
           sed -i "s/%%UGAS_VERSION%%/${VERSION}/g" source/llms.txt
 
@@ -70,6 +70,19 @@ jobs:
             source/SPEC.adoc \
             -o source/index.html
 
+      - name: Build genre packs with AsciiDoctor
+        run: |
+          for spec in source/genres/*/spec.adoc; do
+            [ -f "$spec" ] || continue
+            genre="$(basename "$(dirname "$spec")")"
+            asciidoctor \
+              -a revnumber="${{ steps.version.outputs.version }}" \
+              -a ugas-version="v${{ steps.version.outputs.version }}" \
+              -a stem=latexmath \
+              "$spec" \
+              -o "source/genres/${genre}/index.html"
+          done
+
       - name: Generate LLM files
         run: |
           bash source/scripts/generate-llm-files.sh source source "v${{ steps.version.outputs.version }}"
@@ -82,6 +95,7 @@ jobs:
           cp -r source/schemas/* "${DEST}/schemas/"
           cp source/SPEC.adoc "${DEST}/SPEC.adoc"
           cp -r source/spec "${DEST}/spec"
+          [ -d source/genres ] && cp -r source/genres "${DEST}/genres"
           cp source/index.html "${DEST}/index.html"
           cp source/SPEC.md "${DEST}/SPEC.md"
           cp source/llms.txt docs/llms.txt
