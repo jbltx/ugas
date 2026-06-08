@@ -1,0 +1,14 @@
+[
+  {"query": "Help me build a first-person shooter", "should_trigger": true, "category": "whole-game"},
+  {"query": "I want to make a kart racer with drift-to-boost and item pickups", "should_trigger": true, "category": "whole-game"},
+  {"query": "Scaffold the gameplay data for an RPG", "should_trigger": true, "category": "whole-game"},
+  {"query": "I'm starting a new survival crafting game, set up the core gameplay systems", "should_trigger": true, "category": "whole-game"},
+  {"query": "Give me a complete game definition for a 2D platformer", "should_trigger": true, "category": "whole-game"},
+  {"query": "Help me prototype a fighting game's mechanics from scratch", "should_trigger": true, "category": "whole-game"},
+  {"query": "Just write me a single poison damage-over-time effect that does 8 damage per second for 10 seconds", "should_trigger": false, "category": "single-entity-defer"},
+  {"query": "Add a +25 max health attribute to my character", "should_trigger": false, "category": "single-entity-defer"},
+  {"query": "Fix the magnitude on this stun effect, it's too strong", "should_trigger": false, "category": "single-entity-defer"},
+  {"query": "Write one gameplay ability for a dash with a 3 second cooldown", "should_trigger": false, "category": "single-entity-defer"},
+  {"query": "Build me a React dashboard showing our sales metrics", "should_trigger": false, "category": "unrelated"},
+  {"query": "Help me write a Dockerfile for my Node.js API", "should_trigger": false, "category": "unrelated"}
+]
