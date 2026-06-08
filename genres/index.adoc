@@ -59,6 +59,10 @@ schema-conformant template files you can copy and extend.
 | link:action/index.html[*Action / Action-Adventure*]
 | Platformer-led action — seeded by the Platformer case study
 | `action/entities/`
+
+| link:shooter/index.html[*Shooter*]
+| First/third-person gunplay — ammo economy and hit resolution
+| `shooter/entities/`
 |===
 
 [[using-a-pack]]

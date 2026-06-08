@@ -1,0 +1,14 @@
+# In-progress reload state. HasDuration so it self-expires after the reload window; grants
+# State.Reloading, which blocks GA_Fire and GA_Aim. GA_Reload applies this, waits the duration,
+# then applies GE_Reload (the instant magazine transfer). Duration mirrors the ReloadTime attribute.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_Reloading
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 2.0
+GrantedTags:
+  - State.Reloading
+GameplayCues:
+  - GameplayCue.Weapon.Reload

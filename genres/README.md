@@ -60,3 +60,4 @@ assistant skill) can load a pack's `entities/` directly as a starting point and 
 | `rpg` | Role-Playing (RPG) — seeded by the ARPG case study | [`rpg/spec.adoc`](rpg/spec.adoc) |
 | `racing` | Racing (Forza-style) — seeded by the Racing case study | [`racing/spec.adoc`](racing/spec.adoc) |
 | `action` | Action / Action-Adventure — seeded by the Platformer case study | [`action/spec.adoc`](action/spec.adoc) |
+| `shooter` | Shooter (FPS/TPS) — gunplay, ammo economy, hit resolution | [`shooter/spec.adoc`](shooter/spec.adoc) |
