@@ -153,7 +153,7 @@ jobs:
             echo "Version v${VERSION} already in README, skipping"
           else
             ROW="| [v${VERSION}](v${VERSION}/) | ${DATE} | Pre-release | [Spec](v${VERSION}/index.html) · [MD](v${VERSION}/SPEC.md) · [Templates](v${VERSION}/genres/) | [Schemas](v${VERSION}/schemas/) |"
-            sed -i "s|<!-- NEW_VERSION -->|${ROW}\n<!-- NEW_VERSION -->|" docs/README.md
+            sed -i "s#<!-- NEW_VERSION -->#${ROW}\n<!-- NEW_VERSION -->#" docs/README.md
           fi
 
       - name: Generate docs landing page
