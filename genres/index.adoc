@@ -68,15 +68,44 @@ schema-conformant template files you can copy and extend.
 [[using-a-pack]]
 == Using a pack
 
-. Open a pack's rendered spec (the *Pack* column above) to understand its Attributes, Tags,
-  Abilities, and Effects.
-. Copy that pack's `entities/` directory into your project as a starting point, then keep,
-  rename, or extend the entities — they are schema-conformant and validate against the same
-  `schemas/*.json` as the core spec.
-. Add new states as `State.*` tags granted by Effects (never mutate tags directly), and new
-  mechanics as Effects + Abilities.
+A pack is a *starting point*, not a fixed library. There are two ways to consume one — by
+hand, or by letting an AI agent scaffold from it. Both produce the same schema-conformant
+result.
 
-Users and AI agents (e.g. the `ugas-schema-author` skill) can load a pack's `entities/`
-directly. For machine consumption, the site root publishes `llms.txt` (a discoverability
-index) and `llms-full.txt` (the complete context: the spec plus every schema, example, and
+[[using-a-pack-manual]]
+=== Manual: copy and extend
+
+. Open a pack's rendered spec (the *Pack* column above) to understand its Attributes, Tags,
+  Abilities, and Effects — and its signature mechanic (e.g. the shooter's accuracy
+  `Channel` aggregation).
+. Copy that pack's `entities/` directory into your project as the base, then keep, rename,
+  or extend the entities — they are schema-conformant and validate against the same
+  `schemas/*.json` as the core spec.
+. Extend *additively*: add new mechanics as Effects + Abilities, and new states as `State.*`
+  tags *granted by Effects* (never mutate tags directly). Don't contradict the core spec or
+  the pack's spec.
+. Implement the engine seams a pack names — its `ExecCalc_*` calculators — in your engine;
+  everything else is data.
+
+[[using-a-pack-skill]]
+=== Skill-driven: let an agent scaffold it
+
+Two complementary skills make these packs agent-consumable:
+
+* *`gameplay-creator-assistant`* — genre-first, *whole-game* scaffolding. It discovers the
+  packs, helps you pick one, loads its `entities/` as the base, and scaffolds the four
+  pillars plus a Gameplay Controller into a working project. Runs *guided* (interactive Q&A)
+  or *one-shot* (a genre + a brief in, a full game definition out). Use it to start a new
+  game or prototype.
+* *`ugas-schema-author`* — *single-entity* authoring, review, balancing, and simulation. Use
+  it to add or tune one ability/effect/attribute in an existing game.
+
+The two compose: `gameplay-creator-assistant` owns the whole-game structure and delegates
+each entity's YAML to `ugas-schema-author`.
+
+[[using-a-pack-machine]]
+=== Machine consumption
+
+For fully machine consumption, the site root publishes `llms.txt` (a discoverability index)
+and `llms-full.txt` (the complete context: the spec plus every schema, example, and
 genre-pack entity in one file).

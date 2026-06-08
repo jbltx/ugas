@@ -49,8 +49,41 @@ genres/
 
 ## Consuming a pack
 
-Users and AI agents (e.g. the `ugas-schema-author` skill, and the planned gameplay-creator
-assistant skill) can load a pack's `entities/` directly as a starting point and extend them.
+A pack is meant to be a **starting point**, not a fixed library. Both humans and AI agents
+consume packs the same two ways:
+
+### Manual: copy and extend
+
+1. Read the pack's `spec.adoc` to understand its Attributes, Tags, Abilities, and Effects
+   (and its signature mechanic — e.g. the shooter's accuracy `Channel`s).
+2. Copy the pack's `entities/` directory into your project as the base.
+3. Keep, rename, or extend the entities. They are schema-conformant and validate against the
+   same `schemas/*.json` as the core spec.
+4. Extend **additively**: add new mechanics as Effects + Abilities, and new states as
+   `State.*` tags **granted by Effects** (never mutate tags directly). Don't contradict the
+   core spec or the pack's spec.
+5. Implement the engine seams the pack names — its `ExecCalc_*` calculators — in your engine;
+   everything else is data.
+6. Run `python scripts/validate_schema_examples.py` before committing.
+
+### Skill-driven: let an agent scaffold it
+
+Two complementary skills make a pack agent-consumable:
+
+- **`gameplay-creator-assistant`** — genre-first, **whole-game** scaffolding. It discovers
+  the packs here, helps you pick one, loads its `entities/` as the base, and scaffolds the
+  four pillars plus a Gameplay Controller into a working project. Runs **guided** (interactive
+  Q&A) or **one-shot** (a genre + a brief in, a full game definition out). Best when you're
+  starting a new game or prototype.
+- **`ugas-schema-author`** — **single-entity** authoring, review, balancing, and simulation.
+  Best when you already have a game and want to add or tune one ability/effect/attribute.
+
+The two compose: `gameplay-creator-assistant` owns the whole-game structure and delegates
+each entity's YAML to `ugas-schema-author`.
+
+For fully machine consumption, the published site root also exposes `llms.txt` (a
+discoverability index) and `llms-full.txt` (the complete context — the spec plus every
+schema, example, and genre-pack entity in one file).
 
 ## Pack index
 
