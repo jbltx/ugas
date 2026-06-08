@@ -1,0 +1,300 @@
+=== 8. Gameplay Abilities
+
+==== 8.1 Ability Definition
+
+A Gameplay Ability is a self-contained unit of logic defining an action an Actor can perform. Unlike simple function calls, Abilities are asynchronous, stateful objects with defined lifecycles.
+
+===== Ability Class Structure
+
+[source,typescript]
+----
+abstract class GameplayAbility {
+  /** Tags describing this ability */
+  AbilityTags: TagContainer;
+
+  /** Tags that block this ability's activation */
+  BlockedByTags: TagContainer;
+
+  /** Tags that this ability blocks when active */
+  BlockAbilitiesWithTags: TagContainer;
+
+  /** Tags required on owner for activation */
+  ActivationRequiredTags: TagContainer;
+
+  /** Tags that prevent activation if present */
+  ActivationBlockedTags: TagContainer;
+
+  /**
+   * Tags applied to the owner while this ability is active.
+   * Implementations MUST apply these as an auto-generated Infinite GameplayEffect
+   * on CommitAbility and remove that effect on EndAbility/CancelAbility.
+   * Direct tag mutation is prohibited (see §3.1).
+   */
+  ActivationOwnedTags: TagContainer;
+
+  /** Cost effect applied on commit */
+  CostEffect?: GameplayEffectClass;
+
+  /** Cooldown effect applied on commit */
+  CooldownEffect?: GameplayEffectClass;
+
+  /** Called when ability is activated */
+  abstract ActivateAbility(context: AbilityContext): void;
+
+  /** Called when ability ends */
+  abstract EndAbility(wasCancelled: boolean): void;
+}
+----
+
+===== AbilitySpec (Instance Data)
+
+[source,typescript]
+----
+struct AbilitySpec {
+  /** Reference to the ability class */
+  AbilityClass: GameplayAbilityClass;
+
+  /** Current level of this ability instance */
+  Level: number;
+
+  /** Input action binding (if any) */
+  InputID?: InputID;
+
+  /** Handle for identification */
+  Handle: AbilitySpecHandle;
+
+  /** Runtime parameters */
+  Parameters: Map<string, any>;
+
+  /** Is currently active? */
+  IsActive: boolean;
+
+  /**
+   * Handle to the auto-generated Infinite Effect that grants ActivationOwnedTags.
+   * Set by CommitAbility; cleared by EndAbility/CancelAbility.
+   * Undefined when the ability is not active.
+   */
+  ActiveOwnedTagsHandle?: ActiveEffectHandle;
+}
+----
+
+==== 8.2 Lifecycle State Machine
+
+----
+                    ┌──────────────┐
+                    │  NotGranted  │
+                    └──────┬───────┘
+                           │ Grant
+                           ▼
+                    ┌──────────────┐
+        ┌──────────▶│   Granted    │◀──────────┐
+        │           │  (Inactive)  │           │
+        │           └──────┬───────┘           │
+        │                  │ TryActivate       │
+        │                  ▼                   │
+        │           ┌──────────────┐           │
+        │           │  Activating  │───────────┤
+        │           │ (Validating) │  Fail     │
+        │           └──────┬───────┘           │
+        │                  │ Commit            │
+        │                  ▼                   │
+        │           ┌──────────────┐           │
+        │           │    Active    │           │
+        │           │ (Executing)  │           │
+        │           └──────┬───────┘           │
+        │                  │ End/Cancel        │
+        │                  ▼                   │
+        │           ┌──────────────┐           │
+        └───────────│   Ending     │───────────┘
+                    └──────────────┘
+----
+
+==== 8.3 Activation Requirements
+
+Before an Ability can activate, the following checks MUST pass:
+
+1. _Granted Check_: Ability must be granted to the GC
+2. _Not Already Active_: Ability must not currently be active (unless configured for multiple instances)
+3. _Required Tags_: Owner must have all tags in `ActivationRequiredTags`
+4. _Blocked Tags_: Owner must NOT have any tags in `ActivationBlockedTags`
+5. _Cost Verification_: If CostEffect is defined, owner must have sufficient resources
+6. _Cooldown Verification_: Cooldown tag must not be present
+
+[source,typescript]
+----
+function CanActivateAbility(spec: AbilitySpec): boolean {
+  const ownerTags = GC.GetOwnedTags();
+
+  // Check required tags
+  if (!ownerTags.HasAll(spec.AbilityClass.ActivationRequiredTags)) {
+    return false;
+  }
+
+  // Check blocked tags
+  if (ownerTags.HasAny(spec.AbilityClass.ActivationBlockedTags)) {
+    return false;
+  }
+
+  // Check cooldown
+  if (ownerTags.MatchesTag(GetCooldownTag(spec))) {
+    return false;
+  }
+
+  // Check cost
+  if (!CanAffordCost(spec)) {
+    return false;
+  }
+
+  return true;
+}
+----
+
+==== 8.4 Commit Phase
+
+The Commit phase is the point of no return where resources are consumed and cooldowns begin. Once committed:
+
+1. Cost Effect is applied (resources consumed)
+2. Cooldown Effect is applied (cooldown tag granted)
+3. Activation Owned Tags are granted
+4. Ability proceeds to execution
+
+[source,typescript]
+----
+function CommitAbility(spec: AbilitySpec): boolean {
+  // Apply cost
+  if (spec.AbilityClass.CostEffect) {
+    const costSpec = MakeOutgoingSpec(spec.AbilityClass.CostEffect, spec.Level);
+    ApplyGameplayEffectToSelf(costSpec);
+  }
+
+  // Apply cooldown
+  if (spec.AbilityClass.CooldownEffect) {
+    const cooldownSpec = MakeOutgoingSpec(spec.AbilityClass.CooldownEffect, spec.Level);
+    ApplyGameplayEffectToSelf(cooldownSpec);
+  }
+
+  // Grant activation tags via an auto-generated Infinite Effect.
+  // Direct tag mutation is prohibited (§3.1); all tag state flows through Effects.
+  if (!spec.AbilityClass.ActivationOwnedTags.IsEmpty()) {
+    const ownedTagsSpec = MakeOwnedTagsEffect(spec.AbilityClass.ActivationOwnedTags, spec.Level);
+    spec.ActiveOwnedTagsHandle = ApplyGameplayEffectToSelf(ownedTagsSpec);
+  }
+
+  return true;
+}
+----
+
+==== 8.5 Costs and Cooldowns as Effects
+
+Costs and Cooldowns are NOT separate variables but are implemented as specialized Gameplay Effects.
+
+===== Cost Effect Pattern
+
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
+Name: "GE_Fireball_Cost"
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: "Mana"
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -50.0  # Negative to subtract
+----
+
+===== Cooldown Effect Pattern
+
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
+Name: "GE_Fireball_Cooldown"
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 5.0  # 5 second cooldown
+GrantedTags:
+  - "Cooldown.Ability.Fireball"
+----
+
+This pattern enables external modification of costs and cooldowns. For example, a "Mana Efficiency" buff could apply a multiplier to all cost effects:
+
+[source,yaml,subs="+attributes"]
+----
+$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
+Name: "GE_ManaEfficiency_Buff"
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 30.0
+Modifiers:
+  - Attribute: "ManaCostMultiplier"
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: -0.25  # -25% mana cost
+----
+
+==== 8.6 Cancellation and Interruption
+
+Abilities may be cancelled by:
+
+1. _Self-Cancellation_: Ability logic calls EndAbility(true)
+2. _External Cancel_: Another system calls CancelAbility on the GC
+3. _Cancel Tags_: An Effect grants a tag in the Ability's `CancelAbilitiesWithTags` set
+4. _Owner Death_: Owner's Health reaches zero
+
+[source,typescript]
+----
+function CancelAbility(handle: AbilitySpecHandle): void {
+  const spec = GetAbilitySpec(handle);
+  if (!spec.IsActive) return;
+
+  // Remove activation tags by removing the Effect that granted them.
+  // Direct tag mutation is prohibited (§3.1).
+  if (spec.ActiveOwnedTagsHandle) {
+    RemoveActiveGameplayEffect(spec.ActiveOwnedTagsHandle);
+    spec.ActiveOwnedTagsHandle = undefined;
+  }
+
+  // Call ability's end handler
+  spec.AbilityInstance.EndAbility(true /* wasCancelled */);
+
+  // Cleanup active tasks
+  CancelAllAbilityTasks(handle);
+
+  spec.IsActive = false;
+}
+----
+
+==== 8.7 Schema Definition
+
+[source,yaml]
+----
+Ability:
+  Name: string                    # Required: Unique identifier
+
+  Tags:
+    AbilityTags: [string]         # Tags describing this ability
+    BlockedByTags: [string]       # Tags that block activation
+    BlockAbilitiesWithTags: [string]  # Tags blocked while active
+    CancelAbilitiesWithTags: [string] # Tags cancelled on activation
+    ActivationRequiredTags: [string]  # Required for activation
+    ActivationBlockedTags: [string]   # Block activation if present
+    ActivationOwnedTags: [string]     # Granted while active
+
+  Cost: string                    # Effect name for cost
+  Cooldown: string                # Effect name for cooldown
+
+  Tasks:                          # Sequential task definitions
+    - Type: string                # Task type name
+      Params: object              # Task-specific parameters
+
+  Metadata:
+    DisplayName: string
+    Description: string
+    Icon: string
+----
+
+'''
+

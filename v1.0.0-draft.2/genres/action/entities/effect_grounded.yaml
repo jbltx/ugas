@@ -1,0 +1,9 @@
+# Grounded state: granted while the character stands on the ground.
+# Owned by the physics subsystem - it applies this on landing and removes it on takeoff.
+# Tag ownership follows responsibility (§3.1): abilities never mutate State.Grounded directly.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.2/schemas/gameplay_effect.json
+Name: GE_Grounded
+DurationPolicy: Infinite
+GrantedTags:
+  - State.Grounded

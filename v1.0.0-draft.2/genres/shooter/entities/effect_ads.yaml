@@ -1,0 +1,25 @@
+# Aim down sights: held while the aim input is down (applied/removed by GA_Aim).
+# Tightens the bullet cone and slows movement. Both modifiers use the additive-within-channel
+# convention: factor = 1 + Value, so Spread x (1 - 0.75) = x0.25 and MoveSpeed x (1 - 0.3) = x0.70.
+# Spread sits in the Aim channel; the Attachments channel (GE_AttachmentBarrel) multiplies across it.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.2/schemas/gameplay_effect.json
+Name: GE_ADS
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: Spread
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: -0.75
+    Channel: Aim
+  - Attribute: MoveSpeed
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: -0.3
+    Channel: Aim
+GrantedTags:
+  - State.Aiming
+GameplayCues:
+  - GameplayCue.Weapon.ADS

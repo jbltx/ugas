@@ -1,0 +1,25 @@
+# Ground pound: slam down from the air, damaging every enemy in a small radius on impact.
+# Only usable while airborne; reuses GE_ContactDamage and skips Immunity.Contact targets.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.2/schemas/gameplay_ability.json
+Name: GA_GroundPound
+Tags:
+  AbilityTags:
+    - Ability.Type.Attack
+  ActivationRequiredTags:
+    - State.InAir
+  ActivationBlockedTags:
+    - State.Grounded
+Tasks:
+  - Type: WaitGameplayEvent
+    Params:
+      EventTag: Event.Landed
+  - Type: ApplyEffectToActorsInRadius
+    Params:
+      Radius: 200.0
+      EffectClass: GE_ContactDamage
+      IgnoreTargetsWithTag: Immunity.Contact
+Metadata:
+  DisplayName: Ground Pound
+  Description: Slam to the ground, damaging nearby enemies on impact
+  Icon: ui/icons/ground_pound.png

@@ -1,0 +1,13 @@
+# Equips the default automatic rifle. Infinite; grants the weapon-loadout tags that gate the
+# fire/reload/aim abilities. The rifle's stat block is the ShooterCombatSet base values, so this
+# effect carries no modifiers - swapping weapons means swapping which equip effect is active.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.2/schemas/gameplay_effect.json
+Name: GE_EquipRifle
+DurationPolicy: Infinite
+GrantedTags:
+  - Weapon.Equipped
+  - Weapon.Type.Rifle
+  - Weapon.FireMode.Auto
+GameplayCues:
+  - GameplayCue.Weapon.Equip
