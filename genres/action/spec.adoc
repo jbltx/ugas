@@ -1,0 +1,161 @@
+= UGAS Genre Pack: Action / Action-Adventure
+Mickael Bonfill <jbltx>
+:revnumber: 1.0.0-draft.1
+:ugas-version: v1.0.0-draft.1
+:doctype: book
+:toc: left
+:toc-title: Table of Contents
+:toclevels: 4
+:stem: latexmath
+:source-highlighter: highlight.js
+:icons: font
+:sectanchors:
+:sectlinks:
+:docinfo: shared
+
+[[overview]]
+== Overview
+
+This genre pack targets *action games* in the Mario / Celeste / Hollow Knight mould: a
+character defined by tight movement attributes, a *variable-height jump*, power-ups that change
+form and grant abilities, and a movement *state machine* — grounded, airborne, coyote time —
+that has to stay consistent while abilities, physics, and power-ups all read and write it.
+
+It is the practical, copy-and-extend companion to the *Platformer (Mario-style)* case study in
+link:../../SPEC.adoc[the core specification] (Section 15.1). Where the case study sketches the
+movement attribute set, the variable-height `GA_Jump`, and power-up effects, this pack ships the
+matching schema-conformant Attributes, Tags, Abilities, and Effects in `entities/`, plus a worked
+hero in `entities/gameplay_controller.yaml`.
+
+Platforming is the concrete seed, but the same pieces generalize to the wider *Action /
+Action-Adventure* family — hack-and-slash, stealth, Metroidvania — which layer combat, exploration,
+and progression on top of this movement-and-ability core.
+
+[[relationship-to-core-spec]]
+== Relationship to the core specification
+
+This document is *additive*. It defines genre-specific Attributes, Tags, Abilities, and
+Effects on top of the core Universal Gameplay Ability System specification.
+
+* It MUST NOT redefine, override, or contradict any concept in the core spec.
+* All entities in `entities/` validate against the same `schemas/*.json` as the core.
+* It *reuses* the core lifecycle tags (`State.Alive`, `State.Combat`, `State.Dead`) by reference,
+  and adds the platformer movement states (`State.Grounded`, `State.InAir`, …) introduced by the
+  §15.1 case study.
+* Movement state is mutated *only through Effects* (core spec §3.1) — abilities never write tags
+  directly — and the size/speed power-up stacking is the core modifier `Channel` mechanism
+  (link:../../SPEC.adoc[core spec] §5.3), not a new construct.
+
+[[genre-attributes]]
+== Genre Attributes
+
+Defined in `entities/attribute_set.yaml` as the `PlatformerMovementSet` set.
+
+[cols="1,1,3",options="header"]
+|===
+| Attribute | Category | Role
+
+| `GravityScale` | Statistic | Multiplier on world gravity; raised by `GE_JumpCut` to cut a jump short.
+| `JumpVelocity` | Statistic | Upward impulse applied by `GA_Jump`.
+| `AirControl` | Statistic | Fraction of ground control retained while airborne; clamped to `[0, 1]`.
+| `HorizontalSpeed` | Statistic | Ground run speed; raised while the invincibility star is active.
+| `CoyoteTimeDuration`, `JumpBufferDuration` | Statistic | Forgiveness windows that make the jump feel responsive.
+| `MaxJumpCount` | Statistic | Jumps allowed before landing; raise to `2` for a double jump.
+| `VerticalVelocity` | Meta | Live vertical velocity kept in sync by the physics avatar; read by `GA_Jump`.
+| `Scale` | Statistic | Character size; doubled by the Super power-up.
+| `MaxHealth` / `Health` | Statistic / Resource | `Health` is clamped to `[0, MaxHealth]`; reaching 0 costs a life.
+| `Lives` | Resource | Remaining lives; game over at 0.
+|===
+
+[[genre-movement-state-machine]]
+== The movement state machine (the core action mechanic)
+
+A platformer lives or dies on *game feel*, and in UGAS that feel is a small *tag-driven state
+machine* whose transitions are owned by whichever system is responsible for them.
+
+=== Tag ownership follows responsibility
+
+[cols="1,2,2",options="header"]
+|===
+| State tag | Owner | How it changes
+
+| `State.Grounded` | Physics subsystem | Applied via `GE_Grounded` on landing, removed on takeoff.
+| `State.InAir` | `GA_Jump` | Granted via `GE_InAir` on takeoff, removed on `Event.Landed`.
+| `Status.CoyoteTime` | Physics / movement | A short grace window after leaving a ledge.
+| `Status.JumpBuffered` | Input layer | A jump pressed just before landing is queued.
+|===
+
+No system writes another's tag, and *no system mutates tags directly* — every transition goes
+through an Effect (core spec §3.1). This is why `GA_Jump` does not toggle `State.Grounded`; it only
+grants and later removes its own `GE_InAir`.
+
+=== Variable-height jump
+
+`GA_Jump` (`entities/ability_jump.yaml`) is gated by `State.Grounded` *or* `Status.CoyoteTime`
+(an OR evaluated in activation logic, since tag lists are ANDed). On activation it grants
+`GE_InAir` and applies the `JumpVelocity` impulse, then waits on input release: a short press
+applies `GE_JumpCut`, which raises `GravityScale` so the character falls sooner. On `Event.Landed`
+both effects are removed.
+
+`GE_JumpCut` stacks its gravity multiplier in the `JumpControl` channel, where modifiers are
+additive within the channel: latexmath:[1 + 1.5 = 2.5], i.e. `GravityScale` becomes
+latexmath:[1.0 \times 2.5 = 2.5] while the cut is active.
+
+=== Power-ups change attributes and grant tags
+
+Power-ups are Effects that grant a `State.PowerUp.*` tag and modify attributes. Percentage changes
+use named channels (additive within, multiplicative across), so `Value: 1.0` in the `SizeBonuses`
+channel reads as +100%.
+
+.Worked example (`entities/gameplay_controller.yaml`)
+A hero who has grabbed a Super Mushroom (`GE_SuperMushroom` active):
+
+* `Scale`: base latexmath:[1.0 \times (1 + 1.0) = 2.0] (the `SizeBonuses` channel)
+* `Health`: base latexmath:[1 + 1 = 2] (a flat `Add`)
+
+These are exactly the `CurrentValue` entries recorded for the example hero.
+
+[[genre-tags]]
+== Genre Tags
+
+Defined in `entities/tag_registry.yaml` (additive only):
+
+* *Movement states* — `State.Grounded`, `State.InAir`, `Status.CoyoteTime`, `Status.JumpBuffered`.
+* *Power-up states* — `State.PowerUp.Super|Fire|Invincible`.
+* *Ability types* — `Ability.Type.Movement|Attack`.
+* *Hazards & combat* — `DamageType.Contact|Pit`, `Immunity.Contact`.
+
+[[genre-abilities]]
+== Genre Abilities
+
+* `entities/ability_jump.yaml` — `GA_Jump`: the signature variable-height jump. Grants `GE_InAir`,
+  applies the jump impulse, applies `GE_JumpCut` on early release, and cleans up both on landing.
+* `entities/ability_ground_pound.yaml` — `GA_GroundPound`: an airborne slam. Requires `State.InAir`,
+  blocked while `State.Grounded`, and on `Event.Landed` applies `GE_ContactDamage` to every enemy in
+  radius — skipping `Immunity.Contact` targets. Models the §15.3 radius/tag-query pattern for action.
+
+[[genre-effects]]
+== Genre Effects
+
+* `entities/effect_grounded.yaml` — `GE_Grounded`: infinite; grants `State.Grounded`
+  (applied/removed by the physics subsystem).
+* `entities/effect_in_air.yaml` — `GE_InAir`: infinite; grants `State.InAir` (owned by `GA_Jump`).
+* `entities/effect_jump_cut.yaml` — `GE_JumpCut`: infinite-until-landing; `+150%` `GravityScale`
+  in the `JumpControl` channel for a shorter jump.
+* `entities/effect_super_mushroom.yaml` — `GE_SuperMushroom`: infinite; doubles `Scale`
+  (`SizeBonuses` channel) and grants `+1` `Health`; grants `State.PowerUp.Super`.
+* `entities/effect_invincibility_star.yaml` — `GE_InvincibilityStar`: `HasDuration`; `+30%`
+  `HorizontalSpeed` and grants `State.PowerUp.Invincible` + `Immunity.Contact`.
+* `entities/effect_contact_damage.yaml` — `GE_ContactDamage`: instant; `-1` `Health`. Used by
+  hazards against the player and by `GA_GroundPound` against enemies.
+
+[[using-this-pack]]
+== Using this pack
+
+. Copy `genres/action/` into your project (or load `entities/` directly via the
+  `ugas-schema-author` skill).
+. Keep, rename, or extend the `PlatformerMovementSet`; tune the jump-feel attributes first — they
+  carry most of the game feel.
+. Add new states as `State.*` tags granted by Effects (never mutate tags directly), and new
+  power-ups/attacks as Effects + Abilities.
+. Validate with `python scripts/validate_schema_examples.py` before committing.
