@@ -83,6 +83,17 @@ jobs:
               -o "source/genres/${genre}/index.html"
           done
 
+      - name: Build genre taxonomy with AsciiDoctor
+        run: |
+          if [ -f source/genres/taxonomy.adoc ]; then
+            asciidoctor \
+              -a revnumber="${{ steps.version.outputs.version }}" \
+              -a ugas-version="v${{ steps.version.outputs.version }}" \
+              -a stem=latexmath \
+              source/genres/taxonomy.adoc \
+              -o source/genres/taxonomy.html
+          fi
+
       - name: Generate LLM files
         run: |
           bash source/scripts/generate-llm-files.sh source source "v${{ steps.version.outputs.version }}"
