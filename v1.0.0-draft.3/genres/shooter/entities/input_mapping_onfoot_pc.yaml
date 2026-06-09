@@ -1,0 +1,69 @@
+# PC keyboard + mouse mapping for the OnFoot action set.
+# Move uses a WASD composite; Look uses raw mouse axes with a MouseSensitivity modifier
+# so the player can tune X/Y sensitivity independently in the settings screen.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.3/schemas/input_mapping.json
+ActionSet: OnFoot
+Platform: PC
+Bindings:
+  - Action: Fire
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.LeftButton
+
+  - Action: Aim
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.RightButton
+
+  - Action: Reload
+    Inputs:
+      - Device: Keyboard
+        Input: Key.R
+
+  - Action: Move
+    CompositeInputs:
+      Up:
+        Device: Keyboard
+        Input: Key.W
+      Down:
+        Device: Keyboard
+        Input: Key.S
+      Left:
+        Device: Keyboard
+        Input: Key.A
+      Right:
+        Device: Keyboard
+        Input: Key.D
+
+  - Action: Look
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.Axis.X
+      - Device: Mouse
+        Input: Mouse.Axis.Y
+    Modifiers:
+      - MouseSensitivity
+
+  - Action: Jump
+    Inputs:
+      - Device: Keyboard
+        Input: Key.Space
+
+  - Action: Sprint
+    Inputs:
+      - Device: Keyboard
+        Input: Key.LeftShift
+
+  - Action: Interact
+    Inputs:
+      - Device: Keyboard
+        Input: Key.E
+
+  - Action: CycleWeapon
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.Scroll
+Metadata:
+  DisplayName: On Foot - PC
+  Description: Keyboard and mouse bindings for the on-foot action set

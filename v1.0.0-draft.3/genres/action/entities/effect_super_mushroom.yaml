@@ -1,0 +1,23 @@
+# Super power-up: doubles the character's size and grants one extra hit point.
+# From the §15.1 case study. The Scale modifier sits in the SizeBonuses channel, where the
+# additive-within-channel convention reads Value 1.0 as +100%: factor = 1 + 1.0 = 2.0x size.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.3/schemas/gameplay_effect.json
+Name: GE_SuperMushroom
+DurationPolicy: Infinite
+GrantedTags:
+  - State.PowerUp.Super
+Modifiers:
+  - Attribute: Scale
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 1.0
+    Channel: SizeBonuses
+  - Attribute: Health
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 1.0
+GameplayCues:
+  - GameplayCue.PowerUp.Super

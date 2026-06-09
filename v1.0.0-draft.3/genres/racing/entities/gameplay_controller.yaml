@@ -1,0 +1,60 @@
+# Worked example: a Sport-class car mid-race, on mud, with the sport tuning package fitted.
+# CurrentValue columns show the result of the two infinite effects below:
+#   TireGripMultiplier: base 1.0 x Surface(1 - 0.6 = 0.40) x Upgrades(1 + 0.10 = 1.10) = 0.44
+#   MaxSpeed:           base 250 + Tuning(+20) + Mud(-30)                               = 240.0
+#   EngineTorque:       base 400 + Tuning(+80)                                          = 480.0
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.3/schemas/gameplay_controller.json
+OwnerActor:
+  ActorID: Vehicle_SportCar_01
+  ActorType: PlayerVehicle
+AttributeSets:
+  - Name: VehiclePerformanceSet
+    Attributes:
+      - Name: EngineTorque
+        BaseValue: 400.0
+        CurrentValue: 480.0
+      - Name: MaxSpeed
+        BaseValue: 250.0
+        CurrentValue: 240.0
+      - Name: TireGripMultiplier
+        BaseValue: 1.0
+        CurrentValue: 0.44
+      - Name: AeroDownforce
+        BaseValue: 100.0
+        CurrentValue: 100.0
+      - Name: TireTemperature
+        BaseValue: 80.0
+        CurrentValue: 95.0
+      - Name: MaxBoost
+        BaseValue: 100.0
+        CurrentValue: 100.0
+      - Name: Boost
+        BaseValue: 100.0
+        CurrentValue: 60.0
+GrantedAbilities:
+  - AbilityClass: GA_NitroBoost
+    Level: 1
+    InputID: Boost
+  - AbilityClass: GA_Drift
+    Level: 1
+    InputID: Drift
+ActiveEffects:
+  - Handle: eff-tuning-sport
+    EffectClass: GE_Tuning_Sport
+    Duration: -1
+  - Handle: eff-biome-mud
+    EffectClass: GE_Biome_Mud
+    Duration: -1
+OwnedTags:
+  - Vehicle
+  - Vehicle.Class.Sport
+  - Vehicle.Tuned
+  - Surface.Mud
+  - Race.Phase.Racing
+ReplicationMode: Mixed
+bIsActive: true
+Metadata:
+  DisplayName: Sport Car (tuned, on mud)
+  Description: Worked-example vehicle showing traction-pipeline aggregation on TireGripMultiplier
+  DebugCategory: racing-pack-example

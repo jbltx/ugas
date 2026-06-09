@@ -1,0 +1,42 @@
+# RPG PC keyboard+mouse bindings for on-foot gameplay.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.3/schemas/input_mapping.json
+ActionSet: OnFoot
+Platform: PC
+Bindings:
+  - Action: BasicAttack
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.LeftButton
+
+  - Action: Ability1
+    Inputs:
+      - Device: Keyboard
+        Input: Key.1
+
+  - Action: Move
+    CompositeInputs:
+      Up:
+        Device: Keyboard
+        Input: Key.W
+      Down:
+        Device: Keyboard
+        Input: Key.S
+      Left:
+        Device: Keyboard
+        Input: Key.A
+      Right:
+        Device: Keyboard
+        Input: Key.D
+
+  - Action: Look
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.Axis.X
+      - Device: Mouse
+        Input: Mouse.Axis.Y
+    Modifiers:
+      - MouseSensitivity
+Metadata:
+  DisplayName: On Foot (Keyboard + Mouse)
+  Description: Default PC bindings for RPG exploration and combat

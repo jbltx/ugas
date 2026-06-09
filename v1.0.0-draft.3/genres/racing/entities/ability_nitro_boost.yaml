@@ -1,0 +1,23 @@
+# Nitro boost ability: spend the boost resource for a short burst of power.
+# Costs boost (GE_NitroCost) and goes on cooldown (GE_NitroCooldown); applies GE_NitroBoost to self.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.3/schemas/gameplay_ability.json
+Name: GA_NitroBoost
+Tags:
+  AbilityTags:
+    - Ability.Type.Boost
+  ActivationRequiredTags:
+    - Vehicle
+    - Race.Phase.Racing
+  ActivationBlockedTags:
+    - Vehicle.State.SpunOut
+Cost: GE_NitroCost
+Cooldown: GE_NitroCooldown
+Tasks:
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_NitroBoost
+Metadata:
+  DisplayName: Nitro Boost
+  Description: Burn boost charge for a burst of torque and top speed
+  Icon: ui/icons/nitro.png

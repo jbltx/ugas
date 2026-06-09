@@ -1,0 +1,13 @@
+# Reusable input modifiers for the RPG genre pack.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.3/schemas/input_modifier.json
+Name: MouseSensitivity
+Type: Sensitivity
+Params:
+  Multiplier: 1.0
+  MultiplierX: 1.0
+  MultiplierY: 1.0
+UserConfigurable: true
+Metadata:
+  DisplayName: Mouse Sensitivity
+  Description: Overall mouse look sensitivity

@@ -1,0 +1,8 @@
+# Airborne state: granted by GA_Jump on takeoff and removed on landing.
+# Grants State.InAir so other abilities (e.g. GA_GroundPound) can gate on being airborne.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.3/schemas/gameplay_effect.json
+Name: GE_InAir
+DurationPolicy: Infinite
+GrantedTags:
+  - State.InAir
