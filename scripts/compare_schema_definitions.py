@@ -20,6 +20,13 @@ SCHEMA_PAIRS: Dict[str, Tuple[str, str]] = {
         "schemas/gameplay_controller.json",
         "schemas/gameplay_controller.yaml",
     ),
+    "input_action": ("schemas/input_action.json", "schemas/input_action.yaml"),
+    "input_action_set": (
+        "schemas/input_action_set.json",
+        "schemas/input_action_set.yaml",
+    ),
+    "input_mapping": ("schemas/input_mapping.json", "schemas/input_mapping.yaml"),
+    "input_modifier": ("schemas/input_modifier.json", "schemas/input_modifier.yaml"),
 }
 
 ROOT_METADATA_KEYS = {"$schema", "$id", "title", "description"}

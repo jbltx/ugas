@@ -67,7 +67,10 @@ properties:
           description: Ability level
         InputID:
           type: string
-          description: Optional input binding identifier
+          description: >-
+            Input binding identifier. References an Action Name from the input
+            layer. When the bound Action triggers, the GC calls TryActivateAbility
+            for this grant.
         Handle:
           type: string
           description: Unique handle for this granted ability instance
@@ -110,6 +113,12 @@ properties:
           type: string
           description: Reference to the GC that caused this effect
     description: Currently active effects applied to this GC
+
+  ActiveActionSets:
+    type: array
+    items:
+      type: string
+    description: Currently active ActionSet names (derived from tag evaluation at runtime)
 
   OwnedTags:
     type: array

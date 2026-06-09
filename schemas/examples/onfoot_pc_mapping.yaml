@@ -1,0 +1,68 @@
+# Example: OnFoot PC Mapping (Shooter)
+# Demonstrates keyboard+mouse bindings with WASD composition and modifier references
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+ActionSet: OnFoot
+Platform: PC
+Bindings:
+  - Action: Fire
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.LeftButton
+
+  - Action: Aim
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.RightButton
+
+  - Action: Reload
+    Inputs:
+      - Device: Keyboard
+        Input: Key.R
+
+  - Action: Move
+    CompositeInputs:
+      Up:
+        Device: Keyboard
+        Input: Key.W
+      Down:
+        Device: Keyboard
+        Input: Key.S
+      Left:
+        Device: Keyboard
+        Input: Key.A
+      Right:
+        Device: Keyboard
+        Input: Key.D
+
+  - Action: Look
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.Axis.X
+      - Device: Mouse
+        Input: Mouse.Axis.Y
+    Modifiers:
+      - MouseSensitivity
+
+  - Action: Jump
+    Inputs:
+      - Device: Keyboard
+        Input: Key.Space
+
+  - Action: Sprint
+    Inputs:
+      - Device: Keyboard
+        Input: Key.LeftShift
+
+  - Action: Interact
+    Inputs:
+      - Device: Keyboard
+        Input: Key.E
+
+  - Action: CycleWeapon
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.Scroll
+Metadata:
+  DisplayName: On Foot (Keyboard + Mouse)
+  Description: Default PC bindings for on-foot shooter gameplay
