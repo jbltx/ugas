@@ -12,6 +12,10 @@ This directory contains formal schema definitions for the Universal Gameplay Abi
 | **Gameplay Effect** | `gameplay_effect.json` | `gameplay_effect.yaml` | Schema for effects that modify attributes, grant tags/abilities, with duration and magnitude definitions |
 | **Gameplay Ability** | `gameplay_ability.json` | `gameplay_ability.yaml` | Schema for ability definitions with tag-based activation requirements and blocking rules |
 | **Gameplay Tag** | `gameplay_tag.json` | `gameplay_tag.yaml` | Schema for the tag registry defining semantic state labels in hierarchical notation |
+| **Input Action** | `input_action.json` | `input_action.yaml` | Schema for named semantic input intents with value types and trigger behaviors |
+| **Input Action Set** | `input_action_set.json` | `input_action_set.yaml` | Schema for context-based groups of actions with tag-driven activation |
+| **Input Mapping** | `input_mapping.json` | `input_mapping.yaml` | Schema for bindings between device inputs and actions, with chording, composition, and modifiers |
+| **Input Modifier** | `input_modifier.json` | `input_modifier.yaml` | Schema for reusable input signal processing steps (dead zones, sensitivity, response curves) |
 
 ## Schema Format
 
@@ -80,6 +84,104 @@ Metadata:
   DisplayName: Fireball
   Description: Launch a ball of fire at the target
   Icon: ui/icons/fireball.png
+```
+
+### Input Action Definition
+
+```yaml
+# fire_action.yaml
+Name: Fire
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Input.Type.Combat
+Metadata:
+  DisplayName: Fire Weapon
+  Description: Pull the trigger on the equipped weapon
+  Category: Combat
+```
+
+### Input Action Set Definition
+
+```yaml
+# onfoot_action_set.yaml
+Name: OnFoot
+Actions:
+  - Move
+  - Look
+  - Fire
+  - Aim
+  - Reload
+  - Jump
+  - Sprint
+Priority: 0
+ActivationTags:
+  RequiredTags:
+    - State.Alive
+  BlockedTags:
+    - State.InVehicle
+    - State.Cutscene
+InputBuffer:
+  Enabled: true
+  BufferWindow: 0.12
+  MaxBufferSize: 2
+Metadata:
+  DisplayName: On Foot
+```
+
+### Input Mapping Definition
+
+```yaml
+# onfoot_pc_mapping.yaml
+ActionSet: OnFoot
+Platform: PC
+Bindings:
+  - Action: Fire
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.LeftButton
+
+  - Action: Move
+    CompositeInputs:
+      Up:
+        Device: Keyboard
+        Input: Key.W
+      Down:
+        Device: Keyboard
+        Input: Key.S
+      Left:
+        Device: Keyboard
+        Input: Key.A
+      Right:
+        Device: Keyboard
+        Input: Key.D
+
+  - Action: Look
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.Axis.X
+      - Device: Mouse
+        Input: Mouse.Axis.Y
+    Modifiers:
+      - MouseSensitivity
+```
+
+### Input Modifier Definition
+
+```yaml
+# stick_deadzone_modifier.yaml
+Name: StickDeadzone
+Type: DeadZone
+Params:
+  InnerThreshold: 0.15
+  OuterThreshold: 0.95
+  DeadZoneShape: Radial
+UserConfigurable: true
+Metadata:
+  DisplayName: Stick Dead Zone
+  Description: Inner dead zone radius for analog sticks
 ```
 
 ### Gameplay Tag Registry
@@ -193,6 +295,7 @@ These schemas are based on the **Universal Gameplay Ability System Specification
 - **Section 7**: Gameplay Tags - `gameplay_tag.{json,yaml}`
 - **Section 8**: Gameplay Abilities - `gameplay_ability.{json,yaml}`
 - **Section 9**: Gameplay Effects - `gameplay_effect.{json,yaml}`
+- **Section 11**: Input Integration - `input_action.{json,yaml}`, `input_action_set.{json,yaml}`, `input_mapping.{json,yaml}`, `input_modifier.{json,yaml}`
 - **Appendix B**: Complete Schema Reference
 
 ## Notes

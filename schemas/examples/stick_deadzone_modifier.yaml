@@ -1,0 +1,14 @@
+# Example: Stick Deadzone Modifier
+# Demonstrates a user-configurable radial dead zone for gamepad analog sticks
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+Name: StickDeadzone
+Type: DeadZone
+Params:
+  InnerThreshold: 0.15
+  OuterThreshold: 0.95
+  DeadZoneShape: Radial
+UserConfigurable: true
+Metadata:
+  DisplayName: Stick Dead Zone
+  Description: Inner dead zone radius for analog sticks

@@ -1,0 +1,139 @@
+# Shooter genre input actions. Each document defines a single action that an ability or
+# movement system can listen for. Actions are grouped into Action Sets (see
+# input_action_set_onfoot.yaml) and bound to hardware in Input Mappings.
+# Digital actions produce trigger events; Axis2D actions produce a continuous 2D vector.
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Fire
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Fire
+    - DamageType.Ballistic
+Metadata:
+  DisplayName: Fire
+  Description: Primary fire - pull the trigger
+  Icon: ui/icons/fire.png
+  Category: Combat
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Aim
+ValueType: Digital
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Aim
+Metadata:
+  DisplayName: Aim Down Sights
+  Description: Hold to aim down sights for reduced spread and slower movement
+  Icon: ui/icons/aim.png
+  Category: Combat
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Reload
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Reload
+Metadata:
+  DisplayName: Reload
+  Description: Reload the currently equipped weapon
+  Icon: ui/icons/reload.png
+  Category: Combat
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Move
+ValueType: Axis2D
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Movement
+Metadata:
+  DisplayName: Move
+  Description: Omnidirectional ground movement
+  Icon: ui/icons/move.png
+  Category: Movement
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Look
+ValueType: Axis2D
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Movement
+Metadata:
+  DisplayName: Look
+  Description: Camera / aim direction
+  Icon: ui/icons/look.png
+  Category: Movement
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Jump
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Movement
+Metadata:
+  DisplayName: Jump
+  Description: Jump or vault over obstacles
+  Icon: ui/icons/jump.png
+  Category: Movement
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Sprint
+ValueType: Digital
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Movement
+Metadata:
+  DisplayName: Sprint
+  Description: Hold to sprint at increased speed
+  Icon: ui/icons/sprint.png
+  Category: Movement
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Interact
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags: []
+Metadata:
+  DisplayName: Interact
+  Description: Context-sensitive interaction (doors, pickups, objectives)
+  Icon: ui/icons/interact.png
+  Category: General
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: CycleWeapon
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Fire
+Metadata:
+  DisplayName: Cycle Weapon
+  Description: Switch to the next weapon in the loadout
+  Icon: ui/icons/cycle_weapon.png
+  Category: Combat

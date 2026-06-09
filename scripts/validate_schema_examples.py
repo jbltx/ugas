@@ -20,6 +20,10 @@ SCHEMA_FILES = {
     "gameplay_ability": "schemas/gameplay_ability.json",
     "gameplay_tag": "schemas/gameplay_tag.json",
     "gameplay_controller": "schemas/gameplay_controller.json",
+    "input_action": "schemas/input_action.json",
+    "input_action_set": "schemas/input_action_set.json",
+    "input_mapping": "schemas/input_mapping.json",
+    "input_modifier": "schemas/input_modifier.json",
 }
 
 SCHEMA_SUFFIXES = {
@@ -29,6 +33,10 @@ SCHEMA_SUFFIXES = {
     "/schemas/gameplay_ability.json": "gameplay_ability",
     "/schemas/gameplay_tag.json": "gameplay_tag",
     "/schemas/gameplay_controller.json": "gameplay_controller",
+    "/schemas/input_action.json": "input_action",
+    "/schemas/input_action_set.json": "input_action_set",
+    "/schemas/input_mapping.json": "input_mapping",
+    "/schemas/input_modifier.json": "input_modifier",
 }
 
 
