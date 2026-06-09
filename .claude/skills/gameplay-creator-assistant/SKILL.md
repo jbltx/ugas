@@ -33,7 +33,7 @@ data model from scratch, and it keeps every game consistent with the spec.
 Treat these two values as constants. To target a different release, change only the version.
 
 ```
-UGAS_DOCS    = https://www.jbltx.com/ugas
+UGAS_DOCS    = https://ugas.jbltx.com
 UGAS_VERSION = v1.0.0-draft.1
 ```
 
