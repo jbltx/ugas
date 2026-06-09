@@ -1,0 +1,33 @@
+# Variable-height jump (the signature platformer ability), from the §15.1 case study.
+# Activation gate is State.Grounded OR Status.CoyoteTime - that OR is evaluated in the ability's
+# activation logic, since tag lists are ANDed and cannot express it declaratively.
+# Task order is the happy path: GE_JumpCut is only applied if VerticalVelocity > 0 at release.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.3/schemas/gameplay_ability.json
+Name: GA_Jump
+Tags:
+  AbilityTags:
+    - Ability.Type.Movement
+Tasks:
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_InAir
+  - Type: WaitInputRelease
+    Params:
+      InputID: Jump
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_JumpCut
+  - Type: WaitGameplayEvent
+    Params:
+      EventTag: Event.Landed
+  - Type: RemoveEffectFromOwner
+    Params:
+      EffectClass: GE_InAir
+  - Type: RemoveEffectFromOwner
+    Params:
+      EffectClass: GE_JumpCut
+Metadata:
+  DisplayName: Jump
+  Description: Leap upward; hold for a higher jump, release early to cut it short
+  Icon: ui/icons/jump.png

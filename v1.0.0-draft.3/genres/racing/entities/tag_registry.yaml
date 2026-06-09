@@ -1,0 +1,71 @@
+# Racing genre tag taxonomy. ADDITIVE: this registry introduces genre-specific tags only.
+# It does not redefine core State.* / Ability.* tags - those are referenced, not declared here.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.3/schemas/gameplay_tag.json
+Tags:
+  # --- Track surfaces (granted by area/biome effects; drive the grip pipeline) ---
+  - Tag: Surface.Asphalt
+    Description: Dry sealed track; full baseline grip
+    AllowMultiple: false
+  - Tag: Surface.Mud
+    Description: Soft off-track surface; heavy grip and speed penalty
+    AllowMultiple: false
+  - Tag: Surface.Gravel
+    Description: Loose run-off surface; moderate grip penalty
+    AllowMultiple: false
+  - Tag: Surface.Ice
+    Description: Frozen surface; severe grip penalty
+    AllowMultiple: false
+  - Tag: Surface.Wet
+    Description: Rain-soaked surface; reduced grip and aquaplaning risk
+    AllowMultiple: false
+
+  # --- Vehicle classification (target gating + class-specific tuning) ---
+  - Tag: Vehicle
+    Description: Entity is a controllable vehicle; required by surface/area effects
+    AllowMultiple: false
+  - Tag: Vehicle.Class.Sport
+    Description: Balanced road/sports car
+    AllowMultiple: false
+  - Tag: Vehicle.Class.Kart
+    Description: Lightweight kart; high agility, low top speed
+    AllowMultiple: false
+  - Tag: Vehicle.Class.Formula
+    Description: Open-wheel racer; high downforce and top speed
+    AllowMultiple: false
+  - Tag: Vehicle.Tuned
+    Description: A performance tuning upgrade is installed
+    AllowMultiple: false
+
+  # --- Vehicle dynamic states (granted by abilities and timed effects) ---
+  - Tag: Vehicle.State.Boosting
+    Description: Nitro boost is currently active
+    AllowMultiple: false
+  - Tag: Vehicle.State.Drifting
+    Description: Vehicle is in a controlled slide, building boost charge
+    AllowMultiple: false
+  - Tag: Vehicle.State.SpunOut
+    Description: Vehicle has lost control; blocks driver abilities
+    AllowMultiple: false
+
+  # --- Ability classification ---
+  - Tag: Ability.Type.Boost
+    Description: Consumes the boost resource for a burst of performance
+    AllowMultiple: false
+  - Tag: Ability.Type.Handling
+    Description: Driving technique that alters grip or builds resource
+    AllowMultiple: false
+
+  # --- Race progression / status ---
+  - Tag: Race.Phase.Countdown
+    Description: Pre-start countdown; driver inputs locked
+    AllowMultiple: false
+  - Tag: Race.Phase.Racing
+    Description: Race is live and timed
+    AllowMultiple: false
+  - Tag: Race.Phase.Finished
+    Description: Vehicle has crossed the finish line
+    AllowMultiple: false
+  - Tag: Race.Status.FinalLap
+    Description: The leader has started the last lap
+    AllowMultiple: false

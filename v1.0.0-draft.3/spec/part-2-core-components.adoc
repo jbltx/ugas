@@ -1,0 +1,13 @@
+== Part II: Core Components
+
+include::part-2-core-components/04-gameplay-controller.adoc[]
+
+include::part-2-core-components/05-attributes.adoc[]
+
+include::part-2-core-components/06-attribute-sets.adoc[]
+
+include::part-2-core-components/07-gameplay-tags.adoc[]
+
+include::part-2-core-components/08-gameplay-abilities.adoc[]
+
+include::part-2-core-components/09-gameplay-effects.adoc[]
