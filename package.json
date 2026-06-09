@@ -1,6 +1,6 @@
 {
   "name": "ugas",
-  "version": "1.0.0-draft.2",
+  "version": "1.0.0-draft.3",
   "private": true,
   "description": "Universal Gameplay Ability System Specification",
   "scripts": {
