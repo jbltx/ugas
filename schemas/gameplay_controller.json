@@ -175,7 +175,7 @@
           }
         }
       },
-      "description": "Currently active effects applied to this GC (serialization protocol: §14)"
+      "description": "Currently active effects applied to this GC (serialization protocol §14)"
     },
     "ActiveActionSets": {
       "type": "array",
