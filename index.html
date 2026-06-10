@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UGAS — Universal Gameplay Ability System</title>
+<meta name="description" content="An open, engine-agnostic specification for standardizing gameplay logic across Unreal, Unity, Godot, and AI world models.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231b3df5'/%3E%3Ctext x='16' y='23' font-family='monospace' font-size='18' font-weight='700' fill='%23fff' text-anchor='middle'%3EU%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..800;1,400..600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     UGAS · Direction A — "Blueprint"
+     Engineering-schematic. Hanken Grotesk + JetBrains Mono.
+     ============================================================ */
+
+  :root {
+    --bg:        #eef0f3;
+    --panel:     #f8f9fb;
+    --panel-2:   #ffffff;
+    --ink:       #0d1220;
+    --ink-soft:  #44506a;
+    --ink-faint: #7c879e;
+    --line:      #c9d0dd;
+    --line-soft: #dde2ec;
+    --accent:    #1b3df5;
+    --accent-2:  #0a2bc4;
+    --accent-ink:#ffffff;
+    --grid:      rgba(27, 61, 245, .045);
+    --grid-bold: rgba(27, 61, 245, .085);
+    --shadow:    0 1px 2px rgba(13,18,32,.04), 0 18px 40px -28px rgba(13,18,32,.30);
+    --ok:        #0a8f4f;
+  }
+  [data-theme="dark"] {
+    --bg:        #070b16;
+    --panel:     #0c1322;
+    --panel-2:   #0f1830;
+    --ink:       #eaf0ff;
+    --ink-soft:  #97a6c9;
+    --ink-faint: #5e6e93;
+    --line:      #1d2a48;
+    --line-soft: #16203a;
+    --accent:    #5b8cff;
+    --accent-2:  #87a9ff;
+    --accent-ink:#04081a;
+    --grid:      rgba(91, 140, 255, .06);
+    --grid-bold: rgba(91, 140, 255, .12);
+    --shadow:    0 1px 2px rgba(0,0,0,.4), 0 24px 50px -30px rgba(0,0,0,.8);
+    --ok:        #3fd98a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: "Hanken Grotesk", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 17px;
+    letter-spacing: -.01em;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    transition: background .4s ease, color .4s ease;
+    /* fine engineering grid */
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+      linear-gradient(var(--grid-bold) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-bold) 1px, transparent 1px);
+    background-size: 28px 28px, 28px 28px, 140px 140px, 140px 140px;
+  }
+
+  .mono { font-family: "JetBrains Mono", monospace; }
+
+  a { color: inherit; text-decoration: none; }
+
+  ::selection { background: var(--accent); color: var(--accent-ink); }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+
+  /* ---------- buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: .55em;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px; font-weight: 500; letter-spacing: .02em;
+    padding: 13px 20px; border: 1px solid var(--line);
+    background: var(--panel-2); color: var(--ink);
+    border-radius: 3px; cursor: pointer;
+    transition: transform .18s ease, border-color .18s ease, background .18s ease, color .18s ease;
+  }
+  .btn:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .btn--primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn--primary:hover { background: var(--accent-2); border-color: var(--accent-2); }
+  .btn .arr { transition: transform .18s ease; }
+  .btn:hover .arr { transform: translateX(3px); }
+
+  /* ---------- header ---------- */
+  header {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(12px);
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { display: flex; align-items: baseline; gap: 10px; }
+  .brand b {
+    font-family: "JetBrains Mono", monospace; font-weight: 700;
+    font-size: 19px; letter-spacing: .04em;
+  }
+  .brand b .bracket { color: var(--accent); }
+  .brand small {
+    font-family: "JetBrains Mono", monospace; font-size: 10.5px;
+    color: var(--ink-faint); letter-spacing: .14em; text-transform: uppercase;
+  }
+  .brand small.full-name { text-transform: none; letter-spacing: .01em; font-size: 11px; }
+  @media (max-width: 640px) { .brand small.full-name { display: none; } }
+  .nav-links { display: flex; align-items: center; gap: 28px; }
+  .nav-links a {
+    font-family: "JetBrains Mono", monospace; font-size: 12.5px;
+    color: var(--ink-soft); letter-spacing: .02em; transition: color .15s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  @media (max-width: 860px) { .nav-links a:not(.nav-cta) { display: none; } }
+
+  .toggle {
+    width: 38px; height: 38px; display: grid; place-items: center;
+    border: 1px solid var(--line); border-radius: 3px; background: var(--panel-2);
+    cursor: pointer; color: var(--ink); transition: border-color .15s, transform .15s;
+  }
+  .toggle:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .toggle svg { width: 17px; height: 17px; }
+  .icon-moon { display: none; } [data-theme="dark"] .icon-sun { display: none; }
+  [data-theme="dark"] .icon-moon { display: block; }
+
+  /* ---------- section scaffolding ---------- */
+  section { position: relative; padding: 96px 0; border-top: 1px solid var(--line-soft); }
+  .sec-tag {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: "JetBrains Mono", monospace; font-size: 12px;
+    color: var(--accent); letter-spacing: .08em; text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .sec-tag::before { content: ""; width: 28px; height: 1px; background: var(--accent); }
+  h2 { font-size: clamp(28px, 4vw, 42px); font-weight: 700; letter-spacing: -.025em; line-height: 1.08; }
+  .sec-lead { color: var(--ink-soft); max-width: 60ch; margin-top: 18px; font-size: 18px; }
+
+  /* reveal */
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .hero { padding: 70px 0 100px; border-top: none; }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center; }
+  @media (max-width: 940px) { .hero-grid { grid-template-columns: 1fr; gap: 44px; } }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: "JetBrains Mono", monospace; font-size: 12px;
+    padding: 6px 12px; border: 1px solid var(--line); border-radius: 100px;
+    color: var(--ink-soft); letter-spacing: .04em; margin-bottom: 26px;
+    background: var(--panel-2);
+  }
+  .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 4px color-mix(in srgb, var(--ok) 22%, transparent); }
+
+  .hero h1 {
+    font-size: clamp(40px, 6.4vw, 76px); font-weight: 800;
+    letter-spacing: -.04em; line-height: .98;
+  }
+  .hero h1 .hl { color: var(--accent); }
+  .hero p.lead {
+    margin-top: 26px; font-size: clamp(18px, 2.1vw, 21px);
+    color: var(--ink-soft); max-width: 52ch; line-height: 1.55;
+  }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+  .hero-meta {
+    margin-top: 40px; display: flex; flex-wrap: wrap; gap: 14px 26px;
+    font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--ink-faint);
+  }
+  .hero-meta span { display: inline-flex; align-items: center; gap: 8px; }
+  .hero-meta b { color: var(--ink); font-weight: 500; }
+
+  /* schematic drawing of the attribute formula */
+  .schematic {
+    position: relative; background: var(--panel);
+    border: 1px solid var(--line); border-radius: 6px;
+    padding: 26px; box-shadow: var(--shadow);
+  }
+  .schematic::before {
+    content: "FIG.01 — ATTRIBUTE EVALUATION PIPELINE";
+    position: absolute; top: -9px; left: 20px; padding: 0 9px;
+    background: var(--panel); font-family: "JetBrains Mono", monospace;
+    font-size: 9.5px; letter-spacing: .12em; color: var(--ink-faint);
+  }
+  .schematic .corner { position: absolute; width: 9px; height: 9px; border: 1.5px solid var(--accent); }
+  .schematic .c1 { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+  .schematic .c2 { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+  .schematic .c3 { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+  .schematic .c4 { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+  .formula { font-family: "JetBrains Mono", monospace; margin: 10px 0 4px; }
+  .formula .out { color: var(--accent); font-weight: 700; font-size: 17px; }
+  .formula .eq  { color: var(--ink-faint); }
+  .formula .blk {
+    display: block; padding: 12px 14px; margin: 10px 0; border-radius: 4px;
+    border: 1px dashed var(--line); background: var(--panel-2);
+    font-size: 14px; position: relative;
+  }
+  .formula .blk .lbl {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    font-size: 9px; letter-spacing: .1em; color: var(--ink-faint); text-transform: uppercase;
+  }
+  .formula .op { color: var(--accent); font-weight: 700; }
+  .formula .term { color: var(--ink); }
+  .pipe-row { display: flex; align-items: center; gap: 8px; }
+  .pipe-row .pipe-line { flex: 1; height: 1px; background: repeating-linear-gradient(90deg, var(--line) 0 6px, transparent 6px 11px); }
+  .pipe-row .pipe-tick { font-family: "JetBrains Mono", monospace; font-size: 9px; color: var(--ink-faint); }
+
+
+  /* ============================================================
+     PILLARS
+     ============================================================ */
+  .pillars { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 50px; }
+  @media (max-width: 760px) { .pillars { grid-template-columns: 1fr; } }
+  .pillar {
+    position: relative; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 6px; padding: 26px; overflow: hidden;
+    transition: transform .2s ease, border-color .2s ease;
+  }
+  .pillar:hover { transform: translateY(-4px); border-color: var(--accent); }
+  .pillar .no {
+    font-family: "JetBrains Mono", monospace; font-size: 11px;
+    color: var(--ink-faint); letter-spacing: .1em;
+  }
+  .pillar h3 { font-size: 22px; font-weight: 700; letter-spacing: -.02em; margin: 8px 0 10px; }
+  .pillar h3 .key { color: var(--accent); }
+  .pillar p { color: var(--ink-soft); font-size: 15.5px; }
+  .pillar .meta {
+    margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--line);
+    font-family: "JetBrains Mono", monospace; font-size: 11.5px; color: var(--ink-faint);
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .pillar .meta i { color: var(--accent); font-style: normal; }
+  .pillar .ghost {
+    position: absolute; right: -8px; bottom: -22px; font-family: "JetBrains Mono", monospace;
+    font-weight: 700; font-size: 110px; line-height: 1; color: var(--ink);
+    opacity: .035; pointer-events: none; user-select: none;
+  }
+
+  /* ============================================================
+     SKILLS / LLM
+     ============================================================ */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 50px; }
+  @media (max-width: 820px) { .split { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 28px;
+    transition: border-color .2s ease, transform .2s ease;
+  }
+  .card:hover { border-color: var(--accent); transform: translateY(-3px); }
+  .card .kicker { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+  .card h3 { font-size: 19px; margin: 12px 0 8px; letter-spacing: -.01em; }
+  .card h3 code { font-family: "JetBrains Mono", monospace; font-size: 15px; background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); padding: 2px 8px; border-radius: 4px; }
+  .card p { color: var(--ink-soft); font-size: 15px; }
+
+  .terminal {
+    margin-top: 18px; background: var(--ink); color: #d9e2ff; border-radius: 6px;
+    border: 1px solid var(--line); overflow: hidden; box-shadow: var(--shadow);
+  }
+  [data-theme="dark"] .terminal { background: #04081a; }
+  .terminal .bar { display: flex; align-items: center; gap: 7px; padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,.08); }
+  .terminal .bar i { width: 10px; height: 10px; border-radius: 50%; background: #394566; }
+  .terminal .bar span { margin-left: auto; font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .1em; color: #6b7aa8; text-transform: uppercase; }
+  .terminal pre { font-family: "JetBrains Mono", monospace; font-size: 12.5px; line-height: 1.85; padding: 16px 18px; overflow-x: auto; }
+  .terminal .c-comment { color: #6b7aa8; }
+  .terminal .c-key { color: #79b0ff; }
+  .terminal .c-str { color: #8fe0b0; }
+  .terminal .c-tag { color: #ffc06b; }
+
+  /* ============================================================
+     GENRE PACKS
+     ============================================================ */
+  .packs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 50px; }
+  @media (max-width: 880px) { .packs { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 460px) { .packs { grid-template-columns: 1fr; } }
+  .pack {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 22px 20px; transition: transform .2s, border-color .2s; position: relative;
+  }
+  .pack:hover { transform: translateY(-4px); border-color: var(--accent); }
+  .pack .px { font-family: "JetBrains Mono", monospace; font-size: 10.5px; color: var(--ink-faint); letter-spacing: .12em; }
+  .pack h4 { font-size: 18px; margin: 12px 0 6px; letter-spacing: -.01em; }
+  .pack p { font-size: 13.5px; color: var(--ink-soft); line-height: 1.5; }
+  .pack .go { margin-top: 14px; font-family: "JetBrains Mono", monospace; font-size: 11.5px; color: var(--accent); display: inline-flex; gap: 6px; align-items: center; }
+  .pack:hover .go .arr { transform: translateX(3px); }
+  .pack .go .arr { transition: transform .18s; }
+
+  /* ============================================================
+     VERSIONS TABLE
+     ============================================================ */
+  .vtable { margin-top: 44px; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--panel); }
+  .vrow { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; align-items: center; padding: 16px 22px; border-bottom: 1px solid var(--line-soft); font-family: "JetBrains Mono", monospace; font-size: 13px; }
+  .vrow:last-child { border-bottom: none; }
+  .vrow.head { background: color-mix(in srgb, var(--accent) 6%, var(--panel)); color: var(--ink-faint); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+  .vrow:not(.head):hover { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+  .vrow .ver { color: var(--ink); font-weight: 500; }
+  .vrow .ver .latest { color: var(--accent); }
+  .badge { font-size: 10.5px; padding: 3px 9px; border-radius: 100px; border: 1px solid var(--line); color: var(--ink-soft); justify-self: start; }
+  .badge.pre { border-color: color-mix(in srgb, var(--ok) 50%, var(--line)); color: var(--ok); }
+  .vrow a.open { color: var(--accent); justify-self: start; }
+  .vrow a.open:hover { text-decoration: underline; }
+  @media (max-width: 680px) { .vrow { grid-template-columns: 1fr 1fr; gap: 6px; } .vrow .hide-sm { display: none; } }
+
+  /* ============================================================
+     GET STARTED
+     ============================================================ */
+  .start-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 22px; margin-top: 48px; align-items: stretch; }
+  @media (max-width: 820px) { .start-grid { grid-template-columns: 1fr; } }
+  .steps { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px 6px; }
+  .step { display: flex; gap: 16px; padding: 18px; border-bottom: 1px dashed var(--line); }
+  .step:last-child { border-bottom: none; }
+  .step .n { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--accent); border: 1px solid var(--accent); width: 28px; height: 28px; flex: none; display: grid; place-items: center; border-radius: 50%; }
+  .step h4 { font-size: 16px; margin-bottom: 3px; }
+  .step p { font-size: 14px; color: var(--ink-soft); }
+  .step code { font-family: "JetBrains Mono", monospace; font-size: 12.5px; background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); padding: 1px 6px; border-radius: 4px; }
+
+  .cta-box { background: var(--accent); color: var(--accent-ink); border-radius: 6px; padding: 30px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+  .cta-box::after { content: "{ }"; position: absolute; right: -10px; bottom: -30px; font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 140px; opacity: .12; }
+  .cta-box h3 { font-size: 24px; letter-spacing: -.02em; }
+  .cta-box p { font-size: 15px; opacity: .9; margin: 10px 0 22px; max-width: 32ch; }
+  .cta-box .btn { background: var(--accent-ink); color: var(--accent); border-color: var(--accent-ink); align-self: flex-start; }
+  .cta-box .btn:hover { transform: translateY(-2px); opacity: .92; }
+
+  /* ---------- footer ---------- */
+  footer { border-top: 1px solid var(--line); padding: 54px 0 40px; }
+  .foot { display: flex; justify-content: space-between; gap: 30px; flex-wrap: wrap; }
+  .foot .brand small { display: block; margin-top: 8px; max-width: 38ch; line-height: 1.5; }
+  .foot-links { display: flex; gap: 50px; flex-wrap: wrap; }
+  .foot-col h5 { font-family: "JetBrains Mono", monospace; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 14px; }
+  .foot-col a { display: block; font-size: 14px; color: var(--ink-soft); margin-bottom: 9px; transition: color .15s; }
+  .foot-col a:hover { color: var(--accent); }
+  .foot-bottom { margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--line-soft); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-family: "JetBrains Mono", monospace; font-size: 11.5px; color: var(--ink-faint); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <b><span class="bracket">[</span>UGAS<span class="bracket">]</span></b>
+      <small class="full-name">Universal Gameplay Ability System</small>
+    </a>
+    <nav class="nav-links">
+      <a href="#why">Why</a>
+      <a href="#pillars">Pillars</a>
+      <a href="#agents">Agents</a>
+      <a href="#packs">Packs</a>
+      <a href="#versions">Versions</a>
+      <a href="https://github.com/jbltx/ugas" class="nav-cta">GitHub ↗</a>
+      <button class="toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<a id="top"></a>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow"><span class="dot"></span> <span class="mono">v1.0.0-draft.3 · open specification</span></span>
+      <h1>The portable<br>standard for<br><span class="hl">gameplay logic.</span></h1>
+      <p class="lead">UGAS is an open, engine-agnostic specification for gameplay attributes, tags, abilities, and effects — defined once as data, runnable across Unreal, Unity, Godot, and AI world models.</p>
+      <div class="hero-cta">
+        <a class="btn btn--primary" href="v1.0.0-draft.3/index.html">Read the spec <span class="arr">→</span></a>
+        <a class="btn" href="llms-full.txt">Get llms-full.txt</a>
+      </div>
+      <div class="hero-meta">
+        <span><b>4</b> core pillars</span>
+        <span><b>6</b> JSON / YAML schemas</span>
+        <span><b>4</b> genre packs</span>
+        <span><b>2</b> agent skills</span>
+      </div>
+    </div>
+
+    <div class="schematic reveal">
+      <i class="corner c1"></i><i class="corner c2"></i><i class="corner c3"></i><i class="corner c4"></i>
+      <div class="formula">
+        <div><span class="out">CurrentValue</span> <span class="eq">=</span></div>
+        <div class="blk"><span class="term">BaseValue</span> <span class="op">+</span> <span class="term">Σ Additions</span><span class="lbl">flat</span></div>
+        <div class="pipe-row"><span class="pipe-tick">×</span><span class="pipe-line"></span></div>
+        <div class="blk">( <span class="op">1 +</span> <span class="term">Σ Additive%</span> )<span class="lbl">additive %</span></div>
+        <div class="pipe-row"><span class="pipe-tick">×</span><span class="pipe-line"></span></div>
+        <div class="blk"><span class="op">Π</span> <span class="term">Multiplicative</span><span class="lbl">true mult</span></div>
+      </div>
+      <div class="mono" style="margin-top:14px;font-size:10.5px;color:var(--ink-faint);letter-spacing:.04em;line-height:1.7;">
+        // deterministic order of operations<br>
+        // identical result on client · server · world-model
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== WHY ===================== -->
+<section id="why">
+  <div class="wrap">
+    <span class="sec-tag">Why it exists</span>
+    <h2>Gameplay logic is the last thing<br>that won't port.</h2>
+    <p class="sec-lead">3D models, audio, and animation are interchangeable formats. The rules that govern stats, abilities, status effects, and world state are not — they're rewritten by hand, tightly coupled to one engine, and prone to "spaghetti" where a single health change must manually notify UI, audio, and the network.</p>
+
+    <div class="split" style="margin-top:42px;">
+      <div class="card">
+        <div class="kicker">The old way</div>
+        <h3>Imperative &amp; coupled</h3>
+        <p>Logic lives inside character classes. State changes are scattered. Multiplayer prediction is bespoke per project. Switching engines means a full rewrite.</p>
+      </div>
+      <div class="card">
+        <div class="kicker">The UGAS way</div>
+        <h3>Declarative &amp; decoupled</h3>
+        <p>An <b>Ability System Component</b> is the authoritative state container; the actor is just an avatar. Every mutation is data, every change is an event, and the same definition drives any runtime.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PILLARS ===================== -->
+<section id="pillars">
+  <div class="wrap">
+    <span class="sec-tag">The four pillars</span>
+    <h2>A complete model in four parts.</h2>
+    <p class="sec-lead">Numeric state, semantic state, behavior, and the single mechanism allowed to change them.</p>
+
+    <div class="pillars">
+      <div class="pillar reveal">
+        <div class="no">PILLAR 01</div>
+        <h3><span class="key">Attributes</span></h3>
+        <p>Numeric state on a dual-value pattern — a persistent Base Value and a computed Current Value — run through a deterministic modifier pipeline.</p>
+        <div class="meta"><i>dual-value</i> · <i>OnAttributeChanged</i> · <i>clamping</i> · <i>attribute sets</i></div>
+        <span class="ghost">01</span>
+      </div>
+      <div class="pillar reveal">
+        <div class="no">PILLAR 02</div>
+        <h3><span class="key">Gameplay Tags</span></h3>
+        <p>Hierarchical semantic labels like <span class="mono" style="font-size:13px">State.Debuff.Stunned.Magic</span> that gate logic through parent-child queries instead of booleans.</p>
+        <div class="meta"><i>MatchesTag</i> · <i>MatchesTagExact</i> · <i>HasAny</i> · <i>HasAll</i></div>
+        <span class="ghost">02</span>
+      </div>
+      <div class="pillar reveal">
+        <div class="no">PILLAR 03</div>
+        <h3><span class="key">Abilities</span></h3>
+        <p>Asynchronous, stateful action units with a rigorous lifecycle and Ability Tasks that sleep until temporal, input, event, or spatial triggers fire.</p>
+        <div class="meta"><i>Grant</i> → <i>TryActivate</i> → <i>Commit</i> → <i>Execute</i> → <i>End</i></div>
+        <span class="ghost">03</span>
+      </div>
+      <div class="pillar reveal">
+        <div class="no">PILLAR 04</div>
+        <h3><span class="key">Gameplay Effects</span></h3>
+        <p>The only authorized way to mutate attributes or tags — so every change is tracked, predicted, and replicated. Costs and cooldowns are just effects.</p>
+        <div class="meta"><i>Instant</i> · <i>HasDuration</i> · <i>Infinite</i> · <i>Add/Mul/Div/Override</i></div>
+        <span class="ghost">04</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== AGENTS / LLM ===================== -->
+<section id="agents">
+  <div class="wrap">
+    <span class="sec-tag">Agents &amp; LLM-ready resources</span>
+    <h2>Built to be read by models,<br>not just humans.</h2>
+    <p class="sec-lead">Two complementary skills turn the spec into working game definitions, and the whole corpus is published as a single context file an LLM can ingest in one shot.</p>
+
+    <div class="split">
+      <div class="card reveal">
+        <div class="kicker">Skill · whole-game</div>
+        <h3><code>gameplay-creator-assistant</code></h3>
+        <p>Genre-first scaffolding. Discovers the packs, helps you pick one, loads its entities as a base, and scaffolds all four pillars plus a Gameplay Controller — guided Q&amp;A or one-shot from a brief.</p>
+      </div>
+      <div class="card reveal">
+        <div class="kicker">Skill · single-entity</div>
+        <h3><code>ugas-schema-author</code></h3>
+        <p>Authoring, review, balancing, and simulation for one ability, effect, or attribute at a time. The two compose — the creator delegates each entity's YAML to the author.</p>
+      </div>
+    </div>
+
+    <div class="terminal reveal" style="margin-top:18px;">
+      <div class="bar"><i></i><i></i><i></i><span>llms.txt · discoverability index</span></div>
+      <pre><span class="c-comment"># point any model at the machine-readable entry points</span>
+<span class="c-key">curl</span> https://ugas.jbltx.com/<span class="c-tag">llms.txt</span>        <span class="c-comment"># index of every resource</span>
+<span class="c-key">curl</span> https://ugas.jbltx.com/<span class="c-tag">llms-full.txt</span>   <span class="c-comment"># spec + schemas + examples + packs, one file</span>
+
+<span class="c-comment"># every entity is $schema-tagged and validates</span>
+<span class="c-key">$schema</span>: <span class="c-str">".../schemas/gameplay_effect.json"</span>
+<span class="c-key">durationPolicy</span>: <span class="c-str">"Instant"</span>   <span class="c-comment"># permanent Base Value change</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PACKS ===================== -->
+<section id="packs">
+  <div class="wrap">
+    <span class="sec-tag">Genre packs &amp; templates</span>
+    <h2>Copy-and-extend starter kits.</h2>
+    <p class="sec-lead">Additive packs that extend — never replace — the core spec, each with schema-conformant template entities you can load directly.</p>
+
+    <div class="packs">
+      <a class="pack reveal" href="v1.0.0-draft.3/genres/rpg/index.html">
+        <div class="px">PACK · RPG</div>
+        <h4>Role-Playing</h4>
+        <p>Damage buckets, itemization, and stat scaling — seeded by the ARPG case study.</p>
+        <span class="go">open <span class="arr">→</span></span>
+      </a>
+      <a class="pack reveal" href="v1.0.0-draft.3/genres/racing/index.html">
+        <div class="px">PACK · RACING</div>
+        <h4>Racing</h4>
+        <p>Biome-based traction, downforce, and tuning — Forza-style vehicle simulation.</p>
+        <span class="go">open <span class="arr">→</span></span>
+      </a>
+      <a class="pack reveal" href="v1.0.0-draft.3/genres/action/index.html">
+        <div class="px">PACK · ACTION</div>
+        <h4>Action</h4>
+        <p>Coyote time, variable jumps, and power-ups — platformer-led action mechanics.</p>
+        <span class="go">open <span class="arr">→</span></span>
+      </a>
+      <a class="pack reveal" href="v1.0.0-draft.3/genres/shooter/index.html">
+        <div class="px">PACK · SHOOTER</div>
+        <h4>Shooter</h4>
+        <p>Ammo economy, accuracy channels, and hit resolution for FPS/TPS gunplay.</p>
+        <span class="go">open <span class="arr">→</span></span>
+      </a>
+    </div>
+    <p class="mono" style="margin-top:22px;font-size:12.5px;color:var(--ink-faint);">
+      → Browse the <a href="v1.0.0-draft.3/genres/index.html" style="color:var(--accent)">full pack index</a> and the non-normative <a href="v1.0.0-draft.3/genres/taxonomy.html" style="color:var(--accent)">genre taxonomy</a>.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== VERSIONS ===================== -->
+<section id="versions">
+  <div class="wrap">
+    <span class="sec-tag">Published versions</span>
+    <h2>Versioned, dated, immutable.</h2>
+
+    <div class="vtable">
+      <div class="vrow head">
+        <span>Version</span><span class="hide-sm">Published</span><span>Status</span><span>Open</span>
+      </div>
+      <div class="vrow">
+        <span class="ver"><span class="latest">v1.0.0-draft.3</span> ← latest</span>
+        <span class="hide-sm" style="color:var(--ink-faint)">2026-06-09</span>
+        <span class="badge pre">pre-release</span>
+        <a class="open" href="v1.0.0-draft.3/index.html">spec · schemas →</a>
+      </div>
+      <div class="vrow">
+        <span class="ver">v1.0.0-draft.2</span>
+        <span class="hide-sm" style="color:var(--ink-faint)">2026-06-08</span>
+        <span class="badge pre">pre-release</span>
+        <a class="open" href="v1.0.0-draft.2/index.html">spec · schemas →</a>
+      </div>
+      <div class="vrow">
+        <span class="ver">v1.0.0-draft.1</span>
+        <span class="hide-sm" style="color:var(--ink-faint)">2026-04-13</span>
+        <span class="badge pre">pre-release</span>
+        <a class="open" href="v1.0.0-draft.1/index.html">spec · schemas →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== GET STARTED ===================== -->
+<section id="start">
+  <div class="wrap">
+    <span class="sec-tag">Get started</span>
+    <h2>From spec to running game.</h2>
+
+    <div class="start-grid">
+      <div class="steps reveal">
+        <div class="step">
+          <div class="n">1</div>
+          <div><h4>Read the specification</h4><p>Start with the four pillars in the <a href="v1.0.0-draft.3/index.html" style="color:var(--accent)">latest draft</a>, rendered from AsciiDoc.</p></div>
+        </div>
+        <div class="step">
+          <div class="n">2</div>
+          <div><h4>Grab the schemas</h4><p>Validate your data against the six core <code>schemas/*.json</code> — attribute, effect, ability, tag, set, controller.</p></div>
+        </div>
+        <div class="step">
+          <div class="n">3</div>
+          <div><h4>Fork a genre pack</h4><p>Copy a pack's <code>entities/</code> directory and extend it additively as your base.</p></div>
+        </div>
+        <div class="step">
+          <div class="n">4</div>
+          <div><h4>Or let an agent build it</h4><p>Hand <code>llms-full.txt</code> + a skill to a model and scaffold a whole game from a brief.</p></div>
+        </div>
+      </div>
+
+      <div class="cta-box reveal">
+        <h3>Open standard. Open repo.</h3>
+        <p>UGAS is developed in the open. Read the source, file issues, and contribute genre packs or engine implementations.</p>
+        <a class="btn" href="https://github.com/jbltx/ugas">github.com/jbltx/ugas ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div class="brand" style="flex-direction:column;align-items:flex-start;gap:0;">
+        <b class="mono" style="font-size:19px;letter-spacing:.04em;"><span style="color:var(--accent)">[</span>UGAS<span style="color:var(--accent)">]</span></b>
+        <small class="mono" style="color:var(--ink-faint);">Universal Gameplay Ability System — an open, engine-agnostic specification for portable gameplay logic.</small>
+      </div>
+      <div class="foot-links">
+        <div class="foot-col">
+          <h5>Spec</h5>
+          <a href="v1.0.0-draft.3/index.html">Latest draft</a>
+          <a href="v1.0.0-draft.3/schemas/">Schemas</a>
+          <a href="v1.0.0-draft.3/SPEC.md">Markdown</a>
+        </div>
+        <div class="foot-col">
+          <h5>Packs</h5>
+          <a href="v1.0.0-draft.3/genres/index.html">Genre packs</a>
+          <a href="v1.0.0-draft.3/genres/taxonomy.html">Taxonomy</a>
+        </div>
+        <div class="foot-col">
+          <h5>Machine</h5>
+          <a href="llms.txt">llms.txt</a>
+          <a href="llms-full.txt">llms-full.txt</a>
+        </div>
+        <div class="foot-col">
+          <h5>Project</h5>
+          <a href="https://github.com/jbltx/ugas">GitHub</a>
+          <a href="#versions">Versions</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 UGAS · open specification</span>
+      <span>ugas.jbltx.com · built for engines &amp; models</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // theme: respect saved choice, else system preference
+  (function () {
+    var saved = localStorage.getItem("ugas-theme");
+    var sys = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", saved || sys);
+  })();
+  document.getElementById("themeToggle").addEventListener("click", function () {
+    var cur = document.documentElement.getAttribute("data-theme");
+    var next = cur === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("ugas-theme", next);
+  });
+
+  // scroll reveals
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, { threshold: .14 });
+  document.querySelectorAll(".reveal").forEach(function (el, i) {
+    el.style.transitionDelay = (i % 4 * 70) + "ms";
+    io.observe(el);
+  });
+</script>
+</body>
+</html>
