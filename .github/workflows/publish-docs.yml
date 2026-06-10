@@ -128,7 +128,9 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           DATE="$(date -u +%Y-%m-%d)"
 
-          if grep -qF "[v${VERSION}]" docs/README.md; then
+          if [ ! -f docs/README.md ]; then
+            echo "README.md not found, skipping"
+          elif grep -qF "[v${VERSION}]" docs/README.md; then
             echo "Version v${VERSION} already in README, skipping"
           else
             ROW="| [v${VERSION}](v${VERSION}/) | ${DATE} | Pre-release | [Spec](v${VERSION}/index.html) | [Schemas](v${VERSION}/schemas/) |"
@@ -136,6 +138,12 @@ jobs:
             awk -v row="$ROW" '/^\|[-| ]+\|$/ && !done { print; print row; done=1; next } 1' \
               docs/README.md > docs/README.tmp && mv docs/README.tmp docs/README.md
           fi
+
+      - name: Build landing page
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          DATE="$(date -u +%Y-%m-%d)"
+          bash source/scripts/build-landing-page.sh "${VERSION}" "${DATE}" docs source
 
       - name: Create PR to docs branch
         env:
@@ -170,5 +178,7 @@ jobs:
           - \`schemas/**/*\` → \`v${VERSION}/schemas/\`
           - \`genres/**\` → \`v${VERSION}/genres/\` (genre pack templates + rendered specs, index, taxonomy)
           - \`llms.txt\` → root (LLM discoverability)
-          - \`llms-full.txt\` → root (complete LLM context)"
+          - \`llms-full.txt\` → root (complete LLM context)
+          - \`index.html\` → root (landing page, version table + latest links)
+          - \`versions.json\` → root (version manifest)"
           fi
