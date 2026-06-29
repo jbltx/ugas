@@ -1,4 +1,4 @@
-# Cascade chain: the chain/cascade channel of the scoring pipeline. After a clear, gravity drops
+# Cascade chain: the chain/cascade factor of the scoring pipeline. After a clear, gravity drops
 # the tiles above into the gaps; if they form new matches, the board re-resolves automatically.
 # Each such automatic re-resolution applies this effect once, BEFORE its GE_MatchClear, bumping
 # ChainLength by +1 and granting Puzzle.State.Cascading. ExecCalc_MatchScore turns ChainLength into

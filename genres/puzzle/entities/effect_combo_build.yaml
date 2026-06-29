@@ -1,4 +1,4 @@
-# Combo build: the consecutive-match channel of the scoring pipeline. Each match within the combo
+# Combo build: the consecutive-match factor of the scoring pipeline. Each match within the combo
 # window applies this effect, which adds +1 to ComboMultiplier and, crucially, REFRESHES its own
 # HasDuration timer - re-applying a HasDuration effect restarts the remaining duration, so a fast
 # run of matches keeps the window alive and the multiplier climbing (1 -> 2 -> 3 ...). The moment

@@ -73,7 +73,7 @@ Attributes:
       Description: Seconds left in timed modes; drained by the simulation, topped up by GE_TimeBonus. Ignored by move-limited levels
       UICategory: Economy
 
-  # --- Scoring multipliers (the two channels of the match-scoring pipeline) ---
+  # --- Scoring multipliers (the two factors of the match-scoring pipeline) ---
   - Name: ComboMultiplier
     DefaultBaseValue: 1.0
     Category: Statistic

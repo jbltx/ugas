@@ -1,4 +1,4 @@
-# Board action set: the input context active while a puzzle level is being played. Groups the four
+# Board action set: the input context active while a puzzle level is being played. Groups the three
 # board actions into one set that is live only during Puzzle.Phase.Playing and is deactivated once
 # the level ends (Cleared or GameOver). Input buffering is enabled with a generous 0.20 s window so
 # that a swap queued during a cascade animation fires the moment the board becomes interactive again -
@@ -8,7 +8,6 @@ $schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/i
 Name: BoardControls
 Actions:
   - SelectTile
-  - Drag
   - ActivatePowerup
   - UseHint
 Priority: 0

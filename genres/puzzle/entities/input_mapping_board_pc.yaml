@@ -1,8 +1,7 @@
 # PC mouse + keyboard mapping for the BoardControls action set. The left mouse button selects a
-# tile (and a click on an adjacent tile confirms the swap); dragging the mouse while held swipes a
-# tile, routed through a MouseDragSensitivity modifier; a double-click activates a special tile; the
-# H key requests a hint. This mirrors the Touch scheme one-to-one so the same abilities drive both
-# platforms unchanged.
+# tile (and a click on an adjacent tile confirms the swap); a double-click activates a special tile;
+# the H key requests a hint. This mirrors the Touch scheme one-to-one so the same abilities drive
+# both platforms unchanged.
 
 $schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
 ActionSet: BoardControls
@@ -12,15 +11,6 @@ Bindings:
     Inputs:
       - Device: Mouse
         Input: Mouse.LeftButton
-
-  - Action: Drag
-    Inputs:
-      - Device: Mouse
-        Input: Mouse.Axis.X
-      - Device: Mouse
-        Input: Mouse.Axis.Y
-    Modifiers:
-      - MouseDragSensitivity
 
   - Action: ActivatePowerup
     Inputs:
@@ -33,4 +23,4 @@ Bindings:
         Input: Key.H
 Metadata:
   DisplayName: Board - PC
-  Description: Mouse and keyboard bindings for the puzzle board (click to select, drag to swap, double-click for powerup)
+  Description: Mouse and keyboard bindings for the puzzle board (click to select, click adjacent to swap, double-click for powerup)

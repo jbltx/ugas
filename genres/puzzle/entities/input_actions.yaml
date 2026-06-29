@@ -1,7 +1,8 @@
 # Puzzle genre input actions. Each document defines a single action that an ability listens for.
 # Actions are grouped into an Action Set (see input_action_set_board.yaml) and bound to hardware in
 # Input Mappings (Touch and PC). SelectTile and ActivatePowerup are the InputIDs the worked
-# controller binds to GA_SwapTiles and GA_ActivatePowerup; Drag carries swipe-to-swap direction.
+# controller binds to GA_SwapTiles and GA_ActivatePowerup. The swap is confirmed by tapping the
+# second tile (SelectTile's adjacent-tile confirmation), so there is no separate drag/swipe action.
 
 ---
 $schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
@@ -16,21 +17,6 @@ Metadata:
   DisplayName: Select Tile
   Description: Tap/click a tile to pick it; tap an adjacent tile to confirm a swap
   Icon: ui/icons/select_tile.png
-  Category: Board
-
----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
-Name: Drag
-ValueType: Axis2D
-TriggerBehavior: WhileHeld
-ConsumeInput: true
-Tags:
-  ActionTags:
-    - Ability.Type.Swap
-Metadata:
-  DisplayName: Drag / Swipe
-  Description: Drag from a selected tile to swap it with the neighbour in the swipe direction
-  Icon: ui/icons/drag.png
   Category: Board
 
 ---

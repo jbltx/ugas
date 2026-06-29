@@ -18,8 +18,8 @@ Mickael Bonfill <jbltx>
 
 This genre pack targets *puzzle games* in the Bejeweled / Candy Crush / Puzzle & Dragons mould: a
 board defined by a *score resource* and a *move economy*, a *swap / match / cascade* loop, and — at
-its core — a *match-scoring pipeline* in which a base match score is multiplied through a *combo*
-channel (consecutive matches) and a *chain* channel (cascade depth). Each move is a spent resource;
+its core — a *match-scoring pipeline* in which a base match score is multiplied by a *combo* factor
+(consecutive matches) and a *chain* factor (cascade depth). Each move is a spent resource;
 running out of moves ends the level.
 
 It is the practical, copy-and-extend companion to the *Puzzle (2048-style)* case study in
@@ -29,7 +29,7 @@ board state is mutated only through Effects (never by direct tag writes — §3.
 matching schema-conformant Attributes, Tags, Abilities, and Effects in `entities/`, plus a worked
 board in `entities/gameplay_controller.yaml`. The case study uses 2048's slide-and-merge grid as its
 concrete model; this pack uses tile-matching (match-3) as its concrete seed, but the same pieces —
-the scoring channels, the move economy, and the cascade chain — generalize across the wider
+the scoring factors, the move economy, and the cascade chain — generalize across the wider
 *puzzle* family (physics, logic, puzzle-platformer) catalogued under
 link:../taxonomy.adoc[family-puzzle] in the taxonomy.
 
@@ -43,9 +43,10 @@ Effects on top of the core Universal Gameplay Ability System specification.
 * All entities in `entities/` validate against the same `schemas/*.json` as the core.
 * Board state is mutated *only through Effects* (link:../../SPEC.adoc[core spec] §3.1, echoed by the
   §16.4 case study) — abilities gate on tags and apply Effects; they never write tags directly.
-* The combo/chain score stacking it relies on is the core modifier `Channel` mechanism
-  (link:../../SPEC.adoc[core spec] §5.3) and the per-match product is a core `ExecutionCalculation`
-  (§9.5) — neither is a new construct.
+* The multiplicative combo×chain scoring it relies on is a core `ExecutionCalculation`
+  (link:../../SPEC.adoc[core spec] §9.5) — `ExecCalc_MatchScore` — not a new construct. The combo and
+  chain counters themselves are ordinary attributes accumulated by additive Effect modifiers; only the
+  final multiply-and-bank lives in the Execution.
 
 [[genre-attributes]]
 == Genre Attributes
@@ -77,25 +78,28 @@ a single product:
 
 [stem]
 ++++
-\text{MatchScore} = \underbrace{b}_{\text{base}} \times \underbrace{m_{\text{combo}}}_{\text{Combo channel}} \times \underbrace{(1 + d_{\text{chain}})}_{\text{Chain channel}}
+\text{MatchScore} = \underbrace{b}_{\text{base}} \times \underbrace{m_{\text{combo}}}_{\text{combo factor}} \times \underbrace{(1 + d_{\text{chain}})}_{\text{chain factor}}
 ++++
 
 where latexmath:[b] is `BaseMatchValue` (scaled by `TilesCleared` for larger matches),
 latexmath:[m_{\text{combo}}] is the aggregated `ComboMultiplier`, and latexmath:[d_{\text{chain}}] is
 the current `ChainLength`.
 
-=== The two scoring channels
+=== The two scoring factors
 
-The combo and chain multipliers are the showcase of the core `Channel` mechanism (§5.3): modifiers
-are *additive within* a channel and *multiplicative across* channels, so the two multipliers compose
-cleanly without ever being hand-multiplied in data.
+The combo and chain multipliers are each accumulated as an *ordinary attribute* through additive
+Effect modifiers — there is no `Channel:` field on any entity. `GE_ComboBuild` adds `+1` to
+`ComboMultiplier` per match and `GE_CascadeChain` adds `+1` to `ChainLength` per cascade; the two are
+never hand-multiplied in data. The multiply *across* the two factors is performed once, at scoring
+time, inside the `ExecCalc_MatchScore` Execution (see below) — that is where the product is formed and
+banked.
 
 [cols="1,3,2",options="header"]
 |===
-| Channel | What feeds it | Stacking
+| Factor | What feeds it | Accumulation
 
-| `Combo` | `GE_ComboBuild`, one `+1` per match inside the combo window | Additive within (each match raises `ComboMultiplier`)
-| `Chain` | `GE_CascadeChain`, one `+1` per cascade depth | Additive within, multiplied across the `Combo` channel
+| Combo | `GE_ComboBuild`, one `+1` per match inside the combo window | Additive into `ComboMultiplier`
+| Chain | `GE_CascadeChain`, one `+1` per cascade depth | Additive into `ChainLength`
 |===
 
 `GE_ComboBuild` is a `HasDuration` effect that *refreshes its own timer on every application*:
@@ -114,15 +118,15 @@ two runtime attributes together is exactly the case the core reserves for a cust
 delegates to `ExecCalc_MatchScore`, which reads the four attributes, adds the product to `Score`, and
 mirrors it into `LastMatchScore` for the UI. This is the puzzle counterpart of the Racing pack's
 traction calculator and the Shooter pack's hit-resolution calculator — the seam where a genre's
-signature math plugs into UGAS. The combo and chain *channels* still aggregate declaratively in
-effect YAML; the calculation only performs the final multiply-and-bank.
+signature math plugs into UGAS. The combo and chain factors still accumulate declaratively as plain
+attributes in effect YAML; the calculation only performs the final multiply-and-bank.
 
 .Worked example (`entities/gameplay_controller.yaml`)
 A match-3 board caught mid-cascade with an active combo. The player's fifth swap forms a line of
 three (`BaseMatchValue` `100`) while the combo multiplier stands at `3` and the clear triggers a
 single cascade (`ChainLength` `1`, chain factor latexmath:[1 + 1 = 2]):
 
-* This match: latexmath:[100 \times 3 \times (1 + 1) = 600] (base × `Combo` × `Chain`) — banked in `LastMatchScore`.
+* This match: latexmath:[100 \times 3 \times (1 + 1) = 600] (base × combo × chain) — banked in `LastMatchScore`.
 * Running `Score`: latexmath:[100 + 200 + 600 = 900] — the sum of three scoring matches at combos ×1, ×2, ×3.
 * `MovesRemaining`: latexmath:[25 - 5 = 20] — five swaps spent (two formed no match but still cost a move).
 
@@ -172,9 +176,9 @@ Defined in `entities/tag_registry.yaml` (additive only):
 * `entities/effect_match_clear.yaml` — `GE_MatchClear`: instant; runs `ExecCalc_MatchScore` to bank
   the match product into `Score`; grants `Puzzle.State.Matching`.
 * `entities/effect_combo_build.yaml` — `GE_ComboBuild`: `HasDuration`; `+1` `ComboMultiplier`,
-  refreshing its window on every match (the `Combo` channel).
+  refreshing its window on every match (the combo factor).
 * `entities/effect_cascade_chain.yaml` — `GE_CascadeChain`: instant; `+1` `ChainLength` per cascade
-  (the `Chain` channel); grants `Puzzle.State.Cascading`.
+  (the chain factor); grants `Puzzle.State.Cascading`.
 * `entities/effect_powerup_bomb.yaml` — `GE_PowerupBomb`: instant; an `AttributeBased` flat `Score`
   bonus scaled off `BaseMatchValue`; grants `Puzzle.State.Cascading`.
 * `entities/effect_time_bonus.yaml` — `GE_TimeBonus`: instant; `+TimeRemaining` for timed modes.
@@ -189,9 +193,9 @@ Defined in `entities/tag_registry.yaml` (additive only):
 . Tune the level shape in `PuzzleBoardSet` first — `TargetScore`, `MaxMoves`, and `BaseMatchValue`
   set the difficulty — then add tile types as `Tile.Type.*` tags and new powerups as
   `Powerup.Type.*` effects.
-. Author new scoring sources by choosing the right `Channel`: consecutive-play bonuses go in `Combo`,
-  cascade-depth bonuses in `Chain`; reserve the `ExecCalc_MatchScore` calculation for the final
-  multiply-and-bank.
+. Author new scoring sources by feeding the right factor: consecutive-play bonuses add into
+  `ComboMultiplier`, cascade-depth bonuses into `ChainLength`; reserve the `ExecCalc_MatchScore`
+  calculation for the final multiply-and-bank.
 . Implement the one `ExecCalc_MatchScore` hook in your engine (the per-match product); everything else
   is data.
 . Add new states as `Puzzle.State.*` / `Puzzle.Phase.*` tags granted by Effects (never mutate tags
