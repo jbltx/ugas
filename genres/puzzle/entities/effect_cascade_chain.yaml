@@ -1,0 +1,21 @@
+# Cascade chain: the chain/cascade channel of the scoring pipeline. After a clear, gravity drops
+# the tiles above into the gaps; if they form new matches, the board re-resolves automatically.
+# Each such automatic re-resolution applies this effect once, BEFORE its GE_MatchClear, bumping
+# ChainLength by +1 and granting Puzzle.State.Cascading. ExecCalc_MatchScore turns ChainLength into
+# the chain factor (1 + ChainLength): the player-initiated match resolves at ChainLength 0 (factor 1),
+# the first cascade at ChainLength 1 (factor 2), the second at ChainLength 2 (factor 3), and so on -
+# rewarding deep cascades. ChainLength is reset to 0 by GE_ResetChain once the board settles.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_CascadeChain
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: ChainLength
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 1.0
+GrantedTags:
+  - Puzzle.State.Cascading
+GameplayCues:
+  - GameplayCue.Puzzle.Cascade

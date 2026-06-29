@@ -1,0 +1,22 @@
+# Combo build: the consecutive-match channel of the scoring pipeline. Each match within the combo
+# window applies this effect, which adds +1 to ComboMultiplier and, crucially, REFRESHES its own
+# HasDuration timer - re-applying a HasDuration effect restarts the remaining duration, so a fast
+# run of matches keeps the window alive and the multiplier climbing (1 -> 2 -> 3 ...). The moment
+# the player lets the 2.5 s window lapse without a new match, this effect expires; its +1 modifier
+# is removed and ComboMultiplier falls back toward its clamped floor of 1. ExecCalc_MatchScore reads
+# the aggregated ComboMultiplier, so the combo factor enters the score product declaratively.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_ComboBuild
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 2.5
+Modifiers:
+  - Attribute: ComboMultiplier
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 1.0
+GameplayCues:
+  - GameplayCue.Puzzle.ComboTick

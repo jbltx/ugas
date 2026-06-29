@@ -63,6 +63,10 @@ schema-conformant template files you can copy and extend.
 | link:shooter/index.html[*Shooter*]
 | First/third-person gunplay — ammo economy and hit resolution
 | `shooter/entities/`
+
+| link:puzzle/index.html[*Puzzle*]
+| Tile-matching — seeded by the Puzzle case study; combo×chain scoring and a move economy
+| `puzzle/entities/`
 |===
 
 [[using-a-pack]]

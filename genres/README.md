@@ -94,3 +94,4 @@ schema, example, and genre-pack entity in one file).
 | `racing` | Racing (Forza-style) — seeded by the Racing case study | [`racing/spec.adoc`](racing/spec.adoc) |
 | `action` | Action / Action-Adventure — seeded by the Platformer case study | [`action/spec.adoc`](action/spec.adoc) |
 | `shooter` | Shooter (FPS/TPS) — gunplay, ammo economy, hit resolution | [`shooter/spec.adoc`](shooter/spec.adoc) |
+| `puzzle` | Puzzle (tile-matching) — seeded by the Puzzle case study; combo×chain scoring + move economy | [`puzzle/spec.adoc`](puzzle/spec.adoc) |

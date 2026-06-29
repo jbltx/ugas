@@ -1,0 +1,28 @@
+# Reusable input modifiers for the puzzle genre. Referenced by name in the Input Mappings. They sit
+# in the per-binding modifier pipeline and run in the order they are listed on each binding.
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+Name: SwipeDeadzone
+Type: DeadZone
+Params:
+  DeadZoneShape: Radial
+  InnerThreshold: 0.2
+  OuterThreshold: 0.9
+UserConfigurable: false
+Metadata:
+  DisplayName: Swipe Dead Zone
+  Description: Radial dead zone for touch swipes - ignores finger jitter below 20% so a tap is not misread as a swap
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+Name: MouseDragSensitivity
+Type: Sensitivity
+Params:
+  Multiplier: 1.0
+  MultiplierX: 1.0
+  MultiplierY: 1.0
+UserConfigurable: true
+Metadata:
+  DisplayName: Mouse Drag Sensitivity
+  Description: Per-axis multiplier for mouse-drag swaps, exposed in the player settings screen

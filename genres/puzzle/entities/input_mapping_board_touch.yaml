@@ -1,0 +1,33 @@
+# Touch mapping for the BoardControls action set (Mobile platform) - the primary control scheme for
+# a match-3 puzzle. Tapping selects a tile; dragging from a tile swipes it into its neighbour (the
+# Drag axis runs through a SwipeDeadzone so a stray finger jitter is not read as a swap); a
+# double-tap detonates a special tile; a dedicated on-screen Hint button requests a move.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+ActionSet: BoardControls
+Platform: Mobile
+Bindings:
+  - Action: SelectTile
+    Inputs:
+      - Device: Touch
+        Input: Touch.Primary.Tap
+
+  - Action: Drag
+    Inputs:
+      - Device: Touch
+        Input: Touch.Primary.Swipe
+    Modifiers:
+      - SwipeDeadzone
+
+  - Action: ActivatePowerup
+    Inputs:
+      - Device: Touch
+        Input: Touch.Primary.DoubleTap
+
+  - Action: UseHint
+    Inputs:
+      - Device: Touch
+        Input: Touch.Button.Hint
+Metadata:
+  DisplayName: Board - Touch
+  Description: Touchscreen bindings for the puzzle board (tap to select, swipe to swap, double-tap for powerup)
