@@ -1,0 +1,5 @@
+---
+'ugas': minor
+---
+
+[Added] Combat genre pack (`genres/combat/`): an additive fighting/brawler/hack-and-slash specification plus a schema-conformant template — `FighterCombatSet` (health, a poise/stagger meter, a guard/block-stamina meter, a super gauge, and frame-data feel stats), a combat tag taxonomy (frame-data + stagger states, startup/active/recovery move phases, ability types, hitzones, teams), the signature melee exchange (frame-data hitstun/blockstun states that block actions, a poise → stagger threshold that applies `GE_Stagger`, a `Block` damage channel that reduces incoming damage and slows movement, and combo cancels via `CancelAbilitiesWithTags` / `BlockAbilitiesWithTags`), light/heavy/block/special abilities with a meter-cost super and super-freeze lockout, a custom `ExecCalc_MeleeResolution` Execution coupling AttackPower, Defense, the Block channel, poise/guard damage, and super gain into `EffectiveDamage`, a gamepad input layer, and a worked mid-block fighter controller. Designed from first principles as a ready-to-extend pack, deliberately distinct from the Shooter pack (#38).

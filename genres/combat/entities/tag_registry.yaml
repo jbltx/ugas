@@ -1,0 +1,64 @@
+# Combat genre tag taxonomy. ADDITIVE: introduces genre-specific tags only.
+# It does not redefine the core lifecycle tags (State.Alive / State.Combat / State.Dead) -
+# those are referenced by the pack's entities, not declared here. Frame-data states and the
+# stagger/block states are all GRANTED BY EFFECTS; abilities only gate on them.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_tag.json
+Tags:
+  # --- Combat states (granted by Effects; the frame-data + stagger/guard state machine) ---
+  - Tag: Combat.State.Hitstun
+    Description: Recovering from a clean hit; granted by GE_Hitstun, blocks all actions for the stun window
+    AllowMultiple: false
+  - Tag: Combat.State.Blockstun
+    Description: Recovering from a blocked hit; granted by GE_Blockstun, blocks all actions for the block window
+    AllowMultiple: false
+  - Tag: Combat.State.Blocking
+    Description: Actively guarding; granted by GE_Blocking while the block input is held
+    AllowMultiple: false
+  - Tag: Combat.State.Staggered
+    Description: Poise broken; granted by GE_Stagger when Poise hits 0, leaving the fighter open to punish
+    AllowMultiple: false
+
+  # --- Move frame phases (the startup / active / recovery windows of an attack) ---
+  - Tag: Combat.Move.Startup
+    Description: Wind-up phase before the hitbox is live; the attack is committed but not yet threatening
+    AllowMultiple: false
+  - Tag: Combat.Move.Active
+    Description: Hitbox-live phase; contact during this window applies the move's GE_MeleeDamage
+    AllowMultiple: false
+  - Tag: Combat.Move.Recovery
+    Description: Cool-down phase after the hitbox closes; the cancel window a faster move can interrupt
+    AllowMultiple: false
+
+  # --- Ability classification (used by cancel/block tag queries between moves) ---
+  - Tag: Ability.Type.Light
+    Description: Fast, low-damage normal; the combo starter
+    AllowMultiple: false
+  - Tag: Ability.Type.Heavy
+    Description: Slow, high-damage normal; cancels a light attack's recovery
+    AllowMultiple: false
+  - Tag: Ability.Type.Block
+    Description: Defensive guard ability
+    AllowMultiple: false
+  - Tag: Ability.Type.Special
+    Description: Super-meter spender with invulnerable super-freeze startup
+    AllowMultiple: false
+
+  # --- Hitzones (where on the body a hit lands; drives high/mid/low guard rules) ---
+  - Tag: Hitzone.High
+    Description: Overhead hit; must be blocked standing
+    AllowMultiple: false
+  - Tag: Hitzone.Mid
+    Description: Mid-level hit; blockable standing or crouching
+    AllowMultiple: false
+  - Tag: Hitzone.Low
+    Description: Low hit; must be blocked crouching
+    AllowMultiple: false
+
+  # --- Teams (used to skip friendly fire in the melee-resolution calc) ---
+  - Tag: Team.Friendly
+    Description: Same side as the source; the melee-resolution calc skips friendly fire
+    AllowMultiple: false
+  - Tag: Team.Hostile
+    Description: Opposing side; a valid melee target
+    AllowMultiple: false

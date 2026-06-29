@@ -1,0 +1,46 @@
+# Special: the meter-spending super move. Costs a full bar of Super (Cost: GE_SuperCost, a trivial
+# resource cost referenced by name like the racing pack's nitro cost) and so cannot activate on an
+# empty gauge - the cost gate is what enforces "need meter", no explicit check tag required. During
+# its cinematic super-freeze startup it owns Combat.Move.Startup and uses BlockAbilitiesWithTags to
+# lock out the opponent's normals (Light/Heavy/Block) for the freeze, then sweeps a high-damage hit
+# that applies GE_MeleeDamage. Blocked while in hitstun, blockstun, or staggered. Goes on a long
+# cooldown (GE_SpecialCooldown) so it cannot be chained even with meter to spare.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+Name: GA_Special
+Tags:
+  AbilityTags:
+    - Ability.Type.Special
+  BlockAbilitiesWithTags:
+    - Ability.Type.Light
+    - Ability.Type.Heavy
+    - Ability.Type.Block
+  ActivationRequiredTags:
+    - State.Combat
+  ActivationBlockedTags:
+    - Combat.State.Hitstun
+    - Combat.State.Blockstun
+    - Combat.State.Staggered
+  ActivationOwnedTags:
+    - Combat.Move.Startup
+Cost: GE_SuperCost
+Cooldown: GE_SpecialCooldown
+Tasks:
+  - Type: WaitDelay
+    Params:
+      Duration: 0.5
+  - Type: WaitTargetData
+    Params:
+      TargetingMethod: MeleeSweep
+      MaxRange: 2.5
+      Hitzone: Hitzone.Mid
+  - Type: ApplyEffectToTarget
+    Params:
+      EffectClass: GE_MeleeDamage
+  - Type: WaitDelay
+    Params:
+      Duration: 0.4
+Metadata:
+  DisplayName: Special
+  Description: Spend a full super bar for a high-damage super move with an invulnerable super-freeze
+  Icon: ui/icons/special.png
