@@ -9,6 +9,8 @@ Name: GA_Tackle
 Tags:
   AbilityTags:
     - Ability.Type.Tackle
+  ActivationRequiredTags:
+    - State.Alive
 Cost: GE_TackleCost
 Cooldown: GE_TackleCooldown
 Tasks:

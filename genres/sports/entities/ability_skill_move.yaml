@@ -9,6 +9,8 @@ Name: GA_SkillMove
 Tags:
   AbilityTags:
     - Ability.Type.Skill
+  ActivationRequiredTags:
+    - State.Alive
   ActivationBlockedTags:
     - Athlete.State.Fatigued
 Cost: GE_SkillMoveCost

@@ -11,6 +11,8 @@ Name: GA_Shoot
 Tags:
   AbilityTags:
     - Ability.Type.Shoot
+  ActivationRequiredTags:
+    - State.Alive
 Cost: GE_ShootCost
 Cooldown: GE_ShootCooldown
 Tasks:

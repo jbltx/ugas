@@ -8,10 +8,10 @@ Name: GA_Sprint
 Tags:
   AbilityTags:
     - Ability.Type.Sprint
+  ActivationRequiredTags:
+    - State.Alive
   ActivationBlockedTags:
     - Athlete.State.Fatigued
-  ActivationOwnedTags:
-    - Athlete.State.Sprinting
 Tasks:
   - Type: ApplyEffectToOwner
     Params:

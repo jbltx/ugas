@@ -10,6 +10,8 @@ Name: GA_Pass
 Tags:
   AbilityTags:
     - Ability.Type.Pass
+  ActivationRequiredTags:
+    - State.Alive
 Cost: GE_PassCost
 Cooldown: GE_PassCooldown
 Tasks:
