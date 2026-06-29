@@ -1,0 +1,107 @@
+# Sports genre input actions. Each document defines a single action that an ability or movement
+# system listens for. Actions are grouped into an Action Set (see input_action_set_outfield.yaml)
+# and bound to hardware in Input Mappings. The action Names match the InputID values on the granted
+# abilities in gameplay_controller.yaml (Sprint, Pass, Shoot, Tackle, SkillMove).
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Move
+ValueType: Axis2D
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags: []
+Metadata:
+  DisplayName: Move
+  Description: Omnidirectional ground movement
+  Icon: ui/icons/move.png
+  Category: Movement
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Look
+ValueType: Axis2D
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags: []
+Metadata:
+  DisplayName: Look
+  Description: Camera / aiming direction for passes and shots
+  Icon: ui/icons/look.png
+  Category: Movement
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Sprint
+ValueType: Digital
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Sprint
+Metadata:
+  DisplayName: Sprint
+  Description: Hold to sprint at full speed, draining stamina
+  Icon: ui/icons/sprint.png
+  Category: Movement
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Pass
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Pass
+Metadata:
+  DisplayName: Pass
+  Description: Play the ball to a team-mate
+  Icon: ui/icons/pass.png
+  Category: OnBall
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Shoot
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Shoot
+Metadata:
+  DisplayName: Shoot
+  Description: Strike the ball at goal
+  Icon: ui/icons/shoot.png
+  Category: OnBall
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Tackle
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Tackle
+Metadata:
+  DisplayName: Tackle
+  Description: Challenge a hostile ball-carrier for possession
+  Icon: ui/icons/tackle.png
+  Category: OffBall
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: SkillMove
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Skill
+Metadata:
+  DisplayName: Skill Move
+  Description: Perform a technical dribble to beat a defender
+  Icon: ui/icons/skill_move.png
+  Category: OnBall

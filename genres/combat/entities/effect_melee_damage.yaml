@@ -1,0 +1,17 @@
+# The melee hit payload applied by GA_LightAttack / GA_HeavyAttack / GA_Special to the target.
+# Combat damage is not a single subtraction: it couples the source's AttackPower (scaled by the
+# move's multiplier, supplied as IncomingDamage) with the target's flat Defense, the Block channel
+# damage reduction when the target owns Combat.State.Blocking, plus poise damage and guard damage,
+# and it feeds the super gauge of both fighters. That can't be a static modifier, so it delegates to
+# a custom Execution (ExecCalc_MeleeResolution). The calc honors Team.Friendly targets (skips
+# friendly fire) and writes EffectiveDamage (Meta) for telemetry/UI. This is the combat analogue of
+# the shooter's hit-resolution calc and the racing traction calc - the seam where the genre's
+# signature math plugs into UGAS.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_MeleeDamage
+DurationPolicy: Instant
+Executions:
+  - CalculatorClass: ExecCalc_MeleeResolution
+GameplayCues:
+  - GameplayCue.Combat.Impact

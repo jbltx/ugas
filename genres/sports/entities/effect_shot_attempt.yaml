@@ -1,0 +1,16 @@
+# Shot resolution, applied instantly by GA_Shoot. A shot outcome is not a single subtraction: it
+# couples the shooter's (already fatigue-coupled) ShotPower and ShotAccuracy with the live Stamina
+# reserve and the defender pressure on the shooter, then resolves whether the ball beats the keeper.
+# That multi-attribute, source-vs-target logic can't be a static modifier, so it delegates to a custom
+# Execution (ExecCalc_ShotResolution, spec section 9.5). The calc writes EffectiveShotPower and
+# GoalProbability (both Meta) for telemetry/UI and applies the goal outcome. This is the sports
+# analogue of the shooter pack's ExecCalc_HitResolution - the seam where a genre's signature math
+# plugs into UGAS.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_ShotAttempt
+DurationPolicy: Instant
+Executions:
+  - CalculatorClass: ExecCalc_ShotResolution
+GameplayCues:
+  - GameplayCue.Ball.Shot

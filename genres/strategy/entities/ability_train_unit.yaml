@@ -1,0 +1,27 @@
+# Train unit: queue a unit at a production structure. Costs Minerals (GE_TrainCost) and goes on a
+# build-time cooldown (GE_TrainCooldown) that models the production timer - the next unit cannot be
+# queued until the current one finishes. The "enough supply" requirement (Supply + SupplyCost <=
+# MaxSupply) is an attribute comparison evaluated in activation logic, not an activation tag.
+# Blocked while the structure itself is still under construction. GE_TrainCost and GE_TrainCooldown
+# are trivial (a flat resource cost and a cooldown tag) and are referenced by name rather than
+# shipped as files, the convention the racing/shooter packs use.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+Name: GA_TrainUnit
+Tags:
+  AbilityTags:
+    - Ability.Type.Train
+  ActivationRequiredTags:
+    - State.Alive
+  ActivationBlockedTags:
+    - Unit.State.Constructing
+Cost: GE_TrainCost
+Cooldown: GE_TrainCooldown
+Tasks:
+  - Type: WaitDelay
+    Params:
+      Duration: 15.0
+Metadata:
+  DisplayName: Train Unit
+  Description: Spend minerals and supply to produce a unit over time
+  Icon: ui/icons/train.png
