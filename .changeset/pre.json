@@ -5,16 +5,24 @@
     "ugas": "1.0.0-draft.1"
   },
   "changesets": [
+    "fix-genre-pack-section-refs",
     "gameplay-creator-assistant-skill",
     "genre-pack-action",
+    "genre-pack-casual",
+    "genre-pack-combat",
+    "genre-pack-puzzle",
     "genre-pack-racing",
     "genre-pack-rpg",
     "genre-pack-shooter",
+    "genre-pack-sports",
+    "genre-pack-strategy",
     "genre-pack-structure",
+    "genre-pack-survival-crafting",
     "genre-taxonomy",
     "gentle-clocks-hum",
     "link-templates-docs",
     "llm-discoverability",
+    "state-persistence-protocol",
     "warm-inputs-land"
   ]
 }

@@ -22,7 +22,7 @@ form and grant abilities, and a movement *state machine* — grounded, airborne,
 that has to stay consistent while abilities, physics, and power-ups all read and write it.
 
 It is the practical, copy-and-extend companion to the *Platformer (Mario-style)* case study in
-link:../../SPEC.adoc[the core specification] (Section 15.1). Where the case study sketches the
+link:../../SPEC.adoc[the core specification] (Section 16.1). Where the case study sketches the
 movement attribute set, the variable-height `GA_Jump`, and power-up effects, this pack ships the
 matching schema-conformant Attributes, Tags, Abilities, and Effects in `entities/`, plus a worked
 hero in `entities/gameplay_controller.yaml`.
@@ -41,7 +41,7 @@ Effects on top of the core Universal Gameplay Ability System specification.
 * All entities in `entities/` validate against the same `schemas/*.json` as the core.
 * It *reuses* the core lifecycle tags (`State.Alive`, `State.Combat`, `State.Dead`) by reference,
   and adds the platformer movement states (`State.Grounded`, `State.InAir`, …) introduced by the
-  §15.1 case study.
+  §16.1 case study.
 * Movement state is mutated *only through Effects* (core spec §3.1) — abilities never write tags
   directly — and the size/speed power-up stacking is the core modifier `Channel` mechanism
   (link:../../SPEC.adoc[core spec] §5.3), not a new construct.
@@ -132,7 +132,7 @@ Defined in `entities/tag_registry.yaml` (additive only):
   applies the jump impulse, applies `GE_JumpCut` on early release, and cleans up both on landing.
 * `entities/ability_ground_pound.yaml` — `GA_GroundPound`: an airborne slam. Requires `State.InAir`,
   blocked while `State.Grounded`, and on `Event.Landed` applies `GE_ContactDamage` to every enemy in
-  radius — skipping `Immunity.Contact` targets. Models the §15.3 radius/tag-query pattern for action.
+  radius — skipping `Immunity.Contact` targets. Models the §16.3 radius/tag-query pattern for action.
 
 [[genre-effects]]
 == Genre Effects

@@ -128,90 +128,22 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           DATE="$(date -u +%Y-%m-%d)"
 
-          # Seed the marker if the README doesn't have one yet (one-time migration)
-          if ! grep -q '<!-- NEW_VERSION -->' docs/README.md; then
-          cat > docs/README.md <<'EOF'
-          # Universal Gameplay Ability System (UGAS)
-
-          > An open, engine-agnostic specification for standardizing gameplay logic across game engines and AI world models.
-
-          ## Published Versions
-
-          | Version | Date | Status | Specification | Schemas |
-          |---------|------|--------|---------------|---------|
-          <!-- NEW_VERSION -->
-
-          ## About
-
-          UGAS defines a unified architecture for gameplay abilities, attributes, effects, and state management that works across traditional game engines (Unreal, Unity, Godot) and AI world models.
-
-          For the full project overview, source code, and contribution guidelines, see the [main repository](https://github.com/jbltx/ugas).
-          EOF
-          fi
-
-          if grep -qF "[v${VERSION}]" docs/README.md; then
+          if [ ! -f docs/README.md ]; then
+            echo "README.md not found, skipping"
+          elif grep -qF "[v${VERSION}]" docs/README.md; then
             echo "Version v${VERSION} already in README, skipping"
           else
-            ROW="| [v${VERSION}](v${VERSION}/) | ${DATE} | Pre-release | [Spec](v${VERSION}/index.html) · [MD](v${VERSION}/SPEC.md) · [Templates](v${VERSION}/genres/) | [Schemas](v${VERSION}/schemas/) |"
-            sed -i "s#<!-- NEW_VERSION -->#${ROW}\n<!-- NEW_VERSION -->#" docs/README.md
+            ROW="| [v${VERSION}](v${VERSION}/) | ${DATE} | Pre-release | [Spec](v${VERSION}/index.html) | [Schemas](v${VERSION}/schemas/) |"
+            # Insert as first data row after the table separator (newest first)
+            awk -v row="$ROW" '/^\|[-| ]+\|$/ && !done { print; print row; done=1; next } 1' \
+              docs/README.md > docs/README.tmp && mv docs/README.tmp docs/README.md
           fi
 
-      - name: Generate docs landing page
+      - name: Build landing page
         run: |
-          cd docs
-
-          # Collect and sort version directories (newest first)
-          mapfile -t versions < <(
-            find . -maxdepth 1 -type d -name "v*" -printf '%f\n' | sort -V -r
-          )
-
-          if [ ${#versions[@]} -eq 0 ]; then
-            echo "No version directories found, skipping README generation"
-            exit 0
-          fi
-
-          # Detect latest stable release (no pre-release suffix)
-          latest=""
-          for v in "${versions[@]}"; do
-            if [[ ! "${v#v}" =~ ^[0-9]+\.[0-9]+\.[0-9]+-.+ ]]; then
-              latest="$v"
-              break
-            fi
-          done
-
-          # Generate README.md
-          {
-            cat <<'HEADER'
-          # Universal Gameplay Ability System (UGAS)
-
-          > An open, engine-agnostic specification for standardizing gameplay logic across game engines and AI world models.
-
-          ## Published Versions
-
-          | Version | Status | Specification | Schemas |
-          |---------|--------|---------------|---------|
-          HEADER
-
-            for v in "${versions[@]}"; do
-              if [[ "$v" == "$latest" ]]; then
-                status="**Latest**"
-              elif [[ "${v#v}" =~ ^[0-9]+\.[0-9]+\.[0-9]+-.+ ]]; then
-                status="Pre-release"
-              else
-                status="Release"
-              fi
-              echo "| [$v]($v/) | $status | [Spec]($v/index.html) | [Schemas]($v/schemas/) |"
-            done
-
-            cat <<'FOOTER'
-
-          ## About
-
-          UGAS defines a unified architecture for gameplay abilities, attributes, effects, and state management that works across traditional game engines (Unreal, Unity, Godot) and AI world models.
-
-          For the full project overview, source code, and contribution guidelines, see the [main repository](https://github.com/jbltx/ugas).
-          FOOTER
-          } > README.md
+          VERSION="${{ steps.version.outputs.version }}"
+          DATE="$(date -u +%Y-%m-%d)"
+          bash source/scripts/build-landing-page.sh "${VERSION}" "${DATE}" docs source
 
       - name: Create PR to docs branch
         env:
@@ -246,5 +178,7 @@ jobs:
           - \`schemas/**/*\` → \`v${VERSION}/schemas/\`
           - \`genres/**\` → \`v${VERSION}/genres/\` (genre pack templates + rendered specs, index, taxonomy)
           - \`llms.txt\` → root (LLM discoverability)
-          - \`llms-full.txt\` → root (complete LLM context)"
+          - \`llms-full.txt\` → root (complete LLM context)
+          - \`index.html\` → root (landing page, version table + latest links)
+          - \`versions.json\` → root (version manifest)"
           fi

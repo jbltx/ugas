@@ -1,0 +1,5 @@
+---
+'ugas': minor
+---
+
+[Added] Puzzle genre pack (`genres/puzzle/`): an additive tile-matching specification plus a schema-conformant template — `PuzzleBoardSet` (a `Score` resource, a `MovesRemaining` / `TimeRemaining` economy, `ComboMultiplier`, `ChainLength`, and match telemetry), a puzzle tag taxonomy (board states, level phases, tile types, powerups, ability types), the signature match-scoring pipeline that multiplies a base match through a `Combo` channel (consecutive matches, via a window-refreshing `HasDuration` `GE_ComboBuild`) and a `Chain` channel (cascade depth, via `GE_CascadeChain`) plus a move economy where the swap's move cost is what ends the level at zero moves, the key abilities/effects (`GA_SwapTiles` / `GA_ActivatePowerup` / `GA_UseHint`; `GE_MatchClear`, `GE_PowerupBomb`, `GE_TimeBonus`, `GE_ResetChain`), an `ExecCalc_MatchScore` engine seam that banks the per-match product (tiles × base × combo × chain), a Touch + PC input layer, and a worked mid-cascade board controller (Score = 100 + 200 + 600 = 900 at combos ×1/×2/×3). Seeds the Puzzle case study (§16.4) as a ready-to-extend pack (#41).

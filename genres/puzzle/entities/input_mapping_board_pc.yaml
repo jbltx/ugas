@@ -1,0 +1,26 @@
+# PC mouse + keyboard mapping for the BoardControls action set. The left mouse button selects a
+# tile (and a click on an adjacent tile confirms the swap); a double-click activates a special tile;
+# the H key requests a hint. This mirrors the Touch scheme one-to-one so the same abilities drive
+# both platforms unchanged.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+ActionSet: BoardControls
+Platform: PC
+Bindings:
+  - Action: SelectTile
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.LeftButton
+
+  - Action: ActivatePowerup
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.LeftButton.Double
+
+  - Action: UseHint
+    Inputs:
+      - Device: Keyboard
+        Input: Key.H
+Metadata:
+  DisplayName: Board - PC
+  Description: Mouse and keyboard bindings for the puzzle board (click to select, click adjacent to swap, double-click for powerup)

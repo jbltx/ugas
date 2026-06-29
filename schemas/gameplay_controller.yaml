@@ -94,9 +94,15 @@ properties:
         EffectClass:
           type: string
           description: GameplayEffect class reference
-        Duration:
+        DurationPolicy:
+          type: string
+          enum: [HasDuration, Infinite]
+          description: Duration policy of the originating effect (§14.3)
+        RemainingDuration:
           type: number
-          description: Remaining duration in seconds (-1 for infinite)
+          description: >-
+            Remaining duration in seconds. Present only for HasDuration
+            effects (§14.3.1)
         Stacks:
           type: integer
           minimum: 1
@@ -112,7 +118,38 @@ properties:
         InstigatorGC:
           type: string
           description: Reference to the GC that caused this effect
-    description: Currently active effects applied to this GC
+        SourceAbility:
+          type: string
+          description: >-
+            Ability that applied this effect (for provenance tracking,
+            §14.3.2)
+        PeriodicState:
+          type: object
+          description: >-
+            Periodic execution state for effects with Period settings
+            (§14.3.3)
+          properties:
+            PeriodElapsed:
+              type: number
+              description: Seconds elapsed since last periodic execution
+            ExecutionCount:
+              type: integer
+              minimum: 0
+              description: Total periodic executions fired
+        CapturedAttributes:
+          type: object
+          additionalProperties:
+            type: number
+          description: >-
+            Attribute values captured OnApplication, keyed by attribute
+            name (§14.3)
+        SetByCallerMagnitudes:
+          type: object
+          additionalProperties:
+            type: number
+          description: >-
+            Runtime-provided magnitudes, keyed by data tag (§14.3)
+    description: Currently active effects applied to this GC (serialization protocol §14)
 
   ActiveActionSets:
     type: array

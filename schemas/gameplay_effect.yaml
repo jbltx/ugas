@@ -169,4 +169,4 @@ $defs:
         description: >-
           Optional named aggregation channel. Modifiers in the same channel sum together;
           modifiers in different channels multiply against each other. Used for damage-bucket
-          systems (see §15.3). Defaults to the global channel if omitted.
+          systems (see §16.3). Defaults to the global channel if omitted.

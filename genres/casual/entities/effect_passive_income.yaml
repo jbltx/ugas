@@ -1,0 +1,25 @@
+# Passive income tick: the heartbeat of the idle loop. Infinite + Period(1.0) makes this behave
+# like an Instant effect fired once per second (spec section 9.3), permanently adding to the
+# Currency base value each tick. The amount is NOT static - it is the live, fully-aggregated
+# CurrencyPerSecond - so the magnitude is AttributeBased with BackingAttribute CurrencyPerSecond
+# (spec section 9.4.2): Result = (CurrencyPerSecond + 0) x 1.0 + 0. As generators and prestige
+# push CurrencyPerSecond up, every tick automatically pays out more, with no change to this effect.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_PassiveIncome
+DurationPolicy: Infinite
+Period:
+  Period: 1.0
+  ExecuteOnApplication: false
+Modifiers:
+  - Attribute: Currency
+    Operation: Add
+    Magnitude:
+      Type: AttributeBased
+      BackingAttribute: CurrencyPerSecond
+      Source: Source
+      Coefficient: 1.0
+      PreMultiplyAdditive: 0.0
+      PostMultiplyAdditive: 0.0
+GameplayCues:
+  - GameplayCue.Idle.Tick

@@ -1,0 +1,25 @@
+# Drink: drink from a carried water item to restore Thirst, mirroring GA_ConsumeFood. Requires a
+# water item (Item.Type.Water). A short drink wait, then the instant GE_DrinkWater tops up Thirst,
+# clearing Survival.State.Dehydrated once Thirst leaves 0. Blocked while crafting.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+Name: GA_Drink
+Tags:
+  AbilityTags:
+    - Ability.Type.Consume
+  ActivationRequiredTags:
+    - State.Alive
+    - Item.Type.Water
+  ActivationBlockedTags:
+    - Survival.State.Crafting
+Tasks:
+  - Type: WaitDelay
+    Params:
+      Duration: 1.5
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_DrinkWater
+Metadata:
+  DisplayName: Drink Water
+  Description: Drink from a carried water container to restore hydration
+  Icon: ui/icons/drink.png

@@ -1,0 +1,14 @@
+# Exhaustion: the stamina threshold state. The engine's threshold detector applies this (granting
+# Survival.State.Exhausted) when Stamina reaches 0, and removes it once Stamina regenerates above a
+# recovery margin. INFINITE while exhausted. It carries no attribute drain - it is purely a gating
+# state: GA_Sprint lists Survival.State.Exhausted in ActivationBlockedTags, so an exhausted survivor
+# simply cannot sprint until they have recovered. This shows a threshold cascade whose payload is a
+# capability lock rather than a Health drain.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_Exhaustion
+DurationPolicy: Infinite
+GrantedTags:
+  - Survival.State.Exhausted
+GameplayCues:
+  - GameplayCue.Survival.Exhausted
