@@ -1,0 +1,25 @@
+# Skill move: a technical dribble (stepover, feint, roulette) to beat a defender. Costs stamina
+# (GE_SkillMoveCost: Stamina -5) and goes on a short cooldown (GE_SkillMoveCooldown). Blocked while
+# Fatigued - a tired athlete can't pull off flair - so it shares the GE_Fatigue gate with GA_Sprint.
+# GE_SkillMoveCost and GE_SkillMoveCooldown are trivial and referenced by name, like the
+# racing/shooter cost/cooldown effects.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+Name: GA_SkillMove
+Tags:
+  AbilityTags:
+    - Ability.Type.Skill
+  ActivationRequiredTags:
+    - State.Alive
+  ActivationBlockedTags:
+    - Athlete.State.Fatigued
+Cost: GE_SkillMoveCost
+Cooldown: GE_SkillMoveCooldown
+Tasks:
+  - Type: PlayMontageAndWait
+    Params:
+      MontageSection: SkillMove
+Metadata:
+  DisplayName: Skill Move
+  Description: Perform a technical dribble to beat a defender; cannot be used while fatigued
+  Icon: ui/icons/skill_move.png

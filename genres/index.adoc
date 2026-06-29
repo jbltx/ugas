@@ -64,6 +64,26 @@ schema-conformant template files you can copy and extend.
 | First/third-person gunplay — ammo economy and hit resolution
 | `shooter/entities/`
 
+| link:combat/index.html[*Combat*]
+| Melee fighting/brawler — frame-data states, poise→stagger, guard channel
+| `combat/entities/`
+
+| link:strategy/index.html[*Strategy*]
+| RTS / 4X / tower-defense — periodic economy and a damage × armor matrix
+| `strategy/entities/`
+
+| link:sports/index.html[*Sports*]
+| Team/athlete sports — stamina-driven performance coupling and team momentum
+| `sports/entities/`
+
+| link:puzzle/index.html[*Puzzle*]
+| Tile-matching — seeded by the Puzzle case study; combo×chain scoring and a move economy
+| `puzzle/entities/`
+
+| link:casual/index.html[*Casual*]
+| Casual (idle/incremental) — multiplicative income channels, passive-income tick, energy gate
+| `casual/entities/`
+
 | link:survival-crafting/index.html[*Survival / Crafting*]
 | Needs-decay survival loop — cascading penalties and a gather/craft economy
 | `survival-crafting/entities/`

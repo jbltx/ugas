@@ -1,0 +1,31 @@
+# Injury (knock): a timed debuff applied when an athlete takes a heavy challenge.
+# HasDuration so it wears off over the match; flat penalties to the physical stats and a lower
+# MaxStamina ceiling (so the athlete also tires faster while carrying the knock). Grants
+# Athlete.State.Injured for cues, substitution AI, and broadcast overlays.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_Injury
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 30.0
+Modifiers:
+  - Attribute: Speed
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -15.0
+  - Attribute: Acceleration
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -20.0
+  - Attribute: MaxStamina
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -20.0
+GrantedTags:
+  - Athlete.State.Injured
+GameplayCues:
+  - GameplayCue.Athlete.Injury
