@@ -226,7 +226,8 @@ The core lifecycle tags `State.Alive` / `State.Dead` are *referenced*, not re-de
   is still constructing.
 * `entities/ability_area_strike.yaml` — `GA_AreaStrike`: a caster ability, `Cost: GE_AreaStrikeCost`
   (Energy); picks a ground location and applies `GE_AreaStrikeDamage` (Magic) and `GE_Slow` to every
-  hostile in the blast.
+  hostile in the blast — the data shows a single `ApplyEffectToTarget` task for clarity; fanning the
+  effect out to each unit in the area is the engine's targeting responsibility.
 
 [[genre-effects]]
 == Genre Effects
