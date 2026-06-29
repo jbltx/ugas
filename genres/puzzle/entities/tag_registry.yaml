@@ -1,0 +1,66 @@
+# Puzzle genre tag taxonomy. ADDITIVE: this registry introduces genre-specific tags only.
+# It does not redefine core State.* / Ability.* tags - those are referenced, not declared here.
+# Board states (Matching, Cascading, Stuck) are GRANTED BY EFFECTS, never written directly.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_tag.json
+Tags:
+  # --- Board resolution states (granted by scoring effects; gate the swap/cascade loop) ---
+  - Tag: Puzzle.State.Matching
+    Description: A match is being scored and cleared this instant; granted by GE_MatchClear
+    AllowMultiple: false
+  - Tag: Puzzle.State.Cascading
+    Description: Tiles are falling and re-matching after a clear; granted by GE_CascadeChain while the chain resolves
+    AllowMultiple: false
+  - Tag: Puzzle.State.Stuck
+    Description: No legal swap remains on the board; blocks GA_SwapTiles until the board is shuffled
+    AllowMultiple: false
+
+  # --- Level phase (the lifecycle of a single level; drives win/lose UI and input) ---
+  - Tag: Puzzle.Phase.Playing
+    Description: Level is live; player input and the scoring pipeline are active
+    AllowMultiple: false
+  - Tag: Puzzle.Phase.Cleared
+    Description: Score reached TargetScore; the level is won
+    AllowMultiple: false
+  - Tag: Puzzle.Phase.GameOver
+    Description: Moves (or time) ran out before TargetScore was reached; the level is lost
+    AllowMultiple: false
+
+  # --- Tile types (the matchable pieces; Special covers powerup-bearing tiles) ---
+  - Tag: Tile.Type.Red
+    Description: Red gem tile
+    AllowMultiple: false
+  - Tag: Tile.Type.Blue
+    Description: Blue gem tile
+    AllowMultiple: false
+  - Tag: Tile.Type.Green
+    Description: Green gem tile
+    AllowMultiple: false
+  - Tag: Tile.Type.Yellow
+    Description: Yellow gem tile
+    AllowMultiple: false
+  - Tag: Tile.Type.Special
+    Description: A special tile that carries a powerup payload when matched or activated
+    AllowMultiple: false
+
+  # --- Powerup classification (the kind of board-clear a special tile triggers) ---
+  - Tag: Powerup.Type.Bomb
+    Description: Clears a radial area of tiles around the activation cell
+    AllowMultiple: false
+  - Tag: Powerup.Type.Line
+    Description: Clears an entire row or column through the activation cell
+    AllowMultiple: false
+  - Tag: Powerup.Type.Color
+    Description: Clears every tile of one colour on the board
+    AllowMultiple: false
+
+  # --- Ability classification ---
+  - Tag: Ability.Type.Swap
+    Description: A tile-swap move that costs a move and may trigger a match
+    AllowMultiple: false
+  - Tag: Ability.Type.Powerup
+    Description: Activates a special tile's board-clearing payload
+    AllowMultiple: false
+  - Tag: Ability.Type.Hint
+    Description: A no-cost assist that highlights a legal move; on cooldown
+    AllowMultiple: false
