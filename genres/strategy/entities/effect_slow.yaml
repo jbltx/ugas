@@ -1,0 +1,25 @@
+# Slow field: the tower-defense-flavoured debuff GA_AreaStrike (or a slow tower) drops on enemies.
+# HasDuration so it wears off; a Multiply of -0.4 on MoveSpeed in the "Debuffs" channel
+# (factor 1 - 0.4 = 0.60, i.e. 40% slower). Because it sits in its own channel it multiplies cleanly
+# against any movement Upgrades a unit carries, instead of fighting them additively. Grants
+# Unit.State.Slowed for cues and stacking rules. Targets must be hostile.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_Slow
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 4.0
+ApplicationRequiredTags:
+  - Faction.Hostile
+Modifiers:
+  - Attribute: MoveSpeed
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: -0.4
+    Channel: Debuffs
+GrantedTags:
+  - Unit.State.Slowed
+GameplayCues:
+  - GameplayCue.Unit.Slowed

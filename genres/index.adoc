@@ -63,6 +63,10 @@ schema-conformant template files you can copy and extend.
 | link:shooter/index.html[*Shooter*]
 | First/third-person gunplay — ammo economy and hit resolution
 | `shooter/entities/`
+
+| link:strategy/index.html[*Strategy*]
+| RTS / 4X / tower-defense — periodic economy and a damage × armor matrix
+| `strategy/entities/`
 |===
 
 [[using-a-pack]]
