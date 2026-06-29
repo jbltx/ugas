@@ -96,16 +96,18 @@ _safe_ or _punishable_.
 
 === Cancel windows via the frame-phase tags
 
-Each attack walks three phases — `Combat.Move.Startup` → `Combat.Move.Active` →
-`Combat.Move.Recovery` — owned through `ActivationOwnedTags`. The combo system is then pure tag
+`Combat.Move.Startup` → `Combat.Move.Active` → `Combat.Move.Recovery` is the illustrative phase
+vocabulary the engine sets on a fighter as a move plays out; individual abilities own only the
+phase windows they actually need through `ActivationOwnedTags`. The combo system is then pure tag
 logic:
 
 * `GA_LightAttack` owns `Combat.Move.Recovery` during its tail.
 * `GA_HeavyAttack` lists `Ability.Type.Light` in its `CancelAbilitiesWithTags`, so a heavy buffered
   during the light's recovery *cancels* it — the canonical light → heavy combo cancel, expressed
   with tags alone.
-* `GA_Special` lists the normals in its `BlockAbilitiesWithTags`, locking the opponent out of
-  Light/Heavy/Block during its cinematic super-freeze startup.
+* `GA_Special` lists the normals in its `BlockAbilitiesWithTags`, locking the super-user out of
+  *their own* Light/Heavy/Block while the special is active — `BlockAbilitiesWithTags` is
+  owner-scoped, so this commits the player to the super animation rather than touching the opponent.
 
 === The guard damage channel
 
@@ -198,7 +200,8 @@ Defined in `entities/tag_registry.yaml` (additive only):
 * `entities/ability_block.yaml` — `GA_Block`: holds `GE_Blocking` for the `Block`-channel reduction
   at the cost of movement; ends on input release.
 * `entities/ability_special.yaml` — `GA_Special`: costs a full bar (`Cost: GE_SuperCost`) and uses
-  `BlockAbilitiesWithTags` to lock the opponent out during super-freeze; on `GE_SpecialCooldown`.
+  `BlockAbilitiesWithTags` to lock the user out of *their own* normals during super-freeze (an
+  owner-scoped self-lock that commits the player to the super); on `GE_SpecialCooldown`.
 
 [[genre-effects]]
 == Genre Effects

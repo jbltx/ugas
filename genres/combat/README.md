@@ -27,7 +27,7 @@ ammo, a guard meter and a stagger meter instead of reloads and falloff.
 | `entities/ability_light_attack.yaml` | `GA_LightAttack`: fast combo starter; cancellable into a heavy |
 | `entities/ability_heavy_attack.yaml` | `GA_HeavyAttack`: slow heavy blow that cancels light-attack recovery |
 | `entities/ability_block.yaml` | `GA_Block`: hold to guard (Block channel), blockstun instead of hitstun on contact |
-| `entities/ability_special.yaml` | `GA_Special`: spend a full super bar; super-freeze locks out the opponent |
+| `entities/ability_special.yaml` | `GA_Special`: spend a full super bar; super-freeze locks the user out of their own normals (committed to the super) |
 | `entities/input_actions.yaml` | Brawl input actions: light, heavy, block, special, move |
 | `entities/input_action_set_brawl.yaml` | `Brawl`: the in-match input context with combo-friendly buffering |
 | `entities/input_mapping_brawl_gamepad.yaml` | Gamepad bindings: two attacks, special, hold-block, stick movement |

@@ -41,7 +41,7 @@ Tags:
     Description: Defensive guard ability
     AllowMultiple: false
   - Tag: Ability.Type.Special
-    Description: Super-meter spender with invulnerable super-freeze startup
+    Description: Super-meter spender with a committed/uncancellable super-freeze startup
     AllowMultiple: false
 
   # --- Hitzones (where on the body a hit lands; drives high/mid/low guard rules) ---
