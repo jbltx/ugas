@@ -1,0 +1,23 @@
+# Heat exposure: the desert-biome / midday mirror of GE_Exposure_Cold. INFINITE + PERIOD while the
+# survivor is exposed (applied/removed by the biome's area volume); each tick it pushes
+# BodyTemperature UP toward the survivable ceiling of 43 (clamped by core spec 5.4). It grants
+# Survival.State.Hot once temperature climbs above the 36-38 comfort window. Shade, water, and
+# lighter clothing counter it. The hot-side Health drain (heatstroke) is the symmetric counterpart
+# to GE_Hypothermia and would be applied by the same temperature-window detector on the high side.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_Exposure_Heat
+DurationPolicy: Infinite
+Period:
+  Period: 1.0
+  ExecuteOnApplication: false
+Modifiers:
+  - Attribute: BodyTemperature
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 0.4
+GrantedTags:
+  - Survival.State.Hot
+GameplayCues:
+  - GameplayCue.Survival.Overheating

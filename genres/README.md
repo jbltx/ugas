@@ -99,3 +99,4 @@ schema, example, and genre-pack entity in one file).
 | `sports` | Sports (sim/arcade) — stamina-driven performance coupling, team momentum | [`sports/spec.adoc`](sports/spec.adoc) |
 | `puzzle` | Puzzle (tile-matching) — seeded by the Puzzle case study; combo×chain scoring + move economy | [`puzzle/spec.adoc`](puzzle/spec.adoc) |
 | `casual` | Casual (idle/incremental) — multiplicative income channels, passive-income tick, energy gate | [`casual/spec.adoc`](casual/spec.adoc) |
+| `survival-crafting` | Survival / Crafting — needs-decay loop, cascading penalties, gather/craft economy | [`survival-crafting/spec.adoc`](survival-crafting/spec.adoc) |

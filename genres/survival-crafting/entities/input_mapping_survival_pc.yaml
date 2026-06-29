@@ -1,0 +1,71 @@
+# PC keyboard + mouse mapping for the SurvivalOnFoot action set. Move uses a WASD composite; Look
+# uses raw mouse axes with a MouseSensitivity modifier. Gather/Interact is a hold-to-harvest on E
+# (HoldThreshold distinguishes a quick interact tap from a sustained gather); Eat and Drink sit on
+# the number row; Craft and Build open their respective modes.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+ActionSet: SurvivalOnFoot
+Platform: PC
+Bindings:
+  - Action: Move
+    CompositeInputs:
+      Up:
+        Device: Keyboard
+        Input: Key.W
+      Down:
+        Device: Keyboard
+        Input: Key.S
+      Left:
+        Device: Keyboard
+        Input: Key.A
+      Right:
+        Device: Keyboard
+        Input: Key.D
+
+  - Action: Look
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.Axis.X
+      - Device: Mouse
+        Input: Mouse.Axis.Y
+    Modifiers:
+      - MouseSensitivity
+
+  - Action: Jump
+    Inputs:
+      - Device: Keyboard
+        Input: Key.Space
+
+  - Action: Sprint
+    Inputs:
+      - Device: Keyboard
+        Input: Key.LeftShift
+
+  - Action: Gather
+    Inputs:
+      - Device: Keyboard
+        Input: Key.E
+    HoldThreshold: 0.25
+
+  - Action: Craft
+    Inputs:
+      - Device: Keyboard
+        Input: Key.C
+
+  - Action: Build
+    Inputs:
+      - Device: Keyboard
+        Input: Key.B
+
+  - Action: ConsumeFood
+    Inputs:
+      - Device: Keyboard
+        Input: Key.1
+
+  - Action: Drink
+    Inputs:
+      - Device: Keyboard
+        Input: Key.2
+Metadata:
+  DisplayName: Survival On Foot - PC
+  Description: Keyboard and mouse bindings for the survival on-foot action set

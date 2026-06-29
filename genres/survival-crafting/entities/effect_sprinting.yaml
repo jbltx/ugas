@@ -1,0 +1,25 @@
+# Sprinting: a HasDuration + PERIOD effect that drains Stamina every tick while GA_Sprint holds it
+# (the ability refreshes it each tick and removes it on input release). Like the racing pack's
+# GE_DriftCharge it carries a single periodic modifier so every tick reads as a clean instant
+# Stamina subtraction (core spec 9.3). Its -3/tick drain outpaces the always-on +5/tick
+# GE_StaminaRegen while held, so net Stamina FALLS during a sprint and recovers when it ends. Grants
+# Survival.State.Sprinting (the movement system reads this tag to raise the sprint speed). When
+# Stamina reaches 0 the engine grants Survival.State.Exhausted (GE_Exhaustion), which blocks GA_Sprint.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_Sprinting
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 1.0
+Period:
+  Period: 1.0
+  ExecuteOnApplication: true
+Modifiers:
+  - Attribute: Stamina
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -3.0
+GrantedTags:
+  - Survival.State.Sprinting
