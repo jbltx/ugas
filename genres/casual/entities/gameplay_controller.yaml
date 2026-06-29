@@ -1,0 +1,98 @@
+# Worked example: an idle save mid-game - 3 mines + 1 factory installed, one prestige performed,
+# and a double-income booster currently running. CurrentValue columns are the exact result of the
+# ActiveEffects below; CurrencyPerSecond is the signature multiplicative-channel aggregation.
+#
+#   Generators (flat Add):  3 x Mine(+5) + 1 x Factory(+50)            = 65.0   (pipeline steps 1-2)
+#   CurrencyPerSecond:      65.0 x Prestige(1 + 2.0) x Booster(1 + 1.0)
+#                         = 65.0 x 3.0 x 2.0                            = 390.0  (channels multiply)
+#   PrestigeMultiplier:     base 1.0 x Prestige(1 + 2.0)               = 3.0
+#   Passive income / tick:  GE_PassiveIncome adds (CurrencyPerSecond) to Currency every 1.0 s = +390.0/s
+#
+# Currency, Energy, Stage and Level are mutated by Instant/periodic executions and engine logic,
+# which write the BASE value (an Instant effect permanently changes BaseValue, spec section 9.2),
+# so their BaseValue == CurrentValue here. Only the duration-based channel effects raise
+# CurrencyPerSecond / PrestigeMultiplier above their base.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_controller.json
+OwnerActor:
+  ActorID: IdleProfile_01
+  ActorType: PlayerProfile
+AttributeSets:
+  - Name: IdleEconomySet
+    Attributes:
+      - Name: Currency
+        BaseValue: 125000.0
+        CurrentValue: 125000.0
+      - Name: CurrencyPerSecond
+        BaseValue: 0.0
+        CurrentValue: 390.0
+      - Name: PrestigeMultiplier
+        BaseValue: 1.0
+        CurrentValue: 3.0
+      - Name: MaxEnergy
+        BaseValue: 100.0
+        CurrentValue: 100.0
+      - Name: Energy
+        BaseValue: 40.0
+        CurrentValue: 40.0
+      - Name: Stage
+        BaseValue: 3.0
+        CurrentValue: 3.0
+      - Name: Level
+        BaseValue: 12.0
+        CurrentValue: 12.0
+      - Name: LifetimeCurrency
+        BaseValue: 2400000.0
+        CurrentValue: 2400000.0
+      - Name: OfflineSeconds
+        BaseValue: 0.0
+        CurrentValue: 0.0
+GrantedAbilities:
+  - AbilityClass: GA_Tap
+    Level: 1
+    InputID: Tap
+  - AbilityClass: GA_BuyGenerator
+    Level: 1
+    InputID: BuyGenerator
+  - AbilityClass: GA_Prestige
+    Level: 1
+    InputID: Prestige
+  - AbilityClass: GA_Play
+    Level: 1
+    InputID: Play
+ActiveEffects:
+  - Handle: eff-passive-income
+    EffectClass: GE_PassiveIncome
+    Duration: -1
+  - Handle: eff-energy-regen
+    EffectClass: GE_EnergyRegen
+    Duration: -1
+  - Handle: eff-generator-mine-1
+    EffectClass: GE_Generator_Mine
+    Duration: -1
+  - Handle: eff-generator-mine-2
+    EffectClass: GE_Generator_Mine
+    Duration: -1
+  - Handle: eff-generator-mine-3
+    EffectClass: GE_Generator_Mine
+    Duration: -1
+  - Handle: eff-generator-factory-1
+    EffectClass: GE_Generator_Factory
+    Duration: -1
+  - Handle: eff-prestige-boost
+    EffectClass: GE_PrestigeBoost
+    Duration: -1
+  - Handle: eff-double-income
+    EffectClass: GE_DoubleIncome
+    Duration: 42.0
+OwnedTags:
+  - Meta.State.Prestiged
+  - Booster.State.DoubleIncome
+  - Generator.Type.Mine
+  - Generator.Type.Factory
+ReplicationMode: Full
+bIsActive: true
+Metadata:
+  DisplayName: Idle Profile (3 mines, 1 factory, prestiged, boosted)
+  Description: Worked-example idle save showing CurrencyPerSecond = (generators) x Prestige x Booster aggregation and the per-tick currency gain
+  DebugCategory: casual-pack-example

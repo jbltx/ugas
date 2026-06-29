@@ -1,0 +1,80 @@
+# Casual (idle / incremental) input actions. Each document defines a single action an ability
+# listens for. Actions are grouped into the Idle action set (see input_action_set_idle.yaml) and
+# bound to hardware in Input Mappings (see input_mapping_idle_touch.yaml). Casual play is touch-first:
+# almost everything is a tap. Tap uses OnTap so a quick press-release reads as a discrete click;
+# the rest are OnPressed buttons.
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Tap
+ValueType: Digital
+TriggerBehavior: OnTap
+TapThreshold: 0.2
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Tap
+Metadata:
+  DisplayName: Tap
+  Description: Tap the screen to earn currency
+  Icon: ui/icons/tap.png
+  Category: Core
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: BuyGenerator
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Buy
+Metadata:
+  DisplayName: Buy Generator
+  Description: Purchase the next income generator
+  Icon: ui/icons/buy_generator.png
+  Category: Economy
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Prestige
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Prestige
+Metadata:
+  DisplayName: Prestige
+  Description: Perform a prestige reset for a permanent multiplier
+  Icon: ui/icons/prestige.png
+  Category: Meta
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Play
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Play
+Metadata:
+  DisplayName: Play
+  Description: Spend energy to start an active round
+  Icon: ui/icons/play.png
+  Category: Core
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Boost
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags: []
+Metadata:
+  DisplayName: Boost
+  Description: Claim a double-income booster (e.g. watch an ad or open a chest)
+  Icon: ui/icons/boost.png
+  Category: Economy

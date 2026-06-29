@@ -1,0 +1,26 @@
+# Idle action set: the single input context for an idle/incremental game. Groups the core tap, the
+# economy actions (buy, boost), prestige, and energy-gated play. Active whenever the player is alive
+# (a fresh profile is always "alive"); idle games rarely switch contexts. Input buffering is enabled
+# with a generous window so a flurry of taps all register - the opposite tuning from a twitch shooter,
+# matching casual's forgiving feel.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action_set.json
+Name: Idle
+Actions:
+  - Tap
+  - BuyGenerator
+  - Prestige
+  - Play
+  - Boost
+Priority: 0
+ActivationTags:
+  RequiredTags:
+    - State.Alive
+Exclusive: false
+InputBuffer:
+  Enabled: true
+  BufferWindow: 0.25
+  MaxBufferSize: 5
+Metadata:
+  DisplayName: Idle
+  Description: Default idle/incremental input context covering tapping, economy, prestige, and play
