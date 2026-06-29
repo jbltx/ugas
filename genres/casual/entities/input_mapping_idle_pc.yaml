@@ -1,0 +1,32 @@
+# PC mouse/keyboard mapping for the Idle action set - idle/clicker games are just as at home on
+# desktop and web. The left mouse button is the tap; keyboard shortcuts cover the economy/meta
+# actions for quick play. Tap shares the same TapDebounce as the touch mapping for consistent feel.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+ActionSet: Idle
+Platform: PC
+Bindings:
+  - Action: Tap
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.LeftButton
+    Modifiers:
+      - TapDebounce
+
+  - Action: BuyGenerator
+    Inputs:
+      - Device: Keyboard
+        Input: Key.B
+
+  - Action: Prestige
+    Inputs:
+      - Device: Keyboard
+        Input: Key.P
+
+  - Action: Play
+    Inputs:
+      - Device: Keyboard
+        Input: Key.Space
+Metadata:
+  DisplayName: Idle - PC
+  Description: Mouse and keyboard bindings for the idle action set on desktop/web

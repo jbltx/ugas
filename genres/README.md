@@ -98,3 +98,4 @@ schema, example, and genre-pack entity in one file).
 | `strategy` | Strategy (RTS/4X/Tower Defense) — periodic economy, damage×armor matrix, tech upgrades | [`strategy/spec.adoc`](strategy/spec.adoc) |
 | `sports` | Sports (sim/arcade) — stamina-driven performance coupling, team momentum | [`sports/spec.adoc`](sports/spec.adoc) |
 | `puzzle` | Puzzle (tile-matching) — seeded by the Puzzle case study; combo×chain scoring + move economy | [`puzzle/spec.adoc`](puzzle/spec.adoc) |
+| `casual` | Casual (idle/incremental) — multiplicative income channels, passive-income tick, energy gate | [`casual/spec.adoc`](casual/spec.adoc) |
