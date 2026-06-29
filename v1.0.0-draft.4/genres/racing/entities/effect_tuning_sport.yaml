@@ -1,0 +1,27 @@
+# Sport tuning package: a permanent performance upgrade fitted to the vehicle.
+# Raises drivetrain output (flat) and grip in the "Upgrades" channel of the traction pipeline.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_effect.json
+Name: GE_Tuning_Sport
+DurationPolicy: Infinite
+ApplicationRequiredTags:
+  - Vehicle
+Modifiers:
+  - Attribute: EngineTorque
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 80.0
+  - Attribute: MaxSpeed
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 20.0
+  - Attribute: TireGripMultiplier
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 0.10
+    Channel: Upgrades
+GrantedTags:
+  - Vehicle.Tuned

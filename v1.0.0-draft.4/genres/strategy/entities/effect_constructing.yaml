@@ -1,0 +1,17 @@
+# In-progress construction state. HasDuration so it self-expires after the build window, granting
+# Unit.State.Constructing for its lifetime. That tag is what blocks the structure's own abilities
+# (every genre ability lists it under ActivationBlockedTags) - a half-built structure cannot attack,
+# train, or cast. GA_ConstructBuilding applies this, waits the duration, then lets it expire; the
+# build system raises BuildProgress from 0 to 100 over the same window. Duration mirrors a typical
+# structure build time. The completion cue fires when the state ends.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_effect.json
+Name: GE_Constructing
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 20.0
+GrantedTags:
+  - Unit.State.Constructing
+GameplayCues:
+  - GameplayCue.Unit.ConstructionComplete

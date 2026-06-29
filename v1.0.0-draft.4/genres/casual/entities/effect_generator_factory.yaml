@@ -1,0 +1,18 @@
+# Factory generator: the mid-tier income source installed by GA_BuyGenerator. Same shape as
+# GE_Generator_Mine but a larger flat +50 to CurrencyPerSecond. Infinite and stacking. Because
+# generator income is flat Add, mines and factories sum in the same additive pass (spec section 5.3)
+# before the multiplicative Prestige / Booster channels apply. Grants Generator.Type.Factory.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_effect.json
+Name: GE_Generator_Factory
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: CurrencyPerSecond
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 50.0
+GrantedTags:
+  - Generator.Type.Factory
+GameplayCues:
+  - GameplayCue.Idle.Build

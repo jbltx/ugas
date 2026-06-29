@@ -1,0 +1,16 @@
+# Tap reward: the payload GA_Tap applies on every manual click. Instant, so it permanently adds to
+# the Currency base value (spec section 9.2). A flat +1 keeps the active tap meaningful early but
+# quickly dwarfed by passive income - the intended idle arc from active tapping to idle automation.
+# Tuned per game; a curve-backed magnitude could scale it with Stage.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_effect.json
+Name: GE_TapReward
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Currency
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 1.0
+GameplayCues:
+  - GameplayCue.Idle.Tap

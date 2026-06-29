@@ -1,0 +1,104 @@
+# Platformer movement attribute set: jump feel, air control, plus vitals and size for power-ups.
+# Extends the core spec's attribute model (no core attribute is redefined here).
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/attribute_set.json
+Name: PlatformerMovementSet
+Attributes:
+  # --- Jump & movement feel (tuned for "game feel"; read by the movement abilities) ---
+  - Name: GravityScale
+    DefaultBaseValue: 1.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Gravity Scale
+      Description: Multiplier on world gravity; raised by GE_JumpCut for variable-height jumps
+      UICategory: Movement
+  - Name: JumpVelocity
+    DefaultBaseValue: 1200.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Jump Velocity
+      Description: Upward impulse applied by GA_Jump
+      UICategory: Movement
+  - Name: AirControl
+    DefaultBaseValue: 0.65
+    Category: Statistic
+    Clamping:
+      Min: 0.0
+      Max: 1.0
+    Metadata:
+      DisplayName: Air Control
+      Description: Fraction (0..1) of ground control retained while airborne
+      UICategory: Movement
+  - Name: HorizontalSpeed
+    DefaultBaseValue: 600.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Run Speed
+      Description: Ground movement speed; raised while the invincibility star is active
+      UICategory: Movement
+  - Name: CoyoteTimeDuration
+    DefaultBaseValue: 0.15
+    Category: Statistic
+    Metadata:
+      DisplayName: Coyote Time
+      Description: Grace window (s) after leaving a ledge during which a jump still counts
+      UICategory: Movement
+  - Name: JumpBufferDuration
+    DefaultBaseValue: 0.1
+    Category: Statistic
+    Metadata:
+      DisplayName: Jump Buffer
+      Description: Window (s) before landing during which a jump input is queued
+      UICategory: Movement
+  - Name: MaxJumpCount
+    DefaultBaseValue: 1.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Max Jumps
+      Description: Jumps allowed before touching ground; raise to 2 for a double jump
+      UICategory: Movement
+  - Name: VerticalVelocity
+    DefaultBaseValue: 0.0
+    Category: Meta
+    Metadata:
+      DisplayName: Vertical Velocity
+      Description: Live vertical velocity kept in sync by the physics avatar; read by GA_Jump
+      UICategory: Telemetry
+
+  # --- Form & vitals (targeted by power-ups and hazard damage) ---
+  - Name: Scale
+    DefaultBaseValue: 1.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Character Scale
+      Description: Visual/collision size; doubled by the Super power-up via the SizeBonuses channel
+      UICategory: Form
+  - Name: MaxHealth
+    DefaultBaseValue: 3.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Maximum Health
+      UICategory: Vitals
+  - Name: Health
+    DefaultBaseValue: 1.0
+    Category: Resource
+    Clamping:
+      Min: 0
+      Max: MaxHealth
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Health
+      Description: Hit points; reaching 0 costs a life
+      UICategory: Vitals
+  - Name: Lives
+    DefaultBaseValue: 3.0
+    Category: Resource
+    Clamping:
+      Min: 0
+    Metadata:
+      DisplayName: Lives
+      Description: Remaining lives; game over at 0
+      UICategory: Vitals
+Metadata:
+  DisplayName: Platformer Movement Set
+  Description: Jump/movement feel attributes plus form and vitals for an action-platformer character

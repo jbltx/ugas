@@ -1,0 +1,18 @@
+# Match clear: the payload GA_SwapTiles applies when a swap forms a match. Scoring a match is
+# not a static add - the points are the PRODUCT of four live inputs (tiles cleared x base value
+# x ComboMultiplier x Chain factor), so a single ScalableFloat modifier cannot express it. The
+# effect therefore delegates to a custom Execution, ExecCalc_MatchScore, which reads TilesCleared,
+# BaseMatchValue, ComboMultiplier, and ChainLength, then writes the product into Score (and mirrors
+# it into LastMatchScore for the floating-score popup). This is the puzzle analogue of the shooter's
+# hit-resolution calc - the seam where the genre's signature math plugs into UGAS. Granting
+# Puzzle.State.Matching (instead of mutating a tag directly) keeps state changes on the Effect layer.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_effect.json
+Name: GE_MatchClear
+DurationPolicy: Instant
+Executions:
+  - CalculatorClass: ExecCalc_MatchScore
+GrantedTags:
+  - Puzzle.State.Matching
+GameplayCues:
+  - GameplayCue.Puzzle.MatchClear

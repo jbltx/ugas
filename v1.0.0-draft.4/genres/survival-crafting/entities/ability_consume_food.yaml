@@ -1,0 +1,27 @@
+# Consume food: eat a carried food item to restore Hunger. Requires a food item in the inventory
+# (Item.Type.Food) and that the survivor is alive. A short eat wait, then the instant GE_EatFood
+# tops up Hunger - which is what lifts Hunger off 0 and lets the engine clear Survival.State.Starving.
+# Blocked while crafting. A full game would also decrement the specific food item from inventory;
+# here the restore is the modelled effect.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_ability.json
+Name: GA_ConsumeFood
+Tags:
+  AbilityTags:
+    - Ability.Type.Consume
+  ActivationRequiredTags:
+    - State.Alive
+    - Item.Type.Food
+  ActivationBlockedTags:
+    - Survival.State.Crafting
+Tasks:
+  - Type: WaitDelay
+    Params:
+      Duration: 1.5
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_EatFood
+Metadata:
+  DisplayName: Eat Food
+  Description: Eat a carried food item to restore satiation
+  Icon: ui/icons/eat.png

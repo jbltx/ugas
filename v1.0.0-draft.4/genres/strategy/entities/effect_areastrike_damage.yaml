@@ -1,0 +1,15 @@
+# Area strike payload: instant Magic damage applied to every hostile in the blast, dealt by
+# GA_AreaStrike. It runs the same ExecCalc_ArmorMitigation as a normal weapon hit, but the caster
+# ability tags the strike DamageType.Magic, so the matrix lands its bonus on Armor.Class.Shielded
+# targets and its penalty on Light/Fortified - the area weapon obeys the same rock-paper-scissors
+# rules as single-target fire. Only hostiles are affected (friendly units are skipped).
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_effect.json
+Name: GE_AreaStrikeDamage
+DurationPolicy: Instant
+ApplicationRequiredTags:
+  - Faction.Hostile
+Executions:
+  - CalculatorClass: ExecCalc_ArmorMitigation
+GameplayCues:
+  - GameplayCue.Unit.AreaStrike

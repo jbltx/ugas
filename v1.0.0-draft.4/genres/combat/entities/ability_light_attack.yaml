@@ -1,0 +1,41 @@
+# Light attack: the fast combo starter. Quick startup, short recovery, low damage. Walks the
+# three frame phases (Combat.Move.Startup -> Active -> Recovery) via its ActivationOwnedTags and the
+# task sequence, applying GE_MeleeDamage to the target during the Active window. It owns
+# Combat.Move.Recovery during its tail, which is exactly the tag GA_HeavyAttack's
+# CancelAbilitiesWithTags cancels - so a heavy buffered during light recovery interrupts it,
+# the basic combo cancel. Cannot start while in hitstun, blockstun, staggered, or blocking.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_ability.json
+Name: GA_LightAttack
+Tags:
+  AbilityTags:
+    - Ability.Type.Light
+  ActivationRequiredTags:
+    - State.Combat
+  ActivationBlockedTags:
+    - Combat.State.Hitstun
+    - Combat.State.Blockstun
+    - Combat.State.Staggered
+    - Combat.State.Blocking
+  ActivationOwnedTags:
+    - Combat.Move.Recovery
+Cooldown: GE_LightAttackCooldown
+Tasks:
+  - Type: WaitDelay
+    Params:
+      Duration: 0.08
+  - Type: WaitTargetData
+    Params:
+      TargetingMethod: MeleeSweep
+      MaxRange: 1.5
+      Hitzone: Hitzone.Mid
+  - Type: ApplyEffectToTarget
+    Params:
+      EffectClass: GE_MeleeDamage
+  - Type: WaitDelay
+    Params:
+      Duration: 0.18
+Metadata:
+  DisplayName: Light Attack
+  Description: A fast jab that starts combos; cancellable into a heavy attack
+  Icon: ui/icons/light_attack.png

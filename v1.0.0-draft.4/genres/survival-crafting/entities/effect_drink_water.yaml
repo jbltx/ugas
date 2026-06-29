@@ -1,0 +1,15 @@
+# Drink water: an INSTANT effect that restores Thirst, mirroring GE_EatFood. It tops up the Thirst
+# BASE VALUE, lifting it off the 0 floor so the engine clears Survival.State.Dehydrated and removes
+# GE_Dehydration. Applied by GA_Drink. Thirst is clamped to [0, MaxThirst].
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_effect.json
+Name: GE_DrinkWater
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Thirst
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 50.0
+GameplayCues:
+  - GameplayCue.Survival.Drink

@@ -1,0 +1,15 @@
+# Offline progress: the classic idle-genre "welcome back" payout, applied once on session resume.
+# The accrued amount depends on the live CurrencyPerSecond, the elapsed OfflineSeconds, and a
+# capped/discounted offline rate - so it cannot be a static modifier. Instant effect delegating to
+# a custom Execution (spec section 9.5) that reads CurrencyPerSecond and OfflineSeconds and writes
+# the lump sum into Currency. This is the idle analogue of the shooter's hit-resolution calc: the
+# seam where the genre's signature math plugs into UGAS. Implement ExecCalc_OfflineProgress in your
+# engine (e.g. Currency += CurrencyPerSecond * min(OfflineSeconds, OfflineCap) * OfflineEfficiency).
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_effect.json
+Name: GE_OfflineProgress
+DurationPolicy: Instant
+Executions:
+  - CalculatorClass: ExecCalc_OfflineProgress
+GameplayCues:
+  - GameplayCue.Idle.WelcomeBack

@@ -1,0 +1,18 @@
+# Energy regeneration: refills the energy gate over time. Infinite + Period(5.0) fires like a
+# repeated Instant effect every 5 seconds (spec section 9.3), adding +5 to the Energy base value;
+# the Energy attribute's own [0, MaxEnergy] clamp caps it. This is the regenerating side of the
+# energy gate - GA_Play spends Energy, this slowly gives it back, so active play is rationed over
+# a session in the classic casual energy/lives loop.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_effect.json
+Name: GE_EnergyRegen
+DurationPolicy: Infinite
+Period:
+  Period: 5.0
+  ExecuteOnApplication: false
+Modifiers:
+  - Attribute: Energy
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 5.0

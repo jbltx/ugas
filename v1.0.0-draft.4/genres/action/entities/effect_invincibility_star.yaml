@@ -1,0 +1,22 @@
+# Invincibility star: a timed power-up that ignores contact damage and boosts run speed.
+# HasDuration so it self-expires; grants Immunity.Contact (consumed by hazard/attack effects).
+# Channel SpeedBonuses: factor = 1 + 0.3 = 1.3x HorizontalSpeed while active.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_effect.json
+Name: GE_InvincibilityStar
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 10.0
+Modifiers:
+  - Attribute: HorizontalSpeed
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 0.3
+    Channel: SpeedBonuses
+GrantedTags:
+  - State.PowerUp.Invincible
+  - Immunity.Contact
+GameplayCues:
+  - GameplayCue.PowerUp.Star
