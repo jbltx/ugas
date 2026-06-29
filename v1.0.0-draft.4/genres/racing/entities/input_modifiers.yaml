@@ -1,0 +1,37 @@
+# Input modifiers shared by racing input mappings.
+# StickDeadzone and TriggerDeadzone clean up analog noise;
+# SteeringSensitivity applies an S-curve for progressive steering feel.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/input_modifier.json
+Name: StickDeadzone
+Type: DeadZone
+Params:
+  DeadZoneShape: Radial
+  InnerThreshold: 0.15
+  OuterThreshold: 0.95
+UserConfigurable: true
+Metadata:
+  DisplayName: Stick Dead Zone
+  Description: Radial dead zone for analog stick inputs
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/input_modifier.json
+Name: TriggerDeadzone
+Type: DeadZone
+Params:
+  DeadZoneShape: Axial
+  InnerThreshold: 0.05
+  OuterThreshold: 0.98
+UserConfigurable: false
+Metadata:
+  DisplayName: Trigger Dead Zone
+  Description: Axial dead zone for trigger inputs
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/input_modifier.json
+Name: SteeringSensitivity
+Type: ResponseCurve
+Params:
+  CurveType: SCurve
+UserConfigurable: true
+Metadata:
+  DisplayName: Steering Sensitivity
+  Description: S-curve response for progressive steering feel

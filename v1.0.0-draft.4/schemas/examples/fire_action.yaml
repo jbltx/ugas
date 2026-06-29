@@ -1,0 +1,15 @@
+# Example: Fire Action (Shooter)
+# Demonstrates a digital combat action with press-to-activate trigger behavior
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/input_action.json
+Name: Fire
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Input.Type.Combat
+Metadata:
+  DisplayName: Fire Weapon
+  Description: Pull the trigger on the equipped weapon
+  Category: Combat

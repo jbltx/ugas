@@ -1,0 +1,15 @@
+# Crafting activity state: a HasDuration effect granting Survival.State.Crafting for the length of
+# the craft. GA_Craft applies this (after paying its Materials cost), waits, then applies the crafted
+# item's effect (e.g. GE_CraftedTool). The state blocks gathering and other crafts while the bench
+# is in use. Duration mirrors the craft wait in GA_Craft.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_effect.json
+Name: GE_Crafting
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 3.0
+GrantedTags:
+  - Survival.State.Crafting
+GameplayCues:
+  - GameplayCue.Survival.Crafting

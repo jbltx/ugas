@@ -6,37 +6,37 @@ The specification covers four pillars: Attributes (numeric state with a modifier
 
 ## Specification
 
-- [UGAS Specification (Markdown)](v1.0.0-draft.3/SPEC.md): The full technical specification in Markdown format
-- [UGAS Specification (HTML)](v1.0.0-draft.3/index.html): The full technical specification rendered as HTML
-- [UGAS Specification (AsciiDoc)](v1.0.0-draft.3/SPEC.adoc): The full technical specification in AsciiDoc source format
+- [UGAS Specification (Markdown)](v1.0.0-draft.4/SPEC.md): The full technical specification in Markdown format
+- [UGAS Specification (HTML)](v1.0.0-draft.4/index.html): The full technical specification rendered as HTML
+- [UGAS Specification (AsciiDoc)](v1.0.0-draft.4/SPEC.adoc): The full technical specification in AsciiDoc source format
 - [Complete LLM context file](llms-full.txt): The entire specification plus all schema definitions and examples in a single file
 
 ## Schema Definitions
 
-- [Gameplay Controller Schema](v1.0.0-draft.3/schemas/gameplay_controller.yaml): Central hub managing abilities, effects, attributes, and tags
-- [Attribute Schema](v1.0.0-draft.3/schemas/attribute.yaml): Individual attribute definitions with base values, clamping, replication
-- [Attribute Set Schema](v1.0.0-draft.3/schemas/attribute_set.yaml): Logical groupings of related attributes
-- [Gameplay Effect Schema](v1.0.0-draft.3/schemas/gameplay_effect.yaml): Effects that modify attributes and grant tags/abilities
-- [Gameplay Ability Schema](v1.0.0-draft.3/schemas/gameplay_ability.yaml): Ability definitions with tag-based activation rules
-- [Gameplay Tag Schema](v1.0.0-draft.3/schemas/gameplay_tag.yaml): Tag registry for hierarchical semantic state labels
+- [Gameplay Controller Schema](v1.0.0-draft.4/schemas/gameplay_controller.yaml): Central hub managing abilities, effects, attributes, and tags
+- [Attribute Schema](v1.0.0-draft.4/schemas/attribute.yaml): Individual attribute definitions with base values, clamping, replication
+- [Attribute Set Schema](v1.0.0-draft.4/schemas/attribute_set.yaml): Logical groupings of related attributes
+- [Gameplay Effect Schema](v1.0.0-draft.4/schemas/gameplay_effect.yaml): Effects that modify attributes and grant tags/abilities
+- [Gameplay Ability Schema](v1.0.0-draft.4/schemas/gameplay_ability.yaml): Ability definitions with tag-based activation rules
+- [Gameplay Tag Schema](v1.0.0-draft.4/schemas/gameplay_tag.yaml): Tag registry for hierarchical semantic state labels
 
 ## Examples
 
-- [Health Attribute](v1.0.0-draft.3/schemas/examples/health_attribute.yaml): Resource attribute with clamping
-- [Damage Effect](v1.0.0-draft.3/schemas/examples/damage_effect.yaml): Instant effect that modifies Health
-- [Fireball Ability](v1.0.0-draft.3/schemas/examples/fireball_ability.yaml): Offensive ability with tag requirements
-- [Tag Registry](v1.0.0-draft.3/schemas/examples/tag_registry.yaml): Example tag hierarchy
+- [Health Attribute](v1.0.0-draft.4/schemas/examples/health_attribute.yaml): Resource attribute with clamping
+- [Damage Effect](v1.0.0-draft.4/schemas/examples/damage_effect.yaml): Instant effect that modifies Health
+- [Fireball Ability](v1.0.0-draft.4/schemas/examples/fireball_ability.yaml): Offensive ability with tag requirements
+- [Tag Registry](v1.0.0-draft.4/schemas/examples/tag_registry.yaml): Example tag hierarchy
 
 ## Genre Packs (templates)
 
 Additive, copy-and-extend starter kits per genre: a genre spec that extends (never replaces) the core spec, plus schema-conformant template entities you can load directly.
 
-- [Genre Packs index](v1.0.0-draft.3/genres/index.html): Navigable landing page listing every published genre pack
-- [Genre taxonomy](v1.0.0-draft.3/genres/taxonomy.html): Non-normative map of game genres/subgenres that scopes the pack work
-- [RPG pack spec](v1.0.0-draft.3/genres/rpg/spec.adoc): Role-Playing genre extension; template entities under v1.0.0-draft.3/genres/rpg/entities/
-- [Racing pack spec](v1.0.0-draft.3/genres/racing/spec.adoc): Racing (Forza-style) genre extension; template entities under v1.0.0-draft.3/genres/racing/entities/
-- [Action pack spec](v1.0.0-draft.3/genres/action/spec.adoc): Action / Action-Adventure genre extension; template entities under v1.0.0-draft.3/genres/action/entities/
+- [Genre Packs index](v1.0.0-draft.4/genres/index.html): Navigable landing page listing every published genre pack
+- [Genre taxonomy](v1.0.0-draft.4/genres/taxonomy.html): Non-normative map of game genres/subgenres that scopes the pack work
+- [RPG pack spec](v1.0.0-draft.4/genres/rpg/spec.adoc): Role-Playing genre extension; template entities under v1.0.0-draft.4/genres/rpg/entities/
+- [Racing pack spec](v1.0.0-draft.4/genres/racing/spec.adoc): Racing (Forza-style) genre extension; template entities under v1.0.0-draft.4/genres/racing/entities/
+- [Action pack spec](v1.0.0-draft.4/genres/action/spec.adoc): Action / Action-Adventure genre extension; template entities under v1.0.0-draft.4/genres/action/entities/
 
 ## Optional
 
-- [Schema README](v1.0.0-draft.3/schemas/README.md): Documentation for schema usage and validation
+- [Schema README](v1.0.0-draft.4/schemas/README.md): Documentation for schema usage and validation

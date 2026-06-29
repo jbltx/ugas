@@ -1,0 +1,22 @@
+# Barrel/muzzle attachment: a loadout upgrade that tightens the cone and extends range.
+# Infinite while fitted. The Spread modifier sits in the Attachments channel - a different channel
+# from GE_ADS's Aim channel - so the two multiply: base Spread x Aim x Attachments (see the
+# worked example in gameplay_controller.yaml). EffectiveRange is a flat additive bonus.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_effect.json
+Name: GE_AttachmentBarrel
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: Spread
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: -0.5
+    Channel: Attachments
+  - Attribute: EffectiveRange
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 30.0
+GrantedTags:
+  - Weapon.Attachment.Barrel

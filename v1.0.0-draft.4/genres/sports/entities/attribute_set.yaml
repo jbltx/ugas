@@ -1,0 +1,124 @@
+# Athlete performance attribute set: physical stats, on-ball skill ratings, the stamina
+# resource that drives the fatigue coupling, and the team momentum meter.
+# Extends the core spec's attribute model (no core attribute is redefined here).
+# Base values describe a competent all-round outfield athlete so the set is playable as shipped.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/attribute_set.json
+Name: AthletePerformanceSet
+Attributes:
+  # --- Stamina resource (drains with sprint/actions; backs the fatigue coupling) ---
+  - Name: MaxStamina
+    DefaultBaseValue: 100.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Maximum Stamina
+      UICategory: Condition
+  - Name: Stamina
+    DefaultBaseValue: 100.0
+    Category: Resource
+    Clamping:
+      Min: 0
+      Max: MaxStamina
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Stamina
+      Description: Effort reserve; drained by GE_SprintDrain and ability costs, recovered by GE_StaminaRecover. Backs the fatigue coupling (see spec section 9.4.2)
+      UICategory: Condition
+
+  # --- Physical attributes (the fatigue coupling scales Speed down as Stamina falls) ---
+  - Name: Speed
+    DefaultBaseValue: 100.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Speed
+      Description: Top movement speed; reduced by GE_Fatigue in the Fatigue channel as Stamina depletes
+      UICategory: Physical
+  - Name: Acceleration
+    DefaultBaseValue: 80.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Acceleration
+      Description: How quickly the athlete reaches top Speed
+      UICategory: Physical
+  - Name: Strength
+    DefaultBaseValue: 70.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Strength
+      Description: Physical power for shielding, tackling, and aerial duels
+      UICategory: Physical
+
+  # --- Skill ratings (on-ball technical stats; ShotAccuracy also fatigue-coupled) ---
+  - Name: PassAccuracy
+    DefaultBaseValue: 70.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Pass Accuracy
+      Description: Likelihood a pass reaches its intended target; boosted by GE_MomentumBoost in the Momentum channel
+      UICategory: Skill
+  - Name: ShotPower
+    DefaultBaseValue: 80.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Shot Power
+      Description: Raw power behind a shot; boosted by GE_MomentumBoost in the Momentum channel and read by ExecCalc_ShotResolution
+      UICategory: Skill
+  - Name: ShotAccuracy
+    DefaultBaseValue: 75.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Shot Accuracy
+      Description: Placement precision of a shot; reduced by GE_Fatigue in the Fatigue channel as Stamina depletes
+      UICategory: Skill
+  - Name: Tackling
+    DefaultBaseValue: 65.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Tackling
+      Description: Ability to dispossess an opponent cleanly without conceding a foul
+      UICategory: Skill
+  - Name: Composure
+    DefaultBaseValue: 70.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Composure
+      Description: Steadiness under pressure; resists the defender-pressure penalty in ExecCalc_ShotResolution
+      UICategory: Skill
+
+  # --- Team momentum meter (a multiplicative offensive buff while high) ---
+  - Name: MaxMomentum
+    DefaultBaseValue: 100.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Maximum Momentum
+      UICategory: Team
+  - Name: Momentum
+    DefaultBaseValue: 0.0
+    Category: Resource
+    Clamping:
+      Min: 0
+      Max: MaxMomentum
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Team Momentum
+      Description: Team-wide swing meter; built by positive play and spent into GE_MomentumBoost when it peaks
+      UICategory: Team
+
+  # --- Runtime state (driven by the simulation / shot-resolution calc) ---
+  - Name: EffectiveShotPower
+    DefaultBaseValue: 0.0
+    Category: Meta
+    Metadata:
+      DisplayName: Effective Shot Power
+      Description: Output of ExecCalc_ShotResolution after stamina, accuracy, and defender pressure; for telemetry/UI
+      UICategory: Telemetry
+  - Name: GoalProbability
+    DefaultBaseValue: 0.0
+    Category: Meta
+    Metadata:
+      DisplayName: Goal Probability
+      Description: Resolved chance the current shot scores; written by ExecCalc_ShotResolution for analytics/UI
+      UICategory: Telemetry
+Metadata:
+  DisplayName: Athlete Performance Set
+  Description: Physical attributes, on-ball skill ratings, the stamina resource, the team momentum meter, and runtime telemetry for a sports athlete

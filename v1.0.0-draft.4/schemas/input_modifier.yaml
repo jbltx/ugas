@@ -1,0 +1,129 @@
+# Input Modifier Definition Schema
+# Based on UGAS Specification v1.0.0-draft.4 - Section 11
+
+type: object
+required:
+  - Name
+  - Type
+properties:
+  Name:
+    type: string
+    description: Unique identifier for this modifier
+  Type:
+    type: string
+    enum:
+      - DeadZone
+      - Sensitivity
+      - ResponseCurve
+      - AxisInvert
+      - AxisScale
+      - AxisSwizzle
+      - RadialScaling
+      - Normalize
+      - TriggerThreshold
+      - Clamp
+      - Custom
+    description: The processing operation this modifier performs
+  Params:
+    type: object
+    description: Type-specific parameters
+    properties:
+      InnerThreshold:
+        type: number
+        minimum: 0
+        maximum: 1
+        description: "DeadZone: values below this threshold are clamped to zero"
+      OuterThreshold:
+        type: number
+        minimum: 0
+        maximum: 1
+        description: "DeadZone: values above this threshold are clamped to 1.0"
+      DeadZoneShape:
+        type: string
+        enum:
+          - Axial
+          - Radial
+        description: "DeadZone: Axial applies per-axis, Radial applies to magnitude of 2D vector"
+      Multiplier:
+        type: number
+        description: "Sensitivity: linear multiplier (1.0 = no change)"
+      MultiplierX:
+        type: number
+        description: "Sensitivity: per-axis X multiplier for 2D actions"
+      MultiplierY:
+        type: number
+        description: "Sensitivity: per-axis Y multiplier for 2D actions"
+      CurveType:
+        type: string
+        enum:
+          - Linear
+          - Exponential
+          - SCurve
+          - Custom
+        description: "ResponseCurve: curve shape"
+      Exponent:
+        type: number
+        description: "ResponseCurve: exponent for Exponential curves (1.0 = linear, 2.0 = quadratic)"
+      CurvePoints:
+        type: array
+        items:
+          type: object
+          properties:
+            In:
+              type: number
+            Out:
+              type: number
+        description: "ResponseCurve: explicit input-to-output mapping points for Custom curves"
+      InvertX:
+        type: boolean
+        default: false
+        description: "AxisInvert: invert horizontal axis"
+      InvertY:
+        type: boolean
+        default: false
+        description: "AxisInvert: invert vertical axis"
+      ScaleX:
+        type: number
+        description: "AxisScale: horizontal scale factor"
+      ScaleY:
+        type: number
+        description: "AxisScale: vertical scale factor"
+      ScaleZ:
+        type: number
+        description: "AxisScale: depth scale factor (for Axis3D)"
+      SwizzleOrder:
+        type: string
+        description: "AxisSwizzle: axis reordering (e.g. YXZ to swap X and Y)"
+      MaxRadius:
+        type: number
+        description: "RadialScaling: maximum radius for normalization"
+      PressThreshold:
+        type: number
+        minimum: 0
+        maximum: 1
+        default: 0.5
+        description: "TriggerThreshold: analog value above which a trigger counts as pressed"
+      Min:
+        type: number
+        description: "Clamp: minimum value"
+      Max:
+        type: number
+        description: "Clamp: maximum value"
+      CalculatorClass:
+        type: string
+        description: "Custom: engine-specific class implementing the modifier logic"
+  UserConfigurable:
+    type: boolean
+    default: false
+    description: >-
+      Whether this modifier's params are exposed in the player's settings screen.
+      When true, the runtime SHOULD present relevant params (e.g. sensitivity
+      slider, invert-Y toggle) in the controls menu.
+  Metadata:
+    type: object
+    properties:
+      DisplayName:
+        type: string
+        description: Name shown in settings UI when UserConfigurable
+      Description:
+        type: string

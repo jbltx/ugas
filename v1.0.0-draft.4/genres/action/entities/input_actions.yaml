@@ -1,0 +1,48 @@
+# Input actions for the action / platformer genre pack.
+# Move is a continuous 2D axis (WhileHeld) for analog stick and WASD movement.
+# Jump is digital OnPressed; the ability itself (GA_Jump) uses a WaitInputRelease task
+# to implement variable jump height, so the action only needs to fire the initial trigger.
+# GroundPound is digital OnPressed; the gameplay controller gates it to State.InAir via
+# the binding's RequiredTags, not the action definition.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/input_action.json
+Name: Move
+ValueType: Axis2D
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Movement
+Metadata:
+  DisplayName: Move
+  Description: Horizontal movement along the ground or in the air
+  Category: Movement
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/input_action.json
+Name: Jump
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Movement
+Metadata:
+  DisplayName: Jump
+  Description: Leap upward; hold for a higher arc, release early to cut short
+  Icon: ui/icons/jump.png
+  Category: Movement
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/input_action.json
+Name: GroundPound
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Attack
+    - Ability.Type.Movement
+Metadata:
+  DisplayName: Ground Pound
+  Description: Slam downward while airborne, dealing damage on impact
+  Icon: ui/icons/ground_pound.png
+  Category: Movement

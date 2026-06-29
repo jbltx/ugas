@@ -1,0 +1,18 @@
+# Stamina recovery: the steady regeneration that opposes sprint/action drain.
+# Infinite + Period, applied for the whole match; it tops Stamina back up between bursts of effort.
+# Blocked while sprinting (ApplicationRequiredTags can't express "not sprinting", so the engine
+# pauses/removes this while Athlete.State.Sprinting is present, mirroring the brief's "+Stamina while
+# not sprinting"). The +Stamina is clamped at MaxStamina by the attribute's Clamping.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_effect.json
+Name: GE_StaminaRecover
+DurationPolicy: Infinite
+Period:
+  Period: 1.0
+  ExecuteOnApplication: false
+Modifiers:
+  - Attribute: Stamina
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 3.0

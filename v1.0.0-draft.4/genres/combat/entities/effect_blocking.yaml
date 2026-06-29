@@ -1,0 +1,30 @@
+# Blocking: held while the block input is down (applied/removed by GA_Block). This is the genre's
+# signature defensive effect. It puts a Multiply of -0.6 in the Block channel on IncomingDamage:
+# IncomingDamage x (1 - 0.6) = x0.40, the guard damage reduction the melee-resolution calc reads
+# when it resolves a blocked hit. It also slows movement with a Multiply of -0.5 in the Block channel
+# (MoveSpeed x 0.50) - chip away at a defender's mobility for committing to guard - and grants
+# Combat.State.Blocking, the tag the calc keys its blocked-hit branch (guard damage, blockstun,
+# chip) off of. Because the reduction lives in its own named Block channel, additional defensive
+# layers (e.g. a parry or a guard upgrade in a separate channel) multiply across it cleanly, exactly
+# like the shooter's Aim and Attachments channels compose on Spread.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_effect.json
+Name: GE_Blocking
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: IncomingDamage
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: -0.6
+    Channel: Block
+  - Attribute: MoveSpeed
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: -0.5
+    Channel: Block
+GrantedTags:
+  - Combat.State.Blocking
+GameplayCues:
+  - GameplayCue.Combat.Guard

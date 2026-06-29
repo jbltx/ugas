@@ -1,0 +1,25 @@
+# Use hint: a no-cost assist that highlights one legal swap for the player. It spends no move - the
+# economy is untouched - but it is rate-limited by a cooldown (Cooldown: GE_HintCooldown) so it
+# cannot be spammed. Requires the Playing phase and is blocked while the board is Stuck (there is no
+# legal move to surface). It runs a brief highlight task and ends; it applies no scoring effect.
+# GE_HintCooldown is trivial (a cooldown tag with a short duration) and is referenced by name rather
+# than shipped as its own file, the same convention the Racing and Shooter packs use for cooldowns.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_ability.json
+Name: GA_UseHint
+Tags:
+  AbilityTags:
+    - Ability.Type.Hint
+  ActivationRequiredTags:
+    - Puzzle.Phase.Playing
+  ActivationBlockedTags:
+    - Puzzle.State.Stuck
+Cooldown: GE_HintCooldown
+Tasks:
+  - Type: WaitDelay
+    Params:
+      Duration: 1.5
+Metadata:
+  DisplayName: Use Hint
+  Description: Highlight a legal move; free to use but on a cooldown
+  Icon: ui/icons/hint.png

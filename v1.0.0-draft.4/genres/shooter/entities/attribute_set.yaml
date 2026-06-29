@@ -1,0 +1,144 @@
+# Shooter combat attribute set: survivability, the weapon-handling "feel" stats, and the
+# ammo economy. Extends the core spec's attribute model (no core attribute is redefined here).
+# Base values describe a default automatic rifle so the set is playable as shipped.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/attribute_set.json
+Name: ShooterCombatSet
+Attributes:
+  # --- Survivability (shield absorbs first, then health; both regenerate out of combat) ---
+  - Name: MaxHealth
+    DefaultBaseValue: 100.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Maximum Health
+      UICategory: Survivability
+  - Name: Health
+    DefaultBaseValue: 100.0
+    Category: Resource
+    Clamping:
+      Min: 0
+      Max: MaxHealth
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Health
+      Description: Hit points; reaching 0 is a down/kill. Damage spills here after Shield is depleted
+      UICategory: Survivability
+  - Name: MaxShield
+    DefaultBaseValue: 50.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Maximum Shield
+      UICategory: Survivability
+  - Name: Shield
+    DefaultBaseValue: 50.0
+    Category: Resource
+    Clamping:
+      Min: 0
+      Max: MaxShield
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Shield
+      Description: Regenerating overshield that absorbs incoming damage before Health
+      UICategory: Survivability
+
+  # --- Movement ---
+  - Name: MoveSpeed
+    DefaultBaseValue: 600.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Movement Speed
+      Description: Ground movement speed; lowered while aiming down sights (GE_ADS)
+      UICategory: Movement
+
+  # --- Weapon handling (the gunplay "feel" stats; target of the damage/accuracy channels) ---
+  - Name: WeaponDamage
+    DefaultBaseValue: 25.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Weapon Damage
+      Description: Fully-aggregated per-shot damage read by GE_BallisticDamage (after all channels resolve)
+      UICategory: Weapon
+  - Name: FireRate
+    DefaultBaseValue: 10.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Fire Rate
+      Description: Rounds per second; the per-shot cooldown (GE_FireCooldown) is 1 / FireRate
+      UICategory: Weapon
+  - Name: Spread
+    DefaultBaseValue: 2.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Spread
+      Description: Bullet-cone half-angle in degrees; tightened by aiming (Aim channel) and attachments (Attachments channel)
+      UICategory: Weapon
+  - Name: HeadshotMultiplier
+    DefaultBaseValue: 2.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Headshot Multiplier
+      Description: Damage multiplier applied by the hit-resolution calc when the target is hit on Hitzone.Head
+      UICategory: Weapon
+  - Name: EffectiveRange
+    DefaultBaseValue: 50.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Effective Range
+      Description: Distance in metres before damage falloff begins; extended by barrel attachments
+      UICategory: Weapon
+
+  # --- Ammo economy (magazine spent by firing, refilled from the reserve on reload) ---
+  - Name: MagazineSize
+    DefaultBaseValue: 30.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Magazine Size
+      Description: Rounds per magazine; the upper clamp on Ammo
+      UICategory: Ammo
+  - Name: Ammo
+    DefaultBaseValue: 30.0
+    Category: Resource
+    Clamping:
+      Min: 0
+      Max: MagazineSize
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Loaded Ammo
+      Description: Rounds in the current magazine; spent by GA_Fire (GE_FireCost), refilled by GA_Reload
+      UICategory: Ammo
+  - Name: ReserveAmmo
+    DefaultBaseValue: 90.0
+    Category: Resource
+    Clamping:
+      Min: 0
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Reserve Ammo
+      Description: Spare rounds drawn into the magazine on reload
+      UICategory: Ammo
+  - Name: ReloadTime
+    DefaultBaseValue: 2.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Reload Time
+      Description: Seconds to complete a reload; the GA_Reload wait window
+      UICategory: Ammo
+
+  # --- Runtime state (driven each frame by the simulation / hit-resolution calc) ---
+  - Name: DistanceToTarget
+    DefaultBaseValue: 0.0
+    Category: Meta
+    Metadata:
+      DisplayName: Distance To Target
+      Description: Live distance in metres to the traced target; compared against EffectiveRange for falloff
+      UICategory: Telemetry
+  - Name: EffectiveDamage
+    DefaultBaseValue: 0.0
+    Category: Meta
+    Metadata:
+      DisplayName: Effective Damage
+      Description: Output of ExecCalc_HitResolution after hitzone multiplier and range falloff; for telemetry/UI
+      UICategory: Telemetry
+Metadata:
+  DisplayName: Shooter Combat Set
+  Description: Survivability, weapon-handling feel stats, ammo economy, and runtime telemetry for a first/third-person shooter

@@ -1,0 +1,50 @@
+# Action / platformer genre tag taxonomy. ADDITIVE: introduces genre-specific tags only,
+# including the platformer movement states under the core State.* namespace as used by the
+# §15.1 case study. It does not redefine the core State.Alive / State.Combat / State.Dead
+# lifecycle tags - those are referenced, not declared here.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_tag.json
+Tags:
+  # --- Movement states (granted by Effects; tag ownership follows responsibility, §3.1) ---
+  - Tag: State.Grounded
+    Description: Character is standing on ground; owned by the physics subsystem (GE_Grounded)
+    AllowMultiple: false
+  - Tag: State.InAir
+    Description: Character is airborne; granted by GA_Jump (GE_InAir), removed on landing
+    AllowMultiple: false
+  - Tag: Status.CoyoteTime
+    Description: Brief grace window after leaving a ledge during which a jump still counts
+    AllowMultiple: false
+  - Tag: Status.JumpBuffered
+    Description: A jump input was queued just before landing
+    AllowMultiple: false
+
+  # --- Power-up states (granted by power-up Effects) ---
+  - Tag: State.PowerUp.Super
+    Description: Enlarged "super" form; survives one extra hit
+    AllowMultiple: false
+  - Tag: State.PowerUp.Fire
+    Description: Fire form; enables a ranged attack
+    AllowMultiple: false
+  - Tag: State.PowerUp.Invincible
+    Description: Temporary invincibility (star); ignores contact damage
+    AllowMultiple: false
+
+  # --- Ability classification ---
+  - Tag: Ability.Type.Movement
+    Description: Locomotion ability (jump, dash, climb)
+    AllowMultiple: false
+  - Tag: Ability.Type.Attack
+    Description: Offensive ability (stomp, ground pound, projectile)
+    AllowMultiple: false
+
+  # --- Hazards & combat (the action-adventure surface) ---
+  - Tag: DamageType.Contact
+    Description: Damage from touching an enemy or hazard
+    AllowMultiple: false
+  - Tag: DamageType.Pit
+    Description: Falling out of bounds; typically instant
+    AllowMultiple: false
+  - Tag: Immunity.Contact
+    Description: Ignores incoming contact damage (e.g. while invincible)
+    AllowMultiple: false

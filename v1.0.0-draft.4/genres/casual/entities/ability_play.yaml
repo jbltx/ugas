@@ -1,0 +1,23 @@
+# Play: start an energy-gated active round (a hypercasual minigame, a level attempt, a dungeon run).
+# Costs Energy via GE_PlayCost (referenced by name; an instant Energy-Add of a negative amount). When
+# Energy is 0 the ability cannot pay its cost and simply cannot activate - that IS the energy/lives
+# gate, exactly mirroring how the shooter's GA_Fire is gated by its Ammo cost. GE_EnergyRegen slowly
+# refills Energy over time, rationing active play across a session. Blocked while Session.State.OutOfEnergy
+# so the UI can present a refill prompt instead of a silent failure.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_ability.json
+Name: GA_Play
+Tags:
+  AbilityTags:
+    - Ability.Type.Play
+  ActivationBlockedTags:
+    - Session.State.OutOfEnergy
+Cost: GE_PlayCost
+Tasks:
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_TapReward
+Metadata:
+  DisplayName: Play
+  Description: Spend energy to play an active round
+  Icon: ui/icons/play.png

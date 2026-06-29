@@ -1,0 +1,30 @@
+# Hypothermia: the cascading threshold penalty for the cold side of the temperature window. The
+# engine's temperature-window detector applies this (and it keeps Survival.State.Cold) once
+# BodyTemperature falls below the comfort window's lower bound (36 C), and removes it when the
+# survivor warms back into the window. INFINITE + PERIOD: it drains Health each tick AND slows the
+# survivor (a -25% MoveSpeed multiply in the Cold channel - stumbling in the cold). The temperature
+# PUSH is GE_Exposure_Cold's job; this effect is the consequence of being OUT of the window, exactly
+# the "temp out of window -> grant state + drain" cascade documented in the signature section.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_effect.json
+Name: GE_Hypothermia
+DurationPolicy: Infinite
+Period:
+  Period: 1.0
+  ExecuteOnApplication: true
+Modifiers:
+  - Attribute: Health
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -1.0
+  - Attribute: MoveSpeed
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: -0.25
+    Channel: Cold
+GrantedTags:
+  - Survival.State.Cold
+GameplayCues:
+  - GameplayCue.Survival.Hypothermia

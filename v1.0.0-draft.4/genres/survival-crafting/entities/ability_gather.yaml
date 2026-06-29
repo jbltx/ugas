@@ -1,0 +1,32 @@
+# Gather: harvest a resource node into the inventory. Enters the gathering state (GE_Gathering grants
+# Survival.State.Gathering), waits the harvest window, then applies the GE_GatherResource payload
+# (+Materials, +CarryWeight). Blocked while already gathering or crafting. The "is the survivor
+# looking at a valid Resource.Node" check is activation logic in the engine (it depends on the traced
+# target, which a tag on the survivor can't express); the gather loop itself is pure data.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_ability.json
+Name: GA_Gather
+Tags:
+  AbilityTags:
+    - Ability.Type.Gather
+  ActivationRequiredTags:
+    - State.Alive
+  ActivationBlockedTags:
+    - Survival.State.Gathering
+    - Survival.State.Crafting
+  ActivationOwnedTags:
+    - Survival.State.Gathering
+Tasks:
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_Gathering
+  - Type: WaitDelay
+    Params:
+      Duration: 2.5
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_GatherResource
+Metadata:
+  DisplayName: Gather
+  Description: Harvest the targeted resource node, adding materials to your inventory
+  Icon: ui/icons/gather.png

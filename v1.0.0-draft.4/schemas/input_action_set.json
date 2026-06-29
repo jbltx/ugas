@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/jbltx/ugas/schemas/input_action_set.json",
+  "title": "Input Action Set Definition Schema",
+  "description": "Based on UGAS Specification v1.0.0-draft.4 - Section 11",
+  "type": "object",
+  "required": [
+    "Name",
+    "Actions"
+  ],
+  "properties": {
+    "Name": {
+      "type": "string",
+      "description": "Unique identifier for this action set"
+    },
+    "Actions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Reference to an Action Name"
+      },
+      "minItems": 1,
+      "description": "Actions available when this set is active"
+    },
+    "Priority": {
+      "type": "integer",
+      "default": 0,
+      "description": "When multiple sets are active and contain the same Action, the highest priority wins. Enables layering (e.g. a Dialogue set overlays OnFoot)."
+    },
+    "ActivationTags": {
+      "type": "object",
+      "properties": {
+        "RequiredTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tags required on the owning GC for this set to be active (AND logic)"
+        },
+        "BlockedTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tags that deactivate this set if any are present on the GC"
+        }
+      }
+    },
+    "Exclusive": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, activating this set deactivates all other non-exclusive sets at the same or lower priority. Useful for modal contexts like vehicles or cutscenes."
+    },
+    "InputBuffer": {
+      "type": "object",
+      "description": "Per-set input buffering configuration, overrides the global InputBufferConfig",
+      "properties": {
+        "Enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "BufferWindow": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0.15,
+          "description": "Buffer window in seconds"
+        },
+        "MaxBufferSize": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 3
+        }
+      }
+    },
+    "Metadata": {
+      "type": "object",
+      "properties": {
+        "DisplayName": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

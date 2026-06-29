@@ -1,0 +1,90 @@
+# Worked example: a player aiming a rifle that has a barrel attachment fitted.
+# CurrentValue columns show the result of the three active infinite effects below. The Spread
+# aggregation is the genre's signature: two channels multiply across each other.
+#   Spread:         base 2.0 x Aim(1 - 0.75 = 0.25) x Attachments(1 - 0.5 = 0.50) = 0.25
+#   MoveSpeed:      base 600 x Aim(1 - 0.3 = 0.70)                                = 420.0
+#   EffectiveRange: base 50 + 30 (barrel)                                         = 80.0
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_controller.json
+OwnerActor:
+  ActorID: Soldier_FPS_01
+  ActorType: PlayerCharacter
+AttributeSets:
+  - Name: ShooterCombatSet
+    Attributes:
+      - Name: MaxHealth
+        BaseValue: 100.0
+        CurrentValue: 100.0
+      - Name: Health
+        BaseValue: 100.0
+        CurrentValue: 100.0
+      - Name: MaxShield
+        BaseValue: 50.0
+        CurrentValue: 50.0
+      - Name: Shield
+        BaseValue: 50.0
+        CurrentValue: 50.0
+      - Name: MoveSpeed
+        BaseValue: 600.0
+        CurrentValue: 420.0
+      - Name: WeaponDamage
+        BaseValue: 25.0
+        CurrentValue: 25.0
+      - Name: FireRate
+        BaseValue: 10.0
+        CurrentValue: 10.0
+      - Name: Spread
+        BaseValue: 2.0
+        CurrentValue: 0.25
+      - Name: HeadshotMultiplier
+        BaseValue: 2.0
+        CurrentValue: 2.0
+      - Name: EffectiveRange
+        BaseValue: 50.0
+        CurrentValue: 80.0
+      - Name: MagazineSize
+        BaseValue: 30.0
+        CurrentValue: 30.0
+      - Name: Ammo
+        BaseValue: 30.0
+        CurrentValue: 30.0
+      - Name: ReserveAmmo
+        BaseValue: 90.0
+        CurrentValue: 90.0
+      - Name: ReloadTime
+        BaseValue: 2.0
+        CurrentValue: 2.0
+GrantedAbilities:
+  - AbilityClass: GA_Fire
+    Level: 1
+    InputID: Fire
+  - AbilityClass: GA_Reload
+    Level: 1
+    InputID: Reload
+  - AbilityClass: GA_Aim
+    Level: 1
+    InputID: Aim
+ActiveEffects:
+  - Handle: eff-equip-rifle
+    EffectClass: GE_EquipRifle
+    Duration: -1
+  - Handle: eff-attachment-barrel
+    EffectClass: GE_AttachmentBarrel
+    Duration: -1
+  - Handle: eff-ads
+    EffectClass: GE_ADS
+    Duration: -1
+OwnedTags:
+  - State.Alive
+  - Team.Friendly
+  - Weapon.Equipped
+  - Weapon.Type.Rifle
+  - Weapon.FireMode.Auto
+  - Weapon.Attachment.Barrel
+  - State.Aiming
+ReplicationMode: Mixed
+bIsActive: true
+Metadata:
+  DisplayName: FPS Soldier (aiming, rifle + barrel)
+  Description: Worked-example shooter character showing two-channel Spread aggregation while aiming
+  DebugCategory: shooter-pack-example

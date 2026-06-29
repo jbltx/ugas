@@ -1,0 +1,24 @@
+# Double-income booster: a timed reward (watch an ad, open a chest, daily login) that doubles
+# passive income for a while. HasDuration so it self-expires after 60 seconds. It multiplies
+# CurrencyPerSecond in its own "Booster" channel with a Multiply of +1.0 -> factor 1 + 1.0 = 2.0,
+# i.e. x2 (spec section 5.3). Being a separate channel, it multiplies across both the generators'
+# flat income and the Prestige channel. Grants Booster.State.DoubleIncome for the duration so the
+# UI can show the boosted state and other systems can gate on it.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.4/schemas/gameplay_effect.json
+Name: GE_DoubleIncome
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 60.0
+Modifiers:
+  - Attribute: CurrencyPerSecond
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 1.0
+    Channel: Booster
+GrantedTags:
+  - Booster.State.DoubleIncome
+GameplayCues:
+  - GameplayCue.Idle.Boost
