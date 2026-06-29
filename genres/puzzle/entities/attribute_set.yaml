@@ -1,0 +1,118 @@
+# Puzzle board attribute set: the scoring resource, the move/time economy, the combo and
+# chain multipliers that drive the match-scoring pipeline, and runtime match telemetry.
+# Extends the core spec's attribute model (no core attribute is redefined here).
+# Base values describe a default match-3 level (target 1000, 25 moves) so the set is
+# playable as shipped: ~7 average matches at the right combo/chain comfortably clear it.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/attribute_set.json
+Name: PuzzleBoardSet
+Attributes:
+  # --- Score (the win resource; large headroom, never negative) ---
+  - Name: Score
+    DefaultBaseValue: 0.0
+    Category: Resource
+    Clamping:
+      Min: 0
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Score
+      Description: Accumulated level score; raised by GE_MatchClear through ExecCalc_MatchScore. Clearing the level needs Score >= TargetScore
+      UICategory: Scoring
+  - Name: TargetScore
+    DefaultBaseValue: 1000.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Target Score
+      Description: The score goal for the current level; reaching it grants Puzzle.Phase.Cleared
+      UICategory: Scoring
+  - Name: BaseMatchValue
+    DefaultBaseValue: 100.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Base Match Value
+      Description: Points awarded per matched tile before the Combo and Chain multipliers are applied
+      UICategory: Scoring
+
+  # --- Move economy (each swap spends one move; 0 moves with Score < TargetScore is game over) ---
+  - Name: MaxMoves
+    DefaultBaseValue: 25.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Maximum Moves
+      Description: Move budget for the level; the upper clamp on MovesRemaining
+      UICategory: Economy
+  - Name: MovesRemaining
+    DefaultBaseValue: 25.0
+    Category: Resource
+    Clamping:
+      Min: 0
+      Max: MaxMoves
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Moves Remaining
+      Description: Spendable moves; GA_SwapTiles costs 1 (GE_MoveCost). At 0 the swap can no longer pay its cost, ending the level
+      UICategory: Economy
+
+  # --- Time economy (optional alternative/secondary fail condition for timed modes) ---
+  - Name: MaxTime
+    DefaultBaseValue: 90.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Maximum Time
+      Description: Starting time budget in seconds; the upper clamp on TimeRemaining
+      UICategory: Economy
+  - Name: TimeRemaining
+    DefaultBaseValue: 90.0
+    Category: Resource
+    Clamping:
+      Min: 0
+      Max: MaxTime
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Time Remaining
+      Description: Seconds left in timed modes; drained by the simulation, topped up by GE_TimeBonus. Ignored by move-limited levels
+      UICategory: Economy
+
+  # --- Scoring multipliers (the two factors of the match-scoring pipeline) ---
+  - Name: ComboMultiplier
+    DefaultBaseValue: 1.0
+    Category: Statistic
+    Clamping:
+      Min: 1.0
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Combo Multiplier
+      Description: Consecutive-match multiplier (>= 1). Raised +1 per match by GE_ComboBuild within the combo window; resets to 1 when the window lapses
+      UICategory: Scoring
+  - Name: ChainLength
+    DefaultBaseValue: 0.0
+    Category: Meta
+    Clamping:
+      Min: 0
+    Metadata:
+      DisplayName: Chain Length
+      Description: Cascade depth of the current resolution (0 for the player-initiated match, +1 per gravity-triggered cascade). The Chain multiplier is 1 + ChainLength
+      UICategory: Scoring
+
+  # --- Match telemetry (written by ExecCalc_MatchScore each resolution; for UI and cues) ---
+  - Name: TilesCleared
+    DefaultBaseValue: 0.0
+    Category: Meta
+    Clamping:
+      Min: 0
+    Metadata:
+      DisplayName: Tiles Cleared (Last Match)
+      Description: Number of tiles removed by the most recent match; the tile-count factor read by ExecCalc_MatchScore
+      UICategory: Telemetry
+  - Name: LastMatchScore
+    DefaultBaseValue: 0.0
+    Category: Meta
+    Clamping:
+      Min: 0
+    Metadata:
+      DisplayName: Last Match Score
+      Description: Points the most recent match contributed (tiles x base x combo x chain); written by ExecCalc_MatchScore for the floating-score popup
+      UICategory: Telemetry
+Metadata:
+  DisplayName: Puzzle Board Set
+  Description: Score resource, move/time economy, combo and chain multipliers, and match telemetry for a tile-matching puzzle board

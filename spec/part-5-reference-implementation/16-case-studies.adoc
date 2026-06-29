@@ -1,6 +1,6 @@
-=== 15. Case Studies
+=== 16. Case Studies
 
-==== 15.1 Platformer (Mario-style)
+==== 16.1 Platformer (Mario-style)
 
 ===== Movement Attributes
 
@@ -122,7 +122,7 @@ GameplayCues:
   - "GameplayCue.PowerUp.Super"
 ----
 
-==== 15.2 Racing (Forza-style)
+==== 16.2 Racing (Forza-style)
 
 ===== Vehicle Attribute Sets
 
@@ -236,7 +236,7 @@ class ExecCalc_VehicleTraction extends ExecutionCalculation {
 }
 ----
 
-==== 15.3 ARPG (Diablo-style)
+==== 16.3 ARPG (Diablo-style)
 
 ===== Damage Bucket Architecture
 
@@ -428,7 +428,7 @@ class ItemEquipSystem {
 }
 ----
 
-==== 15.4 Puzzle (2048-style)
+==== 16.4 Puzzle (2048-style)
 
 ===== Grid Cell Attributes
 

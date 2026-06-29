@@ -1,0 +1,87 @@
+# Worked example: a fighter mid-block, the instant after eating one heavy hit on guard.
+# GE_Blocking is the only active effect; its Block-channel modifiers slow the holder and feed the
+# damage reduction the melee-resolution calc reads. CurrentValue columns show the result.
+#   The blocked heavy hit (attacker AttackPower 20 x heavy move multiplier 2.5 = 50 raw):
+#     IncomingDamage:  50 raw x Block(1 - 0.6 = 0.40)                       = 20.0  (post-block)
+#     EffectiveDamage: max(0, 20 post-block - Defense 10)                   = 10.0
+#     Health:          200 - 10 (EffectiveDamage)                          = 190.0
+#     GuardHealth:     80 - 30 (heavy guard damage, chipped while blocking) = 50.0
+#     Poise:           100 - 10 (heavy block-poise chip)                    = 90.0
+#     Super:           0 + 8 (meter gained for taking the hit)             = 8.0
+#   Block-channel movement penalty (active while guard is held):
+#     MoveSpeed:       500 x Block(1 - 0.5 = 0.50)                          = 250.0
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_controller.json
+OwnerActor:
+  ActorID: Fighter_Brawler_01
+  ActorType: PlayerCharacter
+AttributeSets:
+  - Name: FighterCombatSet
+    Attributes:
+      - Name: MaxHealth
+        BaseValue: 200.0
+        CurrentValue: 200.0
+      - Name: Health
+        BaseValue: 200.0
+        CurrentValue: 190.0
+      - Name: MaxPoise
+        BaseValue: 100.0
+        CurrentValue: 100.0
+      - Name: Poise
+        BaseValue: 100.0
+        CurrentValue: 90.0
+      - Name: MaxSuper
+        BaseValue: 100.0
+        CurrentValue: 100.0
+      - Name: Super
+        BaseValue: 0.0
+        CurrentValue: 8.0
+      - Name: AttackPower
+        BaseValue: 20.0
+        CurrentValue: 20.0
+      - Name: Defense
+        BaseValue: 10.0
+        CurrentValue: 10.0
+      - Name: MaxGuardHealth
+        BaseValue: 80.0
+        CurrentValue: 80.0
+      - Name: GuardHealth
+        BaseValue: 80.0
+        CurrentValue: 50.0
+      - Name: MoveSpeed
+        BaseValue: 500.0
+        CurrentValue: 250.0
+      - Name: IncomingDamage
+        BaseValue: 0.0
+        CurrentValue: 20.0
+      - Name: EffectiveDamage
+        BaseValue: 0.0
+        CurrentValue: 10.0
+GrantedAbilities:
+  - AbilityClass: GA_LightAttack
+    Level: 1
+    InputID: LightAttack
+  - AbilityClass: GA_HeavyAttack
+    Level: 1
+    InputID: HeavyAttack
+  - AbilityClass: GA_Block
+    Level: 1
+    InputID: Block
+  - AbilityClass: GA_Special
+    Level: 1
+    InputID: Special
+ActiveEffects:
+  - Handle: eff-blocking
+    EffectClass: GE_Blocking
+    Duration: -1
+OwnedTags:
+  - State.Alive
+  - State.Combat
+  - Team.Friendly
+  - Combat.State.Blocking
+ReplicationMode: Mixed
+bIsActive: true
+Metadata:
+  DisplayName: Brawler (blocking, just ate a heavy)
+  Description: Worked-example fighter showing the Block-channel damage reduction, guard/poise drain, and movement penalty
+  DebugCategory: combat-pack-example

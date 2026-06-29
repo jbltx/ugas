@@ -1,0 +1,32 @@
+# Auto-attack: acquire the target in range and apply weapon damage. The DamageType.* AbilityTag is
+# the attacker's half of the rock-paper-scissors matrix - this unit fires Siege damage, so
+# ExecCalc_ArmorMitigation (inside GE_UnitDamage) looks up the Siege row against the target's
+# Armor.Class.* tag. Paced by a per-attack cooldown (GE_AttackCooldown, duration = 1 / AttackSpeed)
+# rather than a resource cost. Blocked while the unit is still constructing or cloaked. The
+# "target within AttackRange" check is activation logic (an attribute comparison, which cannot be an
+# activation tag), so WaitTargetData acquires the in-range target before the damage is applied.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+Name: GA_AutoAttack
+Tags:
+  AbilityTags:
+    - Ability.Type.Attack
+    - DamageType.Siege
+  ActivationRequiredTags:
+    - State.Alive
+  ActivationBlockedTags:
+    - Unit.State.Constructing
+    - Unit.State.Cloaked
+Cooldown: GE_AttackCooldown
+Tasks:
+  - Type: WaitTargetData
+    Params:
+      TargetingMethod: NearestEnemyInRange
+      MaxRange: 7.0
+  - Type: ApplyEffectToTarget
+    Params:
+      EffectClass: GE_UnitDamage
+Metadata:
+  DisplayName: Auto Attack
+  Description: Fire the unit's weapon at the nearest enemy within range
+  Icon: ui/icons/attack.png

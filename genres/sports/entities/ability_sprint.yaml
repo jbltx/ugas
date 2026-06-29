@@ -1,0 +1,28 @@
+# Sprint: hold to run flat-out, draining stamina. Applies the periodic GE_SprintDrain (which grants
+# Athlete.State.Sprinting and burns Stamina every tick) and ends when the input is released - the same
+# hold-then-WaitInputRelease shape as the platformer jump and the racing drift. Blocked while Fatigued,
+# so once the engine's low-stamina threshold has applied GE_Fatigue the athlete cannot keep sprinting.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+Name: GA_Sprint
+Tags:
+  AbilityTags:
+    - Ability.Type.Sprint
+  ActivationRequiredTags:
+    - State.Alive
+  ActivationBlockedTags:
+    - Athlete.State.Fatigued
+Tasks:
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_SprintDrain
+  - Type: WaitInputRelease
+    Params:
+      InputID: Sprint
+  - Type: RemoveEffectFromOwner
+    Params:
+      EffectClass: GE_SprintDrain
+Metadata:
+  DisplayName: Sprint
+  Description: Hold to sprint at full speed, draining stamina; cannot sprint while fatigued
+  Icon: ui/icons/sprint.png
