@@ -64,6 +64,10 @@ schema-conformant template files you can copy and extend.
 | First/third-person gunplay — ammo economy and hit resolution
 | `shooter/entities/`
 
+| link:combat/index.html[*Combat*]
+| Melee fighting/brawler — frame-data states, poise→stagger, guard channel
+| `combat/entities/`
+
 | link:strategy/index.html[*Strategy*]
 | RTS / 4X / tower-defense — periodic economy and a damage × armor matrix
 | `strategy/entities/`

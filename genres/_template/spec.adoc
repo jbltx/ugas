@@ -23,7 +23,7 @@ Mickael Bonfill <jbltx>
 // TODO: One paragraph describing the genre, the kind of games it targets, and
 // which UGAS pillars it leans on most. Link the matching core case study, e.g.
 // the Platformer / Racing / ARPG / Puzzle studies in
-// link:../../SPEC.adoc[the core specification] (Section 15, Case Studies).
+// link:../../SPEC.adoc[the core specification] (Section 16, Case Studies).
 
 [[relationship-to-core-spec]]
 == Relationship to the core specification
