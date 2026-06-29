@@ -63,6 +63,10 @@ schema-conformant template files you can copy and extend.
 | link:shooter/index.html[*Shooter*]
 | First/third-person gunplay — ammo economy and hit resolution
 | `shooter/entities/`
+
+| link:survival-crafting/index.html[*Survival / Crafting*]
+| Needs-decay survival loop — cascading penalties and a gather/craft economy
+| `survival-crafting/entities/`
 |===
 
 [[using-a-pack]]

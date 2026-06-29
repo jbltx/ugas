@@ -1,0 +1,18 @@
+# Stamina regen: an INFINITE + PERIOD effect that restores Stamina every tick. It is the inverse
+# of the decay effects - a periodic +Stamina. It is BLOCKED while sprinting (Survival.State.Sprinting)
+# via ApplicationRequiredTags is not enough on its own; the recovery is suppressed by applying it only
+# while not sprinting. Modelled here as always-on regen that the sprint drain (GE_Sprinting, -3/tick)
+# outpaces, so net stamina falls while sprinting and recovers when the sprint ends.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_StaminaRegen
+DurationPolicy: Infinite
+Period:
+  Period: 1.0
+  ExecuteOnApplication: false
+Modifiers:
+  - Attribute: Stamina
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 5.0

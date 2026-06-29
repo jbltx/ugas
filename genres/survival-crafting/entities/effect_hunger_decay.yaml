@@ -1,0 +1,18 @@
+# Hunger decay: the core of the survival needs loop. An INFINITE effect with a PERIOD that
+# subtracts a flat amount of Hunger every tick - the canonical periodic effect (cf. core spec
+# 9.3 GE_Poison). Applied once at character spawn and never removed; the simulation runs it for
+# the whole session. When Hunger hits its [0, MaxHunger] clamp floor, the engine's threshold
+# detector grants Survival.State.Starving and applies GE_Starvation (see the spec's signature section).
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_HungerDecay
+DurationPolicy: Infinite
+Period:
+  Period: 1.0
+  ExecuteOnApplication: false
+Modifiers:
+  - Attribute: Hunger
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -0.5

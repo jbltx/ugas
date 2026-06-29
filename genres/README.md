@@ -94,3 +94,4 @@ schema, example, and genre-pack entity in one file).
 | `racing` | Racing (Forza-style) — seeded by the Racing case study | [`racing/spec.adoc`](racing/spec.adoc) |
 | `action` | Action / Action-Adventure — seeded by the Platformer case study | [`action/spec.adoc`](action/spec.adoc) |
 | `shooter` | Shooter (FPS/TPS) — gunplay, ammo economy, hit resolution | [`shooter/spec.adoc`](shooter/spec.adoc) |
+| `survival-crafting` | Survival / Crafting — needs-decay loop, cascading penalties, gather/craft economy | [`survival-crafting/spec.adoc`](survival-crafting/spec.adoc) |
