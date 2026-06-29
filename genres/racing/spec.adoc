@@ -23,7 +23,7 @@ that modify performance, signature driver abilities (nitro, drift), and — at i
 at once.
 
 It is the practical, copy-and-extend companion to the *Racing (Forza-style)* case study in
-link:../../SPEC.adoc[the core specification] (Section 15.2). Where the case study sketches the
+link:../../SPEC.adoc[the core specification] (Section 16.2). Where the case study sketches the
 vehicle attribute set, biome surface effects, and the traction `ExecutionCalculation`, this pack
 ships the matching schema-conformant Attributes, Tags, Abilities, and Effects in `entities/`, plus
 a worked vehicle in `entities/gameplay_controller.yaml`.
@@ -39,7 +39,7 @@ Effects on top of the core Universal Gameplay Ability System specification.
 * It *reuses* core state tags (`State.Alive`, `State.Combat`, …) by reference where relevant —
   it never re-declares them.
 * The grip stacking it relies on is the core modifier `Channel` mechanism
-  (link:../../SPEC.adoc[core spec] §5.3 and §15.2), and the non-linear physics coupling is a core
+  (link:../../SPEC.adoc[core spec] §5.3 and §16.2), and the non-linear physics coupling is a core
   `ExecutionCalculation` — neither is a new construct.
 
 [[genre-attributes]]
@@ -70,7 +70,7 @@ this in two complementary layers, both landing on `TireGripMultiplier` / `Availa
 === Declarative grip channels
 
 Surface and upgrade modifiers stack through *named channels*: additive *within* a channel,
-multiplicative *across* channels — exactly the damage-bucket mechanism from §15.3, reused for grip.
+multiplicative *across* channels — exactly the damage-bucket mechanism from §16.3, reused for grip.
 
 [cols="1,3,2",options="header"]
 |===
@@ -100,7 +100,7 @@ Downforce scaling (latexmath:[\propto \text{speed}^2]) and the tire-temperature 
 *non-linear*, so they live in an `ExecutionCalculation` rather than a channel. `GE_Traction_Update`
 (`entities/effect_traction_update.yaml`) invokes `ExecCalc_VehicleTraction`, which reads the
 aggregated `TireGripMultiplier`, `AeroDownforce`, `TireTemperature`, and `CurrentSpeed` and writes
-`AvailableTraction`. The simulation re-applies this instant effect each physics step. See §15.2 for
+`AvailableTraction`. The simulation re-applies this instant effect each physics step. See §16.2 for
 the reference calculation body.
 
 [[genre-tags]]

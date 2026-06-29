@@ -1,6 +1,6 @@
-=== 14. Implementation Examples
+=== 15. Implementation Examples
 
-==== 14.1 Basic Damage Application
+==== 15.1 Basic Damage Application
 
 ===== Effect Definition
 
@@ -70,7 +70,7 @@ class HealthObserver implements IAttributeChangeObserver {
 }
 ----
 
-==== 14.2 Buff/Debuff with Duration
+==== 15.2 Buff/Debuff with Duration
 
 ===== Temporary Modifier
 
@@ -126,7 +126,7 @@ class GC_Status_StrengthBuff extends GameplayCueLooping {
 }
 ----
 
-==== 14.3 Ability with Cast Time
+==== 15.3 Ability with Cast Time
 
 [source,yaml]
 ----
@@ -195,7 +195,7 @@ class GA_Fireball extends GameplayAbility {
 }
 ----
 
-==== 14.4 Complex Calculation (Armor Penetration)
+==== 15.4 Complex Calculation (Armor Penetration)
 
 [source,typescript]
 ----

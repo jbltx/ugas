@@ -94,4 +94,6 @@ schema, example, and genre-pack entity in one file).
 | `racing` | Racing (Forza-style) — seeded by the Racing case study | [`racing/spec.adoc`](racing/spec.adoc) |
 | `action` | Action / Action-Adventure — seeded by the Platformer case study | [`action/spec.adoc`](action/spec.adoc) |
 | `shooter` | Shooter (FPS/TPS) — gunplay, ammo economy, hit resolution | [`shooter/spec.adoc`](shooter/spec.adoc) |
+| `combat` | Combat (fighting/brawler/hack-and-slash) — frame-data states, poise→stagger, guard channel | [`combat/spec.adoc`](combat/spec.adoc) |
+| `strategy` | Strategy (RTS/4X/Tower Defense) — periodic economy, damage×armor matrix, tech upgrades | [`strategy/spec.adoc`](strategy/spec.adoc) |
 | `sports` | Sports (sim/arcade) — stamina-driven performance coupling, team momentum | [`sports/spec.adoc`](sports/spec.adoc) |

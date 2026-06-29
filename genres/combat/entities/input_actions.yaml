@@ -1,0 +1,78 @@
+# Combat genre input actions. Each document defines a single action that an ability listens for via
+# its InputID. Actions are grouped into the Brawl action set (see input_action_set_brawl.yaml) and
+# bound to hardware in the input mappings. LightAttack / HeavyAttack / Special are press triggers;
+# Block is held (its ability waits on the matching release); Move is a continuous 2D vector.
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: LightAttack
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Light
+Metadata:
+  DisplayName: Light Attack
+  Description: Fast jab - the combo starter
+  Icon: ui/icons/light_attack.png
+  Category: Combat
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: HeavyAttack
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Heavy
+Metadata:
+  DisplayName: Heavy Attack
+  Description: Slow, heavy blow that cancels light-attack recovery
+  Icon: ui/icons/heavy_attack.png
+  Category: Combat
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Block
+ValueType: Digital
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Block
+Metadata:
+  DisplayName: Block
+  Description: Hold to guard against incoming attacks
+  Icon: ui/icons/block.png
+  Category: Combat
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Special
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Special
+Metadata:
+  DisplayName: Special
+  Description: Spend a full super bar for a super move
+  Icon: ui/icons/special.png
+  Category: Combat
+
+---
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Move
+ValueType: Axis2D
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags: []
+Metadata:
+  DisplayName: Move
+  Description: Walk, dash, and crouch direction (crouch enables low blocking)
+  Icon: ui/icons/move.png
+  Category: Movement

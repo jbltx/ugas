@@ -22,7 +22,7 @@ signature abilities, and — above all — a *multiplicative damage pipeline* th
 sane as item counts grow.
 
 It is the practical, copy-and-extend companion to the *ARPG (Diablo-style)* case study in
-link:../../SPEC.adoc[the core specification] (Section 15.3). Where the case study explains the
+link:../../SPEC.adoc[the core specification] (Section 16.3). Where the case study explains the
 _Damage Bucket_ architecture, this pack ships the matching schema-conformant Attributes, Tags,
 Abilities, and Effects in `entities/`, plus a worked hero in `entities/gameplay_controller.yaml`.
 
@@ -37,7 +37,7 @@ Effects on top of the core Universal Gameplay Ability System specification.
 * It *reuses* core state tags (`State.Alive`, `State.Combat`, `State.Dead`,
   `State.Debuff.Stunned`, `State.Buff.Regenerating`) by reference — it never re-declares them.
 * The damage-bucket stacking it relies on is the core modifier `Channel` mechanism
-  (link:../../SPEC.adoc[core spec] §5.3 and §15.3), not a new construct.
+  (link:../../SPEC.adoc[core spec] §5.3 and §16.3), not a new construct.
 
 [[genre-attributes]]
 == Genre Attributes
@@ -103,7 +103,7 @@ Defined in `entities/tag_registry.yaml` (additive only):
 * `entities/ability_whirlwind.yaml` — `GA_Whirlwind`: signature melee AoE. Tagged
   `Ability.Type.Melee` + `DamageType.Physical`, blocked while `State.Dead` /
   `State.Debuff.Stunned`, applies the damage effect to every target in radius while skipping
-  `Immunity.Physical` targets. Models the `GA_Whirlwind` tag-query example from §15.3.
+  `Immunity.Physical` targets. Models the `GA_Whirlwind` tag-query example from §16.3.
 
 [[genre-effects]]
 == Genre Effects

@@ -8,6 +8,7 @@ of truth for the UGAS version.
 import json
 import pathlib
 import re
+from datetime import datetime
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
@@ -17,7 +18,9 @@ def main() -> None:
 
     spec = ROOT / "SPEC.adoc"
     text = spec.read_text()
+    revdate = datetime.now().strftime("%B %Y")
     text = re.sub(r"^:revnumber:.*$", f":revnumber: {version}", text, count=1, flags=re.M)
+    text = re.sub(r"^:revdate:.*$", f":revdate: {revdate}", text, count=1, flags=re.M)
     text = re.sub(r"^:ugas-version:.*$", f":ugas-version: v{version}", text, count=1, flags=re.M)
     spec.write_text(text)
 
