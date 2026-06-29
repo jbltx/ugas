@@ -11,7 +11,7 @@
 #
 #   Health drain/tick:  Starvation(-2) + Hypothermia(-1)                         = -3.0  (VitalsDrainRate)
 #   MoveSpeed:          base 300 x Encumbrance(1 - 0.40 = 0.60) x Cold(1 - 0.25 = 0.75) = 135.0
-#   BodyTemperature:    pushed by GE_Exposure_Cold below the 36-38 comfort window to 34.0 (clamp [25,43])
+#   BodyTemperature:    GE_Exposure_Cold (periodic Add -0.4/tick) drove the BASE VALUE down to 34.0 (clamp [25,43])
 # GE_HungerDecay / GE_ThirstDecay / GE_StaminaRegen are the always-on needs loop that got the
 # survivor here (Hunger drained to 0, Thirst down to 30, Stamina recovered to full while not sprinting).
 
@@ -47,7 +47,7 @@ AttributeSets:
         BaseValue: 100.0
         CurrentValue: 100.0
       - Name: BodyTemperature
-        BaseValue: 37.0
+        BaseValue: 34.0
         CurrentValue: 34.0
       - Name: MoveSpeed
         BaseValue: 300.0

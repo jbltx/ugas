@@ -49,6 +49,7 @@ Tags:
   - Tag: Item.Type.Material
     Description: Raw crafting material gathered from a resource node
     AllowMultiple: true
+    DevComment: Extension point for typed crafting materials (e.g. Item.Type.Material.Wood, Item.Type.Material.Stone); gate craft recipes on sub-tags when the pack is extended
   - Tag: Item.Type.Tool
     Description: A crafted tool; equipping it grants a gathering/crafting buff (GE_CraftedTool)
     AllowMultiple: true
