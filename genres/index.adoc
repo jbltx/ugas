@@ -63,6 +63,10 @@ schema-conformant template files you can copy and extend.
 | link:shooter/index.html[*Shooter*]
 | First/third-person gunplay — ammo economy and hit resolution
 | `shooter/entities/`
+
+| link:sports/index.html[*Sports*]
+| Team/athlete sports — stamina-driven performance coupling and team momentum
+| `sports/entities/`
 |===
 
 [[using-a-pack]]

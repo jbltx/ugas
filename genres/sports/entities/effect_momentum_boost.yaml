@@ -1,0 +1,32 @@
+# Momentum boost: the team-momentum half of the signature mechanic. When the Momentum meter peaks,
+# the team spends it into this buff. It puts a Multiply of +0.20 on the offensive skill stats in a
+# dedicated Momentum channel - a DIFFERENT channel from GE_Fatigue's Fatigue channel, so the two
+# compose multiplicatively per the core pipeline (spec section 5.3): a stat can be momentum-boosted
+# and fatigue-coupled at once without either cancelling the other.
+#   ShotPower    : base 80 x Momentum(1 + 0.20) = 96.0
+#   PassAccuracy : base 70 x Momentum(1 + 0.20) = 84.0  (see gameplay_controller.yaml)
+# HasDuration so the surge self-expires; grants Team.State.HighMomentum for cues and AI.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_MomentumBoost
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 15.0
+Modifiers:
+  - Attribute: ShotPower
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 0.20
+    Channel: Momentum
+  - Attribute: PassAccuracy
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 0.20
+    Channel: Momentum
+GrantedTags:
+  - Team.State.HighMomentum
+GameplayCues:
+  - GameplayCue.Team.MomentumSurge
