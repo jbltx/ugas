@@ -31,12 +31,6 @@ Bindings:
       - Device: Touch
         Input: Touch.Button.Play
     bIsRebindable: false
-
-  - Action: Boost
-    Inputs:
-      - Device: Touch
-        Input: Touch.Button.Boost
-    bIsRebindable: false
 Metadata:
   DisplayName: Idle - Touch
   Description: Touch bindings for the idle action set; whole-screen tap plus on-screen economy buttons

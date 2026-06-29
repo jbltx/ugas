@@ -28,6 +28,7 @@ Tags:
   - Tag: Generator.Type.Bank
     Description: High-tier generator producing the largest flat income
     AllowMultiple: true
+    DevComment: Extension stub — no GE_Generator_Bank effect ships in this pack; reserved for adopters adding a third generator tier.
 
   # --- Ability classification ---
   - Tag: Ability.Type.Tap

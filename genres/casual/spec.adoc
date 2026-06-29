@@ -63,7 +63,7 @@ fresh save — zero income, full energy, run one — so the set is playable as s
 | Attribute | Category | Role
 
 | `Currency` | Resource | Soft currency the loop accumulates; clamped `Min: 0` with no upper bound (idle big numbers). Spent by `GA_BuyGenerator`.
-| `CurrencyPerSecond` | Statistic | The aggregated passive-income rate — the showcase target of the `Generators` (flat), `Prestige`, and `Booster` channels.
+| `CurrencyPerSecond` | Statistic | The aggregated passive-income rate — driven by the flat `Add` subtotal of installed generators plus the multiplicative `Prestige` and `Booster` channels.
 | `PrestigeMultiplier` | Statistic | Display of the `Prestige`-channel factor; clamped `Min: 1.0` and multiplied up by each `GE_PrestigeBoost`.
 | `MaxEnergy` / `Energy` | Statistic / Resource | `Energy` is clamped to `[0, MaxEnergy]`; spent by `GA_Play` and refilled by `GE_EnergyRegen`. The energy gate.
 | `Stage` / `Level` | Statistic | Run progression — current world and active-area tier; advanced by milestones and reset on prestige.
@@ -78,7 +78,7 @@ An idle game lives or dies on its *growth curve*, and in UGAS that curve is the 
 itself. The whole economy lands on one attribute — `CurrencyPerSecond` — which a *periodic* effect
 then pays into `Currency` every tick.
 
-=== Income aggregation across channels
+=== Income aggregation: flat Add subtotal multiplied by two channels
 
 `CurrencyPerSecond` is the showcase of the core `Channel` mechanism. Recall the pipeline (§5.3): flat
 `Add` modifiers sum first, then each `Multiply` channel contributes an effective factor of
@@ -89,7 +89,7 @@ maps cleanly onto this:
 |===
 | Source | What goes in it | Stacking
 
-| Generators | Flat `Add` to `CurrencyPerSecond`, one per installed generator | Additive (sum)
+| Generators | Flat `Add` to `CurrencyPerSecond`, one per installed generator (`Operation: Add`) | Additive (flat sum — not a channel)
 | `Prestige` channel | `Multiply` from `GE_PrestigeBoost` | Additive within, multiplied across the others
 | `Booster` channel | `Multiply` from `GE_DoubleIncome` | Additive within, multiplied across the others
 |===

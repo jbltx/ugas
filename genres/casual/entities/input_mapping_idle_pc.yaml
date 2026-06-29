@@ -27,11 +27,6 @@ Bindings:
     Inputs:
       - Device: Keyboard
         Input: Key.Space
-
-  - Action: Boost
-    Inputs:
-      - Device: Keyboard
-        Input: Key.G
 Metadata:
   DisplayName: Idle - PC
   Description: Mouse and keyboard bindings for the idle action set on desktop/web
