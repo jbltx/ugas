@@ -1,0 +1,7 @@
+---
+'ugas': minor
+---
+
+[Added] Normative Prediction Model for network replication (§13.8): formally defines the client-side prediction primitives that §13.4–§13.7 previously used but never specified. Defines the `PredictionKey` structure — a server-coordinated RNG `Seed`, a `Base`/`Sub`/`ParentSub` grouping for coordinating multiple same-frame activations, and a `ClientId` correlation field — together with its generation, transmission, `ConfirmPrediction`, and `RejectPrediction` lifecycle. Adds a bounded prediction window (`MaxPredictionMillis` 250 ms / `MaxPredictionFrames` 16 by default, whichever is hit first) beyond which a client MUST fall back to awaiting server authority, tied to the §13.6 high-latency guidance. Formally scopes `CaptureState()` to the owning GC's gameplay state only (attribute Base+Current, active effects, ability states, owned tags — no world/physics, no other GCs), reusing the §14.2 GC State Snapshot field set. Defines atomic multi-ability prediction groups, cross-GC predicted effect applications as speculative/local-visual-only (reconciled from the server, extending §13.7), and the `PredictedInputRecord` input-history format with retention and replay depth bounded by the prediction window and scoped to the single owning GC (filling the §13.5 `RollbackAndReplay` gaps).
+
+[Changed] Tightened §13.4 and §13.5 prose to reference the new §13.8 normative definitions; added a forward cross-reference from §13.7 "Predicted applications" to the cross-GC rules in §13.8.4. Documentation only — no schema or entity changes. Closes #4.
