@@ -235,8 +235,15 @@ class ExecCalc_ArmorPenetration extends ExecutionCalculation {
     // Base damage
     let damage = attackPower * (1 - armorDR);
 
-    // Apply critical hit
-    if (RandomFloat() < critChance) {
+    // Apply critical hit.
+    // Draw from the deterministic, seeded stream (context.RNG) rather than a
+    // bare RandomFloat(), so a predicting client and the server roll the same
+    // crit and avoid a rollback. The stream is seeded from PredictionKey.Seed
+    // (§13.8.1) and positioned per the (Sub, draw index) scheme; see the
+    // "Randomness in Execution Calculations" rule in §9.5. (This calculation
+    // stays Predictable; a roll that must be server-only would instead set
+    // Predictable = false and abort prediction per §13.8.2.)
+    if (context.RNG.NextFloat() < critChance) {
       damage *= critDamage;
       context.SetTag("Hit.Critical");
     }
