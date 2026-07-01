@@ -72,6 +72,11 @@ There are three duration policies:
 Read `references/schemas.md` for the full schema definitions. Always refer to it when
 generating entity files — never guess at field names or allowed values.
 
+> The schema definitions are **bundled** in `references/schemas.md`, so authoring and validation
+> work fully offline — the `$schema` URL you stamp is a canonical *identifier*, not a runtime fetch.
+> If you need spec prose beyond the schemas (mechanic semantics, section references), read `spec/`
+> from a local `jbltx/ugas` checkout matched to `%%UGAS_VERSION%%`.
+
 ## Authoring workflow
 
 When the user asks you to create a gameplay entity:

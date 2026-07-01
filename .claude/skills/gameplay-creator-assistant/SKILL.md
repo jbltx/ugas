@@ -59,6 +59,12 @@ Schema `<type>` is one of: `gameplay_controller`, `attribute`, `attribute_set`,
 and every genre pack at once — prefer it over many small fetches. If it isn't published yet
 for this version, fetch the spec once, then the specific schemas and the one pack you need.
 
+**Offline fallback.** The published docs are *generated from* the `jbltx/ugas` repository. If the
+network is unavailable and a checkout of that repo is at hand, read its working tree directly — `spec/`
+(the AsciiDoc source), `schemas/*.json` + `schemas/*.yaml` (the validation schemas), and `genres/<pack>/`
+(the packs) are the source of truth. Match the checkout's version (tag/branch) to `UGAS_VERSION` so what
+you author lines up with the `$schema` id you stamp.
+
 **`$schema` on the files you write.** Every entity you emit into the consumer's project must
 carry the concrete, version-pinned schema id so their tooling can validate it:
 
