@@ -74,6 +74,8 @@ include::spec/part-5-reference-implementation.adoc[]
 
 include::spec/part-6-world-and-space.adoc[]
 
+include::spec/part-7-scene-composition.adoc[]
+
 [appendix]
 === Mathematical Notation
 
