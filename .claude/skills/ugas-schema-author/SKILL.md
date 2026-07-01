@@ -36,6 +36,16 @@ simulate, and balance gameplay entities conforming to the UGAS specification.
    (pair with the `xlsx` skill when available) or export projection results to
    spreadsheets for balancing workflows.
 
+## Working autonomously (and as a building block)
+
+Infer reasonable defaults from the request and the schemas and proceed — don't stall on details
+you can reasonably choose (note what you assumed). Pause for one thing: **confirm before the
+first outward write** — creating or overwriting files in the user's project is a real side
+effect, so confirm the target once before writing. When a higher-level skill (e.g.
+`gameplay-creator-assistant` or `ugas-harness`) is composing you, it owns confirmation and the
+assumptions log — surface your assumptions to it and proceed, rather than prompting the user
+yourself.
+
 ## Core concepts to remember
 
 The UGAS modifier pipeline computes CurrentValue as:

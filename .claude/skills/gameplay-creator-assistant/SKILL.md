@@ -85,6 +85,22 @@ never pass through that pipeline, so a literal `%%UGAS_VERSION%%` would be an in
 5. **Validate** — Check every file against the fetched JSON schemas (or via
    `ugas-schema-author`) and fix every error before presenting the game.
 
+## Working autonomously (and as a harness building block)
+
+Prefer acting on sensible, pack-derived defaults over interrogating the user; in one-shot mode
+record them in the assumptions note you return. Two confirmations are worth a pause, because
+guessing wrong is expensive to undo:
+
+- **Before the first outward write.** Creating files or directories in the user's project (or a
+  new repo) is a real side effect — confirm the target location once before you start writing,
+  not once per file.
+- **Before a meaningful departure from the pack.** Dropping or replacing a genre's *signature*
+  mechanic reshapes the game — surface it and confirm rather than silently diverging. Cosmetic
+  changes (numbers, names, additive extensions) need no confirmation.
+
+When the `ugas-harness` skill is driving you, it owns these gates and its assumptions log — just
+surface departures and proceed; don't double-prompt.
+
 ## Relationship to `ugas-schema-author`
 
 These two skills are complementary. Route by scope:
