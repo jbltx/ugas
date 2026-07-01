@@ -24,6 +24,7 @@ SCHEMA_FILES = {
     "input_action_set": "schemas/input_action_set.json",
     "input_mapping": "schemas/input_mapping.json",
     "input_modifier": "schemas/input_modifier.json",
+    "scene": "schemas/scene.json",
 }
 
 SCHEMA_SUFFIXES = {
@@ -37,6 +38,7 @@ SCHEMA_SUFFIXES = {
     "/schemas/input_action_set.json": "input_action_set",
     "/schemas/input_mapping.json": "input_mapping",
     "/schemas/input_modifier.json": "input_modifier",
+    "/schemas/scene.json": "scene",
 }
 
 

@@ -1,0 +1,35 @@
+# Example: Arena Scene
+# A small combat arena — a player, two enemies, a hazard zone, and a respawn point.
+
+$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/scene.json
+Name: Arena
+Placements:
+  - Controller: PlayerCharacter
+    InstanceId: player-1
+    Position: [0, 0, 0]
+    StartupTags:
+      - Faction.Player
+  - Controller: Goblin
+    InstanceId: goblin-1
+    Position: [5, 0, 3]
+    StartupTags:
+      - Faction.Enemy
+    AttributeOverrides:
+      Health: 60
+  - Controller: Goblin
+    InstanceId: goblin-2
+    Position: [-4, 0, 6]
+    StartupTags:
+      - Faction.Enemy
+Regions:
+  - Name: LavaPit
+    Shape: Sphere
+    Position: [0, 0, 10]
+    Radius: 4
+    GrantedTags:
+      - Zone.Hazard.Fire
+SpawnPoints:
+  - Name: PlayerRespawn
+    Position: [0, 0, -8]
+    Tags:
+      - Spawn.Player
