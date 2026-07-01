@@ -1,0 +1,14 @@
+[
+  {"query": "Build a working first-person shooter and prove the combat actually plays in-engine", "should_trigger": true, "category": "build-and-verify"},
+  {"query": "Stand up my RPG's abilities and verify they behave right when I run them", "should_trigger": true, "category": "build-and-verify"},
+  {"query": "Make an autonomous pass at a survival-crafting prototype and test it end to end", "should_trigger": true, "category": "build-and-verify"},
+  {"query": "Bring up the gameplay systems for my platformer and confirm they work in Unity", "should_trigger": true, "category": "build-and-verify"},
+  {"query": "Does my UGAS combat setup behave correctly in-engine? build it and check the numbers", "should_trigger": true, "category": "verify-existing"},
+  {"query": "Author the whole game, run it, and iterate until the acceptance scenarios pass", "should_trigger": true, "category": "build-and-verify"},
+  {"query": "Scaffold an RPG from a genre pack", "should_trigger": false, "category": "scaffold-only-defer"},
+  {"query": "Give me a complete game definition for a 2D platformer", "should_trigger": false, "category": "scaffold-only-defer"},
+  {"query": "Just write me a single poison damage-over-time effect", "should_trigger": false, "category": "single-entity-defer"},
+  {"query": "Simulate the DPS curve for this weapon over 30 seconds", "should_trigger": false, "category": "single-entity-defer"},
+  {"query": "Help me write a Dockerfile for my Node.js API", "should_trigger": false, "category": "unrelated"},
+  {"query": "Build me a React dashboard showing our sales metrics", "should_trigger": false, "category": "unrelated"}
+]
