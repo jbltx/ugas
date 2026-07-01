@@ -176,3 +176,61 @@ Normative:
   checks exactly as a single-target application would; `MaxTargets` caps the set after ordering.
 . Under client-side prediction an area application is predicted only if its query is deterministic
   (§17.2 rule 3, §17.7); otherwise it defers to server authority.
+
+==== 17.4 Zones and Regions
+
+A *zone* (region) is a standing volume in the world that grants Gameplay Tags to the GCs whose anchor
+is inside it, and removes them on exit. Zones formalise a pattern the specification previously only
+illustrated — the biome effects of §16.2 (mud/asphalt applied by vehicle position) and the
+"zone transition" buff-clearing of §14 — as a first-class, query-driven construct.
+
+[source,typescript]
+----
+struct Region {
+  /** Region identity, for authoring and debugging. */
+  Name: string;
+
+  /** The volume, as a §17.2 shape anchored in the world. */
+  Shape: "Sphere" | "Box" | "Capsule";
+  Origin: Vector3;             // sphere / box centre, or capsule reference point
+  Radius?: float;              // Sphere and Capsule
+  HalfExtents?: Vector3;       // Box
+  Orientation?: Quaternion;    // Box
+  P0?: Vector3; P1?: Vector3;  // Capsule endpoints
+
+  /** Which GCs the region acts on (§17.2 SpatialFilter); empty = all spatial GCs. */
+  Filter?: SpatialFilter;
+
+  /** Tags granted to a GC while its anchor is inside the region; removed on exit. */
+  GrantedTags: GameplayTag[];
+}
+----
+
+===== Membership semantics (normative)
+
+A region's occupancy is a standing §17.2 query: the anchors inside `Shape` matching `Filter`.
+
+. *Grant on entry, remove on exit.* When a GC's anchor enters a region, the region MUST grant each of
+  its `GrantedTags` to that GC; when the anchor leaves, the region MUST remove them. Grants use the
+  reference-counted tag container of §7.2 — a GC inside two overlapping regions that grant the same tag
+  holds it once per region and keeps it until it leaves both.
+. *Tags, not direct mutation.* A region affects occupants only by granting tags (§3.1: state flows
+  through tags and effects, never direct mutation). Gameplay reacts to those tags — e.g. a
+  `Zone.Hazard.Fire` tag is the `ApplicationRequiredTags` of a burning Effect, or a `Biome.Snow` tag
+  gates a cold-exposure Effect (as in §16.2).
+. *Evaluation cadence.* Region membership is re-evaluated on the ambient §10.6 spatial budget
+  (50–100 ms is sufficient for entry/exit). An implementation MAY instead use engine trigger-volume
+  callbacks, provided the observable grant/remove semantics match.
+. *Zone transition.* Leaving a region removes its granted tags, which in turn expires any Effect gated
+  on them — the mechanism behind the §14 "clear temporary combat buffs on zone transition".
+. *Persistence.* Region-granted tags are derived from occupancy and MUST NOT be persisted as owned
+  state (§14 treats tags as derived); on load, occupancy is re-evaluated and the correct tags
+  re-granted.
+
+[NOTE]
+====
+A region is authored world content — the engine typically owns its placement (a trigger volume, a
+tilemap cell, a nav area). This section defines the _membership → tag-grant_ contract; the
+authored/serialized representation of regions (a `RegionDefinition`) is provided by the reference
+implementation alongside the spatial pillar's engine binding (§15 of the roadmap), not mandated here.
+====
