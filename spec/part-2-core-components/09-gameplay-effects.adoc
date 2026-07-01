@@ -119,6 +119,16 @@ Modifiers:
       Value: -5.0  # 5 damage per second
 ----
 
+[NOTE]
+.Periodic execution over a clamped Attribute
+====
+Each periodic execution is an independent Instant application to the Base Value (§5.2) and is therefore subject to the Attribute's bounds (§5.4) *on its own*. When more than one periodic (or Instant) Effect modifies the same clamped Attribute, the bound is applied *after each execution* — never once over their net sum. At a bound the result is consequently order-sensitive and generally differs from summing the deltas and clamping once.
+
+_Example:_ `Health` is clamped to `[0, 100]` and currently `100`. In one tick a `+10` regeneration and a `−30` poison both execute. Regen first: `min(100, 100+10)=100`, then `100−30=70`. Poison first: `100−30=70`, then `min(100, 70+10)=80`. Summing-then-clamping would give `min(100, 100+10−30)=80`. The three disagree only because a bound is reached mid-sequence.
+
+Implementations SHOULD execute a tick's due periodic executions in a deterministic, documented order so that a scenario is reproducible. To make opposing periodics commute at a bound, model them as a single net-magnitude periodic Effect, or leave the Attribute unclamped and clamp on read.
+====
+
 ==== 9.4 Modifier Specification
 
 ===== 9.4.1 Operations

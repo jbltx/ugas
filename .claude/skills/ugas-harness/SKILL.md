@@ -116,6 +116,12 @@ Rules that keep verification honest:
   scenario's result is reproducible — otherwise it isn't an oracle.
 - `Object` is ambiguous in `eval`; use `UnityEngine.Object.DestroyImmediate` and clean up spawned
   GameObjects/SOs.
+- **The reference task factory models a *subset* of ability tasks.** `WaitDelay` (honors `Duration`),
+  `ApplyEffectToOwner`, `RemoveEffectFromOwner`, and `ApplyEffectToActorsInRadius` execute; other
+  authored types (`WaitInputRelease`, `PlayMontage`, `WaitGameplayEvent`) fall back to a **NoOp** that
+  completes immediately. So don't infer a mechanic works from "the ability activated" — when its verb is
+  an unmodeled task, that task did *nothing*. Verify an ability-driven mechanic either by confirming its
+  task type is modeled, or by **applying its payload Effect(s) directly** and asserting the state change.
 
 ## Compose a scene (§18)
 
@@ -156,9 +162,16 @@ On failure, read the eval output and localize:
 - **Missing seam** → the mechanic needs an `ExecCalc_*` execution the consumer implements; note it
   as a seam, not a failure.
 
+Before flagging a runtime gap, rule out two **known-correct-but-surprising** behaviors: (1) a mechanic
+whose ability verb is an unmodeled task silently no-ops (see the task-factory caveat above) — assert on
+the payload directly; (2) **periodic effects on a clamped resource clamp *after each execution*, not
+over their net sum** (§9.3), so stacked regen/decay (or boost/drag on a bounded speed) is order-sensitive
+at a bound — an "off" survival/racing number is often this, not a bug.
+
 ## Prerequisites & environment
 
-- **Author/Validate** need only the fetched spec + schemas (network), like the authoring skills.
+- **Author/Validate** need only the spec + schemas — fetched from the docs site, or read from a local
+  `jbltx/ugas` checkout when offline (see the authoring skills' offline fallback).
 - **Run/Observe** need a **Unity project with `ugas-unity`** and the **`unity-tools` server**
   running (the editor open on that project). Target it with `--project-path`. If it's absent, do
   the Author/Validate stages, produce the eval-sim scenarios as ready-to-run C#, and tell the user
