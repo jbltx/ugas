@@ -72,6 +72,8 @@ include::spec/part-4-feedback-and-networking.adoc[]
 
 include::spec/part-5-reference-implementation.adoc[]
 
+include::spec/part-6-world-and-space.adoc[]
+
 [appendix]
 === Mathematical Notation
 

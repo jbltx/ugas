@@ -1,0 +1,5 @@
+---
+'ugas': minor
+---
+
+[Added] World & Spatial Model pillar (§17), foundation. UGAS was position-agnostic; §17 makes the spatial model first-class and normative as an engine seam (the spec defines the model + query contract; the engine provides the spatial index). This first installment defines §17.1 **Spatial Anchors** (a GC's world position via its Avatar, or an explicit `WorldOrigin`; GCs without a position are non-spatial and invisible to queries) and §17.2 the **Spatial Query Model** — a normative `SpatialQuery` interface (`Distance`, `OverlapSphere`/`Box`/`Capsule`/`Cone`, `LineOfSight`, `Nearest`) with a `SpatialFilter` (tag/affiliation/max-results) and normative semantics (filter-then-test, self handling, determinism for §17.7 prediction, non-spatial exclusion, §10.6 tick budgets). Appended as §17 to avoid renumbering §4–§16 and their cross-references. First of a split series for the spatial pillar (range/multi-target, zones, perception, partitioning, prediction to follow); documentation only — no schema or entity changes yet.
