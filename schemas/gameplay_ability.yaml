@@ -52,6 +52,10 @@ properties:
   Cooldown:
     type: string
     description: Reference to cooldown GameplayEffect
+  MaxRange:
+    type: number
+    minimum: 0
+    description: "Maximum targeting range in engine units (§17.3). Absent or 0 means self-targeted / no range gate; a target-requiring activation MUST be within range (§17.2 Distance), validated server-side per §13.7."
   AsyncValidation:
     type: object
     description: Optional asynchronous server-side validation for activation (§8.8). When present and Required is true, an activation that passes the synchronous checks enters PendingConfirmation before Commit instead of committing synchronously.

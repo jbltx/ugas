@@ -127,3 +127,52 @@ tags on entry/exit; perception (§17.5) composes `OverlapSphere` with `LineOfSig
 (§17.6) is how an engine answers all of the above efficiently; and predicted spatial queries (§17.7)
 rely on the determinism of semantic rule 3.
 ====
+
+==== 17.3 Range and Area Application
+
+The two most common spatial needs are expressed directly on the existing pillars via the §17.2 query
+model: an ability's *range* and an effect's *area* application.
+
+===== Targeting range
+
+An ability MAY declare a `MaxRange` (schema §8.7). When it targets another GC, the activation is valid
+only while the target's anchor is within `MaxRange` of the instigator's anchor
+(`SpatialQuery.Distance`, §17.2):
+
+* A range-gated activation whose target is out of range MUST fail activation — it does not commit
+  (§8.3). Under prediction the client MAY predict the range check, but the server's reachability
+  validation (§13.7) is authoritative.
+* `MaxRange` absent or `0` means the ability is self-targeted or imposes no range gate.
+* Range is measured between anchors (§17.1); an instigator or target without an anchor is, by
+  definition, out of range for a range-gated ability.
+
+===== Area application
+
+By default an effect applies to a single target (`ApplyGameplayEffectToTarget`, §13.7). An effect MAY
+instead declare an `Area` (schema §9): it is applied to _every_ anchor matching a filter within a
+shape, resolved by a single §17.2 query at the moment of application.
+
+[source,typescript]
+----
+// Resolve the target set once, then apply to each, honoring the §9.6 execution policy.
+function ApplyAreaEffect(instigator: GC, origin: Vector3, spec: EffectSpec, area: Area): void {
+  const hits = area.Shape === "Cone"
+    ? query.OverlapCone(origin, instigator.Facing, resolve(area.Radius), area.HalfAngleDeg, area.Filter)
+    : query.OverlapSphere(origin, resolve(area.Radius), area.Filter); // Sphere
+  for (const anchor of hits) // set already ordered + capped by MaxTargets
+    ApplyGameplayEffectToTarget(anchor.Owner, spec);
+}
+----
+
+Normative:
+
+. The target set MUST be resolved by a single query at application time — an area effect _snapshots_
+  who is in the area then; anchors entering the shape afterwards are not retroactively affected.
+. `Area.Radius` MAY be `AttributeBased` (§9.4.2), so an upgrade or stat can scale the radius — the
+  capability genre packs previously lacked (they hard-coded a constant radius in a task parameter).
+. The origin is the application anchor: `EffectContext.WorldOrigin` (§9.9) for a ground-targeted cast,
+  otherwise the instigator's or target's anchor.
+. Each per-target application obeys the effect's execution policy (§9.6) and the §13.7 authorization
+  checks exactly as a single-target application would; `MaxTargets` caps the set after ordering.
+. Under client-side prediction an area application is predicted only if its query is deterministic
+  (§17.2 rule 3, §17.7); otherwise it defers to server authority.
