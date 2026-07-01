@@ -117,6 +117,19 @@ Rules that keep verification honest:
 - `Object` is ambiguous in `eval`; use `UnityEngine.Object.DestroyImmediate` and clean up spawned
   GameObjects/SOs.
 
+## Compose a scene (§18)
+
+Isolated eval-sim proves a *system*; a **Scene** proves a *playable encounter*. Once the entities
+validate, author a Scene (§18, the `scene` schema) that places the controllers into a world —
+`Placements` (a controller config at a pose with startup tags / effects / attribute overrides),
+`Regions` (§17.4 zones), and `SpawnPoints` — then load it with `SceneLoader.Load(scene, world)` into a
+`UgasSpatialWorld` and drive `world.Tick()`. The assertions now span multiple positioned actors at
+once: enemies spawn at their poses with their faction tags, a hazard region tags whoever stands in it,
+perception acquires across the placed set. This is the harness's step from "the damage math is right"
+to "the encounter plays." Scene load is deterministic (declaration order + seeded RNG, §18.6), so a
+scene is as reproducible an oracle as a single-controller sim, and per-instance state round-trips
+through §14 for save/reload scenarios.
+
 ## Acceptance scenarios are the success oracle
 
 For each genre, codify its **signature mechanic as a runnable scenario** — the §16 case studies
