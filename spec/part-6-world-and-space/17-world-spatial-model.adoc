@@ -234,3 +234,101 @@ tilemap cell, a nav area). This section defines the _membership → tag-grant_ c
 authored/serialized representation of regions (a `RegionDefinition`) is provided by the reference
 implementation alongside the spatial pillar's engine binding (§15 of the roadmap), not mandated here.
 ====
+
+==== 17.5 Perception and Awareness
+
+Perception composes a range query with line-of-sight: an observer becomes _aware_ of a target when the
+target is within the observer's sense range AND visible to it. It is the basis of aggro, stealth
+detection, and AI target acquisition.
+
+[source,typescript]
+----
+struct PerceptionConfig {
+  /** Maximum sense range; MAY be AttributeBased (§9.4.2), e.g. reduced while blinded. */
+  Range: float;
+
+  /** Forward field-of-view half-angle in degrees; omitted = omnidirectional. */
+  FovHalfAngleDeg?: float;
+
+  /** Require unobstructed line-of-sight (§17.2) to sense the target. */
+  RequireLineOfSight: boolean;
+
+  /** Which GCs are sensed (§17.2 SpatialFilter) — typically Hostile. */
+  Filter: SpatialFilter;
+}
+----
+
+===== Semantics (normative)
+
+Perception is a §17.2 query from the observer's anchor:
+
+. *Composition.* A target is perceived iff it is returned by `OverlapSphere(observerPos, Range, Filter)`
+  — narrowed to `OverlapCone` when `FovHalfAngleDeg` is set — AND, when `RequireLineOfSight`,
+  `LineOfSight(observerPos, targetPos)` is true.
+. *Awareness as tags.* Perception state MUST be expressed as tags (or an Effect) on the observer, never
+  as hidden state — e.g. acquiring a target grants `State.Perceiving` / triggers an aggro Effect; losing
+  it removes the tag. This is the §17.4 zone pattern with the "region" being the observer's own dynamic
+  sense volume.
+. *Cadence.* Perception is an ambient acquisition query and MUST honour the §10.6 budget (50–100 ms);
+  it is not a per-frame gameplay-critical query unless a title requires it.
+. *No implied symmetry.* A perceiving B does not imply B perceives A; each observer evaluates its own
+  `PerceptionConfig`.
+. *Determinism.* Like all §17.2 queries, perception is deterministic (for §17.7), though it is typically
+  server-authoritative (AI runs on the server).
+
+==== 17.6 Spatial Partitioning
+
+§17.2 defines the query contract; this section governs how an implementation answers it at scale. UGAS
+does not mandate a structure, but it bounds the cost.
+
+===== Requirements
+
+. *Sub-linear queries.* An implementation SHOULD answer `OverlapSphere` / `OverlapCone` / `Nearest` in
+  better than O(n) over all GCs — via a spatial partition (uniform or hierarchical grid, BVH, k-d tree)
+  or the host engine's physics broadphase. A full scan is permitted only for small worlds.
+. *Budget alignment.* Query cadence MUST respect the §10.6 spatial tick budgets: hit detection and
+  targeting are gameplay-critical (evaluated the frame they are needed); lingering area effects, auras,
+  and perception are ambient (50–100 ms). The partition exists so the ambient set can be re-queried at
+  that cadence without a per-frame full scan.
+. *Result bounds.* `SpatialFilter.MaxResults` (and `Area.MaxTargets`, `Nearest.count`) bound worst-case
+  result size; an implementation MUST NOT allocate unboundedly per query (the reference implementation
+  aggregates into reusable buffers, as the §5 attribute kernel does).
+. *Staleness.* A partition MAY be rebuilt or incrementally updated; between updates an _ambient_ query
+  MAY reflect positions up to one ambient tick stale, but a gameplay-critical query MUST use current
+  positions.
+
+===== Non-normative guidance
+
+For most titles a _uniform grid_ keyed by `floor(position / cellSize)` (with `cellSize` ≈ the largest
+common query radius) gives near-O(1) neighbourhood queries and cheap incremental updates — this is what
+the reference implementation's optional DOTS backend uses (a parallel spatial hash). Large open worlds
+benefit from a hierarchical grid or the engine's broadphase; tile/grid games (§16.4) already _are_ a
+partition — adjacency is a cell-index lookup, not a distance query.
+
+==== 17.7 Prediction of Spatial Queries
+
+Client-side prediction (§13.4, §13.8) extends to spatial gameplay only under the determinism guarantee
+of §17.2 (semantic rule 3). A predicted ability whose activation depends on a spatial query — a range
+check (§17.3), an area target set (§17.3), a perceived target (§17.5) — MUST resolve that query
+identically on the predicting client and the authoritative server, or reconcile.
+
+===== Semantics (normative)
+
+. *Deterministic inputs.* A predicted query MUST run against state both ends agree on: positions in the
+  prediction's `CaptureState()` scope (§13.8.3) for the owning GC, and replicated positions for others.
+  Where positions differ across the wire the query may mis-predict and MUST reconcile via §13.5 against
+  the server's authoritative result.
+. *Stable ordering.* Ordered results (`Nearest`, and any `MaxTargets` / `MaxResults` truncation) MUST
+  use the deterministic tie-break of §17.2 rule 3 so client and server select the same subset; an
+  ambiguous order MUST NOT pick different targets on each end.
+. *Cross-GC targets.* A predicted area or targeted effect hitting GCs the client does not own is
+  speculative / local-visual only, reconciled from the server (§13.8.4) — the client MAY show the blast,
+  but non-owned GCs change only on server confirmation.
+. *Non-predictable queries.* A query depending on state the client cannot reproduce (server-only
+  perception, hidden actors) MUST be marked non-predictable so the dependent activation aborts to server
+  authority — the same escape hatch as §9.5 (randomised ExecutionCalculations) and §13.8.2 (prediction
+  window).
+
+This closes the World & Spatial Model: §17.1–17.2 define anchors and queries; §17.3 range and area;
+§17.4 zones; §17.5 perception; §17.6 how queries scale; §17.7 how they behave under prediction — the
+whole pillar resting on the single determinism guarantee of §17.2.
