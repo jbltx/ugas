@@ -1,9 +1,11 @@
-# Light attack: the fast combo starter. Quick startup, short recovery, low damage. Walks the
-# three frame phases (Combat.Move.Startup -> Active -> Recovery) via its ActivationOwnedTags and the
-# task sequence, applying GE_MeleeDamage to the target during the Active window. It owns
-# Combat.Move.Recovery during its tail, which is exactly the tag GA_HeavyAttack's
-# CancelAbilitiesWithTags cancels - so a heavy buffered during light recovery interrupts it,
-# the basic combo cancel. Cannot start while in hitstun, blockstun, staggered, or blocking.
+# Light attack: the fast combo starter. Quick startup, short recovery, low damage. A WaitDelay startup
+# gates the hitbox, then ApplyEffectToTarget applies GE_MeleeDamage to the nearest Team.Hostile within
+# MaxRange (the modeled melee-hit path; a reference runtime treats WaitTargetData as a no-op, so the
+# sweep target is acquired by ApplyEffectToTarget itself), then a WaitDelay recovery. Which fighter is
+# Team.Hostile, and high/mid/low hitzone guard rules, are engine targeting seams (§17.2). It owns
+# Combat.Move.Recovery during its tail, which is exactly the tag GA_HeavyAttack's CancelAbilitiesWithTags
+# cancels - so a heavy during light recovery interrupts it, the basic combo cancel. Cannot start while in
+# hitstun, blockstun, staggered, or blocking.
 
 $schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_LightAttack
@@ -24,14 +26,11 @@ Tasks:
   - Type: WaitDelay
     Params:
       Duration: 0.08
-  - Type: WaitTargetData
-    Params:
-      TargetingMethod: MeleeSweep
-      MaxRange: 1.5
-      Hitzone: Hitzone.Mid
   - Type: ApplyEffectToTarget
     Params:
       EffectClass: GE_MeleeDamage
+      MaxRange: 1.5
+      RequireTag: Team.Hostile
   - Type: WaitDelay
     Params:
       Duration: 0.18
