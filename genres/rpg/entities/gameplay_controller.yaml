@@ -45,6 +45,7 @@ OwnedTags:
   - State.Alive
   - State.Combat
   - Class.Barbarian
+  - Team.Friendly
   - Item.Equipped.Weapon
   - Item.Type.Sword
 ReplicationMode: Mixed
