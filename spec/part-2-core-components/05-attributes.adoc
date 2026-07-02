@@ -73,6 +73,30 @@ Current Value::
 | Ephemeral (calculated)
 |===
 
+===== Instant Modifiers on the Base Value
+
+An Instant effect applies each of its Modifiers *directly to the Base Value*, in authored order,
+according to the operation:
+
+* `Add` / `AddPost` — add the (signed) magnitude to the Base Value.
+* `Override` — set the Base Value to the magnitude.
+* `Multiply` — scale the Base Value by `stem:[(1 + m)]`, the same signed-bonus convention the
+  Current-Value pipeline uses (§5.3): a magnitude of `+1.0` doubles the Base Value, `-0.25` removes 25%.
+  Channel grouping is a Current-Value concept and does not apply to a Base-Value write — each Instant
+  `Multiply` scales the Base Value independently, in authored order.
+
+The result is then clamped to the Attribute's declared bounds. These per-operation rules are *total*: an
+implementation MUST NOT silently drop any operation (a `Multiply` on an Instant effect is a Base-Value
+scale, not a no-op). An Instant `Multiply` with magnitude `0` is the identity (`stem:[times 1]`).
+
+This applies only to *Instant* effects. A durational (Infinite / HasDuration) effect's `Multiply` and
+`Divide` modifiers are Current-Value modifiers (§5.3) and are never written to the Base Value — including
+on the periodic ticks of a periodic durational effect, whose executions apply only `Add` / `AddPost` /
+`Override` to the Base Value (a periodic `Multiply`-to-base would double-count against the effect's own
+Current-Value contribution and compound every tick). A percentage change that must be *permanent* is
+authored as an Instant `Multiply`; a percentage change that lasts *while an effect is active* is a
+durational `Multiply` in the Current-Value pipeline.
+
 ==== 5.3 Modifier Pipeline
 
 The Current Value calculation MUST follow a standardized pipeline to ensure mathematical consistency across implementations.

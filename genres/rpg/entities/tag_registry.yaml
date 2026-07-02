@@ -45,6 +45,16 @@ Tags:
     Description: Target ignores incoming fire damage
     AllowMultiple: false
 
+  # --- Affiliation (engine-assigned; §17.2 defers affiliation to the title) ---
+  # Which actors are hostile to the hero is the engine team model's job; abilities filter targets by
+  # these so a single-target strike acquires an enemy (not the caster or an ally).
+  - Tag: Team.Friendly
+    Description: Same side as the source (the player party); spared by hostile-only targeting
+    AllowMultiple: false
+  - Tag: Team.Hostile
+    Description: An enemy of the source; a valid target for the hero's attacks
+    AllowMultiple: false
+
   # --- Items (granted by equip effects) ---
   - Tag: Item.Equipped.Weapon
     Description: A weapon is equipped in the main hand
