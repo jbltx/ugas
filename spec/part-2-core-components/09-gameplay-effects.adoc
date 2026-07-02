@@ -83,6 +83,18 @@ HasDuration Effects::
 Infinite Effects::
   Modify the Current Value indefinitely until explicitly removed. Classic examples: passive auras, equipment bonuses, persistent status effects.
 
+[NOTE]
+====
+`HasDuration` timers and periodic intervals (§9.3) advance in the runtime's *tick time* — the elapsed
+amount passed to each update — not in any built-in notion of "turn." A **turn- or phase-based title** (a
+card battler, a tactics grid) represents each turn as a discrete advance: it ticks the system by one
+fixed turn-step at end-of-turn — so a status authored to last `N` expires after `N` turn-steps — and it
+does **not** *also* advance those same effects with per-frame time, which would age turn-scoped statuses
+mid-turn. In other words the *unit* of a duration is whatever unit the title advances the runtime by:
+real-time titles pass seconds; turn-based titles pass one step per turn. This keeps the effect model
+usable for both without a separate "turns" concept, but the title MUST drive a single, consistent clock.
+====
+
 ==== 9.3 Periodic Execution
 
 Effects with duration (HasDuration or Infinite) MAY execute periodically:
