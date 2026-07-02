@@ -116,12 +116,16 @@ Rules that keep verification honest:
   scenario's result is reproducible — otherwise it isn't an oracle.
 - `Object` is ambiguous in `eval`; use `UnityEngine.Object.DestroyImmediate` and clean up spawned
   GameObjects/SOs.
-- **The reference task factory models a *subset* of ability tasks.** `WaitDelay` (honors `Duration`),
-  `ApplyEffectToOwner`, `RemoveEffectFromOwner`, and `ApplyEffectToActorsInRadius` execute; other
-  authored types (`WaitInputRelease`, `PlayMontage`, `WaitGameplayEvent`) fall back to a **NoOp** that
-  completes immediately. So don't infer a mechanic works from "the ability activated" — when its verb is
-  an unmodeled task, that task did *nothing*. Verify an ability-driven mechanic either by confirming its
-  task type is modeled, or by **applying its payload Effect(s) directly** and asserting the state change.
+- **Ability tasks run in *sequence*, and the factory models a *subset* of them.** Tasks execute in
+  declaration order — each pauses the ability until it completes, then the next activates (so
+  `[WaitDelay, ApplyEffectToOwner]` = "wait, then act"; the ability auto-ends after the last task).
+  **Modeled:** `WaitDelay` (honors `Duration`), `ApplyEffectToOwner`, `RemoveEffectFromOwner`,
+  `ApplyEffectToActorsInRadius`, `ApplyEffectToTarget` (nearest-in-range, name-filtered), `WaitTagAdded`,
+  and `WaitInputRelease` (needs the controller's input-state source — auto-wired by `UgasInputSystem`).
+  **Still NoOp:** `PlayMontage`, `WaitGameplayEvent`, `WaitTargetData`. So don't infer a mechanic works
+  from "the ability activated" — when its verb is an unmodeled task, that task did *nothing*. Verify an
+  ability-driven mechanic by confirming its task type is modeled, or by **applying its payload Effect(s)
+  directly** and asserting the state change.
 
 ## Compose a scene (§18)
 
