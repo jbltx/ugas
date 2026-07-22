@@ -1,0 +1,22 @@
+# On-foot action set: the default action set for a platformer character.
+# Bundles all traversal and combat inputs available while the character is alive.
+# Input buffering is enabled with a generous 0.15 s window and depth of 3, which
+# smooths out rapid jump-chains and coyote-time sequences typical of the genre.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action_set.json
+Name: OnFoot
+Actions:
+  - Move
+  - Jump
+  - GroundPound
+Priority: 0
+ActivationTags:
+  RequiredTags:
+    - State.Alive
+InputBuffer:
+  Enabled: true
+  BufferWindow: 0.15
+  MaxBufferSize: 3
+Metadata:
+  DisplayName: On Foot
+  Description: Default movement and combat inputs for a grounded or airborne platformer hero

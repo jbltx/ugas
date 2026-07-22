@@ -1,0 +1,229 @@
+= UGAS Genre Pack: Sports
+Mickael Bonfill <jbltx>
+:revnumber: 1.0.0-draft.5
+:ugas-version: v1.0.0-draft.5
+:doctype: book
+:toc: left
+:toc-title: Table of Contents
+:toclevels: 4
+:stem: latexmath
+:source-highlighter: highlight.js
+:icons: font
+:sectanchors:
+:sectlinks:
+:docinfo: shared
+
+[[overview]]
+== Overview
+
+This genre pack targets *team and athlete sports games* in the FIFA / NBA 2K / Madden mould — and
+the arcade end of the family (NBA Jam, Rocket League-style momentum swings) just as readily: an
+athlete defined by *physical* attributes and *on-ball skill* ratings, a *stamina reserve* that
+drains with effort, and a *team momentum* meter that swings a match. Its signature is a
+*stamina-driven performance coupling*: as an athlete tires, speed and finishing degrade
+*continuously and proportionally* — and when the team is on top, a momentum surge multiplies their
+offensive skill.
+
+Within the link:taxonomy.html[genre taxonomy] (`family-sports`) it sits across the *traditional
+sports simulation* and *arcade sports* subgenres — performance-driven play built on individual
+athlete attributes and a team-wide meter — rather than *sports management* (which is roster/economy
+strategy) or *sports-based fighting* (which the Combat pack covers).
+
+Unlike the Platformer, Racing, and ARPG packs, the core specification ships no dedicated sports case
+study, so this pack is designed from first principles. It still leans entirely on core constructs —
+the *AttributeBased* magnitude type (link:../../SPEC.adoc[core spec] §9.4.2) for the fatigue
+coupling, the modifier `Channel` mechanism (§5.3) for the momentum buff, periodic Effects (§9.3) for
+stamina drain and recovery, effect-granted tags for the athlete state machine, and an optional custom
+`Execution` (§9.5) for shot resolution. It ships the matching schema-conformant Attributes, Tags,
+Abilities, and Effects in `entities/`, plus a worked athlete in `entities/gameplay_controller.yaml`.
+
+[[relationship-to-core-spec]]
+== Relationship to the core specification
+
+This document is *additive*. It defines genre-specific Attributes, Tags, Abilities, and
+Effects on top of the core Universal Gameplay Ability System specification.
+
+* It MUST NOT redefine, override, or contradict any concept in the core spec.
+* All entities in `entities/` validate against the same `schemas/*.json` as the core.
+* It *reuses* the core lifecycle tags (`State.Alive`, `State.Combat`, `State.Cutscene`) by reference,
+  and adds sports-specific states (`Athlete.State.Fatigued`, `Team.State.HighMomentum`, …).
+* Athlete and team state is mutated *only through Effects* (core spec §3.1) — abilities never write
+  tags directly; they gate on tags and apply Effects.
+* The fatigue coupling is the core `AttributeBased` magnitude type (§9.4.2) and the momentum buff is
+  the core modifier `Channel` mechanism (§5.3) — neither is a new construct.
+
+[[genre-attributes]]
+== Genre Attributes
+
+Defined in `entities/attribute_set.yaml` as the `AthletePerformanceSet` set. The base values describe
+a competent all-round outfield athlete, so the set is playable as shipped.
+
+[cols="1,1,3",options="header"]
+|===
+| Attribute | Category | Role
+
+| `MaxStamina` / `Stamina` | Statistic / Resource | `Stamina` is clamped to `[0, MaxStamina]`; drained by sprinting and ability costs, recovered out of effort. The *backing attribute* of the fatigue coupling.
+| `Speed` | Statistic | Top movement speed; scaled *down* by `GE_Fatigue` in the `Fatigue` channel as `Stamina` falls.
+| `Acceleration` | Statistic | How quickly the athlete reaches top `Speed`.
+| `Strength` | Statistic | Physical power for shielding, tackling, and aerial duels.
+| `PassAccuracy` | Statistic | Likelihood a pass finds its target; scaled *up* by `GE_MomentumBoost` in the `Momentum` channel.
+| `ShotPower` | Statistic | Raw power behind a shot; boosted by `GE_MomentumBoost` (`Momentum` channel) and read by `ExecCalc_ShotResolution`.
+| `ShotAccuracy` | Statistic | Shot placement precision; scaled *down* by `GE_Fatigue` in the `Fatigue` channel as `Stamina` falls.
+| `Tackling` | Statistic | Ability to win the ball cleanly in a challenge.
+| `Composure` | Statistic | Steadiness under pressure; resists the defender-pressure penalty in `ExecCalc_ShotResolution`.
+| `MaxMomentum` / `Momentum` | Statistic / Resource | `Momentum` is clamped to `[0, MaxMomentum]`; the team swing meter, spent into `GE_MomentumBoost` when it peaks.
+| `EffectiveShotPower`, `GoalProbability` | Meta | Runtime telemetry written by `ExecCalc_ShotResolution`; the resolved shot power and scoring chance for UI/analytics.
+|===
+
+[[genre-fatigue-coupling]]
+== Stamina-driven performance coupling (the core sports mechanic)
+
+The pulse of a sports match is *stamina*: a fresh athlete is fast and clinical, a spent one is
+laboured and wayward. This pack expresses that not as a step-function debuff but as a *continuous
+coupling* — the showcase for the core `AttributeBased` magnitude type.
+
+=== The fatigue coupling via AttributeBased magnitudes
+
+`GE_Fatigue` (`entities/effect_fatigue.yaml`) carries two `Multiply` modifiers whose magnitudes are
+not constants but are *derived from the live `Stamina` attribute*. The core formula (§9.4.2) is:
+
+[stem]
+++++
+m = (\text{BackingAttribute} + \text{PreMultiplyAdditive}) \times \text{Coefficient} + \text{PostMultiplyAdditive}
+++++
+
+With `BackingAttribute: Stamina` and `PreMultiplyAdditive: -100` (so the term is
+latexmath:[\text{Stamina} - \text{MaxStamina}]), the two modifiers are:
+
+* `Speed`: latexmath:[m = (\text{Stamina} - 100) \times 0.005]
+* `ShotAccuracy`: latexmath:[m = (\text{Stamina} - 100) \times 0.004]
+
+Each modifier is a `Multiply` in the `Fatigue` channel, so its pipeline factor is
+latexmath:[1 + m] (§5.3). At full stamina the factor is exactly latexmath:[1.0] — *no penalty when
+fresh* — and it shrinks smoothly as the reserve drains. The deeper the fatigue, the larger the bite:
+
+[cols="1,1,1",options="header"]
+|===
+| `Stamina` | `Speed` factor latexmath:[(1+m)] | resulting `Speed` (base 100)
+
+| 100 | latexmath:[1.00] | latexmath:[100.0]
+| 60  | latexmath:[0.80] | latexmath:[80.0]
+| 40  | latexmath:[0.70] | latexmath:[70.0]
+| 0   | latexmath:[0.50] | latexmath:[50.0]
+|===
+
+.Worked example (`entities/gameplay_controller.yaml`)
+A striker worn down to latexmath:[\text{Stamina} = 40]:
+
+* `Speed`: latexmath:[100 \times \left(1 + (40 - 100)\times 0.005\right) = 100 \times 0.70 = 70.0]
+* `ShotAccuracy`: latexmath:[75 \times \left(1 + (40 - 100)\times 0.004\right) = 75 \times 0.76 = 57.0]
+
+These are exactly the `CurrentValue` entries recorded for the example athlete. Because the magnitude
+re-reads `Stamina` on each evaluation, *no calculation code is involved* — the coupling is pure data.
+
+=== The fatigue threshold and the Fatigued gate
+
+The coupling above is smooth, but a hard *state* gate is what stops a tired athlete from sprinting on.
+When `Stamina` crosses a low threshold the engine applies `GE_Fatigue`, which — besides the coupling
+— grants `Athlete.State.Fatigued`; when `Stamina` recovers above the threshold the engine removes it.
+That threshold check is engine logic, since an attribute comparison cannot be an activation tag — the
+same pattern the shooter pack uses for "reload only when not full". `Athlete.State.Fatigued` sits in
+the `ActivationBlockedTags` of `GA_Sprint` and `GA_SkillMove`, so an exhausted athlete can neither
+sprint nor pull off flair until they have recovered.
+
+=== Team momentum via a multiplicative channel
+
+The attacking counterpart to fatigue is *team momentum*. `GE_MomentumBoost`
+(`entities/effect_momentum_boost.yaml`) is applied when the `Momentum` meter peaks and puts a
+`Multiply` of latexmath:[+0.20] on the offensive skill stats in a dedicated `Momentum` channel,
+granting `Team.State.HighMomentum`. Because `Momentum` is a *different* channel from `Fatigue`, the
+two compose multiplicatively (§5.3): a stat can be fatigue-coupled and momentum-boosted at the same
+time without either cancelling the other.
+
+* `ShotPower`: latexmath:[80 \times (1 + 0.20) = 96.0]
+* `PassAccuracy`: latexmath:[70 \times (1 + 0.20) = 84.0]
+
+In the worked athlete the affected stats each sit in exactly one channel, so these factors apply
+cleanly — but a `ShotPower` that were *also* fatigue-coupled would read
+latexmath:[80 \times \text{Fatigue} \times \text{Momentum}], the channels multiplying as the pipeline
+prescribes.
+
+[[genre-shot-resolution]]
+== Shot resolution
+
+`GE_ShotAttempt` (`entities/effect_shot_attempt.yaml`) is the instant payload `GA_Shoot` applies at
+goal. A shot outcome is not a single subtraction: it couples the shooter's (already fatigue-coupled)
+`ShotPower` and `ShotAccuracy` with the live `Stamina` reserve and the *defender pressure* on the
+shooter, then resolves whether the ball beats the keeper. That multi-attribute, source-vs-target
+logic can't be a static modifier, so the effect delegates to a custom `Execution`
+(`ExecCalc_ShotResolution`, §9.5) that writes `EffectiveShotPower` and `GoalProbability` (both `Meta`)
+for telemetry and UI. This is the sports analogue of the Racing pack's traction calculator and the
+Shooter pack's hit resolution — the optional seam where a genre's signature math plugs into UGAS. A
+pure-data adopter can skip it; the fatigue coupling and momentum buff need no engine code at all.
+
+[[genre-tags]]
+== Genre Tags
+
+Defined in `entities/tag_registry.yaml` (additive only):
+
+* *Athlete states* — `Athlete.State.Sprinting|Fatigued|Injured`.
+* *Team states* — `Team.State.HighMomentum`.
+* *Team affiliation* — `Team.Friendly|Hostile`.
+* *Player roles* — `Role.Striker|Midfielder|Defender|Goalkeeper`.
+* *Ability types* — `Ability.Type.Sprint|Pass|Shoot|Tackle|Skill`.
+
+[[genre-abilities]]
+== Genre Abilities
+
+* `entities/ability_sprint.yaml` — `GA_Sprint`: hold to run flat-out; applies the periodic
+  `GE_SprintDrain` and ends on input release (`WaitInputRelease`). Blocked while
+  `Athlete.State.Fatigued`.
+* `entities/ability_pass.yaml` — `GA_Pass`: play the ball to a friendly receiver. Costs `Stamina`
+  (`Cost: GE_PassCost`) on a short cooldown (`GE_PassCooldown`); `PassAccuracy` governs the outcome.
+* `entities/ability_shoot.yaml` — `GA_Shoot`: strike at goal. Costs `Stamina` (`Cost: GE_ShootCost`)
+  on a cooldown (`GE_ShootCooldown`); traces to goal and applies `GE_ShotAttempt`.
+* `entities/ability_tackle.yaml` — `GA_Tackle`: challenge a `Team.Hostile` ball-carrier. Costs
+  `Stamina` (`Cost: GE_TackleCost`) on a cooldown (`GE_TackleCooldown`); `Tackling`/`Strength` decide
+  the duel.
+* `entities/ability_skill_move.yaml` — `GA_SkillMove`: a technical dribble. Costs `Stamina`
+  (`Cost: GE_SkillMoveCost`) on a cooldown (`GE_SkillMoveCooldown`); blocked while
+  `Athlete.State.Fatigued`.
+
+The trivial cost/cooldown effects (`GE_PassCost`, `GE_ShootCost`, `GE_TackleCost`,
+`GE_SkillMoveCost`, and their `*Cooldown` siblings) are a flat `Stamina` cost and a cooldown tag; the
+pack references them by name rather than shipping a file for each, the same convention the Racing and
+Shooter packs use.
+
+[[genre-effects]]
+== Genre Effects
+
+* `entities/effect_fatigue.yaml` — `GE_Fatigue`: infinite; the `AttributeBased` `Speed`/`ShotAccuracy`
+  reduction (the signature coupling); grants `Athlete.State.Fatigued`.
+* `entities/effect_sprint_drain.yaml` — `GE_SprintDrain`: `HasDuration` + `Period`; subtracts
+  `Stamina` every tick while sprinting; grants `Athlete.State.Sprinting`.
+* `entities/effect_stamina_recover.yaml` — `GE_StaminaRecover`: infinite + `Period`; restores
+  `Stamina` while not sprinting.
+* `entities/effect_momentum_boost.yaml` — `GE_MomentumBoost`: `HasDuration`; `+20%` to
+  `ShotPower`/`PassAccuracy` in the `Momentum` channel; grants `Team.State.HighMomentum`.
+* `entities/effect_injury.yaml` — `GE_Injury`: `HasDuration` debuff; flat `Speed`/`Acceleration`
+  penalties and a lower `MaxStamina` ceiling; grants `Athlete.State.Injured`.
+* `entities/effect_shot_attempt.yaml` — `GE_ShotAttempt`: instant; runs the `ExecCalc_ShotResolution`
+  `Execution` to resolve the shot and write `EffectiveShotPower`/`GoalProbability`.
+
+[[using-this-pack]]
+== Using this pack
+
+. Copy `genres/sports/` into your project (or load `entities/` directly via the
+  `ugas-schema-author` skill).
+. Tune the athlete base values in `AthletePerformanceSet` first — and tune the fatigue coupling by
+  adjusting the `Coefficient` on each `GE_Fatigue` modifier (a larger coefficient means a steeper
+  drop-off as `Stamina` falls). Add player archetypes as `Role.*` tags and per-position stat tweaks.
+. Author new conditioning or buff modifiers by choosing the right `Channel`: stamina-derived
+  penalties belong in `Fatigue`, team swings in `Momentum`; reserve a custom `Execution` for
+  multi-attribute resolution like shot outcomes.
+. Implement the one optional `ExecCalc_ShotResolution` hook in your engine if you want
+  defender-pressure-aware shot resolution; everything else — fatigue coupling, momentum buff, stamina
+  economy — is pure data.
+. Add new states as `Athlete.State.*` / `Team.State.*` tags granted by Effects (never mutate tags
+  directly), and new techniques as Effects + Abilities.
+. Validate with `python scripts/validate_schema_examples.py` before committing.

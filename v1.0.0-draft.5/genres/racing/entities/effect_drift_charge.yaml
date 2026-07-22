@@ -1,0 +1,20 @@
+# Drift charge: while sliding, periodically refill the boost resource.
+# HasDuration + Period demonstrates timed, repeating execution (refreshed each tick GA_Drift holds).
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_DriftCharge
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 5.0
+Period:
+  Period: 0.5
+  ExecuteOnApplication: false
+Modifiers:
+  - Attribute: Boost
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 10.0
+GrantedTags:
+  - Vehicle.State.Drifting

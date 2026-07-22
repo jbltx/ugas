@@ -1,0 +1,15 @@
+# Hitstun: the recovery state forced on a fighter who is cleanly hit. HasDuration so it self-expires
+# after the stun window; grants Combat.State.Hitstun, which blocks every action ability
+# (their ActivationBlockedTags list it). Applied to the target alongside GE_MeleeDamage on a clean
+# (unblocked) hit. The duration is the move's hitstun frame count expressed in seconds.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_Hitstun
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 0.4
+GrantedTags:
+  - Combat.State.Hitstun
+GameplayCues:
+  - GameplayCue.Combat.Hitstun

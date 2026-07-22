@@ -1,0 +1,22 @@
+# Sprint drain: while GA_Sprint is held, periodically burn stamina.
+# HasDuration + Period demonstrates timed, repeating execution (refreshed each tick the input holds).
+# Grants Athlete.State.Sprinting for cues and animation; the steady -Stamina/tick is what eventually
+# trips the engine's low-stamina threshold and brings GE_Fatigue (and the Fatigued tag) into play.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_SprintDrain
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 5.0
+Period:
+  Period: 0.5
+  ExecuteOnApplication: true
+Modifiers:
+  - Attribute: Stamina
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -4.0
+GrantedTags:
+  - Athlete.State.Sprinting

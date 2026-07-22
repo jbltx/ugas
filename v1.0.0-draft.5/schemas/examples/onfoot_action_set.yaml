@@ -1,0 +1,29 @@
+# Example: OnFoot Action Set (Shooter)
+# Demonstrates tag-driven activation with input buffering
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action_set.json
+Name: OnFoot
+Actions:
+  - Move
+  - Look
+  - Fire
+  - Aim
+  - Reload
+  - Jump
+  - Sprint
+  - Interact
+  - CycleWeapon
+Priority: 0
+ActivationTags:
+  RequiredTags:
+    - State.Alive
+  BlockedTags:
+    - State.InVehicle
+    - State.Cutscene
+InputBuffer:
+  Enabled: true
+  BufferWindow: 0.12
+  MaxBufferSize: 2
+Metadata:
+  DisplayName: On Foot
+  Description: Standard FPS controls while on foot

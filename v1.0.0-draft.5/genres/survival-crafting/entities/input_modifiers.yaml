@@ -1,0 +1,41 @@
+# Reusable input modifiers for the survival genre. Referenced by name in Input Mappings. They sit in
+# the per-binding modifier pipeline and run in the order listed on each binding. MouseSensitivity is
+# player-configurable (exposed in the settings screen); StickDeadzone cleans up analog stick drift
+# for a future gamepad mapping; MovementNormalize keeps diagonal WASD/stick movement at unit speed.
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_modifier.json
+Name: MouseSensitivity
+Type: Sensitivity
+Params:
+  Multiplier: 1.0
+  MultiplierX: 1.0
+  MultiplierY: 1.0
+UserConfigurable: true
+Metadata:
+  DisplayName: Mouse Sensitivity
+  Description: Per-axis mouse sensitivity multiplier exposed in the player settings screen
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_modifier.json
+Name: StickDeadzone
+Type: DeadZone
+Params:
+  DeadZoneShape: Radial
+  InnerThreshold: 0.15
+  OuterThreshold: 0.95
+UserConfigurable: true
+Metadata:
+  DisplayName: Stick Dead Zone
+  Description: Radial dead zone for analog sticks - ignores drift below 15% and saturates above 95%
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_modifier.json
+Name: MovementNormalize
+Type: Normalize
+Params:
+  MaxRadius: 1.0
+UserConfigurable: false
+Metadata:
+  DisplayName: Movement Normalize
+  Description: Normalizes the movement vector so diagonal input is not faster than cardinal input

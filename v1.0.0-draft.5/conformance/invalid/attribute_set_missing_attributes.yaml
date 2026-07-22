@@ -1,0 +1,3 @@
+# label: invalid — attribute set missing required Attributes
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/attribute_set.json
+Name: CoreStats

@@ -1,0 +1,22 @@
+# Harvest payload: an INSTANT effect applied at the end of the gather wait. It adds raw materials to
+# the inventory AND adds their weight to CarryWeight - the link between gathering and encumbrance.
+# Because both are Instant modifiers they change the BASE VALUES of Materials and CarryWeight. Once
+# CarryWeight crosses MaxCarryWeight, the engine's weight detector applies GE_Overencumbered. A real
+# game would vary the yield by node type (Resource.Node.Tree/Rock/Bush); this is the baseline wood haul.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_GatherResource
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Materials
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 5.0
+  - Attribute: CarryWeight
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 5.0
+GameplayCues:
+  - GameplayCue.Survival.Harvest

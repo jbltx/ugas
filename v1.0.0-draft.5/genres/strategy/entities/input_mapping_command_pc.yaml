@@ -1,0 +1,56 @@
+# PC keyboard + mouse mapping for the Command action set - the canonical RTS scheme.
+# Select is left-click; the contextual Move/Attack-Move order is right-click; Build/Train/Cast are
+# hotkeys (B / T / Q); CameraPan uses a WASD composite with an EdgePanScaling modifier so screen-edge
+# and keyboard scrolling share one tuned response. The order and camera bindings are non-rebindable
+# anchors of the scheme; the hotkeys remain rebindable.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_mapping.json
+ActionSet: Command
+Platform: PC
+Bindings:
+  - Action: Select
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.LeftButton
+    bIsRebindable: false
+
+  - Action: AttackMove
+    Inputs:
+      - Device: Mouse
+        Input: Mouse.RightButton
+    bIsRebindable: false
+
+  - Action: Build
+    Inputs:
+      - Device: Keyboard
+        Input: Key.B
+
+  - Action: Train
+    Inputs:
+      - Device: Keyboard
+        Input: Key.T
+
+  - Action: CastAbility
+    Inputs:
+      - Device: Keyboard
+        Input: Key.Q
+
+  - Action: CameraPan
+    CompositeInputs:
+      Up:
+        Device: Keyboard
+        Input: Key.W
+      Down:
+        Device: Keyboard
+        Input: Key.S
+      Left:
+        Device: Keyboard
+        Input: Key.A
+      Right:
+        Device: Keyboard
+        Input: Key.D
+    Modifiers:
+      - EdgePanScaling
+Metadata:
+  DisplayName: Command - PC
+  Description: Keyboard and mouse bindings for the RTS command action set

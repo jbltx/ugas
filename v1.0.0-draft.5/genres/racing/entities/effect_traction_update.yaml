@@ -1,0 +1,9 @@
+# Traction recompute: couples the declarative grip stat to the non-linear physics.
+# An ExecutionCalculation reads grip, downforce, speed, and tire temperature and writes
+# AvailableTraction. Instant; the simulation re-applies it each physics step.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_Traction_Update
+DurationPolicy: Instant
+Executions:
+  - CalculatorClass: ExecCalc_VehicleTraction

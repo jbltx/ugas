@@ -1,0 +1,29 @@
+# Brawl action set: the default input context for a fighter in a match. Groups the five combat and
+# movement actions into a single set that is active whenever the fighter is alive and in combat, and
+# not in a cutscene. Input buffering is enabled with a 0.15 s window (max 3 queued events) so that
+# fast cancel strings - light buffered into heavy, special buffered out of a launcher - register on
+# the frame they become legal rather than being dropped, the responsiveness fighting games demand.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action_set.json
+Name: Brawl
+Actions:
+  - LightAttack
+  - HeavyAttack
+  - Block
+  - Special
+  - Move
+Priority: 0
+ActivationTags:
+  RequiredTags:
+    - State.Alive
+    - State.Combat
+  BlockedTags:
+    - State.Cutscene
+Exclusive: false
+InputBuffer:
+  Enabled: true
+  BufferWindow: 0.15
+  MaxBufferSize: 3
+Metadata:
+  DisplayName: Brawl
+  Description: Default fighting input context covering attacks, blocking, the special, and movement

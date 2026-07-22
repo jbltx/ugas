@@ -1,0 +1,44 @@
+# Console gamepad mapping for the Brawl action set - the canonical fighting-game controller layout.
+# Light and heavy attacks sit on the bottom and right face buttons; the special is on the right
+# shoulder for a clean two-button-plus-meter input; block holds on the left trigger (with a press
+# threshold so a half-pull does not drop guard). The left stick passes through a radial dead zone
+# and radial scaling so diagonal walk/crouch inputs read consistently.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_mapping.json
+ActionSet: Brawl
+Platform: Console
+Bindings:
+  - Action: LightAttack
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.FaceBottom
+
+  - Action: HeavyAttack
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.FaceRight
+
+  - Action: Special
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.RightShoulder
+
+  - Action: Block
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.LeftTrigger
+    Modifiers:
+      - TriggerThreshold
+
+  - Action: Move
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.LeftStick.X
+      - Device: Gamepad
+        Input: Gamepad.LeftStick.Y
+    Modifiers:
+      - StickDeadzone
+      - RadialScaling
+Metadata:
+  DisplayName: Brawl - Gamepad
+  Description: Console gamepad bindings for the fighting action set (two attacks, special, hold-block, stick movement)

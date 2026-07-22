@@ -1,0 +1,17 @@
+# Thirst decay: the second pillar of the needs loop. INFINITE + PERIOD, draining Thirst faster
+# than Hunger (people dehydrate before they starve). Applied at spawn and never removed. When
+# Thirst reaches the [0, MaxThirst] clamp floor, the engine grants Survival.State.Dehydrated and
+# applies GE_Dehydration. Hot biomes layer an extra thirst drain on top via their own area effect.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_ThirstDecay
+DurationPolicy: Infinite
+Period:
+  Period: 1.0
+  ExecuteOnApplication: false
+Modifiers:
+  - Attribute: Thirst
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -0.8

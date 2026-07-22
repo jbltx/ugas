@@ -1,0 +1,32 @@
+# Sprint: hold to run faster while draining Stamina. Same hold-then-WaitInputRelease shape as the
+# shooter pack's GA_Aim and the racing pack's GA_Drift: apply GE_Sprinting on press, remove it on
+# release. GE_Sprinting periodically drains Stamina and grants Survival.State.Sprinting. Blocked while
+# Survival.State.Exhausted (the stamina-zero threshold state) so an exhausted survivor must recover
+# before sprinting again, and while Survival.State.Overencumbered (too laden to run).
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_ability.json
+Name: GA_Sprint
+Tags:
+  AbilityTags:
+    - Ability.Type.Movement
+  ActivationRequiredTags:
+    - State.Alive
+  ActivationBlockedTags:
+    - Survival.State.Exhausted
+    - Survival.State.Overencumbered
+  ActivationOwnedTags:
+    - Survival.State.Sprinting
+Tasks:
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_Sprinting
+  - Type: WaitInputRelease
+    Params:
+      InputID: Sprint
+  - Type: RemoveEffectFromOwner
+    Params:
+      EffectClass: GE_Sprinting
+Metadata:
+  DisplayName: Sprint
+  Description: Hold to sprint at increased speed, draining stamina
+  Icon: ui/icons/sprint.png

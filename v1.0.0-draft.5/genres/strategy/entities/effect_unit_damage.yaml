@@ -1,0 +1,17 @@
+# Weapon hit, applied to the target unit by GA_AutoAttack. Strategy damage is not a single
+# subtraction: it couples the attacker's aggregated AttackDamage with the rock-paper-scissors
+# DAMAGE-TYPE x ARMOR-CLASS matrix (the attacker's DamageType.* tag vs the target's Armor.Class.*
+# tag) and only then subtracts the target's flat Armor - so it runs through a custom Execution.
+# ExecCalc_ArmorMitigation reads both tag sets, applies the matrix multiplier, subtracts Armor
+# (flooring at a small chip value so a hit is never fully negated), writes the result to Health and
+# records it in the EffectiveDamage Meta attribute for telemetry/UI. This is the strategy analogue
+# of the shooter's hit-resolution calc and the racing pack's traction calc - the seam where the
+# genre's signature math plugs into UGAS.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_UnitDamage
+DurationPolicy: Instant
+Executions:
+  - CalculatorClass: ExecCalc_ArmorMitigation
+GameplayCues:
+  - GameplayCue.Unit.WeaponImpact

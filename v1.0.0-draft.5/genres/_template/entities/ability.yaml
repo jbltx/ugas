@@ -1,0 +1,22 @@
+# Template entity: Gameplay Ability
+# Replace with a genre-specific ability (lifecycle: Grant -> TryActivate -> ... -> End).
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_ability.json
+Name: ExampleAbility
+Tags:
+  AbilityTags:
+    - Ability.Example
+  ActivationRequiredTags:
+    - State.CanAct
+  ActivationBlockedTags:
+    - State.Stunned
+  ActivationOwnedTags:
+    - State.Busy
+Tasks:
+  - Type: PlayMontage
+    Params:
+      MontageToPlay: Anim_Example
+      PlayRate: 1.0
+Metadata:
+  DisplayName: Example Ability
+  Description: Replace with a genre-specific ability definition

@@ -1,0 +1,17 @@
+# Stagger: the punish window opened when a fighter's Poise meter is fully drained. HasDuration so it
+# self-expires after the stagger window; grants Combat.State.Staggered, which blocks every action
+# ability and leaves the fighter open to a guaranteed punish. This effect is NOT applied by an
+# ability - it is applied by the engine when the OnAttributeChanged threshold on Poise (Poise == 0)
+# fires (core spec section 5.6), keeping with the rule that states are granted by Effects, never
+# written directly. The stagger window is long enough to land a full combo.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_Stagger
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 1.5
+GrantedTags:
+  - Combat.State.Staggered
+GameplayCues:
+  - GameplayCue.Combat.Stagger

@@ -1,0 +1,26 @@
+# Aim down sights: hold to apply GE_ADS (tighter cone, slower movement, State.Aiming), release to
+# remove it. Same hold-then-WaitInputRelease shape as the platformer jump. Cannot aim mid-reload.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_ability.json
+Name: GA_Aim
+Tags:
+  AbilityTags:
+    - Ability.Type.Aim
+  ActivationRequiredTags:
+    - Weapon.Equipped
+  ActivationBlockedTags:
+    - State.Reloading
+Tasks:
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_ADS
+  - Type: WaitInputRelease
+    Params:
+      InputID: Aim
+  - Type: RemoveEffectFromOwner
+    Params:
+      EffectClass: GE_ADS
+Metadata:
+  DisplayName: Aim Down Sights
+  Description: Hold to aim for a tighter bullet cone at the cost of movement speed
+  Icon: ui/icons/aim.png

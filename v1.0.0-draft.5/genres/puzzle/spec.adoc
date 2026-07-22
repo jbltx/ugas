@@ -1,0 +1,203 @@
+= UGAS Genre Pack: Puzzle
+Mickael Bonfill <jbltx>
+:revnumber: 1.0.0-draft.5
+:ugas-version: v1.0.0-draft.5
+:doctype: book
+:toc: left
+:toc-title: Table of Contents
+:toclevels: 4
+:stem: latexmath
+:source-highlighter: highlight.js
+:icons: font
+:sectanchors:
+:sectlinks:
+:docinfo: shared
+
+[[overview]]
+== Overview
+
+This genre pack targets *puzzle games* in the Bejeweled / Candy Crush / Puzzle & Dragons mould: a
+board defined by a *score resource* and a *move economy*, a *swap / match / cascade* loop, and — at
+its core — a *match-scoring pipeline* in which a base match score is multiplied by a *combo* factor
+(consecutive matches) and a *chain* factor (cascade depth). Each move is a spent resource;
+running out of moves ends the level.
+
+It is the practical, copy-and-extend companion to the *Puzzle (2048-style)* case study in
+link:../../SPEC.adoc[the core specification] (Section 16.4). Where the case study sketches the
+grid-cell attribute set, the move ability that drives state through Tasks, and the principle that
+board state is mutated only through Effects (never by direct tag writes — §3.1), this pack ships the
+matching schema-conformant Attributes, Tags, Abilities, and Effects in `entities/`, plus a worked
+board in `entities/gameplay_controller.yaml`. The case study uses 2048's slide-and-merge grid as its
+concrete model; this pack uses tile-matching (match-3) as its concrete seed, but the same pieces —
+the scoring factors, the move economy, and the cascade chain — generalize across the wider
+*puzzle* family (physics, logic, puzzle-platformer) catalogued under
+link:../taxonomy.adoc[family-puzzle] in the taxonomy.
+
+[[relationship-to-core-spec]]
+== Relationship to the core specification
+
+This document is *additive*. It defines genre-specific Attributes, Tags, Abilities, and
+Effects on top of the core Universal Gameplay Ability System specification.
+
+* It MUST NOT redefine, override, or contradict any concept in the core spec.
+* All entities in `entities/` validate against the same `schemas/*.json` as the core.
+* Board state is mutated *only through Effects* (link:../../SPEC.adoc[core spec] §3.1, echoed by the
+  §16.4 case study) — abilities gate on tags and apply Effects; they never write tags directly.
+* The multiplicative combo×chain scoring it relies on is a core `ExecutionCalculation`
+  (link:../../SPEC.adoc[core spec] §9.5) — `ExecCalc_MatchScore` — not a new construct. The combo and
+  chain counters themselves are ordinary attributes accumulated by additive Effect modifiers; only the
+  final multiply-and-bank lives in the Execution.
+
+[[genre-attributes]]
+== Genre Attributes
+
+Defined in `entities/attribute_set.yaml` as the `PuzzleBoardSet` set. The base values describe a
+default match-3 level (target 1000, 25 moves, base match value 100), so the set is playable as
+shipped.
+
+[cols="1,1,3",options="header"]
+|===
+| Attribute | Category | Role
+
+| `Score` | Resource | Accumulated level score, clamped to `[0, ∞)`; raised by `GE_MatchClear` through `ExecCalc_MatchScore`. Clearing the level needs `Score ≥ TargetScore`.
+| `TargetScore` | Statistic | The score goal for the level; reaching it grants `Puzzle.Phase.Cleared`.
+| `BaseMatchValue` | Statistic | Points per match before the combo and chain multipliers; the `b` term in the scoring formula.
+| `MaxMoves` / `MovesRemaining` | Statistic / Resource | `MovesRemaining` is clamped to `[0, MaxMoves]`; each swap costs `1`. At `0` the swap can no longer pay its cost — the level ends.
+| `MaxTime` / `TimeRemaining` | Statistic / Resource | Optional timed-mode budget, clamped to `[0, MaxTime]`; drained by the simulation, topped up by `GE_TimeBonus`. Ignored by move-limited levels.
+| `ComboMultiplier` | Statistic | Consecutive-match multiplier, clamped to `≥ 1`; raised `+1` per match by `GE_ComboBuild` and reset to `1` when the combo window lapses.
+| `ChainLength` | Meta | Cascade depth of the current resolution (`0` for the player move, `+1` per cascade); the chain factor is latexmath:[1 + \text{ChainLength}].
+| `TilesCleared` / `LastMatchScore` | Meta | Telemetry written by `ExecCalc_MatchScore` each resolution — the tile count of the last match and the points it contributed; drive the floating-score popup.
+|===
+
+[[genre-scoring-pipeline]]
+== The match-scoring pipeline (the core puzzle mechanic)
+
+Scoring a match is pushed on from three directions at once — the size of the match, how many matches
+the player has strung together, and how deep the resulting cascade runs. This pack expresses that as
+a single product:
+
+[stem]
+++++
+\text{MatchScore} = \underbrace{b}_{\text{base}} \times \underbrace{m_{\text{combo}}}_{\text{combo factor}} \times \underbrace{(1 + d_{\text{chain}})}_{\text{chain factor}}
+++++
+
+where latexmath:[b] is `BaseMatchValue` (scaled by `TilesCleared` for larger matches),
+latexmath:[m_{\text{combo}}] is the aggregated `ComboMultiplier`, and latexmath:[d_{\text{chain}}] is
+the current `ChainLength`.
+
+=== The two scoring factors
+
+The combo and chain multipliers are each accumulated as an *ordinary attribute* through additive
+Effect modifiers — there is no `Channel:` field on any entity. `GE_ComboBuild` adds `+1` to
+`ComboMultiplier` per match and `GE_CascadeChain` adds `+1` to `ChainLength` per cascade; the two are
+never hand-multiplied in data. The multiply *across* the two factors is performed once, at scoring
+time, inside the `ExecCalc_MatchScore` Execution (see below) — that is where the product is formed and
+banked.
+
+[cols="1,3,2",options="header"]
+|===
+| Factor | What feeds it | Accumulation
+
+| Combo | `GE_ComboBuild`, one `+1` per match inside the combo window | Additive into `ComboMultiplier`
+| Chain | `GE_CascadeChain`, one `+1` per cascade depth | Additive into `ChainLength`
+|===
+
+`GE_ComboBuild` is a `HasDuration` effect that *refreshes its own timer on every application*:
+because re-applying a `HasDuration` effect restarts its remaining duration, a fast run of matches
+keeps the window alive and the multiplier climbing (`1 → 2 → 3 …`); the instant the player lets the
+2.5 s window lapse, the effect expires and `ComboMultiplier` falls back to its clamped floor of `1`.
+This is the puzzle analogue of the shooter pack's held-state effects — the genre's "feel" expressed
+as a refreshing duration rather than a one-shot modifier.
+
+=== Per-match product via ExecutionCalculation
+
+The match score is a *product of four live inputs* (`TilesCleared`, `BaseMatchValue`,
+`ComboMultiplier`, `ChainLength`), so it cannot be a static `ScalableFloat` modifier — multiplying
+two runtime attributes together is exactly the case the core reserves for a custom
+`ExecutionCalculation` (§9.5). `GE_MatchClear` (`entities/effect_match_clear.yaml`) therefore
+delegates to `ExecCalc_MatchScore`, which reads the four attributes, adds the product to `Score`, and
+mirrors it into `LastMatchScore` for the UI. This is the puzzle counterpart of the Racing pack's
+traction calculator and the Shooter pack's hit-resolution calculator — the seam where a genre's
+signature math plugs into UGAS. The combo and chain factors still accumulate declaratively as plain
+attributes in effect YAML; the calculation only performs the final multiply-and-bank.
+
+.Worked example (`entities/gameplay_controller.yaml`)
+A match-3 board caught mid-cascade with an active combo. The player's fifth swap forms a line of
+three (`BaseMatchValue` `100`) while the combo multiplier stands at `3` and the clear triggers a
+single cascade (`ChainLength` `1`, chain factor latexmath:[1 + 1 = 2]):
+
+* This match: latexmath:[100 \times 3 \times (1 + 1) = 600] (base × combo × chain) — banked in `LastMatchScore`.
+* Running `Score`: latexmath:[100 + 200 + 600 = 900] — the sum of three scoring matches at combos ×1, ×2, ×3.
+* `MovesRemaining`: latexmath:[25 - 5 = 20] — five swaps spent (two formed no match but still cost a move).
+
+These are exactly the `CurrentValue` entries recorded for the example board. `Score` `900` is still
+short of `TargetScore` `1000` with `20` moves in hand, so the board remains in `Puzzle.Phase.Playing`.
+
+[[genre-move-economy]]
+== The move economy
+
+Every swap is a spent resource. `GA_SwapTiles` (`entities/ability_swap_tiles.yaml`) declares
+`Cost: GE_MoveCost`, a trivial effect that subtracts `1` from `MovesRemaining`. Because *an ability
+cannot activate if it cannot pay its cost*, this single cost gate is exactly what ends the level at
+zero moves — no explicit "out of moves" check or tag is needed. This is the direct parallel of the
+Shooter pack, where the ammo cost on `GA_Fire` is what stops the gun firing on an empty magazine: in
+both genres a depleted resource silently closes the loop. `GA_ActivatePowerup` draws from the same
+`MovesRemaining` budget, so powerups trade against ordinary moves; `GA_UseHint` is free but rate-
+limited by a cooldown. `GE_MoveCost` and `GE_HintCooldown` are trivial (a flat resource cost and a
+cooldown tag) and are referenced by name rather than shipped as files — the same convention the
+Racing and Shooter packs use for their cost and cooldown effects.
+
+[[genre-tags]]
+== Genre Tags
+
+Defined in `entities/tag_registry.yaml` (additive only):
+
+* *Board resolution states* — `Puzzle.State.Matching`, `Puzzle.State.Cascading`, `Puzzle.State.Stuck`,
+  all granted by Effects.
+* *Level phase* — `Puzzle.Phase.Playing`, `Puzzle.Phase.Cleared`, `Puzzle.Phase.GameOver`.
+* *Tile types* — `Tile.Type.Red|Blue|Green|Yellow|Special`.
+* *Powerup classification* — `Powerup.Type.Bomb|Line|Color`.
+* *Ability types* — `Ability.Type.Swap|Powerup|Hint`.
+
+[[genre-abilities]]
+== Genre Abilities
+
+* `entities/ability_swap_tiles.yaml` — `GA_SwapTiles`: the core move; `Cost: GE_MoveCost` (`−1`
+  `MovesRemaining`), waits for the adjacent-tile confirmation, then applies `GE_MatchClear`. Blocked
+  while the board is resolving (`Matching` / `Cascading`) or `Stuck`; requires `Puzzle.Phase.Playing`.
+* `entities/ability_activate_powerup.yaml` — `GA_ActivatePowerup`: detonates a selected special tile,
+  applying `GE_PowerupBomb`; also costs a move. Requires `Tile.Type.Special`.
+* `entities/ability_use_hint.yaml` — `GA_UseHint`: a no-cost assist on a cooldown
+  (`Cooldown: GE_HintCooldown`) that highlights a legal move.
+
+[[genre-effects]]
+== Genre Effects
+
+* `entities/effect_match_clear.yaml` — `GE_MatchClear`: instant; runs `ExecCalc_MatchScore` to bank
+  the match product into `Score`; grants `Puzzle.State.Matching`.
+* `entities/effect_combo_build.yaml` — `GE_ComboBuild`: `HasDuration`; `+1` `ComboMultiplier`,
+  refreshing its window on every match (the combo factor).
+* `entities/effect_cascade_chain.yaml` — `GE_CascadeChain`: instant; `+1` `ChainLength` per cascade
+  (the chain factor); grants `Puzzle.State.Cascading`.
+* `entities/effect_powerup_bomb.yaml` — `GE_PowerupBomb`: instant; an `AttributeBased` flat `Score`
+  bonus scaled off `BaseMatchValue`; grants `Puzzle.State.Cascading`.
+* `entities/effect_time_bonus.yaml` — `GE_TimeBonus`: instant; `+TimeRemaining` for timed modes.
+* `entities/effect_reset_chain.yaml` — `GE_ResetChain`: instant; `Override`s `ChainLength` back to `0`
+  once the board settles; grants `Puzzle.Phase.Playing`.
+
+[[using-this-pack]]
+== Using this pack
+
+. Copy `genres/puzzle/` into your project (or load `entities/` directly via the
+  `ugas-schema-author` skill).
+. Tune the level shape in `PuzzleBoardSet` first — `TargetScore`, `MaxMoves`, and `BaseMatchValue`
+  set the difficulty — then add tile types as `Tile.Type.*` tags and new powerups as
+  `Powerup.Type.*` effects.
+. Author new scoring sources by feeding the right factor: consecutive-play bonuses add into
+  `ComboMultiplier`, cascade-depth bonuses into `ChainLength`; reserve the `ExecCalc_MatchScore`
+  calculation for the final multiply-and-bank.
+. Implement the one `ExecCalc_MatchScore` hook in your engine (the per-match product); everything else
+  is data.
+. Add new states as `Puzzle.State.*` / `Puzzle.Phase.*` tags granted by Effects (never mutate tags
+  directly), and new moves as Effects + Abilities.
+. Validate with `python scripts/validate_schema_examples.py` before committing.

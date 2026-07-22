@@ -1,0 +1,38 @@
+# Reusable input modifiers for the combat genre. Referenced by name in the input mappings.
+# StickDeadzone is player-configurable; the others are tuning knobs owned by the designer. All
+# modifiers sit in the per-binding modifier pipeline and run in the order listed on each binding.
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_modifier.json
+Name: StickDeadzone
+Type: DeadZone
+Params:
+  DeadZoneShape: Radial
+  InnerThreshold: 0.2
+  OuterThreshold: 0.9
+UserConfigurable: true
+Metadata:
+  DisplayName: Stick Dead Zone
+  Description: Radial dead zone for the walk/crouch stick - ignores drift below 20% and saturates above 90%
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_modifier.json
+Name: RadialScaling
+Type: RadialScaling
+Params:
+  MaxRadius: 1.0
+UserConfigurable: false
+Metadata:
+  DisplayName: Radial Scaling
+  Description: Normalizes stick input to a maximum radius of 1.0 for consistent diagonal walk/crouch
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_modifier.json
+Name: TriggerThreshold
+Type: TriggerThreshold
+Params:
+  PressThreshold: 0.5
+UserConfigurable: false
+Metadata:
+  DisplayName: Trigger Threshold
+  Description: Analog trigger press threshold for the block trigger - values below 0.5 are treated as released

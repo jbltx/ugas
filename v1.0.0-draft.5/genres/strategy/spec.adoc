@@ -1,0 +1,275 @@
+= UGAS Genre Pack: Strategy
+Mickael Bonfill <jbltx>
+:revnumber: 1.0.0-draft.5
+:ugas-version: v1.0.0-draft.5
+:doctype: book
+:toc: left
+:toc-title: Table of Contents
+:toclevels: 4
+:stem: latexmath
+:source-highlighter: highlight.js
+:icons: font
+:sectanchors:
+:sectlinks:
+:docinfo: shared
+
+[[overview]]
+== Overview
+
+This genre pack targets *strategy games* in the StarCraft / Age of Empires / Command & Conquer /
+tower-defense mould: planning, economy, and tactical decision-making rather than reflex. A unit is
+defined by combat attributes (health, armor, attack, range, speed) and a production cost; a player
+runs a *resource economy* that grows over time; and combat is decided by a *rock-paper-scissors
+matrix* of damage types against armor classes layered on top of flat armor. It is broad enough to
+seed an RTS, a 4X game (the same economy and tech scale to per-turn income and research trees), a
+real-time-tactics skirmish, or a tower-defense map (the slow debuff and area strike are the
+tower-defense flavour).
+
+The genre's *two signature mechanics* are:
+
+. an *economy driven by periodic income* — `Minerals` (and a caster's `Energy`) rise on a fixed
+  cadence via *infinite effects with a `Period`*, the showcase for the core spec's periodic
+  execution; and
+. a *damage-type × armor-class mitigation matrix* — a custom `ExecutionCalculation`
+  (`ExecCalc_ArmorMitigation`) reads the attacker's `DamageType.*` tag and the target's
+  `Armor.Class.*` tag, applies the matrix multiplier, then subtracts flat `Armor`.
+
+Both lean entirely on core constructs. Unlike the Platformer, Racing, and ARPG packs, the core
+specification ships no dedicated strategy case study, so this pack is designed from first principles
+— but it reuses the periodic-effect machinery (link:../../SPEC.adoc[core spec] §9.3), the modifier
+`Channel` mechanism (§5.3) for stacking tech upgrades, custom `Executions` (§9.5) for the
+mitigation matrix, and effect-granted tags (§7.5) for the unit state machine. The
+link:../../SPEC.adoc[core spec] Gameplay Controller (§4) is the unit (or the player's *commander*).
+
+[[relationship-to-core-spec]]
+== Relationship to the core specification
+
+This document is *additive*. It defines genre-specific Attributes, Tags, Abilities, and
+Effects on top of the core Universal Gameplay Ability System specification.
+
+* It MUST NOT redefine, override, or contradict any concept in the core spec.
+* All entities in `entities/` validate against the same `schemas/*.json` as the core.
+* It *reuses* the core lifecycle tags (`State.Alive`, `State.Dead`) by reference — for example in
+  the worked controller's `OwnedTags` and in every ability's activation gate — and never re-declares
+  them.
+* Unit state (`Unit.State.Constructing`, `Unit.State.Slowed`, …) is mutated *only through Effects*
+  (§7.5) — abilities gate on tags and apply Effects, they never write tags directly. The income
+  cadence is the core periodic-effect mechanism (§9.3), the tech stacking is the core modifier
+  `Channel` mechanism (§5.3), and the mitigation matrix is a core `ExecutionCalculation` (§9.5) —
+  none is a new construct.
+
+[[genre-attributes]]
+== Genre Attributes
+
+Defined in `entities/attribute_set.yaml` as the `UnitStatsSet` set. The base values describe a
+default mechanical assault unit, so the set is playable as shipped. *Armor class* and *damage type*
+are deliberately *not* attributes — they are tags (`Armor.Class.*`, `DamageType.*`) read by the
+mitigation calc.
+
+[cols="1,1,3",options="header"]
+|===
+| Attribute | Category | Role
+
+| `MaxHealth` / `Health` | Statistic / Resource | `Health` is clamped to `[0, MaxHealth]`; mitigated damage is subtracted here, and `0` destroys the unit.
+| `Armor` | Statistic | *Flat* reduction subtracted *after* the matrix multiplier; raised by `GE_ArmorUpgrade`.
+| `AttackDamage` | Statistic | Fully-aggregated per-hit damage read by `GE_UnitDamage`; raised by the `Upgrades` channel.
+| `AttackSpeed` | Statistic | Attacks per second; the auto-attack cooldown is latexmath:[1 / \text{AttackSpeed}].
+| `AttackRange` | Statistic | Engagement distance (m); gates `GA_AutoAttack` activation.
+| `MoveSpeed` | Statistic | Ground speed; lowered multiplicatively by `GE_Slow` in the `Debuffs` channel.
+| `SupplyCost` | Statistic | Population the unit consumes against the commander's `MaxSupply`.
+| `BuildProgress` | Meta | Construction completion latexmath:[0\text{–}100]; below 100 the entity is a site.
+| `Minerals` / `Gas` | Resource | Commander-scoped economy; `Minerals` rises via the periodic `GE_MineralIncome`.
+| `Energy` / `MaxEnergy` | Resource / Statistic | Caster pool spent by `GA_AreaStrike`; refilled by the periodic `GE_EnergyRegen`.
+| `Supply` / `MaxSupply` | Resource / Statistic | Population in use vs the cap; training is blocked at `MaxSupply`.
+| `EffectiveDamage` | Meta | Output of `ExecCalc_ArmorMitigation` after the matrix and flat armor; for telemetry.
+|===
+
+The economy resources are *commander-scoped*: in a real game they live on a per-player commander GC
+that owns no combat stats, while combat units leave them at base. They are grouped into the one set
+so the pack ships self-contained and playable; the worked unit only populates its combat attributes.
+
+[[genre-economy]]
+== The resource economy (signature mechanic A)
+
+A strategy game is paced by *income over time*, and UGAS expresses that directly with a *periodic
+infinite effect* (§9.3): an effect whose `DurationPolicy` is `Infinite` and that carries a `Period`
+re-runs its modifiers on that cadence for as long as it is active.
+
+`GE_MineralIncome` (`entities/effect_mineral_income.yaml`) is the showcase: `Infinite` duration,
+`Period: { Period: 1.0 }`, and a single `Add` of latexmath:[+5] to `Minerals`. One instance is
+applied to the commander GC per working harvester, so income scales with how many harvesters a
+player commits — no per-frame polling, no custom code. With latexmath:[n] harvesters active, the
+commander's mineral rate is:
+
+[stem]
+++++
+\frac{d(\text{Minerals})}{dt} = n \times \frac{5}{1.0\ \text{s}} = 5n \ \text{per second}
+++++
+
+so over a latexmath:[t]-second window the income is latexmath:[5 n t] minerals. `ExecuteOnApplication`
+is `false`, so the first payout lands one full second after a harvester starts rather than instantly.
+`GE_EnergyRegen` reuses the identical pattern at a 2-second cadence to refill a caster unit's
+`Energy`, proving the construct is not economy-only.
+
+Spending is the mirror image: each production ability names a trivial *cost* effect — `GE_BuildCost`,
+`GE_TrainCost`, `GE_AreaStrikeCost` — that subtracts the resource. Because an ability cannot activate
+if it cannot pay its cost (§8.5), an under-resourced player simply cannot start the action, with no
+explicit "enough minerals" tag needed (these trivial cost effects are referenced by name rather than
+shipped as files, the convention the Racing and Shooter packs use).
+
+[[genre-tech-upgrades]]
+== Tech upgrades via the Upgrades channel
+
+Permanent, faction-wide research is a *declarative* stack on the modifier pipeline. `Spread` was the
+Shooter pack's channel showcase; here it is `AttackDamage`. Modifiers in the same `Channel` are
+*additive within*; channels *multiply across* (§5.3), so a tech that has been researched twice stacks
+without any custom code:
+
+* `GE_WeaponUpgrade` (`entities/effect_weapon_upgrade.yaml`) puts a `Multiply` of latexmath:[+0.15]
+  in the `Upgrades` channel. Two researched ranks sum within the channel:
+  latexmath:[1 + 0.15 + 0.15 = 1.30].
+* `GE_ArmorUpgrade` is the flat counterpart: `+2` `Armor` per rank (a plain additive, no channel).
+
+.Worked example — tech aggregation (`entities/gameplay_controller.yaml`)
+A Siege Tank with two weapon-upgrade ranks and one armor-upgrade rank researched:
+
+* `AttackDamage`: latexmath:[30 \times (1 + 0.15 + 0.15) = 30 \times 1.30 = 39.0] (the `Upgrades`
+  channel)
+* `Armor`: latexmath:[1 + 2 = 3.0] (a flat `Add`)
+
+These are exactly the `CurrentValue` entries recorded for the example tank. The `Debuffs` channel
+used by `GE_Slow` multiplies *against* `Upgrades`, so a slow never simply cancels a movement upgrade —
+the two compose.
+
+[[genre-damage-matrix]]
+== The damage-type × armor-class matrix (signature mechanic B)
+
+Strategy combat is *not* a single subtraction. Every weapon carries a `DamageType.*` tag and every
+target an `Armor.Class.*` tag; the pairing selects a *rock-paper-scissors multiplier*, and only then
+is flat `Armor` removed. That coupling is non-linear in the tag pair, so it lives in a custom
+`ExecutionCalculation` (§9.5) rather than a channel.
+
+`GE_UnitDamage` (`entities/effect_unit_damage.yaml`) is the payload `GA_AutoAttack` applies to the
+target. It delegates to `ExecCalc_ArmorMitigation`, which (1) reads the attacker's `DamageType.*` tag
+and the target's `Armor.Class.*` tag, (2) looks up the multiplier in the matrix below, (3) multiplies
+the attacker's aggregated `AttackDamage`, (4) subtracts the target's flat `Armor` (floored at a small
+chip value so a hit is never fully negated), (5) writes the result to `Health` and records it in the
+`EffectiveDamage` Meta attribute for telemetry/UI. This is the strategy analogue of the Shooter
+pack's hit-resolution calc and the Racing pack's traction calc — the seam where the genre's signature
+math plugs into UGAS.
+
+.Damage-type × armor-class multiplier matrix (implemented by `ExecCalc_ArmorMitigation`)
+[cols="1,1,1,1,1",options="header"]
+|===
+| Damage ↓ \ Armor → | `Light` | `Heavy` | `Fortified` | `Shielded`
+
+| `Normal`   | 1.0  | 1.0  | 0.5 | 1.0
+| `Piercing` | 1.5  | 1.0  | 0.5 | 0.75
+| `Siege`    | 1.25 | 0.75 | 1.5 | 0.5
+| `Magic`    | 0.75 | 1.0  | 0.5 | 1.5
+|===
+
+Read it as rock-paper-scissors: `Piercing` shreds `Light` infantry but glances off `Fortified`
+structures; `Siege` cracks `Fortified` but is poor against `Heavy` vehicles and `Shielded` units;
+`Magic` melts `Shielded` units but underperforms elsewhere; `Normal` is the safe all-rounder that is
+never penalised below baseline (except against `Fortified`).
+
+.Worked example — single hit (`entities/gameplay_controller.yaml` tank vs targets)
+The example Siege Tank (aggregated `AttackDamage` latexmath:[= 39], `DamageType.Siege`) fires at two
+different targets:
+
+* vs *Light* infantry (`Armor.Class.Light`, `Armor` latexmath:[= 2]):
++
+[stem]
+++++
+\text{damage} = \overbrace{39}^{\text{AttackDamage}} \times \underbrace{1.25}_{\text{Siege vs Light}} - \overbrace{2}^{\text{Armor}} = 48.75 - 2 = 46.75
+++++
+
+* vs a *Heavy* vehicle (`Armor.Class.Heavy`, `Armor` latexmath:[= 4]):
++
+[stem]
+++++
+\text{damage} = 39 \times \underbrace{0.75}_{\text{Siege vs Heavy}} - 4 = 29.25 - 4 = 25.25
+++++
+
+Same attacker, same `AttackDamage`: the matrix alone turns a latexmath:[46.75]-damage hit into a
+latexmath:[25.25]-damage one purely from the target's armor class — which is exactly the tactical
+decision (what to build against what) that defines the genre.
+
+[[genre-tags]]
+== Genre Tags
+
+Defined in `entities/tag_registry.yaml` (additive only):
+
+* *Unit types* — `Unit.Type.Infantry|Vehicle|Air|Structure`.
+* *Armor classes* (target side of the matrix) — `Armor.Class.Light|Heavy|Fortified|Shielded`.
+* *Damage types* (attacker side of the matrix) — `DamageType.Normal|Piercing|Siege|Magic`.
+* *Unit states* (granted by Effects) — `Unit.State.Constructing|Slowed|Cloaked`.
+* *Ability types* — `Ability.Type.Attack|Build|Train|Cast`.
+* *Faction* — `Faction.Friendly|Hostile`.
+
+The core lifecycle tags `State.Alive` / `State.Dead` are *referenced*, not re-declared.
+
+[[genre-abilities]]
+== Genre Abilities
+
+* `entities/ability_auto_attack.yaml` — `GA_AutoAttack`: acquires the nearest enemy within
+  `AttackRange` (`WaitTargetData`) and applies `GE_UnitDamage`; tagged `DamageType.Siege` (the
+  attacker's matrix half) and paced by a per-attack cooldown (`GE_AttackCooldown`, duration
+  latexmath:[= 1 / \text{AttackSpeed}]). Blocked while `Unit.State.Constructing` or
+  `Unit.State.Cloaked`.
+* `entities/ability_construct_building.yaml` — `GA_ConstructBuilding`: `Cost: GE_BuildCost`
+  (Minerals); applies `GE_Constructing` to the new site, waits the build window, then lets the state
+  expire.
+* `entities/ability_train_unit.yaml` — `GA_TrainUnit`: `Cost: GE_TrainCost` plus a production
+  `Cooldown` (`GE_TrainCooldown`); the supply check is activation logic. Blocked while the producer
+  is still constructing.
+* `entities/ability_area_strike.yaml` — `GA_AreaStrike`: a caster ability, `Cost: GE_AreaStrikeCost`
+  (Energy); picks a ground location and applies `GE_AreaStrikeDamage` (Magic) and `GE_Slow` to every
+  hostile in the blast — the data shows a single `ApplyEffectToTarget` task for clarity; fanning the
+  effect out to each unit in the area is the engine's targeting responsibility.
+
+[[genre-effects]]
+== Genre Effects
+
+* `entities/effect_mineral_income.yaml` — `GE_MineralIncome`: `Infinite` + `Period 1.0`; `+5`
+  `Minerals` per second. The economy showcase.
+* `entities/effect_energy_regen.yaml` — `GE_EnergyRegen`: `Infinite` + `Period 2.0`; `+5` `Energy`
+  per tick for caster units.
+* `entities/effect_unit_damage.yaml` — `GE_UnitDamage`: instant; runs `ExecCalc_ArmorMitigation` (the
+  matrix + flat armor).
+* `entities/effect_weapon_upgrade.yaml` — `GE_WeaponUpgrade`: `Infinite`; `Multiply +0.15` on
+  `AttackDamage` in the `Upgrades` channel; stacks additively per rank.
+* `entities/effect_armor_upgrade.yaml` — `GE_ArmorUpgrade`: `Infinite`; flat `+2` `Armor` per rank.
+* `entities/effect_constructing.yaml` — `GE_Constructing`: `HasDuration`; grants
+  `Unit.State.Constructing`, which blocks the unit's own abilities.
+* `entities/effect_slow.yaml` — `GE_Slow`: `HasDuration`; `Multiply -0.4` on `MoveSpeed` in the
+  `Debuffs` channel; grants `Unit.State.Slowed`. Tower-defense flavour.
+* `entities/effect_areastrike_damage.yaml` — `GE_AreaStrikeDamage`: instant Magic damage to hostiles
+  via `ExecCalc_ArmorMitigation`.
+
+[[genre-input]]
+== Input
+
+The pack ships the canonical RTS point-and-click scheme. `entities/input_actions.yaml` defines
+`Select`, `AttackMove` (the contextual move/attack order), `Build`, `Train`, `CastAbility`, and the
+`CameraPan` axis; `entities/input_action_set_command.yaml` groups them into the `Command` set (active
+while `State.Alive`); `entities/input_mapping_command_pc.yaml` binds them to keyboard + mouse
+(left-click select, right-click order, `B`/`T`/`Q` hotkeys, WASD camera); and
+`entities/input_modifiers.yaml` provides the camera-feel modifiers. The worked unit's
+`GA_AutoAttack` is bound to the `AttackMove` action and `GA_AreaStrike` to `CastAbility` via their
+`InputID`s.
+
+[[using-this-pack]]
+== Using this pack
+
+. Copy `genres/strategy/` into your project (or load `entities/` directly via the
+  `ugas-schema-author` skill).
+. Tune the `UnitStatsSet` base values first — they describe one default unit; add new unit types as
+  production effects that grant `Unit.Type.*` / `Armor.Class.*` tags and adjust the stat block.
+. Implement the one engine seam this pack names — `ExecCalc_ArmorMitigation` (the damage-type ×
+  armor-class matrix plus flat armor) — in your engine; everything else is data. Edit the matrix
+  multipliers there to rebalance the rock-paper-scissors.
+. Add new tech as `Upgrades`-channel effects, new states as `Unit.State.*` tags *granted by Effects*
+  (never mutate tags directly), and new economy streams as periodic infinite effects.
+. Validate with `python scripts/validate_schema_examples.py` before committing.

@@ -1,0 +1,16 @@
+# Input modifiers for the action / platformer genre pack.
+# StickDeadzone applies a radial dead-zone to analog stick input, filtering out
+# drift near the center (Inner 0.15) and snapping to full deflection near the edge
+# (Outer 0.95). Marked UserConfigurable so players can tune thresholds in settings.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_modifier.json
+Name: StickDeadzone
+Type: DeadZone
+Params:
+  DeadZoneShape: Radial
+  InnerThreshold: 0.15
+  OuterThreshold: 0.95
+UserConfigurable: true
+Metadata:
+  DisplayName: Stick Dead Zone
+  Description: Radial dead-zone for analog sticks; filters center drift and snaps near full deflection

@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action.json",
+  "title": "Input Action Definition Schema",
+  "description": "Based on UGAS Specification v1.0.0-draft.5 - Section 11",
+  "type": "object",
+  "required": [
+    "Name",
+    "ValueType"
+  ],
+  "properties": {
+    "Name": {
+      "type": "string",
+      "description": "Unique identifier for this action, referenced by InputID on granted abilities"
+    },
+    "ValueType": {
+      "type": "string",
+      "enum": ["Digital", "Axis1D", "Axis2D", "Axis3D"],
+      "description": "Semantic value type this action produces. Digital actions emit trigger events (Started/Ongoing/Completed). Axis actions emit a continuous value each frame while nonzero."
+    },
+    "TriggerBehavior": {
+      "type": "string",
+      "enum": ["OnPressed", "OnReleased", "WhileHeld", "OnTap", "OnDoubleTap"],
+      "default": "OnPressed",
+      "description": "When this action fires its trigger event. OnPressed fires once on activation. WhileHeld fires every frame while input is nonzero. OnTap requires press-then-release within TapThreshold."
+    },
+    "TapThreshold": {
+      "type": "number",
+      "minimum": 0,
+      "default": 0.2,
+      "description": "Maximum hold duration (seconds) for OnTap and OnDoubleTap"
+    },
+    "DoubleTapWindow": {
+      "type": "number",
+      "minimum": 0,
+      "default": 0.3,
+      "description": "Maximum gap (seconds) between two taps for OnDoubleTap"
+    },
+    "ConsumeInput": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this action consumes the input event, preventing lower-priority actions from receiving it"
+    },
+    "Tags": {
+      "type": "object",
+      "properties": {
+        "ActionTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tags describing this action for bulk queries (e.g. disable all combat inputs)"
+        }
+      }
+    },
+    "Metadata": {
+      "type": "object",
+      "properties": {
+        "DisplayName": {
+          "type": "string",
+          "description": "Localization-friendly name shown in control remapping UI"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "Icon": {
+          "type": "string"
+        },
+        "Category": {
+          "type": "string",
+          "description": "UI grouping for settings screens (e.g. Movement, Combat)"
+        }
+      }
+    }
+  }
+}

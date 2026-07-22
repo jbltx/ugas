@@ -1,0 +1,17 @@
+# Stamina regen: an always-on INFINITE + PERIOD effect that restores Stamina every tick.
+# There is no ApplicationRequiredTags gate; the effect runs unconditionally. While sprinting,
+# GE_SprintDrain applies a faster opposing drain (-3/tick) that outpaces this regen (+5/tick
+# less the drain), so net stamina falls during a sprint and recovers once the sprint ends.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_StaminaRegen
+DurationPolicy: Infinite
+Period:
+  Period: 1.0
+  ExecuteOnApplication: false
+Modifiers:
+  - Attribute: Stamina
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 5.0

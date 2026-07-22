@@ -1,0 +1,186 @@
+= UGAS Genre Pack: Shooter
+Mickael Bonfill <jbltx>
+:revnumber: 1.0.0-draft.5
+:ugas-version: v1.0.0-draft.5
+:doctype: book
+:toc: left
+:toc-title: Table of Contents
+:toclevels: 4
+:stem: latexmath
+:source-highlighter: highlight.js
+:icons: font
+:sectanchors:
+:sectlinks:
+:docinfo: shared
+
+[[overview]]
+== Overview
+
+This genre pack targets *shooters* in the Call of Duty / Halo / Apex / Counter-Strike mould: a
+character defined by *weapon-handling* attributes, an *ammo economy* (magazine plus reserve), a
+*fire / reload / aim* gunplay loop, and *hit resolution* that couples regenerating shields, hitzone
+multipliers (headshots), and range falloff.
+
+Unlike the Platformer, Racing, and ARPG packs, the core specification ships no dedicated shooter
+case study, so this pack is designed from first principles. It still leans entirely on core
+constructs — the modifier `Channel` mechanism (link:../../SPEC.adoc[core spec] §5.3) for accuracy
+aggregation, custom `Executions` for stateful reload and damage, and effect-granted tags for the
+weapon-handling state machine.
+
+The first-person shooter is the concrete seed, but the same pieces generalize to the wider
+*shooter* family — third-person, hero shooter, battle royale — which layer classes, loot, and
+objectives on top of this gunplay-and-loadout core.
+
+[[relationship-to-core-spec]]
+== Relationship to the core specification
+
+This document is *additive*. It defines genre-specific Attributes, Tags, Abilities, and
+Effects on top of the core Universal Gameplay Ability System specification.
+
+* It MUST NOT redefine, override, or contradict any concept in the core spec.
+* All entities in `entities/` validate against the same `schemas/*.json` as the core.
+* It *reuses* the core lifecycle tags (`State.Alive`, `State.Combat`, `State.Dead`) by reference,
+  and adds shooter-specific states (`State.Aiming`, `State.Reloading`, …).
+* Weapon-handling state is mutated *only through Effects* (core spec §3.1) — abilities never write
+  tags directly — and the accuracy stacking is the core modifier `Channel` mechanism, not a new
+  construct.
+
+[[genre-attributes]]
+== Genre Attributes
+
+Defined in `entities/attribute_set.yaml` as the `ShooterCombatSet` set. The base values describe a
+default automatic rifle, so the set is playable as shipped.
+
+[cols="1,1,3",options="header"]
+|===
+| Attribute | Category | Role
+
+| `MaxHealth` / `Health` | Statistic / Resource | `Health` is clamped to `[0, MaxHealth]`; damage spills here once `Shield` is gone.
+| `MaxShield` / `Shield` | Statistic / Resource | Regenerating overshield; absorbs incoming damage before `Health`.
+| `MoveSpeed` | Statistic | Ground movement speed; lowered while aiming down sights.
+| `WeaponDamage` | Statistic | Fully-aggregated per-shot damage read by `GE_BallisticDamage`.
+| `FireRate` | Statistic | Rounds per second; the per-shot cooldown is latexmath:[1 / \text{FireRate}].
+| `Spread` | Statistic | Bullet-cone half-angle in degrees; tightened by the `Aim` and `Attachments` channels.
+| `HeadshotMultiplier` | Statistic | Damage multiplier applied on a `Hitzone.Head` hit.
+| `EffectiveRange` | Statistic | Distance before damage falloff begins; extended by barrel attachments.
+| `MagazineSize` | Statistic | Rounds per magazine; the upper clamp on `Ammo`.
+| `Ammo` | Resource | Loaded rounds; clamped to `[0, MagazineSize]`, spent by firing.
+| `ReserveAmmo` | Resource | Spare rounds drawn into the magazine on reload.
+| `ReloadTime` | Statistic | Seconds to complete a reload; the `GA_Reload` wait window.
+| `DistanceToTarget` | Meta | Live distance to the traced target; compared against `EffectiveRange`.
+| `EffectiveDamage` | Meta | Output of the hit-resolution calc after hitzone and falloff; for telemetry.
+|===
+
+[[genre-gunplay-loop]]
+== The gunplay loop (the core shooter mechanic)
+
+A shooter lives or dies on *gun feel*, and in UGAS that feel is a small loop of abilities, each
+gated by tags and an ammo resource.
+
+=== Fire — cost-gated and rate-paced
+
+`GA_Fire` (`entities/ability_fire.yaml`) requires `Weapon.Equipped` and is blocked while
+`State.Reloading`. On activation it traces under the crosshair (`WaitTargetData`) and applies
+`GE_BallisticDamage` to the hit target. Two reusable effects make the cadence work:
+
+* *Cost* — `GE_FireCost` subtracts `1` from `Ammo`. Because an ability cannot activate if it cannot
+  pay its cost, this is exactly what stops the gun firing on an empty magazine — no explicit
+  ammo-check tag is needed.
+* *Cooldown* — `GE_FireCooldown` runs for latexmath:[1 / \text{FireRate}] seconds, pacing automatic
+  fire.
+
+Both are trivial (a flat resource cost and a cooldown tag); the pack references them by name rather
+than shipping a file for each, the same convention the Racing pack uses for its nitro cost/cooldown.
+
+=== Reload — a state plus a stateful transfer
+
+`GA_Reload` is blocked while already reloading. It applies `GE_Reloading` (which grants
+`State.Reloading`, blocking fire and aim), waits the reload window, then applies `GE_Reload`. The
+amount of ammo moved depends on the live `Ammo`, `MagazineSize`, and `ReserveAmmo`, so it cannot be
+a static modifier — `GE_Reload` runs a custom `Execution` (`ExecCalc_MagazineReload`) that tops the
+magazine up and decrements the reserve by the rounds loaded. The "only reload when not full and the
+reserve is non-empty" check is activation logic, since attribute comparisons can't be activation tags.
+
+=== Aim down sights — accuracy traded for mobility
+
+`GA_Aim` uses the same hold-then-`WaitInputRelease` shape as the platformer jump: it applies
+`GE_ADS` on press and removes it on release. `GE_ADS` tightens the bullet cone and slows movement,
+and grants `State.Aiming`.
+
+=== Accuracy aggregation across channels
+
+`Spread` is the showcase of the core `Channel` mechanism. Modifiers are *additive within* a channel
+and *multiplicative across* channels, so aiming and attachments compose cleanly:
+
+* `GE_ADS` puts a `Multiply` of `-0.75` in the `Aim` channel: latexmath:[1 - 0.75 = 0.25].
+* `GE_AttachmentBarrel` puts a `Multiply` of `-0.5` in the `Attachments` channel:
+  latexmath:[1 - 0.5 = 0.50].
+
+.Worked example (`entities/gameplay_controller.yaml`)
+A soldier aiming a rifle that has a barrel attachment fitted:
+
+* `Spread`: latexmath:[2.0 \times 0.25 \times 0.50 = 0.25] (base × `Aim` × `Attachments`)
+* `MoveSpeed`: latexmath:[600 \times (1 - 0.3) = 420] (the `Aim` channel)
+* `EffectiveRange`: latexmath:[50 + 30 = 80] (a flat `Add`)
+
+These are exactly the `CurrentValue` entries recorded for the example soldier.
+
+[[genre-hit-resolution]]
+== Hit resolution
+
+`GE_BallisticDamage` (`entities/effect_ballistic_damage.yaml`) is the payload `GA_Fire` applies to
+the hit target. Shooter damage is not a single subtraction: it couples the source's aggregated
+`WeaponDamage` with *range falloff* (`DistanceToTarget` vs `EffectiveRange`), the *hitzone
+multiplier* (× `HeadshotMultiplier` when the target is hit on `Hitzone.Head`), and *shield-before-
+health* absorption. That can't be a static modifier, so the effect delegates to a custom
+`Execution` (`ExecCalc_HitResolution`) that honors `Immunity.Ballistic` targets and writes
+`EffectiveDamage` (a `Meta` attribute) for telemetry and UI. This is the shooter analogue of the
+Racing pack's traction calculator — the seam where a genre's signature math plugs into UGAS.
+
+[[genre-tags]]
+== Genre Tags
+
+Defined in `entities/tag_registry.yaml` (additive only):
+
+* *Weapon-handling states* — `State.Aiming`, `State.Reloading`, `State.Sprinting`.
+* *Weapon loadout* — `Weapon.Equipped`, `Weapon.Type.Rifle|Pistol|Shotgun|Sniper`,
+  `Weapon.FireMode.Auto|SemiAuto|Burst`, `Weapon.Attachment.Barrel`.
+* *Ability types* — `Ability.Type.Fire|Reload|Aim|Movement`.
+* *Damage & hitzones* — `DamageType.Ballistic|Explosive`, `Hitzone.Head|Body|Limb`.
+* *Teams & immunity* — `Team.Friendly|Hostile`, `Immunity.Ballistic`.
+
+[[genre-abilities]]
+== Genre Abilities
+
+* `entities/ability_fire.yaml` — `GA_Fire`: traces under the crosshair and applies
+  `GE_BallisticDamage`; costs `Ammo` and is paced by a per-shot cooldown.
+* `entities/ability_reload.yaml` — `GA_Reload`: applies `GE_Reloading`, waits, then runs the
+  `GE_Reload` magazine transfer.
+* `entities/ability_aim.yaml` — `GA_Aim`: holds `GE_ADS` for a tighter cone at the cost of movement.
+
+[[genre-effects]]
+== Genre Effects
+
+* `entities/effect_equip_rifle.yaml` — `GE_EquipRifle`: infinite; grants the weapon-loadout tags.
+* `entities/effect_ads.yaml` — `GE_ADS`: infinite-while-held; `Spread` and `MoveSpeed` multipliers
+  in the `Aim` channel; grants `State.Aiming`.
+* `entities/effect_attachment_barrel.yaml` — `GE_AttachmentBarrel`: infinite; `Spread` multiplier in
+  the `Attachments` channel and `+30` `EffectiveRange`; grants `Weapon.Attachment.Barrel`.
+* `entities/effect_reloading.yaml` — `GE_Reloading`: `HasDuration`; grants `State.Reloading`.
+* `entities/effect_reload.yaml` — `GE_Reload`: instant; `ExecCalc_MagazineReload` transfers reserve
+  rounds into the magazine.
+* `entities/effect_ballistic_damage.yaml` — `GE_BallisticDamage`: instant; `ExecCalc_HitResolution`
+  applies shields, hitzone multiplier, and falloff.
+
+[[using-this-pack]]
+== Using this pack
+
+. Copy `genres/shooter/` into your project (or load `entities/` directly via the
+  `ugas-schema-author` skill).
+. Tune the rifle base values in `ShooterCombatSet` first — they carry most of the gun feel — then
+  add new weapons as `GE_Equip*` effects and new attachments as `Attachments`-channel effects.
+. Implement the two `ExecCalc_*` hooks (`ExecCalc_MagazineReload`, `ExecCalc_HitResolution`) in your
+  engine; everything else is data.
+. Add new states as `State.*` tags granted by Effects (never mutate tags directly), and new weapons
+  /abilities as Effects + Abilities.
+. Validate with `python scripts/validate_schema_examples.py` before committing.

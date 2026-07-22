@@ -1,0 +1,248 @@
+= UGAS Video Game Genre Taxonomy
+Mickael Bonfill <jbltx>
+:revnumber: 1.0.0-draft.5
+:ugas-version: v1.0.0-draft.5
+:doctype: book
+:toc: left
+:toc-title: Table of Contents
+:toclevels: 4
+:stem: latexmath
+:source-highlighter: highlight.js
+:icons: font
+:sectanchors:
+:sectlinks:
+:docinfo: shared
+
+[[overview]]
+== Overview
+
+This document is a *reference taxonomy* of video game genres and subgenres. It exists to
+**scope and categorize** the genre-pack work tracked in
+https://github.com/jbltx/ugas/issues/28[issue #28], and to position the ten prioritized
+genres within the broader space of games.
+
+[IMPORTANT]
+====
+This taxonomy is *non-normative*. Unlike a genre `spec.adoc`, it neither extends nor
+constrains the link:../SPEC.adoc[core UGAS specification]. It is a map, not a contract: it
+informs which genre packs we build and how they relate, but it defines no Attributes, Tags,
+Abilities, or Effects. For the genre-pack conventions and authoring rules, see the
+link:README.md[genre packs guide].
+====
+
+[[classification]]
+== How genres are classified
+
+Genres here are organized primarily by **gameplay mechanics** — what the player *does* —
+rather than by setting, theme, art style, or narrative. A medieval-fantasy game and a
+sci-fi game can share the same genre if they share the same core loop.
+
+Two consequences worth keeping in mind:
+
+* *Genres overlap.* Real games routinely blend families (e.g. an action-RPG, a
+  survival-crafting shooter). A title can legitimately sit under more than one family.
+* *Some labels are modifiers, not families.* Properties like _open-world_, _massively
+  multiplayer_, _roguelike_, and _horror_ compose *across* families rather than being
+  families of their own. They are listed separately under <<modifiers>>.
+
+[[families]]
+== Genre families
+
+[[family-action]]
+=== Action
+
+Reflex- and timing-driven gameplay; the core challenge is execution in real time.
+
+* Platformer (2D, 3D, puzzle-platformer)
+* Shooter (emphasized as its own UGAS pack — see <<prioritization>>)
+** First-person shooter (FPS)
+** Third-person shooter (TPS)
+** Hero shooter
+** Light-gun shooter
+** Shoot 'em up (shmup)
+** Battle royale
+* Fighting / Combat (see <<family-combat>>)
+* Beat 'em up
+* Hack-and-slash
+* Stealth
+* Rhythm / music
+* Survival-action
+
+[[family-action-adventure]]
+=== Action-Adventure
+
+Combines action mechanics with exploration, puzzle-solving, and progression.
+
+* Survival horror
+* Metroidvania
+* Open-world action-adventure
+
+[[family-combat]]
+=== Combat
+
+Direct, skill-based confrontation between characters — the dueling/fighting core that the
+*Combat* pack targets. Closely related to the fighting and beat-'em-up subgenres under
+<<family-action>>, but treated as its own pack because its mechanics (movesets, blocking,
+combos, hit trades) differ markedly from projectile-centric shooters.
+
+* Fighting (1v1, arena)
+* Beat 'em up / brawler
+* Hack-and-slash
+* Sports-based fighting
+
+[[family-adventure]]
+=== Adventure
+
+Narrative, exploration, and puzzle-solving with little or no reflex-based action.
+
+* Text adventure / interactive fiction
+* Graphic / point-and-click adventure
+* Visual novel
+* Interactive movie
+* Walking simulator / real-time 3D adventure
+
+[[family-rpg]]
+=== Role-Playing (RPG)
+
+Character progression, stats, inventory, and player-driven builds at the core.
+
+* Action RPG (ARPG)
+* Computer / Western RPG (CRPG)
+* Japanese RPG (JRPG)
+* Massively multiplayer online RPG (MMORPG)
+* Roguelike / Roguelite
+* Tactical RPG (TRPG / SRPG)
+* Sandbox / open-world RPG
+* First-person party-based RPG
+* Monster-taming
+
+[[family-simulation]]
+=== Simulation
+
+Models a system or activity with relative fidelity; the goal is to manage or operate it.
+
+* Construction & management (city builder, tycoon, god game)
+* Life simulation
+* Vehicle / flight / space simulation
+* Farming simulation
+
+[[family-strategy]]
+=== Strategy
+
+Planning, resource management, and tactical or operational decision-making.
+
+* 4X (eXplore, eXpand, eXploit, eXterminate)
+* Real-time strategy (RTS)
+* Real-time tactics (RTT)
+* Turn-based strategy (TBS)
+* Turn-based tactics (TBT)
+* Wargame / grand strategy
+* Tower defense
+* Multiplayer online battle arena (MOBA)
+* Auto battler
+* Artillery
+
+[[family-sports]]
+=== Sports
+
+Simulates or abstracts real or fictional sports.
+
+* Traditional sports simulation
+* Arcade sports
+* Sports management
+* Sports-based fighting
+
+[[family-racing]]
+=== Racing
+
+Vehicle competition against time or opponents.
+
+* Simulation (sim) racing
+* Arcade racing
+* Kart racing
+* Combat racing
+
+[[family-puzzle]]
+=== Puzzle
+
+Logic, pattern, and problem-solving challenges.
+
+* Tile-matching
+* Physics
+* Hidden object
+* Programming
+* Puzzle-platformer
+* Logic / traditional puzzle
+* Word / trivia
+
+[[family-survival-crafting]]
+=== Survival & Crafting
+
+Resource gathering, crafting, and base-building under persistent threat or scarcity.
+(Overlaps heavily with <<family-action>> and <<family-simulation>>.)
+
+* Survival
+* Crafting / base-building
+* Sandbox survival
+
+[[family-casual-party]]
+=== Casual & Party
+
+Low-barrier, short-session, or multiplayer-social play.
+
+* Casual
+* Hypercasual
+* Idle / incremental (clicker)
+* Party
+
+[[family-other]]
+=== Other notable genres
+
+* Horror (as a standalone, beyond survival horror)
+* Board / card / casino
+* Gacha
+* Digital collectible card game (CCG)
+* Educational / serious / exergame
+
+[[modifiers]]
+== Cross-cutting modifiers
+
+These labels describe *how* a game is played or framed and combine with the families above
+rather than replacing them.
+
+* *Sandbox / open-world* — non-linear, player-directed exploration of a large space.
+* *Massively multiplayer online (MMO)* — large shared persistent worlds.
+* *Roguelike elements* — procedural generation and permadeath layered onto another genre.
+* *Horror* — a thematic framing that can modify action, adventure, or survival games.
+
+[[prioritization]]
+== UGAS pack prioritization
+
+For the initial genre packs, https://github.com/jbltx/ugas/issues/28[issue #28] prioritizes
+the ten genres below. Selection blends **player reach** (casual ~63%, action & shooter ~39%,
+racing ~37%) with **revenue / market share** (Newzoo, Statista, GAMIVO, 2025–2026). The core
+spec already ships four case studies — platformer, racing, ARPG, and puzzle — which seed the
+first packs.
+
+[cols="1,3,4", options="header"]
+|===
+| # | Genre | Maps to / rationale
+
+| 1 | Action / Action-Adventure | <<family-action>>, <<family-action-adventure>> — the broadest reach and the engine for most real-time gameplay.
+| 2 | Shooter (FPS / TPS) | <<family-action>> (shooter subgenres) — top PC/console revenue category.
+| 3 | Role-Playing (RPG) | <<family-rpg>> — deep progression systems; seeded by the ARPG case study.
+| 4 | Survival / Crafting | <<family-survival-crafting>> — high-engagement, fast-growing category.
+| 5 | Casual | <<family-casual-party>> — largest player base by reach (~63%).
+| 6 | Racing | <<family-racing>> — broad reach (~37%); seeded by the racing case study.
+| 7 | Combat | <<family-combat>> — fighting/dueling mechanics distinct from shooters.
+| 8 | Strategy (RTS / 4X / Tower Defense) | <<family-strategy>> — planning- and resource-driven play.
+| 9 | Sports | <<family-sports>> — consistently strong commercial performers.
+| 10 | Puzzle | <<family-puzzle>> — wide casual reach; seeded by the puzzle case study.
+|===
+
+[NOTE]
+====
+*Combat* replaced *Simulation* in the top ten relative to an earlier draft, reflecting the
+combined player-reach and revenue ranking. Simulation remains a first-class family (see
+<<family-simulation>>) and a candidate for a later pack.
+====

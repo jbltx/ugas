@@ -1,0 +1,31 @@
+# Activate powerup: tap a special tile to detonate its payload (here, a bomb that clears a radial
+# area). Like a swap it spends a move (Cost: GE_MoveCost), so powerups draw from the same move
+# economy and cannot be activated once moves run out. It requires a special tile to be selected
+# (Tile.Type.Special) and the level to be in the Playing phase, and is blocked while the board is
+# still resolving. On activation it applies GE_PowerupBomb to the board, which adds the flat
+# board-clear bonus and grants Cascading so the resulting cascades score through the normal pipeline.
+# GE_MoveCost is the same trivial -1 MovesRemaining cost effect referenced by GA_SwapTiles.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_ability.json
+Name: GA_ActivatePowerup
+Tags:
+  AbilityTags:
+    - Ability.Type.Powerup
+  ActivationRequiredTags:
+    - Puzzle.Phase.Playing
+    - Tile.Type.Special
+  ActivationBlockedTags:
+    - Puzzle.State.Matching
+    - Puzzle.State.Cascading
+Cost: GE_MoveCost
+Tasks:
+  - Type: WaitConfirm
+    Params:
+      TargetingMethod: SingleTile
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_PowerupBomb
+Metadata:
+  DisplayName: Activate Powerup
+  Description: Detonate a selected special tile's board-clearing payload
+  Icon: ui/icons/powerup.png

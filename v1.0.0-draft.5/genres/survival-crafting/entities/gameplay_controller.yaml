@@ -1,0 +1,123 @@
+# Worked example: a survivor caught out at night in a snow biome - cold AND starving AND
+# overencumbered. It shows both halves of the signature mechanic at once: the cascading Health
+# drains (engine-detected thresholds), and a two-channel MoveSpeed penalty (the modifier pipeline).
+#
+# Periodic effects modify BASE VALUES over time (core spec 5.2 / 9.3), so the resource pools below
+# are snapshots mid-event; the Statistic MoveSpeed is the CurrentValue from the active multiply
+# channels. The active effects and their per-tick deltas:
+#   Hunger hit 0           -> engine grants Survival.State.Starving + GE_Starvation  (Health -2/tick)
+#   BodyTemperature < 36   -> engine grants Survival.State.Cold     + GE_Hypothermia (Health -1/tick)
+#   CarryWeight 65 > Max 50 -> engine grants Survival.State.Overencumbered + GE_Overencumbered
+#
+#   Health drain/tick:  Starvation(-2) + Hypothermia(-1)                         = -3.0  (VitalsDrainRate)
+#   MoveSpeed:          base 300 x Encumbrance(1 - 0.40 = 0.60) x Cold(1 - 0.25 = 0.75) = 135.0
+#   BodyTemperature:    GE_Exposure_Cold (periodic Add -0.4/tick) drove the BASE VALUE down to 34.0 (clamp [25,43])
+# GE_HungerDecay / GE_ThirstDecay / GE_StaminaRegen are the always-on needs loop that got the
+# survivor here (Hunger drained to 0, Thirst down to 30, Stamina recovered to full while not sprinting).
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_controller.json
+OwnerActor:
+  ActorID: Survivor_01
+  ActorType: PlayerCharacter
+AttributeSets:
+  - Name: SurvivorVitalsSet
+    Attributes:
+      - Name: MaxHealth
+        BaseValue: 100.0
+        CurrentValue: 100.0
+      - Name: Health
+        BaseValue: 40.0
+        CurrentValue: 40.0
+      - Name: MaxHunger
+        BaseValue: 100.0
+        CurrentValue: 100.0
+      - Name: Hunger
+        BaseValue: 0.0
+        CurrentValue: 0.0
+      - Name: MaxThirst
+        BaseValue: 100.0
+        CurrentValue: 100.0
+      - Name: Thirst
+        BaseValue: 30.0
+        CurrentValue: 30.0
+      - Name: MaxStamina
+        BaseValue: 100.0
+        CurrentValue: 100.0
+      - Name: Stamina
+        BaseValue: 100.0
+        CurrentValue: 100.0
+      - Name: BodyTemperature
+        BaseValue: 34.0
+        CurrentValue: 34.0
+      - Name: MoveSpeed
+        BaseValue: 300.0
+        CurrentValue: 135.0
+      - Name: MaxCarryWeight
+        BaseValue: 50.0
+        CurrentValue: 50.0
+      - Name: CarryWeight
+        BaseValue: 65.0
+        CurrentValue: 65.0
+      - Name: Materials
+        BaseValue: 0.0
+        CurrentValue: 12.0
+      - Name: WarmthRating
+        BaseValue: 0.0
+        CurrentValue: 0.0
+      - Name: VitalsDrainRate
+        BaseValue: 0.0
+        CurrentValue: -3.0
+GrantedAbilities:
+  - AbilityClass: GA_Gather
+    Level: 1
+    InputID: Gather
+  - AbilityClass: GA_Craft
+    Level: 1
+    InputID: Craft
+  - AbilityClass: GA_Build
+    Level: 1
+    InputID: Build
+  - AbilityClass: GA_ConsumeFood
+    Level: 1
+    InputID: ConsumeFood
+  - AbilityClass: GA_Drink
+    Level: 1
+    InputID: Drink
+  - AbilityClass: GA_Sprint
+    Level: 1
+    InputID: Sprint
+ActiveEffects:
+  - Handle: eff-hunger-decay
+    EffectClass: GE_HungerDecay
+    Duration: -1
+  - Handle: eff-thirst-decay
+    EffectClass: GE_ThirstDecay
+    Duration: -1
+  - Handle: eff-stamina-regen
+    EffectClass: GE_StaminaRegen
+    Duration: -1
+  - Handle: eff-starvation
+    EffectClass: GE_Starvation
+    Duration: -1
+  - Handle: eff-exposure-cold
+    EffectClass: GE_Exposure_Cold
+    Duration: -1
+  - Handle: eff-hypothermia
+    EffectClass: GE_Hypothermia
+    Duration: -1
+  - Handle: eff-overencumbered
+    EffectClass: GE_Overencumbered
+    Duration: -1
+OwnedTags:
+  - State.Alive
+  - Survival.State.Starving
+  - Survival.State.Cold
+  - Survival.State.Overencumbered
+  - Biome.Snow
+  - Environment.TimeOfDay.Night
+ReplicationMode: Mixed
+bIsActive: true
+Metadata:
+  DisplayName: Survivor (night, cold + starving + overencumbered)
+  Description: Worked-example survivor showing cascading Health drains and two-channel MoveSpeed reduction
+  DebugCategory: survival-crafting-pack-example

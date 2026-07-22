@@ -1,0 +1,34 @@
+# Swap tiles: the core puzzle move. The player picks two adjacent tiles to swap; if the swap forms
+# a line of three or more, the match is scored. Each swap costs one move (Cost: GE_MoveCost, which
+# subtracts 1 from MovesRemaining). Because an ability cannot activate if it cannot pay its cost,
+# this single cost gate is exactly what ENDS THE LEVEL at 0 moves - no explicit "out of moves" check
+# is needed - the same pattern the shooter uses where the ammo cost stops firing on an empty magazine.
+# The swap waits for the player's second-tile confirmation (WaitConfirm), then applies GE_MatchClear,
+# which scores the match via ExecCalc_MatchScore. Blocked while the board is still resolving
+# (Matching / Cascading) or has no legal move (Stuck); requires the level to be in the Playing phase.
+# GE_MoveCost is trivial (a flat -1 MovesRemaining resource cost) and is referenced by name rather
+# than shipped as its own file, the same convention the Racing and Shooter packs use for cost effects.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_ability.json
+Name: GA_SwapTiles
+Tags:
+  AbilityTags:
+    - Ability.Type.Swap
+  ActivationRequiredTags:
+    - Puzzle.Phase.Playing
+  ActivationBlockedTags:
+    - Puzzle.State.Stuck
+    - Puzzle.State.Matching
+    - Puzzle.State.Cascading
+Cost: GE_MoveCost
+Tasks:
+  - Type: WaitConfirm
+    Params:
+      TargetingMethod: AdjacentTilePair
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_MatchClear
+Metadata:
+  DisplayName: Swap Tiles
+  Description: Swap two adjacent tiles to form a match; costs one move
+  Icon: ui/icons/swap.png

@@ -1,0 +1,13 @@
+# Damage from a single bullet hit, applied to the traced target by GA_Fire. Shooter damage is not a
+# single static subtraction: it couples the source's aggregated WeaponDamage with range falloff
+# (DistanceToTarget vs EffectiveRange), the hitzone multiplier (x HeadshotMultiplier on Hitzone.Head),
+# and shield-before-health absorption - so it runs through a custom Execution. The calc honors
+# Immunity.Ballistic targets and writes EffectiveDamage (Meta) for telemetry/UI.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_BallisticDamage
+DurationPolicy: Instant
+Executions:
+  - CalculatorClass: ExecCalc_HitResolution
+GameplayCues:
+  - GameplayCue.Weapon.Impact
