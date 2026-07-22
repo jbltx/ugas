@@ -5,7 +5,7 @@
 # lighter clothing counter it. The hot-side Health drain (heatstroke) is the symmetric counterpart
 # to GE_Hypothermia and would be applied by the same temperature-window detector on the high side.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Exposure_Heat
 DurationPolicy: Infinite
 Period:

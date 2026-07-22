@@ -4,7 +4,7 @@
 # weakest against high-multiplier siege - which keeps the rock-paper-scissors matrix meaningful even
 # at full upgrades. Stacks by applying multiple instances (additive flat Add). Requires a built unit.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_ArmorUpgrade
 DurationPolicy: Infinite
 ApplicationRequiredTags:

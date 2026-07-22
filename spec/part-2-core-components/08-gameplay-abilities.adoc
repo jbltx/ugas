@@ -212,7 +212,7 @@ Costs and Cooldowns are NOT separate variables but are implemented as specialize
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_Fireball_Cost"
 DurationPolicy: Instant
 Modifiers:
@@ -227,7 +227,7 @@ Modifiers:
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_Fireball_Cooldown"
 DurationPolicy: HasDuration
 Duration:
@@ -241,7 +241,7 @@ This pattern enables external modification of costs and cooldowns. For example, 
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_ManaEfficiency_Buff"
 DurationPolicy: HasDuration
 Duration:

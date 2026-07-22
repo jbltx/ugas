@@ -3,7 +3,7 @@
 # by the pack's entities (e.g. the worked controller's OwnedTags), not declared here.
 # Every survival state below is GRANTED BY AN EFFECT, never written directly by an ability.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_tag.json
 Tags:
   # --- Survival states (granted by the cascading threshold effects; gate abilities and cues) ---
   - Tag: Survival.State.Starving

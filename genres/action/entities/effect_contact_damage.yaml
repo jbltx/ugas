@@ -2,7 +2,7 @@
 # the player, and by GA_GroundPound striking enemies. Targets holding Immunity.Contact are
 # skipped by the applying ability (see GA_GroundPound).
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_ContactDamage
 DurationPolicy: Instant
 Modifiers:

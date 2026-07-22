@@ -3,7 +3,7 @@
 # sooner. GA_Jump removes it on landing alongside GE_InAir.
 # Channel JumpControl uses the additive-within-channel convention: factor = 1 + 1.5 = 2.5x gravity.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_JumpCut
 DurationPolicy: Infinite
 Modifiers:

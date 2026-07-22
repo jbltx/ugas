@@ -5,7 +5,7 @@
 # The Upgrades channel multiplies against any other channel (e.g. Debuffs), exactly the
 # damage-bucket mechanism from the core spec, reused for tech. Requires a built unit.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_WeaponUpgrade
 DurationPolicy: Infinite
 ApplicationRequiredTags:

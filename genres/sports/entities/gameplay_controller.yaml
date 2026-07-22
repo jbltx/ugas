@@ -12,7 +12,7 @@
 #   PassAccuracy: base  70 x Momentum(1 + 0.20 = 1.20)                     = 84.0
 # Acceleration, Strength, Tackling, and Composure carry no active modifier, so Current == Base.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: Athlete_Striker_09
   ActorType: PlayerCharacter

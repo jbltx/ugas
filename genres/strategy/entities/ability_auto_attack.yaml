@@ -8,7 +8,7 @@
 # damage. Affiliation (which units are Faction.Hostile to this attacker) is the engine team model's job —
 # §17.2 defers affiliation to the title, which tags opponents Faction.Hostile per the registry.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_AutoAttack
 Tags:
   AbilityTags:

@@ -7,7 +7,7 @@
 # analogue of the shooter pack's ExecCalc_HitResolution - the seam where a genre's signature math
 # plugs into UGAS.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_ShotAttempt
 DurationPolicy: Instant
 Executions:

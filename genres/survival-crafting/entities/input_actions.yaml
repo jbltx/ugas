@@ -4,7 +4,7 @@
 # gameplay_controller.yaml reference (Gather -> GA_Gather, Sprint -> GA_Sprint, etc.).
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Move
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -19,7 +19,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Look
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -34,7 +34,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Jump
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -49,7 +49,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Sprint
 ValueType: Digital
 TriggerBehavior: WhileHeld
@@ -64,7 +64,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Gather
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -79,7 +79,7 @@ Metadata:
   Category: Survival
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Craft
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -94,7 +94,7 @@ Metadata:
   Category: Survival
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Build
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -109,7 +109,7 @@ Metadata:
   Category: Survival
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: ConsumeFood
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -124,7 +124,7 @@ Metadata:
   Category: Survival
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Drink
 ValueType: Digital
 TriggerBehavior: OnPressed

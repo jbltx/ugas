@@ -127,6 +127,8 @@ def classify(rel: Path, section_titles: dict[str, dict]) -> tuple[str, str, str]
                 return "genre-entity", f"genre.{pack}.{stem}", f"{titlecase(pack)}: {stem}"
             if name == "spec.adoc":
                 return "genre-pack-spec", f"genre.{pack}.spec", f"{titlecase(pack)} pack spec"
+            if name == "pack.yaml":
+                return "doc", f"genre.{pack}.meta", f"{titlecase(pack)} pack metadata"
             if name == "index.html":
                 return "html", f"genre.{pack}.html", f"{titlecase(pack)} pack (HTML)"
             if name == "README.md":

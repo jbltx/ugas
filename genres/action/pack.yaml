@@ -1,0 +1,4 @@
+# Genre pack metadata — structured source for genres/index.json.
+id: action
+scope: 'Action / platformer — Mario, Celeste, Hollow Knight.'
+signatureMechanic: 'Movement state machine (grounded / airborne / coyote time) with a variable-height jump, kept consistent as abilities, physics, and power-ups all read and write it.'

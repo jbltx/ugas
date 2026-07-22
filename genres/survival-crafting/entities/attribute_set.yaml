@@ -4,7 +4,7 @@
 # comfortable temperature carrying nothing, so the set is playable as shipped: every need starts
 # full and the needs-decay loop (GE_HungerDecay / GE_ThirstDecay) drains them from there.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/attribute_set.json
 Name: SurvivorVitalsSet
 Attributes:
   # --- Survivability (Health is the sink the cascading threshold penalties drain) ---

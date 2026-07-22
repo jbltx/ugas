@@ -4,7 +4,7 @@
 # every tick for as long as the survivor starves. This is the "need bottoms out -> drains Health"
 # cascade described in the signature section; the detection is engine logic, the drain is pure data.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Starvation
 DurationPolicy: Infinite
 Period:

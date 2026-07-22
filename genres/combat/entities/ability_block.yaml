@@ -6,7 +6,7 @@
 # hitstun, blockstun, or staggered. Holding guard chips GuardHealth on each blocked hit; when it
 # empties, the engine breaks the guard (a separate guard-break flow), so blocking is not free.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_Block
 Tags:
   AbilityTags:

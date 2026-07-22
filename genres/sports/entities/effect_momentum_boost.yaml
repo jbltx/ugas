@@ -7,7 +7,7 @@
 #   PassAccuracy : base 70 x Momentum(1 + 0.20) = 84.0  (see gameplay_controller.yaml)
 # HasDuration so the surge self-expires; grants Team.State.HighMomentum for cues and AI.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_MomentumBoost
 DurationPolicy: HasDuration
 Duration:

@@ -8,7 +8,7 @@
 # and re-granting GE_PassiveIncome - is engine logic this ability triggers. UGAS data captures the
 # permanent reward (GE_PrestigeBoost) and the gate; the bookkeeping of the wipe is an engine seam.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_Prestige
 Tags:
   AbilityTags:

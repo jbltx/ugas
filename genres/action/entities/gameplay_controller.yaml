@@ -3,7 +3,7 @@
 #   Scale:  base 1.0 x SizeBonuses(1 + 1.0 = 2.0) = 2.0
 #   Health: base 1   + 1 (mushroom)               = 2.0
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: Hero_Platformer_01
   ActorType: PlayerCharacter

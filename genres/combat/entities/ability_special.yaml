@@ -8,7 +8,7 @@
 # is an engine targeting seam, §17.2). Blocked while in hitstun, blockstun, or staggered. Goes on a long
 # cooldown (GE_SpecialCooldown) so it cannot be chained even with meter to spare.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_Special
 Tags:
   AbilityTags:

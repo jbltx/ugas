@@ -6,7 +6,7 @@
 # (§17.2). Energy refills over time via the periodic GE_EnergyRegen. GE_AreaStrikeCost and
 # GE_AreaStrikeCooldown are trivial and referenced by name rather than shipped as files.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_AreaStrike
 Tags:
   AbilityTags:

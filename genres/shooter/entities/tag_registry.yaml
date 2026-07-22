@@ -2,7 +2,7 @@
 # It does not redefine the core lifecycle tags (State.Alive / State.Combat / State.Dead) -
 # those are referenced by the pack's entities, not declared here.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_tag.json
 Tags:
   # --- Weapon-handling states (granted by Effects; tag ownership follows responsibility) ---
   - Tag: State.Aiming

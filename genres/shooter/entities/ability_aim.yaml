@@ -1,7 +1,7 @@
 # Aim down sights: hold to apply GE_ADS (tighter cone, slower movement, State.Aiming), release to
 # remove it. Same hold-then-WaitInputRelease shape as the platformer jump. Cannot aim mid-reload.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_Aim
 Tags:
   AbilityTags:

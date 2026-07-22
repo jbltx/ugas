@@ -2,7 +2,7 @@
 # Replace with a genre-specific attribute. Every field below uses a real value
 # (the validator rejects placeholder tokens like "string"/"float").
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/attribute.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/attribute.json
 Name: Health
 DefaultBaseValue: 100.0
 Category: Resource

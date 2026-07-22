@@ -4,7 +4,7 @@
 # and shield-before-health absorption - so it runs through a custom Execution. The calc honors
 # Immunity.Ballistic targets and writes EffectiveDamage (Meta) for telemetry/UI.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_BallisticDamage
 DurationPolicy: Instant
 Executions:

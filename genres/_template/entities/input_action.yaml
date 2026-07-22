@@ -1,7 +1,7 @@
 # Template entity: Input Action
 # Replace with a genre-specific action definition.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: ExampleAction
 ValueType: Digital
 TriggerBehavior: OnPressed

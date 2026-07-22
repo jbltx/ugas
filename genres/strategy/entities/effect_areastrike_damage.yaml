@@ -4,7 +4,7 @@
 # targets and its penalty on Light/Fortified - the area weapon obeys the same rock-paper-scissors
 # rules as single-target fire. Only hostiles are affected (friendly units are skipped).
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_AreaStrikeDamage
 DurationPolicy: Instant
 ApplicationRequiredTags:

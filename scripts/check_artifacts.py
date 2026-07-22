@@ -39,6 +39,20 @@ def validate_meta(version_dir: Path, errors: list[str]) -> dict | None:
         (json.loads(sections_index.read_text(encoding="utf-8")),
          meta_dir / "sections-index.schema.json"),
     ]
+    genres_index = version_dir / "genres" / "index.json"
+    if genres_index.is_file():
+        checks.append(
+            (json.loads(genres_index.read_text(encoding="utf-8")),
+             meta_dir / "genres-index.schema.json")
+        )
+    # versions.json lives at the docs root (one level up), when the landing page
+    # has already produced it.
+    versions_json = version_dir.parent / "versions.json"
+    if versions_json.is_file() and (meta_dir / "versions.schema.json").is_file():
+        checks.append(
+            (json.loads(versions_json.read_text(encoding="utf-8")),
+             meta_dir / "versions.schema.json")
+        )
     for data, schema_path in checks:
         schema = json.loads(schema_path.read_text(encoding="utf-8"))
         errs = sorted(Draft7Validator(schema).iter_errors(data), key=lambda e: list(e.path))
@@ -62,6 +76,23 @@ def check_checksums(version_dir: Path, manifest: dict, errors: list[str]) -> Non
             fail(f"checksum mismatch: {r['path']}", errors)
         if p.stat().st_size != r["bytes"]:
             fail(f"byte size mismatch: {r['path']}", errors)
+
+
+def check_genre_index(version_dir: Path, errors: list[str]) -> None:
+    gi = version_dir / "genres" / "index.json"
+    if not gi.is_file():
+        return
+    data = json.loads(gi.read_text(encoding="utf-8"))
+
+    def resolve(p: str) -> Path:  # strip leading vX/ segment
+        return version_dir / Path(*Path(p).parts[1:])
+
+    for pack in data.get("packs", []):
+        if not resolve(pack["specPath"]).is_file():
+            fail(f"genres/index.json specPath missing: {pack['specPath']}", errors)
+        for e in pack["entities"]:
+            if not resolve(e["path"]).is_file():
+                fail(f"genres/index.json entity path missing: {e['path']}", errors)
 
 
 def check_fences(version_dir: Path, errors: list[str]) -> None:
@@ -106,6 +137,7 @@ def main(argv: list[str]) -> int:
     if manifest is not None:
         check_checksums(version_dir, manifest, errors)
         check_llms(version_dir, llms_path, manifest, errors)
+    check_genre_index(version_dir, errors)
     check_fences(version_dir, errors)
     check_placeholders(version_dir, llms_path, errors)
 

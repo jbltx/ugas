@@ -6,7 +6,7 @@
 # is removed and ComboMultiplier falls back toward its clamped floor of 1. ExecCalc_MatchScore reads
 # the aggregated ComboMultiplier, so the combo factor enters the score product declaratively.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_ComboBuild
 DurationPolicy: HasDuration
 Duration:

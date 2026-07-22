@@ -4,7 +4,7 @@
 # resources), one active instance per working harvester. ExecuteOnApplication is false so the first
 # payout lands one full second after the harvester starts, not instantly.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_MineralIncome
 DurationPolicy: Infinite
 Period:

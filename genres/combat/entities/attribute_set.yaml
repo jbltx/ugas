@@ -4,7 +4,7 @@
 # all-rounder fighter so the set is playable as shipped: 200 HP, a 100-point poise bar, an
 # empty 100-point super gauge, and 80 points of guard stamina.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/attribute_set.json
 Name: FighterCombatSet
 Attributes:
   # --- Survivability (depleted by GE_MeleeDamage; reaching 0 Health is a KO) ---

@@ -3,7 +3,7 @@
 # item's effect (e.g. GE_CraftedTool). The state blocks gathering and other crafts while the bench
 # is in use. Duration mirrors the craft wait in GA_Craft.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Crafting
 DurationPolicy: HasDuration
 Duration:

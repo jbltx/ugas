@@ -6,7 +6,7 @@
 # Team.Hostile) is the engine team model's job (§17.2). A real title supplies the exact victim from the
 # player's target / the montage hit-window instead.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_BasicAttack
 Tags:
   AbilityTags:

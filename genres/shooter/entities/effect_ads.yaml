@@ -3,7 +3,7 @@
 # convention: factor = 1 + Value, so Spread x (1 - 0.75) = x0.25 and MoveSpeed x (1 - 0.3) = x0.70.
 # Spread sits in the Aim channel; the Attachments channel (GE_AttachmentBarrel) multiplies across it.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_ADS
 DurationPolicy: Infinite
 Modifiers:

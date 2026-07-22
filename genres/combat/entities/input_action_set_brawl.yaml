@@ -4,7 +4,7 @@
 # fast cancel strings - light buffered into heavy, special buffered out of a launcher - register on
 # the frame they become legal rather than being dropped, the responsiveness fighting games demand.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action_set.json
 Name: Brawl
 Actions:
   - LightAttack

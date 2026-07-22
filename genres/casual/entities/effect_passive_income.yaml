@@ -5,7 +5,7 @@
 # (spec section 9.4.2): Result = (CurrencyPerSecond + 0) x 1.0 + 0. As generators and prestige
 # push CurrencyPerSecond up, every tick automatically pays out more, with no change to this effect.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_PassiveIncome
 DurationPolicy: Infinite
 Period:

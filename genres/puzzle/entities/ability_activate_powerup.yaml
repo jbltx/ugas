@@ -6,7 +6,7 @@
 # board-clear bonus and grants Cascading so the resulting cascades score through the normal pipeline.
 # GE_MoveCost is the same trivial -1 MovesRemaining cost effect referenced by GA_SwapTiles.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_ActivatePowerup
 Tags:
   AbilityTags:

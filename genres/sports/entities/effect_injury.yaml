@@ -3,7 +3,7 @@
 # MaxStamina ceiling (so the athlete also tires faster while carrying the knock). Grants
 # Athlete.State.Injured for cues, substitution AI, and broadcast overlays.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Injury
 DurationPolicy: HasDuration
 Duration:

@@ -3,7 +3,7 @@
 # drift near the center (Inner 0.15) and snapping to full deflection near the edge
 # (Outer 0.95). Marked UserConfigurable so players can tune thresholds in settings.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: StickDeadzone
 Type: DeadZone
 Params:

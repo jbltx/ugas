@@ -6,7 +6,7 @@
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/attribute_set.json
 Name: "PlatformerMovementSet"
 Attributes:
   - Name: "GravityScale"
@@ -102,7 +102,7 @@ class GA_Jump extends GameplayAbility {
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_SuperMushroom"
 DurationPolicy: Infinite
 GrantedTags:
@@ -128,7 +128,7 @@ GameplayCues:
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/attribute_set.json
 Name: "VehiclePerformanceSet"
 Attributes:
   - Name: "EngineTorque"
@@ -162,7 +162,7 @@ Attributes:
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_Biome_Mud"
 DurationPolicy: Infinite
 ApplicationRequiredTags:
@@ -181,7 +181,7 @@ Modifiers:
 GrantedTags:
   - "Surface.Mud"
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_Biome_Asphalt"
 DurationPolicy: Infinite
 ApplicationRequiredTags:
@@ -264,7 +264,7 @@ Three canonical buckets:
 [source,yaml,subs="+attributes"]
 ----
 # GE_Weapon_FireSword.yaml — item that grants a fire damage bonus
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_Weapon_FireSword"
 DurationPolicy: Infinite
 Modifiers:
@@ -434,7 +434,7 @@ class ItemEquipSystem {
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/attribute_set.json
 Name: "PuzzleCellSet"
 Attributes:
   - Name: "CellValue"

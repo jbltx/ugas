@@ -6,7 +6,7 @@
 # CameraPan is a continuous 2D vector for edge/keyboard scrolling.
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Select
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -20,7 +20,7 @@ Metadata:
   Category: Command
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: AttackMove
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -35,7 +35,7 @@ Metadata:
   Category: Command
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Build
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -50,7 +50,7 @@ Metadata:
   Category: Production
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Train
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -65,7 +65,7 @@ Metadata:
   Category: Production
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: CastAbility
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -80,7 +80,7 @@ Metadata:
   Category: Command
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: CameraPan
 ValueType: Axis2D
 TriggerBehavior: WhileHeld

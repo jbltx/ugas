@@ -3,7 +3,7 @@
 # referenced by the pack's entities, not declared here. Dynamic states are granted by Effects
 # (spec section 7.5), never written directly by abilities.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_tag.json
 Tags:
   # --- Meta-progression states (granted by Effects; gate the prestige ability) ---
   - Tag: Meta.State.PrestigeReady

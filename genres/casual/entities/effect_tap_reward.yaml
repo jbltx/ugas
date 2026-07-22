@@ -3,7 +3,7 @@
 # quickly dwarfed by passive income - the intended idle arc from active tapping to idle automation.
 # Tuned per game; a curve-backed magnitude could scale it with Stage.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_TapReward
 DurationPolicy: Instant
 Modifiers:

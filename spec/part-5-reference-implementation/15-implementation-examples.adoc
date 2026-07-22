@@ -6,7 +6,7 @@
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_BasicDamage"
 DurationPolicy: Instant
 Modifiers:
@@ -76,7 +76,7 @@ class HealthObserver implements IAttributeChangeObserver {
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_StrengthBuff"
 DurationPolicy: HasDuration
 Duration:

@@ -1,7 +1,7 @@
 # Template entity: Input Action Set
 # Replace with a genre-specific action set.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action_set.json
 Name: ExampleSet
 Actions:
   - ExampleAction

@@ -3,7 +3,7 @@
 # payload. The state both drives the harvest animation/cue and blocks conflicting actions (you can't
 # craft mid-swing). Duration mirrors the gather wait in GA_Gather.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Gathering
 DurationPolicy: HasDuration
 Duration:

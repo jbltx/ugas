@@ -4,7 +4,7 @@
 # and keyboard scrolling share one tuned response. The order and camera bindings are non-rebindable
 # anchors of the scheme; the hotkeys remain rebindable.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_mapping.json
 ActionSet: Command
 Platform: PC
 Bindings:

@@ -4,7 +4,7 @@
 # enabled with a tight 0.12 s window (max 2 queued events) so that rapid fire/reload
 # sequences feel responsive without swallowing unintended repeats.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action_set.json
 Name: OnFoot
 Actions:
   - Fire

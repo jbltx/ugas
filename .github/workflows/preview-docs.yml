@@ -108,9 +108,11 @@ jobs:
 
       - name: Generate + verify consumer artifacts
         run: |
-          # dist/ is the preview's version tree; give it the schemas the manifest lists.
+          # dist/ is the preview's version tree; give it the source files the
+          # manifest and generators list (the genre HTML is already in dist/genres).
           cp -r schemas dist/schemas
           cp SPEC.adoc dist/SPEC.adoc
+          cp -r genres/. dist/genres/
           bash scripts/build-artifacts.sh dist "${{ steps.ver.outputs.version }}" dist/llms.txt
           python3 scripts/check_artifacts.py dist dist/llms.txt
 

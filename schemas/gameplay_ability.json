@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/jbltx/ugas/schemas/gameplay_ability.json",
+  "$id": "https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json",
   "title": "Ability Definition Schema",
   "description": "Based on UGAS Specification %%UGAS_VERSION%% - Appendix B",
   "type": "object",

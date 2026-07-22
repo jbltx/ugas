@@ -3,7 +3,7 @@
 # (their ActivationBlockedTags list it). Applied to the target alongside GE_MeleeDamage on a clean
 # (unblocked) hit. The duration is the move's hitstun frame count expressed in seconds.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Hitstun
 DurationPolicy: HasDuration
 Duration:

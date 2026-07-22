@@ -13,7 +13,7 @@
 # so their BaseValue == CurrentValue here. Only the duration-based channel effects raise
 # CurrencyPerSecond / PrestigeMultiplier above their base.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: IdleProfile_01
   ActorType: PlayerProfile

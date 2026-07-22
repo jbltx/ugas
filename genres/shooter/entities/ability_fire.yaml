@@ -4,7 +4,7 @@
 # the automatic fire rate. Cannot fire mid-reload. GE_FireCost and GE_FireCooldown are trivial
 # (a flat resource cost and a cooldown tag) and are referenced by name rather than shipped as files.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_Fire
 Tags:
   AbilityTags:

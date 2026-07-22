@@ -3,7 +3,7 @@
 # Extends the core spec's attribute model (no core attribute is redefined here).
 # Base values make a fresh idle game playable as shipped: 0 income, full energy, run 1.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/attribute_set.json
 Name: IdleEconomySet
 Attributes:
   # --- Soft currency (the resource the whole loop accumulates; grows without bound) ---

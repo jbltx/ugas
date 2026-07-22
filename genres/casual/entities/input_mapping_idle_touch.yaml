@@ -3,7 +3,7 @@
 # targets). Tap runs through TapDebounce so an accidental double-fire within a few frames is
 # swallowed, keeping rapid tapping clean. Buttons are not rebindable (they are UI elements).
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_mapping.json
 ActionSet: Idle
 Platform: Mobile
 Bindings:

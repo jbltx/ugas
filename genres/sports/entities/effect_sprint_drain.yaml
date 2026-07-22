@@ -3,7 +3,7 @@
 # Grants Athlete.State.Sprinting for cues and animation; the steady -Stamina/tick is what eventually
 # trips the engine's low-stamina threshold and brings GE_Fatigue (and the Fatigued tag) into play.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_SprintDrain
 DurationPolicy: HasDuration
 Duration:

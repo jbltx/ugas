@@ -28,6 +28,10 @@ jobs:
         run: |
           python scripts/compare_schema_definitions.py
 
+      - name: Check version consistency
+        run: |
+          python scripts/check_version_consistency.py
+
       - name: Guard generated artifacts
         run: |
           # llms.txt is generated from the manifest at publish time; a hand-maintained

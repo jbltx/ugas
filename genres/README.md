@@ -32,9 +32,9 @@ genres/
   concept in [`SPEC.adoc`](../SPEC.adoc). It only adds genre-specific definitions and links
   back to core sections.
 - **Entities must validate.** Every `.yaml`/`.json` under `genres/` must be a schema
-  instance carrying a root `$schema` key that ends in one of the six core schemas
+  instance carrying a root `$schema` key that ends in one of the core UGAS schemas
   (e.g. `…/schemas/attribute.json`). Use the version placeholder:
-  `$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/<name>.json`.
+  `$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/<name>.json`.
   Only such entity files may live under `genres/` — `scripts/validate_schema_examples.py`
   validates the whole tree and fails on a missing/unknown `$schema`.
 - **No placeholder scalars.** Use real values; tokens like `string` or `float` fail validation.

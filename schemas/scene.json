@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/jbltx/ugas/schemas/scene.json",
+  "$id": "https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/scene.json",
   "title": "Scene Composition Schema",
   "description": "Based on UGAS Specification %%UGAS_VERSION%% - Section 18",
   "type": "object",

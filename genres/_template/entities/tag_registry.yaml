@@ -1,7 +1,7 @@
 # Template entity: Gameplay Tag registry
 # Replace with the hierarchical tags this genre pack introduces.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_tag.json
 Tags:
   - Tag: State.CanAct
     Description: Entity is able to act

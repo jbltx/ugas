@@ -133,7 +133,6 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           bash source/scripts/build-artifacts.sh "docs/v${VERSION}" "v${VERSION}" docs/llms.txt
-          python3 source/scripts/check_artifacts.py "docs/v${VERSION}" docs/llms.txt
 
       - name: Update README version table
         run: |
@@ -156,6 +155,11 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           DATE="$(date -u +%Y-%m-%d)"
           bash source/scripts/build-landing-page.sh "${VERSION}" "${DATE}" docs source
+
+      - name: Verify consumer artifacts
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          python3 source/scripts/check_artifacts.py "docs/v${VERSION}" docs/llms.txt
 
       - name: Create PR to docs branch
         env:

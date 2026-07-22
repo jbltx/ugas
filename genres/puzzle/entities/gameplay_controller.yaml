@@ -20,7 +20,7 @@
 #
 # Score 900 < TargetScore 1000, MovesRemaining 20 > 0: the level is still in Puzzle.Phase.Playing.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: PuzzleBoard_Level07_01
   ActorType: PuzzleBoard

@@ -2,7 +2,7 @@
 # BASE VALUE, lifting it off the 0 floor so the engine clears Survival.State.Dehydrated and removes
 # GE_Dehydration. Applied by GA_Drink. Thirst is clamped to [0, MaxThirst].
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_DrinkWater
 DurationPolicy: Instant
 Modifiers:

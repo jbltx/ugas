@@ -4,7 +4,7 @@
 # that a swap queued during a cascade animation fires the moment the board becomes interactive again -
 # the responsiveness players expect from a match-3 board.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action_set.json
 Name: BoardControls
 Actions:
   - SelectTile

@@ -1,7 +1,7 @@
 # Vehicle performance attribute set: drivetrain, aero, tires, and the boost resource.
 # Extends the core spec's attribute model (no core attribute is redefined here).
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/attribute_set.json
 Name: VehiclePerformanceSet
 Attributes:
   # --- Drivetrain (the power the engine puts to the wheels) ---

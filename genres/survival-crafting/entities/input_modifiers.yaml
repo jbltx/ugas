@@ -4,7 +4,7 @@
 # for a future gamepad mapping; MovementNormalize keeps diagonal WASD/stick movement at unit speed.
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: MouseSensitivity
 Type: Sensitivity
 Params:
@@ -17,7 +17,7 @@ Metadata:
   Description: Per-axis mouse sensitivity multiplier exposed in the player settings screen
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: StickDeadzone
 Type: DeadZone
 Params:
@@ -30,7 +30,7 @@ Metadata:
   Description: Radial dead zone for analog sticks - ignores drift below 15% and saturates above 95%
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: MovementNormalize
 Type: Normalize
 Params:
