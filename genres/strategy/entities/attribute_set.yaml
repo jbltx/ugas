@@ -12,7 +12,7 @@
 # base. They are grouped here so the pack ships one self-contained, playable set; the worked
 # controller (a single unit) only populates the combat attributes - see gameplay_controller.yaml.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/attribute_set.json
 Name: UnitStatsSet
 Attributes:
   # --- Survivability (damage spills into Health once mitigation resolves; 0 is a kill) ---

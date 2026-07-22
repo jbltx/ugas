@@ -1,0 +1,5 @@
+# label: valid — small tag registry
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_tag.json
+Tags:
+  - Tag: State.Alive
+    Description: Entity is alive

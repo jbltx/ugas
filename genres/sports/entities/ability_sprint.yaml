@@ -3,7 +3,7 @@
 # hold-then-WaitInputRelease shape as the platformer jump and the racing drift. Blocked while Fatigued,
 # so once the engine's low-stamina threshold has applied GE_Fatigue the athlete cannot keep sprinting.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_Sprint
 Tags:
   AbilityTags:

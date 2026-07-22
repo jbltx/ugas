@@ -9,7 +9,7 @@
 # GE_MoveCost is trivial (a flat -1 MovesRemaining resource cost) and is referenced by name rather
 # than shipped as its own file, the same convention the Racing and Shooter packs use for cost effects.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_SwapTiles
 Tags:
   AbilityTags:

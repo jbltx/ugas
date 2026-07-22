@@ -1,8 +1,8 @@
 = Universal Gameplay Ability System Specification
 Mickael Bonfill <jbltx>
-:revnumber: 1.0.0-draft.4
-:revdate: June 2026
-:ugas-version: v1.0.0-draft.4
+:revnumber: 1.0.0-draft.5
+:revdate: July 2026
+:ugas-version: v1.0.0-draft.5
 :doctype: book
 :toc: left
 :toc-title: Table of Contents
@@ -71,6 +71,10 @@ include::spec/part-3-asynchronous-execution.adoc[]
 include::spec/part-4-feedback-and-networking.adoc[]
 
 include::spec/part-5-reference-implementation.adoc[]
+
+include::spec/part-6-world-and-space.adoc[]
+
+include::spec/part-7-scene-composition.adoc[]
 
 [appendix]
 === Mathematical Notation
@@ -153,12 +157,12 @@ _Product_ (stem:[\prod]): Product of values over an index range
 All `$schema` URLs in UGAS data files use the pattern:
 
 ----
-https://raw.githubusercontent.com/jbltx/ugas/{version}/schemas/{schema-name}.json
+https://ugas.jbltx.com/{version}/schemas/{schema-name}.json
 ----
 
-Where `{version}` is the git tag of the UGAS release the data file was authored against (e.g. `{ugas-version}`). Each released version tag MUST maintain stable schema URLs — schemas at a given version tag MUST NOT be modified after release.
+Where `{version}` is the published UGAS release the data file was authored against (e.g. `{ugas-version}`). This is the canonical, resolvable URL: it is served by the docs site, and each schema's own `$id` is set to the same URL, so an authored file's `$schema` both identifies and (when a network is available) resolves to the exact schema it was validated against. Each released version MUST maintain stable schema URLs — schemas at a given version MUST NOT be modified after release.
 
-Data files SHOULD pin to the exact UGAS version they were authored against. Tooling that processes UGAS data files SHOULD validate against the schema URL declared in `$schema`, and SHOULD fail clearly when the URL is unreachable or the schema is invalid, rather than silently skipping validation.
+Data files SHOULD pin to the exact UGAS version they were authored against. Tooling that processes UGAS data files SHOULD validate against the schema declared in `$schema`; because the `$schema` value is a stable *identifier*, validators MAY resolve it offline (e.g. against the version's bundled schema set) rather than over the network, and SHOULD fail clearly when the schema cannot be resolved rather than silently skipping validation.
 
 ==== GameplayController Schema Definition
 

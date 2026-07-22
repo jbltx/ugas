@@ -3,7 +3,7 @@
 # knobs. Mirrors the shooter/racing modifier conventions.
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: StickDeadzone
 Type: DeadZone
 Params:
@@ -16,7 +16,7 @@ Metadata:
   Description: Radial dead zone for analog sticks - ignores drift below 15% and saturates above 95%
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: RadialScaling
 Type: RadialScaling
 Params:
@@ -27,7 +27,7 @@ Metadata:
   Description: Normalizes stick input to a maximum radius of 1.0 so diagonal runs match cardinal speed
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: TriggerThreshold
 Type: TriggerThreshold
 Params:

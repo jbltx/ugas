@@ -3,7 +3,7 @@
 # those are referenced by the pack's entities, not declared here. Frame-data states and the
 # stagger/block states are all GRANTED BY EFFECTS; abilities only gate on them.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_tag.json
 Tags:
   # --- Combat states (granted by Effects; the frame-data + stagger/guard state machine) ---
   - Tag: Combat.State.Hitstun

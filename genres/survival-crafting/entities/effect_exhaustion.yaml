@@ -5,7 +5,7 @@
 # simply cannot sprint until they have recovered. This shows a threshold cascade whose payload is a
 # capability lock rather than a Health drain.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Exhaustion
 DurationPolicy: Infinite
 GrantedTags:

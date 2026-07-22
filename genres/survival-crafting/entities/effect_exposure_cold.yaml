@@ -6,7 +6,7 @@
 # Once BodyTemperature sits below the comfort window, the engine keeps Survival.State.Cold applied and
 # the cold becomes a Health drain through GE_Hypothermia.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Exposure_Cold
 DurationPolicy: Infinite
 Period:

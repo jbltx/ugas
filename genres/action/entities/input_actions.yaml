@@ -5,7 +5,7 @@
 # GroundPound is digital OnPressed; the gameplay controller gates it to State.InAir via
 # the binding's RequiredTags, not the action definition.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Move
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -18,7 +18,7 @@ Metadata:
   Description: Horizontal movement along the ground or in the air
   Category: Movement
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Jump
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -32,7 +32,7 @@ Metadata:
   Icon: ui/icons/jump.png
   Category: Movement
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: GroundPound
 ValueType: Digital
 TriggerBehavior: OnPressed

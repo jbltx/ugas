@@ -4,7 +4,7 @@
 # 0.12 s window so quick pass/skill-move sequences feel responsive without swallowing repeats - the
 # same convention the shooter pack uses for its on-foot set.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action_set.json
 Name: Outfield
 Actions:
   - Move

@@ -3,7 +3,7 @@
 # attribute's own clamp. Demonstrates that periodic income is not economy-only - the same construct
 # regenerates a per-unit caster pool.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_EnergyRegen
 DurationPolicy: Infinite
 Period:

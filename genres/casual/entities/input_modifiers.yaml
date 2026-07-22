@@ -3,7 +3,7 @@
 # are simple, so the set is small and tap-centric.
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: TapDebounce
 Type: Custom
 Params:
@@ -14,7 +14,7 @@ Metadata:
   Description: Swallows a second tap fired within a few frames of the first, so rapid tapping does not double-count a single press
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: TouchPressThreshold
 Type: TriggerThreshold
 Params:

@@ -1,12 +1,12 @@
-# Area strike: a caster ability that spends Energy to hit a target area with Magic damage and a slow.
-# Costs Energy (GE_AreaStrikeCost: a flat Energy subtraction) and goes on a cooldown
-# (GE_AreaStrikeCooldown). On activation it picks a ground location (WaitTargetData), then applies
-# both GE_AreaStrikeDamage (instant Magic damage, via ExecCalc_ArmorMitigation) and GE_Slow to every
-# hostile caught in the blast - so the strike both damages and debuffs. Energy refills over time via
-# the periodic GE_EnergyRegen. GE_AreaStrikeCost and GE_AreaStrikeCooldown are trivial and referenced
-# by name rather than shipped as files.
+# Area strike: a caster ability that spends Energy to hit an area with Magic damage and a slow. Costs
+# Energy (GE_AreaStrikeCost: a flat Energy subtraction) and goes on a cooldown (GE_AreaStrikeCooldown).
+# It applies GE_AreaStrikeDamage (instant Magic damage, via ExecCalc_ArmorMitigation) and GE_Slow to
+# every hostile caught in the blast via ApplyEffectToActorsInRadius — sparing Faction.Friendly. The
+# reference blast is centered on the caster; picking a ground location is an engine targeting seam
+# (§17.2). Energy refills over time via the periodic GE_EnergyRegen. GE_AreaStrikeCost and
+# GE_AreaStrikeCooldown are trivial and referenced by name rather than shipped as files.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_AreaStrike
 Tags:
   AbilityTags:
@@ -19,16 +19,16 @@ Tags:
 Cost: GE_AreaStrikeCost
 Cooldown: GE_AreaStrikeCooldown
 Tasks:
-  - Type: WaitTargetData
-    Params:
-      TargetingMethod: GroundLocation
-      Radius: 4.0
-  - Type: ApplyEffectToTarget
+  - Type: ApplyEffectToActorsInRadius
     Params:
       EffectClass: GE_AreaStrikeDamage
-  - Type: ApplyEffectToTarget
+      Radius: 4.0
+      IgnoreTargetsWithTag: Faction.Friendly
+  - Type: ApplyEffectToActorsInRadius
     Params:
       EffectClass: GE_Slow
+      Radius: 4.0
+      IgnoreTargetsWithTag: Faction.Friendly
 Metadata:
   DisplayName: Area Strike
   Description: Spend energy to blast a target area with magic damage and a slowing field

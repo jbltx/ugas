@@ -6,7 +6,7 @@
 # PUSH is GE_Exposure_Cold's job; this effect is the consequence of being OUT of the window, exactly
 # the "temp out of window -> grant state + drain" cascade documented in the signature section.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Hypothermia
 DurationPolicy: Infinite
 Period:

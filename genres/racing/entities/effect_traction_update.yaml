@@ -2,7 +2,7 @@
 # An ExecutionCalculation reads grip, downforce, speed, and tire temperature and writes
 # AvailableTraction. Instant; the simulation re-applies it each physics step.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Traction_Update
 DurationPolicy: Instant
 Executions:

@@ -4,7 +4,7 @@
 # in the order they are listed on each binding.
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: StickDeadzone
 Type: DeadZone
 Params:
@@ -17,7 +17,7 @@ Metadata:
   Description: Radial dead zone for analog sticks - ignores drift below 15% and saturates above 95%
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: MouseSensitivity
 Type: Sensitivity
 Params:
@@ -30,7 +30,7 @@ Metadata:
   Description: Per-axis mouse sensitivity multiplier exposed in the player settings screen
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: TriggerThreshold
 Type: TriggerThreshold
 Params:
@@ -41,7 +41,7 @@ Metadata:
   Description: Analog trigger press threshold - values below 0.5 are treated as released
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: AimAssistCurve
 Type: ResponseCurve
 Params:
@@ -53,7 +53,7 @@ Metadata:
   Description: Exponential response curve for gamepad aiming - slower near center, faster at extremes
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: RadialScaling
 Type: RadialScaling
 Params:

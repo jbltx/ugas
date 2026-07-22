@@ -40,7 +40,7 @@ GC.GetAttributeSet<T extends AttributeSet>(): T | null;
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/attribute_set.json
 Name: "CombatAttributeSet"
 Attributes:
   - Name: "Health"
@@ -82,7 +82,7 @@ Attributes:
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/attribute_set.json
 Name: "MovementAttributeSet"
 Attributes:
   - Name: "MoveSpeed"
@@ -111,7 +111,7 @@ Attributes:
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/attribute_set.json
 Name: "VehicleAttributeSet"
 Attributes:
   - Name: "EngineTorque"
@@ -144,7 +144,7 @@ Attributes MAY reference Attributes from other registered sets:
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/attribute_set.json
 Name: "DerivedStatsSet"
 Dependencies:
   - "CombatAttributeSet"

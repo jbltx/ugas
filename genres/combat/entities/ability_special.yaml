@@ -3,11 +3,12 @@
 # empty gauge - the cost gate is what enforces "need meter", no explicit check tag required. During
 # its cinematic super-freeze startup it owns Combat.Move.Startup and uses BlockAbilitiesWithTags to
 # lock out the user's OWN normals (Light/Heavy/Block) for the freeze - committing the player to the
-# super animation (an owner-scoped self-lock, not anything applied to the opponent) - then sweeps a high-damage hit
-# that applies GE_MeleeDamage. Blocked while in hitstun, blockstun, or staggered. Goes on a long
+# super animation (an owner-scoped self-lock, not anything applied to the opponent) - then ApplyEffectToTarget
+# applies GE_MeleeDamage to the nearest Team.Hostile within MaxRange (the modeled melee-hit path; hitzone
+# is an engine targeting seam, §17.2). Blocked while in hitstun, blockstun, or staggered. Goes on a long
 # cooldown (GE_SpecialCooldown) so it cannot be chained even with meter to spare.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_Special
 Tags:
   AbilityTags:
@@ -30,14 +31,11 @@ Tasks:
   - Type: WaitDelay
     Params:
       Duration: 0.5
-  - Type: WaitTargetData
-    Params:
-      TargetingMethod: MeleeSweep
-      MaxRange: 2.5
-      Hitzone: Hitzone.Mid
   - Type: ApplyEffectToTarget
     Params:
       EffectClass: GE_MeleeDamage
+      MaxRange: 2.5
+      RequireTag: Team.Hostile
   - Type: WaitDelay
     Params:
       Duration: 0.4

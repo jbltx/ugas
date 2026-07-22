@@ -2,7 +2,7 @@
 # fire/reload/aim abilities. The rifle's stat block is the ShooterCombatSet base values, so this
 # effect carries no modifiers - swapping weapons means swapping which equip effect is active.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_EquipRifle
 DurationPolicy: Infinite
 GrantedTags:

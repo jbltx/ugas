@@ -4,7 +4,7 @@
 # energy gate - GA_Play spends Energy, this slowly gives it back, so active play is rationed over
 # a session in the classic casual energy/lives loop.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_EnergyRegen
 DurationPolicy: Infinite
 Period:

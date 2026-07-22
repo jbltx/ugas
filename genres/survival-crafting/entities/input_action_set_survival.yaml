@@ -3,7 +3,7 @@
 # menu or cutscene. Input buffering is enabled with a short window so a queued Gather or Eat fires as
 # soon as the previous activity wait ends, without swallowing repeats.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action_set.json
 Name: SurvivalOnFoot
 Actions:
   - Move

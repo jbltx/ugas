@@ -4,7 +4,7 @@
 # Block is held (its ability waits on the matching release); Move is a continuous 2D vector.
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: LightAttack
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -19,7 +19,7 @@ Metadata:
   Category: Combat
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: HeavyAttack
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -34,7 +34,7 @@ Metadata:
   Category: Combat
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Block
 ValueType: Digital
 TriggerBehavior: WhileHeld
@@ -49,7 +49,7 @@ Metadata:
   Category: Combat
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Special
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -64,7 +64,7 @@ Metadata:
   Category: Combat
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Move
 ValueType: Axis2D
 TriggerBehavior: WhileHeld

@@ -1,7 +1,7 @@
 # Nitro boost: a short burst of extra power applied by GA_NitroBoost.
 # HasDuration so it self-expires; grants Vehicle.State.Boosting for cues and ability gating.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_NitroBoost
 DurationPolicy: HasDuration
 Duration:

@@ -2,7 +2,7 @@
 # a match-3 puzzle. Tapping selects a tile, and tapping an adjacent tile confirms the swap; a
 # double-tap detonates a special tile; a dedicated on-screen Hint button requests a move.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_mapping.json
 ActionSet: BoardControls
 Platform: Mobile
 Bindings:

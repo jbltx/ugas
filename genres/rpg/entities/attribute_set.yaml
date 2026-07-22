@@ -1,7 +1,7 @@
 # RPG core attribute set: primary stats, derived combat stats, vitals, and progression.
 # Extends the core spec's attribute model (no core attribute is redefined here).
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/attribute_set.json
 Name: RPGCoreAttributes
 Attributes:
   # --- Primary attributes (player-allocated, drive everything else) ---

@@ -6,7 +6,7 @@
 # seam where the genre's signature math plugs into UGAS. Implement ExecCalc_OfflineProgress in your
 # engine (e.g. Currency += CurrencyPerSecond * min(OfflineSeconds, OfflineCap) * OfflineEfficiency).
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_OfflineProgress
 DurationPolicy: Instant
 Executions:

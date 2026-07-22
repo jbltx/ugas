@@ -1,7 +1,7 @@
 # Racing action set: groups all on-track driving inputs.
 # Active only while the vehicle is racing and not spun out.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action_set.json
 Name: RacingOnTrack
 Actions:
   - Steer

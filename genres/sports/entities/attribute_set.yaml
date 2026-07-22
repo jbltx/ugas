@@ -3,7 +3,7 @@
 # Extends the core spec's attribute model (no core attribute is redefined here).
 # Base values describe a competent all-round outfield athlete so the set is playable as shipped.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/attribute_set.json
 Name: AthletePerformanceSet
 Attributes:
   # --- Stamina resource (drains with sprint/actions; backs the fatigue coupling) ---

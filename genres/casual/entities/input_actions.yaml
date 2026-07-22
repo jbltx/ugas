@@ -5,7 +5,7 @@
 # the rest are OnPressed buttons.
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Tap
 ValueType: Digital
 TriggerBehavior: OnTap
@@ -21,7 +21,7 @@ Metadata:
   Category: Core
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: BuyGenerator
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -36,7 +36,7 @@ Metadata:
   Category: Economy
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Prestige
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -51,7 +51,7 @@ Metadata:
   Category: Meta
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Play
 ValueType: Digital
 TriggerBehavior: OnPressed

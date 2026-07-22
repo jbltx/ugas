@@ -5,7 +5,7 @@
 # fires (core spec section 5.6), keeping with the rule that states are granted by Effects, never
 # written directly. The stagger window is long enough to land a full combo.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Stagger
 DurationPolicy: HasDuration
 Duration:

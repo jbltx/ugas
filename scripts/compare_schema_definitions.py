@@ -27,6 +27,7 @@ SCHEMA_PAIRS: Dict[str, Tuple[str, str]] = {
     ),
     "input_mapping": ("schemas/input_mapping.json", "schemas/input_mapping.yaml"),
     "input_modifier": ("schemas/input_modifier.json", "schemas/input_modifier.yaml"),
+    "scene": ("schemas/scene.json", "schemas/scene.yaml"),
 }
 
 ROOT_METADATA_KEYS = {"$schema", "$id", "title", "description"}

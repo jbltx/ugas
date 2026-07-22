@@ -4,7 +4,7 @@
 # Digital actions produce trigger events; Axis2D actions produce a continuous 2D vector.
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Fire
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -20,7 +20,7 @@ Metadata:
   Category: Combat
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Aim
 ValueType: Digital
 TriggerBehavior: WhileHeld
@@ -35,7 +35,7 @@ Metadata:
   Category: Combat
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Reload
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -50,7 +50,7 @@ Metadata:
   Category: Combat
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Move
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -65,7 +65,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Look
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -80,7 +80,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Jump
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -95,7 +95,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Sprint
 ValueType: Digital
 TriggerBehavior: WhileHeld
@@ -110,7 +110,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Interact
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -124,7 +124,7 @@ Metadata:
   Category: General
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: CycleWeapon
 ValueType: Digital
 TriggerBehavior: OnPressed

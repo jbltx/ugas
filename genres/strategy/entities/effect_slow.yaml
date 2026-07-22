@@ -4,7 +4,7 @@
 # against any movement Upgrades a unit carries, instead of fighting them additively. Grants
 # Unit.State.Slowed for cues and stacking rules. Targets must be hostile.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Slow
 DurationPolicy: HasDuration
 Duration:

@@ -36,6 +36,16 @@ simulate, and balance gameplay entities conforming to the UGAS specification.
    (pair with the `xlsx` skill when available) or export projection results to
    spreadsheets for balancing workflows.
 
+## Working autonomously (and as a building block)
+
+Infer reasonable defaults from the request and the schemas and proceed — don't stall on details
+you can reasonably choose (note what you assumed). Pause for one thing: **confirm before the
+first outward write** — creating or overwriting files in the user's project is a real side
+effect, so confirm the target once before writing. When a higher-level skill (e.g.
+`gameplay-creator-assistant` or `ugas-harness`) is composing you, it owns confirmation and the
+assumptions log — surface your assumptions to it and proceed, rather than prompting the user
+yourself.
+
 ## Core concepts to remember
 
 The UGAS modifier pipeline computes CurrentValue as:
@@ -62,6 +72,17 @@ There are three duration policies:
 Read `references/schemas.md` for the full schema definitions. Always refer to it when
 generating entity files — never guess at field names or allowed values.
 
+> The schema definitions are **bundled** in `references/schemas.md`, so authoring and validation
+> work fully offline — the `$schema` URL you stamp is a canonical *identifier*, not a runtime fetch.
+> If you need spec prose beyond the schemas (mechanic semantics, section references), read `spec/`
+> from a local `jbltx/ugas` checkout matched to the version you are authoring against.
+
+> **Version in the `$schema` URL — repo vs consumer.** Inside the UGAS repo the literal
+> `%%UGAS_VERSION%%` placeholder is correct (the publish pipeline substitutes it). In **any other
+> project** the placeholder never gets substituted, so emit a **concrete** version instead —
+> resolve `latest` from `https://ugas.jbltx.com/versions.json`, or use the version the user pins.
+> Either way the canonical host is `https://ugas.jbltx.com` (not `raw.githubusercontent.com`).
+
 ## Authoring workflow
 
 When the user asks you to create a gameplay entity:
@@ -77,7 +98,9 @@ When the user asks you to create a gameplay entity:
 3. **Read the schemas** — Read `references/schemas.md` to get the exact field names,
    types, and allowed values. Every generated file must include a `$schema` field
    pointing to the canonical schema URL:
-   `https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/<type>.json`
+   `https://ugas.jbltx.com/<version>/schemas/<type>.json`
+   (use the concrete resolved version outside the repo — see the note above; only inside the
+   UGAS repo is the `%%UGAS_VERSION%%` placeholder correct).
 
 4. **Generate YAML** — Produce clean, commented YAML files. Use the examples in
    `references/schemas.md` as style guides. Place output files in `schemas/examples/`

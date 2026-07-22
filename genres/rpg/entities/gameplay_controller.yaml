@@ -2,7 +2,7 @@
 # WeaponDamage shows the damage-bucket result of the two active effects below:
 #   base 10  x MainStat(1 + 0.01*50 = 1.50)  x DamageBonuses(1 + 0.20 = 1.20)  = 18.0
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: Hero_Barbarian_01
   ActorType: PlayerCharacter
@@ -45,6 +45,7 @@ OwnedTags:
   - State.Alive
   - State.Combat
   - Class.Barbarian
+  - Team.Friendly
   - Item.Equipped.Weapon
   - Item.Type.Sword
 ReplicationMode: Mixed

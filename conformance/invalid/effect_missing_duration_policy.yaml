@@ -1,0 +1,3 @@
+# label: invalid — effect missing required DurationPolicy
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_Damage

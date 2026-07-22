@@ -8,7 +8,7 @@
 # layers (e.g. a parry or a guard upgrade in a separate channel) multiply across it cleanly, exactly
 # like the shooter's Aim and Attachments channels compose on Spread.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Blocking
 DurationPolicy: Infinite
 Modifiers:

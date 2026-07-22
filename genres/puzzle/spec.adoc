@@ -1,7 +1,7 @@
 = UGAS Genre Pack: Puzzle
 Mickael Bonfill <jbltx>
-:revnumber: 1.0.0-draft.1
-:ugas-version: v1.0.0-draft.1
+:revnumber: 1.0.0-draft.5
+:ugas-version: v1.0.0-draft.5
 :doctype: book
 :toc: left
 :toc-title: Table of Contents

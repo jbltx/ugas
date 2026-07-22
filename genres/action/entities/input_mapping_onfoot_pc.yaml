@@ -3,7 +3,7 @@
 # Jump maps to Space; GroundPound maps to S but is gated behind State.InAir so
 # it only activates when airborne (prevents conflict with the downward Move axis).
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_mapping.json
 ActionSet: OnFoot
 Platform: PC
 Bindings:

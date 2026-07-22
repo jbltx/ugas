@@ -3,7 +3,7 @@
 # activation logic, since tag lists are ANDed and cannot express it declaratively.
 # Task order is the happy path: GE_JumpCut is only applied if VerticalVelocity > 0 at release.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_Jump
 Tags:
   AbilityTags:

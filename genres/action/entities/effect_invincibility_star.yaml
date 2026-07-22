@@ -2,7 +2,7 @@
 # HasDuration so it self-expires; grants Immunity.Contact (consumed by hazard/attack effects).
 # Channel SpeedBonuses: factor = 1 + 0.3 = 1.3x HorizontalSpeed while active.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_InvincibilityStar
 DurationPolicy: HasDuration
 Duration:

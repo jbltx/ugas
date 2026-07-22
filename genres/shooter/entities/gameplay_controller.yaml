@@ -5,7 +5,7 @@
 #   MoveSpeed:      base 600 x Aim(1 - 0.3 = 0.70)                                = 420.0
 #   EffectiveRange: base 50 + 30 (barrel)                                         = 80.0
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: Soldier_FPS_01
   ActorType: PlayerCharacter

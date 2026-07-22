@@ -5,7 +5,7 @@
 # refills Energy over time, rationing active play across a session. Blocked while Session.State.OutOfEnergy
 # so the UI can present a refill prompt instead of a silent failure.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_Play
 Tags:
   AbilityTags:

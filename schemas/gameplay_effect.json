@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/jbltx/ugas/schemas/gameplay_effect.json",
+  "$id": "https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json",
   "title": "GameplayEffect Definition Schema",
   "description": "Based on UGAS Specification %%UGAS_VERSION%% - Appendix B",
   "type": "object",
@@ -106,6 +106,49 @@
         "type": "string"
       },
       "description": "Visual/audio cues to trigger"
+    },
+    "Area": {
+      "type": "object",
+      "description": "Optional area application (§17.3). When present, the effect applies to every anchor matching the filter within the shape (via the §17.2 spatial queries) instead of a single target; the execution policy (§9.6) governs per-target combination.",
+      "required": ["Shape"],
+      "properties": {
+        "Shape": {
+          "type": "string",
+          "enum": ["Sphere", "Cone"],
+          "description": "Query shape centered at the application origin (EffectContext.WorldOrigin, §9.9)."
+        },
+        "Radius": {
+          "$ref": "#/$defs/MagnitudeDefinition",
+          "description": "Sphere radius / cone range. May be AttributeBased to scale with an attribute (§9.4.2)."
+        },
+        "HalfAngleDeg": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 180,
+          "description": "Cone half-angle in degrees (Cone shape only)."
+        },
+        "RequireTags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Candidate must own all these tags (§7, hierarchical). Empty = no requirement."
+        },
+        "ExcludeTags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Candidate must own none of these tags."
+        },
+        "Affiliation": {
+          "type": "string",
+          "enum": ["Any", "Allied", "Hostile", "Neutral", "SelfOnly", "ExcludeSelf"],
+          "default": "ExcludeSelf",
+          "description": "Affiliation of candidates relative to the applying GC (§17.2)."
+        },
+        "MaxTargets": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Cap on affected targets (0 = unbounded), applied after ordering."
+        }
+      }
     }
   },
   "$defs": {

@@ -1,7 +1,7 @@
 # Ground pound: slam down from the air, damaging every enemy in a small radius on impact.
 # Only usable while airborne; reuses GE_ContactDamage and skips Immunity.Contact targets.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_GroundPound
 Tags:
   AbilityTags:

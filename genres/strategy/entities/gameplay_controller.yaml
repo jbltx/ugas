@@ -10,7 +10,7 @@
 # The damage matrix worked example in spec.adoc fires THIS tank's Siege attack (AttackDamage 39) at a
 # Light infantry target (Siege vs Light = 1.25, target Armor 2): 39 x 1.25 - 2 = 46.75 final damage.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: Unit_SiegeTank_01
   ActorType: PlayerUnit

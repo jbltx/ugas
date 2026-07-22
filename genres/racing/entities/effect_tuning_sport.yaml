@@ -1,7 +1,7 @@
 # Sport tuning package: a permanent performance upgrade fitted to the vehicle.
 # Raises drivetrain output (flat) and grip in the "Upgrades" channel of the traction pipeline.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Tuning_Sport
 DurationPolicy: Infinite
 ApplicationRequiredTags:

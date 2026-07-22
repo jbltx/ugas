@@ -6,7 +6,7 @@
 #   - DamageType.* : carried by the attacker (its weapon), read by ExecCalc_ArmorMitigation.
 #   - Armor.Class.*: carried by the target, read by the same calc to pick the RPS multiplier.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_tag.json
 Tags:
   # --- Unit type / role (set on the unit by its production effect; used for bulk queries) ---
   - Tag: Unit.Type.Infantry

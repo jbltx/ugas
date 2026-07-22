@@ -3,7 +3,7 @@
 # the others are designer-owned tuning knobs for camera feel.
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: EdgePanScaling
 Type: Sensitivity
 Params:
@@ -16,7 +16,7 @@ Metadata:
   Description: Player-tunable multiplier on map-scroll speed, shared by edge-pan and keyboard panning
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: CameraDeadzone
 Type: DeadZone
 Params:
@@ -29,7 +29,7 @@ Metadata:
   Description: Radial dead zone for analog camera-pan input - ignores stick drift below 10%
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: CameraSmoothing
 Type: ResponseCurve
 Params:

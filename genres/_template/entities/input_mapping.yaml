@@ -1,7 +1,7 @@
 # Template entity: Input Mapping
 # Replace with genre-specific bindings.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_mapping.json
 ActionSet: ExampleSet
 Bindings:
   - Action: ExampleAction

@@ -6,7 +6,7 @@
 # are trivial (a flat resource cost and a cooldown tag) and are referenced by name rather than
 # shipped as files, the convention the racing/shooter packs use.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_TrainUnit
 Tags:
   AbilityTags:

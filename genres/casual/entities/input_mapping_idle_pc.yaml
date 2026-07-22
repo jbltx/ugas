@@ -2,7 +2,7 @@
 # desktop and web. The left mouse button is the tap; keyboard shortcuts cover the economy/meta
 # actions for quick play. Tap shares the same TapDebounce as the touch mapping for consistent feel.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_mapping.json
 ActionSet: Idle
 Platform: PC
 Bindings:

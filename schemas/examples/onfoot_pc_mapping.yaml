@@ -1,7 +1,7 @@
 # Example: OnFoot PC Mapping (Shooter)
 # Demonstrates keyboard+mouse bindings with WASD composition and modifier references
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_mapping.json
 ActionSet: OnFoot
 Platform: PC
 Bindings:

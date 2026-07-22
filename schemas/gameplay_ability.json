@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/jbltx/ugas/schemas/gameplay_ability.json",
+  "$id": "https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json",
   "title": "Ability Definition Schema",
   "description": "Based on UGAS Specification %%UGAS_VERSION%% - Appendix B",
   "type": "object",
@@ -71,6 +71,33 @@
     "Cooldown": {
       "type": "string",
       "description": "Reference to cooldown GameplayEffect"
+    },
+    "MaxRange": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Maximum targeting range in engine units (§17.3). Absent or 0 means self-targeted / no range gate; a target-requiring activation MUST be within range (§17.2 Distance), validated server-side per §13.7."
+    },
+    "AsyncValidation": {
+      "type": "object",
+      "description": "Optional asynchronous server-side validation for activation (§8.8). When present and Required is true, an activation that passes the synchronous checks enters PendingConfirmation before Commit instead of committing synchronously.",
+      "properties": {
+        "Required": {
+          "type": "boolean",
+          "description": "If true, route activation through the PendingConfirmation state and await server validation before Commit. Absent or false keeps the synchronous Validating -> Commit behaviour."
+        },
+        "Kind": {
+          "type": "string",
+          "description": "Category of asynchronous validation, e.g. AntiCheat | RemoteInventory | Entitlement | Custom."
+        },
+        "TimeoutMs": {
+          "type": "number",
+          "description": "Maximum time to wait for the validation result before treating it as an asynchronous failure (transition Fail -> Granted, nothing consumed)."
+        },
+        "Predicted": {
+          "type": "boolean",
+          "description": "If true, the owning client MAY speculatively commit and enter Active while the server holds PendingConfirmation, reconciling via the prediction model (§13.8)."
+        }
+      }
     },
     "Tasks": {
       "type": "array",

@@ -3,7 +3,7 @@
 # modifiers sit in the per-binding modifier pipeline and run in the order listed on each binding.
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: StickDeadzone
 Type: DeadZone
 Params:
@@ -16,7 +16,7 @@ Metadata:
   Description: Radial dead zone for the walk/crouch stick - ignores drift below 20% and saturates above 90%
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: RadialScaling
 Type: RadialScaling
 Params:
@@ -27,7 +27,7 @@ Metadata:
   Description: Normalizes stick input to a maximum radius of 1.0 for consistent diagonal walk/crouch
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: TriggerThreshold
 Type: TriggerThreshold
 Params:
