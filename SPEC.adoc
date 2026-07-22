@@ -1,8 +1,8 @@
 = Universal Gameplay Ability System Specification
 Mickael Bonfill <jbltx>
-:revnumber: 1.0.0-draft.4
-:revdate: June 2026
-:ugas-version: v1.0.0-draft.4
+:revnumber: 1.0.0-draft.5
+:revdate: July 2026
+:ugas-version: v1.0.0-draft.5
 :doctype: book
 :toc: left
 :toc-title: Table of Contents
