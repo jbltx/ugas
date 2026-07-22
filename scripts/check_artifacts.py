@@ -120,6 +120,36 @@ def check_fences(version_dir: Path, errors: list[str]) -> None:
             fail(f"unbalanced code fence in section {md.name}", errors)
 
 
+def check_rag(version_dir: Path, errors: list[str]) -> None:
+    chunks_path = version_dir / "rag" / "chunks.jsonl"
+    if not chunks_path.is_file():
+        return
+    meta = version_dir / "schemas" / "manifest" / "rag-chunk.schema.json"
+    validator = Draft7Validator(json.loads(meta.read_text(encoding="utf-8"))) if meta.is_file() else None
+
+    ids: set[str] = set()
+    for lineno, line in enumerate(chunks_path.read_text(encoding="utf-8").splitlines(), 1):
+        if not line.strip():
+            continue
+        chunk = json.loads(line)
+        ids.add(chunk["id"])
+        if validator is not None:
+            for e in validator.iter_errors(chunk):
+                fail(f"rag/chunks.jsonl:{lineno} {list(e.path)} {e.message}", errors)
+        if chunk["text"].count("```") % 2:
+            fail(f"rag/chunks.jsonl:{lineno} chunk {chunk['id']} splits a code fence", errors)
+        if hashlib.sha256(chunk["text"].encode("utf-8")).hexdigest() != chunk["sha256"]:
+            fail(f"rag/chunks.jsonl:{lineno} chunk {chunk['id']} sha256 mismatch", errors)
+
+    index_path = version_dir / "rag" / "llms-index.json"
+    if index_path.is_file():
+        index = json.loads(index_path.read_text(encoding="utf-8"))
+        for intent, chunk_ids in index.items():
+            for cid in chunk_ids:
+                if cid not in ids:
+                    fail(f"rag/llms-index.json intent {intent!r} references unknown chunk {cid}", errors)
+
+
 def check_llms(version_dir: Path, llms_path: Path, manifest: dict, errors: list[str]) -> None:
     text = llms_path.read_text(encoding="utf-8")
     packs = sorted(
@@ -158,6 +188,7 @@ def main(argv: list[str]) -> int:
     check_genre_index(version_dir, errors)
     check_bundle(version_dir, errors)
     check_fences(version_dir, errors)
+    check_rag(version_dir, errors)
     check_placeholders(version_dir, llms_path, errors)
 
     if errors:
