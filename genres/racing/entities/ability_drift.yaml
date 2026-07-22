@@ -1,7 +1,7 @@
 # Drift ability: hold to slide. Grants Vehicle.State.Drifting and refills boost via GE_DriftCharge,
 # trading cornering grip for nitro charge. Ends when the input is released.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_Drift
 Tags:
   AbilityTags:

@@ -8,7 +8,7 @@
 # NOTE: the reset itself (zeroing Currency / generators / Stage and re-granting GE_PassiveIncome) is
 # engine logic GA_Prestige triggers; this effect only applies the resulting permanent multiplier.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_PrestigeBoost
 DurationPolicy: Infinite
 Modifiers:

@@ -19,7 +19,7 @@
 # evaluation, the penalty deepens as the athlete tires further. It also grants Athlete.State.Fatigued,
 # the tag that gates GA_Sprint / GA_SkillMove.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Fatigue
 DurationPolicy: Infinite
 Modifiers:

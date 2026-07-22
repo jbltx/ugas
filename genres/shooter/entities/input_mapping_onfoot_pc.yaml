@@ -2,7 +2,7 @@
 # Move uses a WASD composite; Look uses raw mouse axes with a MouseSensitivity modifier
 # so the player can tune X/Y sensitivity independently in the settings screen.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_mapping.json
 ActionSet: OnFoot
 Platform: PC
 Bindings:

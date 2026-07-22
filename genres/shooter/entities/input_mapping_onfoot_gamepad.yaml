@@ -3,7 +3,7 @@
 # Both sticks pass through a radial dead zone; the right stick additionally gets an
 # AimAssistCurve (exponential response) for smoother aim control on a gamepad.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_mapping.json
 ActionSet: OnFoot
 Platform: Console
 Bindings:

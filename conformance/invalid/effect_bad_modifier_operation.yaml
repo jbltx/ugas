@@ -1,0 +1,10 @@
+# label: invalid — nested Modifier.Operation not in enum (tests bundle nested $ref)
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_Damage
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Health
+    Operation: Divide
+    Magnitude:
+      Type: ScalableFloat
+      Value: -25.0

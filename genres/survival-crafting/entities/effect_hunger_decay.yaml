@@ -4,7 +4,7 @@
 # the whole session. When Hunger hits its [0, MaxHunger] clamp floor, the engine's threshold
 # detector grants Survival.State.Starving and applies GE_Starvation (see the spec's signature section).
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_HungerDecay
 DurationPolicy: Infinite
 Period:

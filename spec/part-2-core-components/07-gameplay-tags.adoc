@@ -230,7 +230,7 @@ Tag definitions MAY be collected in a tag registry:
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_tag.json
 Tags:
   - Tag: "State.Debuff.Stunned"
     Description: "Actor is unable to perform actions"

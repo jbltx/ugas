@@ -4,7 +4,7 @@
 # Base values describe a default match-3 level (target 1000, 25 moves) so the set is
 # playable as shipped: ~7 average matches at the right combo/chain comfortably clear it.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/attribute_set.json
 Name: PuzzleBoardSet
 Attributes:
   # --- Score (the win resource; large headroom, never negative) ---

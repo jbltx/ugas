@@ -1,7 +1,7 @@
 = UGAS Genre Pack: Strategy
 Mickael Bonfill <jbltx>
-:revnumber: 1.0.0-draft.1
-:ugas-version: v1.0.0-draft.1
+:revnumber: 1.0.0-draft.4
+:ugas-version: v1.0.0-draft.4
 :doctype: book
 :toc: left
 :toc-title: Table of Contents

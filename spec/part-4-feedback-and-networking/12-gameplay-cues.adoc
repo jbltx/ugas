@@ -15,7 +15,7 @@ Cues are triggered by Tags following the `GameplayCue.*` convention:
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_FireDamage"
 DurationPolicy: Instant
 Modifiers:

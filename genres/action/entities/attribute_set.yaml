@@ -1,7 +1,7 @@
 # Platformer movement attribute set: jump feel, air control, plus vitals and size for power-ups.
 # Extends the core spec's attribute model (no core attribute is redefined here).
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/attribute_set.json
 Name: PlatformerMovementSet
 Attributes:
   # --- Jump & movement feel (tuned for "game feel"; read by the movement abilities) ---

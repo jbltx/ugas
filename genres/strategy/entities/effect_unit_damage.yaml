@@ -8,7 +8,7 @@
 # of the shooter's hit-resolution calc and the racing pack's traction calc - the seam where the
 # genre's signature math plugs into UGAS.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_UnitDamage
 DurationPolicy: Instant
 Executions:

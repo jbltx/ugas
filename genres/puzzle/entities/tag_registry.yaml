@@ -2,7 +2,7 @@
 # It does not redefine core State.* / Ability.* tags - those are referenced, not declared here.
 # Board states (Matching, Cascading, Stuck) are GRANTED BY EFFECTS, never written directly.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_tag.json
 Tags:
   # --- Board resolution states (granted by scoring effects; gate the swap/cascade loop) ---
   - Tag: Puzzle.State.Matching

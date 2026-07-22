@@ -1,6 +1,6 @@
 # RPG on-foot action set. Active while the character is alive.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action_set.json
 Name: OnFoot
 Actions:
   - BasicAttack

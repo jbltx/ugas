@@ -2,7 +2,7 @@
 # From the §15.1 case study. The Scale modifier sits in the SizeBonuses channel, where the
 # additive-within-channel convention reads Value 1.0 as +100%: factor = 1 + 1.0 = 2.0x size.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_SuperMushroom
 DurationPolicy: Infinite
 GrantedTags:

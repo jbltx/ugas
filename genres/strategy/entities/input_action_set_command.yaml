@@ -3,7 +3,7 @@
 # player is alive and not in a cutscene. Input buffering is enabled with a short window so that
 # rapid build/train hotkey sequences register without swallowing repeats.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action_set.json
 Name: Command
 Actions:
   - Select

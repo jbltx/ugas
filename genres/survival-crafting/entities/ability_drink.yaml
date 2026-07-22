@@ -2,7 +2,7 @@
 # water item (Item.Type.Water). A short drink wait, then the instant GE_DrinkWater tops up Thirst,
 # clearing Survival.State.Dehydrated once Thirst leaves 0. Blocked while crafting.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_Drink
 Tags:
   AbilityTags:

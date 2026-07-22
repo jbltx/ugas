@@ -30,51 +30,61 @@ data model from scratch, and it keeps every game consistent with the spec.
 
 ## Where UGAS lives — the canonical source
 
-Treat these two values as constants. To target a different release, change only the version.
-
 ```
-UGAS_DOCS    = https://ugas.jbltx.com
-UGAS_VERSION = v1.0.0-draft.1
+UGAS_DOCS = https://ugas.jbltx.com
 ```
 
-Fetch resources over the network (use your web-fetch capability — `WebFetch` is reliable;
-`curl` works where egress is allowed). Prefer the machine-readable, markdown-first forms;
-fall back down this list when a form isn't published for the pinned version yet:
+**Resolve the version at runtime — don't hard-code it.** Read `{UGAS_DOCS}/versions.json`
+and use its `latest` alias (e.g. `v1.0.0-draft.4`) as `UGAS_VERSION`, unless the user pins a
+specific version. This is why the skill doesn't ship a frozen version number: a hard-coded pin
+silently goes stale as UGAS releases. If you cannot read `versions.json` (no network, no
+bundle), fall back to whatever version your resource source exposes and say which you used.
 
-| Want | URL | Notes |
-|------|-----|-------|
-| Everything, one fetch | `{UGAS_DOCS}/llms-full.txt` | Spec + all schemas + examples + genre packs inlined. Ideal single read for an agent. |
-| Index of all resources | `{UGAS_DOCS}/llms.txt` | Links spec, schemas, examples, genre packs. |
-| Spec (markdown) | `{UGAS_DOCS}/{UGAS_VERSION}/SPEC.md` | Best prose form for reasoning about mechanics. |
-| Spec (HTML) | `{UGAS_DOCS}/{UGAS_VERSION}/` | Always-available fallback for the spec. |
-| A schema (annotated) | `{UGAS_DOCS}/{UGAS_VERSION}/schemas/<type>.yaml` | Human/agent-readable, commented. |
-| A schema (JSON Schema) | `{UGAS_DOCS}/{UGAS_VERSION}/schemas/<type>.json` | The machine schema used for validation. |
-| Genre catalog | `{UGAS_DOCS}/{UGAS_VERSION}/genres/` index | The list of packs and one-line scopes. |
-| A genre pack | `{UGAS_DOCS}/{UGAS_VERSION}/genres/<pack>/` | `spec` (mechanics) + `entities/*.yaml` (templates). |
+Everything a consumer needs is enumerated in the **manifest** — fetch it first:
+`{UGAS_DOCS}/{UGAS_VERSION}/index.json` lists every resource (`id`, `kind`, `path`, `url`,
+`sha256`). From there:
 
-Schema `<type>` is one of: `gameplay_controller`, `attribute`, `attribute_set`,
-`gameplay_ability`, `gameplay_effect`, `gameplay_tag`.
+| Want | Path (under `{UGAS_DOCS}/{UGAS_VERSION}/`) | Notes |
+|------|--------------------------------------------|-------|
+| Manifest of everything | `index.json` | Checksummed listing; the source of truth for what exists. |
+| One spec section | `sections/<NN>-<slug>.md` (see `sections/index.json`) | Load just the section you need (e.g. gameplay effects) instead of the whole spec. |
+| Full spec (markdown) | `SPEC.md` | Whole-spec prose form. |
+| Genre pack catalog | `genres/index.json` | Every pack: `scope`, `signatureMechanic`, and its `entities[]`. |
+| A genre pack's entities | `genres/<pack>/entities/*.yaml` (paths in `genres/index.json`) | The templates you copy and extend. |
+| A schema | `schemas/<type>.json` (or `.yaml`) | Per-type JSON Schema. |
+| Offline validation bundle | `schemas/bundle.json` | One self-contained schema; validate any entity against it with no further fetches. |
+| Retrieval index / chunks | `rag/llms-index.json`, `rag/chunks.jsonl` | Intent → chunk routing for targeted lookups. |
+| Everything, one fetch | `{UGAS_DOCS}/llms-full.txt` | Spec + all schemas + examples + packs inlined (root path, not versioned). |
 
-**Efficiency:** if `llms-full.txt` is available, one fetch gives you the spec, every schema,
-and every genre pack at once — prefer it over many small fetches. If it isn't published yet
-for this version, fetch the spec once, then the specific schemas and the one pack you need.
+### I/O is pluggable — pick the adapter that fits your host
 
-**Offline fallback.** The published docs are *generated from* the `jbltx/ugas` repository. If the
-network is unavailable and a checkout of that repo is at hand, read its working tree directly — `spec/`
-(the AsciiDoc source), `schemas/*.json` + `schemas/*.yaml` (the validation schemas), and `genres/<pack>/`
-(the packs) are the source of truth. Match the checkout's version (tag/branch) to `UGAS_VERSION` so what
-you author lines up with the `$schema` id you stamp.
+Authoring UGAS data does not require a shell. Read resources through whichever **fetch
+adapter** your environment supports; the rest of this skill is identical either way:
 
-**`$schema` on the files you write.** Every entity you emit into the consumer's project must
-carry the concrete, version-pinned schema id so their tooling can validate it:
+- **Network** — `WebFetch`/`curl` against `{UGAS_DOCS}/...`. Simplest when egress is allowed.
+- **Bundled resource** — for a browser/embedded/no-egress agent: vendor `index.json`,
+  `sections/`, `genres/index.json` + the pack(s) you target, and `schemas/bundle.json` into
+  your resource tree at build time, then read them through your resource-read tool. No runtime
+  network needed. This is the recommended mode for embedded consumers.
+- **Local checkout** — if a `jbltx/ugas` checkout is at hand, read its working tree
+  (`spec/`, `schemas/`, `genres/<pack>/`); match the checkout's version to `UGAS_VERSION`.
+
+Likewise choose an **output adapter** for what you produce (see *Author vs realize* below):
+write YAML files into the consumer's project, return the data to a caller, or hand it to an
+engine-realization step.
+
+**`$schema` on the files you write.** Every entity you emit must carry the concrete,
+version-pinned, canonical schema id so any tool can validate it:
 
 ```
-$schema: https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.1/schemas/<type>.json
+$schema: https://ugas.jbltx.com/<UGAS_VERSION>/schemas/<type>.json
 ```
 
-Use the concrete version, **not** the `%%UGAS_VERSION%%` placeholder. That placeholder only
-exists inside the UGAS repo, where a publish pipeline substitutes it; a consumer's files
-never pass through that pipeline, so a literal `%%UGAS_VERSION%%` would be an invalid URL.
+Substitute the concrete resolved version (e.g. `v1.0.0-draft.4`) — **never** emit the literal
+`%%UGAS_VERSION%%` placeholder (that only exists inside the UGAS repo, where the publish
+pipeline substitutes it) and **not** a `raw.githubusercontent.com` URL (the canonical host is
+`ugas.jbltx.com`; its `$id`s match this URL). The value is a stable identifier: a validator may
+resolve it offline against `schemas/bundle.json` rather than over the network.
 
 ## What you do
 
@@ -226,14 +236,14 @@ Cross-consistency rules (verify before validating):
   the project has an obvious home for gameplay data, use it; otherwise default to a clear
   directory like `ugas/<game-name>/` (or ask in guided mode) and tell the user where the files
   landed and how to point their engine/validator at them.
-- **`$schema` on every file.** Each entity carries the concrete, version-pinned id:
-  `https://raw.githubusercontent.com/jbltx/ugas/v1.0.0-draft.1/schemas/<type>.json` (see *the
-  canonical source* for why the concrete version, not the placeholder).
+- **`$schema` on every file.** Each entity carries the concrete, version-pinned canonical id
+  `https://ugas.jbltx.com/<UGAS_VERSION>/schemas/<type>.json` (see *the canonical source* for
+  why the concrete resolved version, not the placeholder or a raw.githubusercontent URL).
 - **No placeholder scalars.** Use real values; tokens like `string`/`float` fail validation.
 - **Validate and fix.** Validate every file before presenting, by either:
   - delegating to `ugas-schema-author` (preferred — it owns validation), or
-  - fetching the JSON schemas (`{UGAS_DOCS}/{UGAS_VERSION}/schemas/<type>.json`) and checking
-    each file against the schema named by its `$schema` (e.g. a small `jsonschema` script).
+  - validating each file against the schema named by its `$schema` — resolve it offline against
+    `schemas/bundle.json` (one file, no network) or fetch `schemas/<type>.json`.
   Resolve every error before presenting the game.
 
 ## Delegating to `ugas-schema-author`
@@ -261,6 +271,22 @@ If `ugas-schema-author` is unavailable, fall back to the fetched schema YAMLs an
   granted by Effects, never edits that contradict the spec or the pack's spec.
 - **Name the engine seams.** List every `ExecCalc_*` the game relies on so the implementer
   knows exactly what custom code to write; everything else is pure data.
+
+## Author engine-agnostic data vs realize it in an engine
+
+These are two separate concerns; this skill owns only the first.
+
+- **Authoring** produces engine-agnostic UGAS data (the four pillars + Controller as
+  schema-valid entities). It needs no engine and no shell — just a fetch adapter for the spec/
+  schemas/packs and an output adapter for the result. A browser, an IDE, or a CI job can all
+  author.
+- **Realization** maps that data onto a specific engine — attributes to fields, tags to a
+  string set, abilities/effects to functions, and each `ExecCalc_*` to an engine seam. That is
+  the consuming project's job, downstream of authoring, and varies per engine.
+
+Keep them decoupled: emit portable data and **name the `ExecCalc_*` seams** the game relies on,
+but do not assume or generate engine code here. A consumer can adopt authoring without
+inheriting any engine or environment assumptions.
 
 ## Running inside the UGAS repo itself
 

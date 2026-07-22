@@ -3,7 +3,7 @@
 # the H key requests a hint. This mirrors the Touch scheme one-to-one so the same abilities drive
 # both platforms unchanged.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_mapping.json
 ActionSet: BoardControls
 Platform: PC
 Bindings:

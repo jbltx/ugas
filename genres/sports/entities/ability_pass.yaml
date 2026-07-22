@@ -5,7 +5,7 @@
 # resource cost and a cooldown tag) and are referenced by name rather than shipped as files, the same
 # convention the racing and shooter packs use for their cost/cooldown effects.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_Pass
 Tags:
   AbilityTags:

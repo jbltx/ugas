@@ -3,7 +3,7 @@
 # custom Execution that tops the magazine up to MagazineSize and decrements ReserveAmmo by the
 # rounds loaded (capped by what's left in reserve).
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Reload
 DurationPolicy: Instant
 Executions:

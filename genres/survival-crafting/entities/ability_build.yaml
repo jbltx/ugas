@@ -5,7 +5,7 @@
 # structures are what let a survivor earn Survival.State.Sheltered and escape cold exposure.
 # GE_BuildCost is a trivial flat resource cost referenced by name, not shipped as a file.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_Build
 Tags:
   AbilityTags:

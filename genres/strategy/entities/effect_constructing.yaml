@@ -5,7 +5,7 @@
 # build system raises BuildProgress from 0 to 100 over the same window. Duration mirrors a typical
 # structure build time. The completion cue fires when the state ends.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Constructing
 DurationPolicy: HasDuration
 Duration:

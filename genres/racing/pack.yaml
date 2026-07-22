@@ -1,0 +1,4 @@
+# Genre pack metadata — structured source for genres/index.json.
+id: racing
+scope: 'Driving & racing — Forza, Gran Turismo, arcade-kart.'
+signatureMechanic: 'Traction pipeline that stays coherent as track surfaces, tuning parts, and physics all push on grip at once.'

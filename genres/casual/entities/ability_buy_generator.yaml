@@ -8,7 +8,7 @@
 # NOTE: idle generator prices scale geometrically with the count owned. That price curve is engine
 # logic (it sizes GE_BuyGeneratorCost per purchase); the effect application itself is data.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_BuyGenerator
 Tags:
   AbilityTags:

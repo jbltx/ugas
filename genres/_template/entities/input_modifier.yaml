@@ -1,7 +1,7 @@
 # Template entity: Input Modifier
 # Replace with genre-specific modifier configuration.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_modifier.json
 Name: ExampleDeadzone
 Type: DeadZone
 Params:

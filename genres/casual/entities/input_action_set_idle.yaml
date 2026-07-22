@@ -4,7 +4,7 @@
 # with a generous window so a flurry of taps all register - the opposite tuning from a twitch shooter,
 # matching casual's forgiving feel.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action_set.json
 Name: Idle
 Actions:
   - Tap

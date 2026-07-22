@@ -4,7 +4,7 @@
 # dehydration kills sooner. When both are active the two drains stack additively on Health (the
 # combined per-tick loss is the sum), which the optional ExecCalc_SurvivalTick can fold into one delta.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Dehydration
 DurationPolicy: Infinite
 Period:

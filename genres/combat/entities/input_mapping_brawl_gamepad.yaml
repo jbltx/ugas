@@ -4,7 +4,7 @@
 # threshold so a half-pull does not drop guard). The left stick passes through a radial dead zone
 # and radial scaling so diagonal walk/crouch inputs read consistently.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_mapping.json
 ActionSet: Brawl
 Platform: Console
 Bindings:

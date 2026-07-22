@@ -4,7 +4,7 @@
 # abilities in gameplay_controller.yaml (Sprint, Pass, Shoot, Tackle, SkillMove).
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Move
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -18,7 +18,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Look
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -32,7 +32,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Sprint
 ValueType: Digital
 TriggerBehavior: WhileHeld
@@ -47,7 +47,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Pass
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -62,7 +62,7 @@ Metadata:
   Category: OnBall
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Shoot
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -77,7 +77,7 @@ Metadata:
   Category: OnBall
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Tackle
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -92,7 +92,7 @@ Metadata:
   Category: OffBall
 
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: SkillMove
 ValueType: Digital
 TriggerBehavior: OnPressed

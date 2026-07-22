@@ -27,3 +27,29 @@ jobs:
       - name: Check schema equivalence
         run: |
           python scripts/compare_schema_definitions.py
+
+      - name: Check version consistency
+        run: |
+          python scripts/check_version_consistency.py
+
+      - name: Run conformance corpus
+        run: |
+          python scripts/run_conformance.py
+
+      - name: Guard generated artifacts
+        run: |
+          # llms.txt is generated from the manifest at publish time; a hand-maintained
+          # copy in source would reintroduce the drift this pipeline removed.
+          if [ -f llms.txt ]; then
+            echo "::error::llms.txt must not be committed — it is generated from index.json at publish time." >&2
+            exit 1
+          fi
+          # The artifact generators and meta-schemas must be well-formed.
+          python -c "import ast, pathlib; [ast.parse(p.read_text()) for p in pathlib.Path('scripts').glob('build_*.py')]; ast.parse(pathlib.Path('scripts/check_artifacts.py').read_text())"
+          python - <<'PY'
+          import json, pathlib
+          from jsonschema import Draft7Validator
+          for p in pathlib.Path("schemas/manifest").glob("*.json"):
+              Draft7Validator.check_schema(json.loads(p.read_text()))
+              print("meta-schema OK:", p.name)
+          PY

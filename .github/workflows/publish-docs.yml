@@ -52,9 +52,8 @@ jobs:
       - name: Resolve version placeholders
         run: |
           VERSION="v${{ steps.version.outputs.version }}"
-          find source/schemas source/genres -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
+          find source/schemas source/genres source/conformance -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
             -exec sed -i "s/%%UGAS_VERSION%%/${VERSION}/g" {} +
-          sed -i "s/%%UGAS_VERSION%%/${VERSION}/g" source/llms.txt
 
       - name: Install Asciidoctor and Pandoc
         run: |
@@ -118,10 +117,23 @@ jobs:
           cp source/SPEC.adoc "${DEST}/SPEC.adoc"
           cp -r source/spec "${DEST}/spec"
           [ -d source/genres ] && cp -r source/genres "${DEST}/genres"
+          [ -d source/conformance ] && cp -r source/conformance "${DEST}/conformance"
           cp source/index.html "${DEST}/index.html"
           cp source/SPEC.md "${DEST}/SPEC.md"
-          cp source/llms.txt docs/llms.txt
           cp source/llms-full.txt docs/llms-full.txt
+
+      - name: Set up Python for artifacts
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install artifact deps
+        run: python3 -m pip install --quiet jsonschema PyYAML
+
+      - name: Generate consumer artifacts (sections + manifest + llms.txt)
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          bash source/scripts/build-artifacts.sh "docs/v${VERSION}" "v${VERSION}" docs/llms.txt
 
       - name: Update README version table
         run: |
@@ -144,6 +156,11 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           DATE="$(date -u +%Y-%m-%d)"
           bash source/scripts/build-landing-page.sh "${VERSION}" "${DATE}" docs source
+
+      - name: Verify consumer artifacts
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          python3 source/scripts/check_artifacts.py "docs/v${VERSION}" docs/llms.txt
 
       - name: Create PR to docs branch
         env:
@@ -177,7 +194,9 @@ jobs:
           - \`SPEC.adoc\` → \`v${VERSION}/SPEC.md\` (Markdown via Pandoc)
           - \`schemas/**/*\` → \`v${VERSION}/schemas/\`
           - \`genres/**\` → \`v${VERSION}/genres/\` (genre pack templates + rendered specs, index, taxonomy)
-          - \`llms.txt\` → root (LLM discoverability)
+          - \`sections/**\` → \`v${VERSION}/sections/\` (pre-chunked spec + section index)
+          - \`index.json\` → \`v${VERSION}/index.json\` (checksummed resource manifest)
+          - \`llms.txt\` → root (generated from the manifest — LLM discoverability)
           - \`llms-full.txt\` → root (complete LLM context)
           - \`index.html\` → root (landing page, version table + latest links)
           - \`versions.json\` → root (version manifest)"

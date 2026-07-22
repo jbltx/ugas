@@ -4,7 +4,7 @@
 # CarryWeight crosses MaxCarryWeight, the engine's weight detector applies GE_Overencumbered. A real
 # game would vary the yield by node type (Resource.Node.Tree/Rock/Bush); this is the baseline wood haul.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_GatherResource
 DurationPolicy: Instant
 Modifiers:

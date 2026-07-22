@@ -70,7 +70,7 @@ properties:
 ### Example
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/attribute.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/attribute.json
 Name: Health
 DefaultBaseValue: 100.0
 Category: Resource
@@ -276,7 +276,7 @@ properties:
 ### Example
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: SimpleDamageEffect
 DurationPolicy: Instant
 Modifiers:
@@ -365,7 +365,7 @@ properties:
 ### Example
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: FireballAbility
 Tags:
   AbilityTags:
@@ -443,7 +443,7 @@ properties:
 ### Example
 
 ```yaml
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_tag.json
 Tags:
   - Tag: State.Alive
     Description: Entity is alive and active

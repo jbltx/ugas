@@ -114,7 +114,7 @@ Periodic effects behave like repeated Instant effects within a duration containe
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_Poison"
 DurationPolicy: HasDuration
 Duration:
@@ -449,7 +449,7 @@ Effects MAY grant Tags while active:
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_Burning"
 DurationPolicy: HasDuration
 Duration:
@@ -484,7 +484,7 @@ Effects MAY grant Abilities while active:
 
 [source,yaml,subs="+attributes"]
 ----
-$schema: https://raw.githubusercontent.com/jbltx/ugas/{ugas-version}/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_effect.json
 Name: "GE_FireSword_Equipped"
 DurationPolicy: Infinite
 GrantedAbilities:

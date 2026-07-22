@@ -1,0 +1,3 @@
+# label: valid — minimal ability (required Name)
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+Name: GA_Fireball

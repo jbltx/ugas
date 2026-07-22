@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/jbltx/ugas/schemas/attribute_set.json",
+  "$id": "https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/attribute_set.json",
   "title": "AttributeSet Definition Schema",
   "description": "Based on UGAS Specification %%UGAS_VERSION%% - Appendix B",
   "type": "object",
@@ -20,7 +20,7 @@
     "Attributes": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/Attribute"
+        "$ref": "#/$defs/Attribute"
       }
     },
     "Metadata": {
@@ -35,7 +35,7 @@
       }
     }
   },
-  "definitions": {
+  "$defs": {
     "Attribute": {
       "type": "object",
       "required": ["Name", "DefaultBaseValue"],

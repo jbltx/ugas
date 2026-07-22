@@ -4,7 +4,7 @@
 # partial pulls don't drain stamina. Pass / Shoot / Skill Move sit on the face buttons; Tackle on a
 # shoulder so a defender can challenge without taking a thumb off the move stick.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_mapping.json
 ActionSet: Outfield
 Platform: Console
 Bindings:

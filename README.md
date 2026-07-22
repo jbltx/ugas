@@ -21,6 +21,7 @@ UGAS defines a unified architecture for implementing gameplay abilities, attribu
 |--------------------|------------------------------------------|
 | [SPEC.adoc](SPEC.adoc) | Full technical specification             |
 | [genres/](genres/README.md) | Genre packs: per-genre additional specs + ready-to-use templates |
+| [docs/CONSUMING.md](docs/CONSUMING.md) | Consuming UGAS programmatically: manifests, pre-chunked spec, offline schema bundle, and the vendoring playbook |
 
 ## Schema Definitions
 

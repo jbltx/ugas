@@ -1,7 +1,7 @@
 # Example: Arena Scene
 # A small combat arena — a player, two enemies, a hazard zone, and a respawn point.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/scene.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/scene.json
 Name: Arena
 Placements:
   - Controller: PlayerCharacter

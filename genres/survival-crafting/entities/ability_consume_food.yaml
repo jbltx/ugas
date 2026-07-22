@@ -4,7 +4,7 @@
 # Blocked while crafting. A full game would also decrement the specific food item from inventory;
 # here the restore is the modelled effect.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_ConsumeFood
 Tags:
   AbilityTags:

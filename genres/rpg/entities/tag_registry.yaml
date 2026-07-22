@@ -1,7 +1,7 @@
 # RPG genre tag taxonomy. ADDITIVE: this registry introduces genre-specific tags only.
 # It does not redefine core State.* / Ability.* tags — those are referenced, not declared here.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_tag.json
 Tags:
   # --- Damage types (used by abilities, immunities, and conditional effects) ---
   - Tag: DamageType.Physical

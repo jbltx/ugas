@@ -4,7 +4,7 @@
 # own recovery on a well-spaced attack, which is what makes some blocked strings safe and others
 # punishable. The duration is the move's blockstun frame count expressed in seconds.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Blockstun
 DurationPolicy: HasDuration
 Duration:

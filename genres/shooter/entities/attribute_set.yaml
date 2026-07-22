@@ -2,7 +2,7 @@
 # ammo economy. Extends the core spec's attribute model (no core attribute is redefined here).
 # Base values describe a default automatic rifle so the set is playable as shipped.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/attribute_set.json
 Name: ShooterCombatSet
 Attributes:
   # --- Survivability (shield absorbs first, then health; both regenerate out of combat) ---

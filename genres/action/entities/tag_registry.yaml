@@ -3,7 +3,7 @@
 # §15.1 case study. It does not redefine the core State.Alive / State.Combat / State.Dead
 # lifecycle tags - those are referenced, not declared here.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_tag.json
 Tags:
   # --- Movement states (granted by Effects; tag ownership follows responsibility, §3.1) ---
   - Tag: State.Grounded

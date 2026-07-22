@@ -11,7 +11,7 @@
 #   Block-channel movement penalty (active while guard is held):
 #     MoveSpeed:       500 x Block(1 - 0.5 = 0.50)                          = 250.0
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: Fighter_Brawler_01
   ActorType: PlayerCharacter

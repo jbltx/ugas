@@ -6,7 +6,7 @@
 # The transient Puzzle.State.Cascading / Puzzle.State.Matching tags fall away with their instant
 # effects; this effect just re-asserts the interactive phase.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_ResetChain
 DurationPolicy: Instant
 Modifiers:

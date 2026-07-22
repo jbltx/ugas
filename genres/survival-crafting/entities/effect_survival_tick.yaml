@@ -7,7 +7,7 @@
 # signature math plugs into UGAS. INFINITE + PERIOD; ExecuteOnApplication so the first tick lands at spawn.
 # Use EITHER this single calc OR the individual GE_Starvation/GE_Dehydration/GE_Hypothermia drains.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_SurvivalTick
 DurationPolicy: Infinite
 Period:

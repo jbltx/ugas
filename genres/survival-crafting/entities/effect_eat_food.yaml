@@ -4,7 +4,7 @@
 # Applied by GA_ConsumeFood at the end of its eat wait. Hunger is clamped to [0, MaxHunger], so a
 # big meal can't overfill the survivor.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_EatFood
 DurationPolicy: Instant
 Modifiers:

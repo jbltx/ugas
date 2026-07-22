@@ -29,7 +29,21 @@ def main() -> None:
     rtext = re.sub(r"(version\s*=\s*\{)[^}]*(\})", rf"\g<1>{version}\g<2>", rtext, count=1)
     readme.write_text(rtext)
 
-    print(f"Synced version {version} into SPEC.adoc and README.md")
+    # Genre pack / index / taxonomy AsciiDoc headers carry their own version
+    # attributes. Keep them pinned to the same version so source never drifts
+    # (they are also overridden at build time, but stale source is misleading).
+    genre_docs = sorted((ROOT / "genres").glob("*/spec.adoc"))
+    for extra in ("index.adoc", "taxonomy.adoc"):
+        p = ROOT / "genres" / extra
+        if p.is_file():
+            genre_docs.append(p)
+    for doc in genre_docs:
+        gtext = doc.read_text()
+        gtext = re.sub(r"^:revnumber:.*$", f":revnumber: {version}", gtext, count=1, flags=re.M)
+        gtext = re.sub(r"^:ugas-version:.*$", f":ugas-version: v{version}", gtext, count=1, flags=re.M)
+        doc.write_text(gtext)
+
+    print(f"Synced version {version} into SPEC.adoc, README.md, and {len(genre_docs)} genre docs")
 
 
 if __name__ == "__main__":

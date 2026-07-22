@@ -2,7 +2,7 @@
 # BasicAttack is the primary left-click attack. Ability1 is the first hotbar slot.
 # Move and Look are standard 2D axes for character movement and camera control.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: BasicAttack
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -15,7 +15,7 @@ Metadata:
   Description: Primary melee or ranged attack
   Category: Combat
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Ability1
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -28,7 +28,7 @@ Metadata:
   Description: First ability hotbar slot
   Category: Combat
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Move
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -41,7 +41,7 @@ Metadata:
   Description: Directional movement vector
   Category: Movement
 ---
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
 Name: Look
 ValueType: Axis2D
 TriggerBehavior: WhileHeld

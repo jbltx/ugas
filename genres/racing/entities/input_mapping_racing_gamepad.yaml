@@ -1,7 +1,7 @@
 # Gamepad bindings for the RacingOnTrack action set (Console platform).
 # Maps standard gamepad controls to driving actions with appropriate modifiers.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_mapping.json
 ActionSet: RacingOnTrack
 Platform: Console
 Bindings:

@@ -3,7 +3,7 @@
 # Input buffering is enabled with a generous 0.15 s window and depth of 3, which
 # smooths out rapid jump-chains and coyote-time sequences typical of the genre.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action_set.json
 Name: OnFoot
 Actions:
   - Move

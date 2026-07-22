@@ -4,7 +4,7 @@
 #   MaxSpeed:           base 250 + Tuning(+20) + Mud(-30)                               = 240.0
 #   EngineTorque:       base 400 + Tuning(+80)                                          = 480.0
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: Vehicle_SportCar_01
   ActorType: PlayerVehicle

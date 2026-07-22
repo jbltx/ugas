@@ -15,7 +15,7 @@
 # GE_HungerDecay / GE_ThirstDecay / GE_StaminaRegen are the always-on needs loop that got the
 # survivor here (Hunger drained to 0, Thirst down to 30, Stamina recovered to full while not sprinting).
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: Survivor_01
   ActorType: PlayerCharacter

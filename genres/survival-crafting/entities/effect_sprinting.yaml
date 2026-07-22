@@ -6,7 +6,7 @@
 # Survival.State.Sprinting (the movement system reads this tag to raise the sprint speed). When
 # Stamina reaches 0 the engine grants Survival.State.Exhausted (GE_Exhaustion), which blocks GA_Sprint.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_Sprinting
 DurationPolicy: HasDuration
 Duration:

@@ -3,7 +3,7 @@
 # Thirst reaches the [0, MaxThirst] clamp floor, the engine grants Survival.State.Dehydrated and
 # applies GE_Dehydration. Hot biomes layer an extra thirst drain on top via their own area effect.
 
-$schema: https://raw.githubusercontent.com/jbltx/ugas/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_ThirstDecay
 DurationPolicy: Infinite
 Period:
