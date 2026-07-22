@@ -52,7 +52,7 @@ jobs:
       - name: Resolve version placeholders
         run: |
           VERSION="v${{ steps.version.outputs.version }}"
-          find source/schemas source/genres -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
+          find source/schemas source/genres source/conformance -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
             -exec sed -i "s/%%UGAS_VERSION%%/${VERSION}/g" {} +
 
       - name: Install Asciidoctor and Pandoc
@@ -117,6 +117,7 @@ jobs:
           cp source/SPEC.adoc "${DEST}/SPEC.adoc"
           cp -r source/spec "${DEST}/spec"
           [ -d source/genres ] && cp -r source/genres "${DEST}/genres"
+          [ -d source/conformance ] && cp -r source/conformance "${DEST}/conformance"
           cp source/index.html "${DEST}/index.html"
           cp source/SPEC.md "${DEST}/SPEC.md"
           cp source/llms-full.txt docs/llms-full.txt

@@ -27,13 +27,15 @@ python3 "${SCRIPT_DIR}/build_sections.py" "${VERSION_DIR}/SPEC.md" "${VERSION_DI
 # 2. Enumerate genre packs + template entities.
 python3 "${SCRIPT_DIR}/build_genre_manifest.py" "${VERSION_DIR}/genres" "${VERSION}"
 
-# (P1 build_schema_bundle.py and P2 build_rag.py hook in here, before the
-#  resource manifest, as those phases land.)
+# 3. Bundle all schemas into one offline-resolvable validation document.
+python3 "${SCRIPT_DIR}/build_schema_bundle.py" "${VERSION_DIR}/schemas" "${VERSION}"
 
-# 3. Manifest last — it checksums every artifact produced above.
+# (P2 build_rag.py hooks in here, before the resource manifest, as it lands.)
+
+# 4. Manifest last — it checksums every artifact produced above.
 python3 "${SCRIPT_DIR}/build_manifest.py" "${VERSION_DIR}" "${VERSION}" --base-url "${BASE_URL}"
 
-# 4. Generate llms.txt FROM the manifest so the human index can never drift.
+# 5. Generate llms.txt FROM the manifest so the human index can never drift.
 python3 "${SCRIPT_DIR}/build_llms_txt.py" "${VERSION_DIR}/index.json" "${LLMS_OUT}"
 
 echo "Consumer artifacts generated in ${VERSION_DIR}"

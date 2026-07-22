@@ -135,6 +135,11 @@ def classify(rel: Path, section_titles: dict[str, dict]) -> tuple[str, str, str]
                 return "doc", f"genre.{pack}.readme", f"{titlecase(pack)} pack README"
         return "other", f"file.{rel.as_posix()}", name
 
+    # Conformance corpus
+    if parts[0] == "conformance" and len(parts) >= 2:
+        bucket = parts[1]  # valid | invalid
+        return "conformance", f"conformance.{bucket}.{stem}", f"Conformance ({bucket}): {stem}"
+
     # RAG artifacts
     if parts[0] == "rag":
         return "rag", f"rag.{stem}", f"RAG {titlecase(stem)}"

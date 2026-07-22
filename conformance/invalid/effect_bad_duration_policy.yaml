@@ -1,0 +1,4 @@
+# label: invalid — DurationPolicy not in enum [Instant, HasDuration, Infinite]
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_Damage
+DurationPolicy: Forever

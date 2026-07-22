@@ -1,0 +1,7 @@
+# label: valid — attribute set with one attribute
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/attribute_set.json
+Name: CoreStats
+Attributes:
+  - Name: Health
+    DefaultBaseValue: 100.0
+    Category: Resource

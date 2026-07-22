@@ -17,7 +17,7 @@ properties:
   Attributes:
     type: array
     items:
-      $ref: "#/definitions/Attribute"
+      $ref: "#/$defs/Attribute"
   Metadata:
     type: object
     properties:
@@ -26,7 +26,7 @@ properties:
       Description:
         type: string
 
-definitions:
+$defs:
   Attribute:
     type: object
     required:

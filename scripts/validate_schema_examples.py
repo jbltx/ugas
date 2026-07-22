@@ -196,6 +196,10 @@ def main() -> int:
         for path in sorted(examples_root.rglob("*")):
             if path.suffix.lower() not in {".yaml", ".yml", ".json"}:
                 continue
+            # pack.yaml is genre-pack metadata, and index.json is a generated
+            # manifest — neither is a schema-bearing entity.
+            if path.name in {"pack.yaml", "index.json"}:
+                continue
             validated_count += validate_example_file(
                 path, validators, required_fields, errors
             )

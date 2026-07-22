@@ -1,0 +1,5 @@
+# label: valid — minimal Resource attribute (required Name + DefaultBaseValue)
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/attribute.json
+Name: Health
+DefaultBaseValue: 100.0
+Category: Resource

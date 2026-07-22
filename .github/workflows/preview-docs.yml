@@ -38,7 +38,7 @@ jobs:
 
       - name: Resolve version placeholders
         run: |
-          find schemas genres -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
+          find schemas genres conformance -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
             -exec sed -i "s/%%UGAS_VERSION%%/${{ steps.ver.outputs.version }}/g" {} +
 
       - name: Install Asciidoctor and Pandoc
@@ -113,6 +113,7 @@ jobs:
           cp -r schemas dist/schemas
           cp SPEC.adoc dist/SPEC.adoc
           cp -r genres/. dist/genres/
+          [ -d conformance ] && cp -r conformance dist/conformance
           bash scripts/build-artifacts.sh dist "${{ steps.ver.outputs.version }}" dist/llms.txt
           python3 scripts/check_artifacts.py dist dist/llms.txt
 

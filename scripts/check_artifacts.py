@@ -95,6 +95,24 @@ def check_genre_index(version_dir: Path, errors: list[str]) -> None:
                 fail(f"genres/index.json entity path missing: {e['path']}", errors)
 
 
+def check_bundle(version_dir: Path, errors: list[str]) -> None:
+    bundle_path = version_dir / "schemas" / "bundle.json"
+    if not bundle_path.is_file():
+        return
+    bundle = json.loads(bundle_path.read_text(encoding="utf-8"))
+    try:
+        Draft7Validator.check_schema(bundle)
+    except Exception as e:  # malformed bundle
+        fail(f"schemas/bundle.json is not a valid draft-07 schema: {e}", errors)
+        return
+    # It must resolve offline: instantiating the validator and validating a
+    # trivial doc must not raise a $ref resolution error.
+    try:
+        Draft7Validator(bundle).is_valid({})
+    except Exception as e:
+        fail(f"schemas/bundle.json has unresolved internal $refs: {e}", errors)
+
+
 def check_fences(version_dir: Path, errors: list[str]) -> None:
     for md in sorted((version_dir / "sections").glob("*.md")):
         n = sum(1 for line in md.read_text(encoding="utf-8").splitlines() if FENCE_RE.match(line))
@@ -138,6 +156,7 @@ def main(argv: list[str]) -> int:
         check_checksums(version_dir, manifest, errors)
         check_llms(version_dir, llms_path, manifest, errors)
     check_genre_index(version_dir, errors)
+    check_bundle(version_dir, errors)
     check_fences(version_dir, errors)
     check_placeholders(version_dir, llms_path, errors)
 

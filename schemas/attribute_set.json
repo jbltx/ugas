@@ -20,7 +20,7 @@
     "Attributes": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/Attribute"
+        "$ref": "#/$defs/Attribute"
       }
     },
     "Metadata": {
@@ -35,7 +35,7 @@
       }
     }
   },
-  "definitions": {
+  "$defs": {
     "Attribute": {
       "type": "object",
       "required": ["Name", "DefaultBaseValue"],
