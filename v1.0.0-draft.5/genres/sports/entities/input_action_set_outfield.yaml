@@ -1,0 +1,30 @@
+# Outfield action set: the default input context for an outfield athlete in open play.
+# Groups movement, on-ball, and off-ball actions into a single set that is active whenever the
+# athlete is alive and not in a stoppage (cutscene/replay). Input buffering is enabled with a tight
+# 0.12 s window so quick pass/skill-move sequences feel responsive without swallowing repeats - the
+# same convention the shooter pack uses for its on-foot set.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action_set.json
+Name: Outfield
+Actions:
+  - Move
+  - Look
+  - Sprint
+  - Pass
+  - Shoot
+  - Tackle
+  - SkillMove
+Priority: 0
+ActivationTags:
+  RequiredTags:
+    - State.Alive
+  BlockedTags:
+    - State.Cutscene
+Exclusive: false
+InputBuffer:
+  Enabled: true
+  BufferWindow: 0.12
+  MaxBufferSize: 2
+Metadata:
+  DisplayName: Outfield
+  Description: Default outfield input context covering movement, on-ball, and off-ball actions

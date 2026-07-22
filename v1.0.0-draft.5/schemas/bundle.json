@@ -1,0 +1,1725 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ugas.jbltx.com/v1.0.0-draft.5/schemas/bundle.json",
+  "title": "UGAS schema bundle",
+  "description": "Self-contained bundle of every UGAS entity schema. Validate an entity against #/$defs/<type> (type = the <type> in its $schema), or against the whole bundle to dispatch on $schema automatically. Resolves offline.",
+  "$defs": {
+    "attribute": {
+      "title": "Attribute Definition Schema",
+      "description": "Based on UGAS Specification v1.0.0-draft.5 - Appendix B",
+      "type": "object",
+      "required": [
+        "Name",
+        "DefaultBaseValue"
+      ],
+      "properties": {
+        "Name": {
+          "type": "string",
+          "description": "Unique identifier for this attribute"
+        },
+        "DefaultBaseValue": {
+          "type": "number",
+          "description": "Initial base value"
+        },
+        "Category": {
+          "type": "string",
+          "enum": [
+            "Resource",
+            "Statistic",
+            "Meta"
+          ],
+          "default": "Statistic"
+        },
+        "Clamping": {
+          "type": "object",
+          "properties": {
+            "Min": {
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "description": "Attribute reference"
+                }
+              ]
+            },
+            "Max": {
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "description": "Attribute reference"
+                }
+              ]
+            }
+          }
+        },
+        "ReplicationMode": {
+          "type": "string",
+          "enum": [
+            "None",
+            "OwnerOnly",
+            "All"
+          ],
+          "default": "All"
+        },
+        "Metadata": {
+          "type": "object",
+          "properties": {
+            "DisplayName": {
+              "type": "string"
+            },
+            "Description": {
+              "type": "string"
+            },
+            "UICategory": {
+              "type": "string"
+            },
+            "Icon": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "attribute_set": {
+      "title": "AttributeSet Definition Schema",
+      "description": "Based on UGAS Specification v1.0.0-draft.5 - Appendix B",
+      "type": "object",
+      "required": [
+        "Name",
+        "Attributes"
+      ],
+      "properties": {
+        "Name": {
+          "type": "string",
+          "description": "Unique set identifier"
+        },
+        "Dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Required attribute sets"
+        },
+        "Attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/attribute_set/$defs/Attribute"
+          }
+        },
+        "Metadata": {
+          "type": "object",
+          "properties": {
+            "DisplayName": {
+              "type": "string"
+            },
+            "Description": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "$defs": {
+        "Attribute": {
+          "type": "object",
+          "required": [
+            "Name",
+            "DefaultBaseValue"
+          ],
+          "properties": {
+            "Name": {
+              "type": "string",
+              "description": "Unique identifier for this attribute"
+            },
+            "DefaultBaseValue": {
+              "type": "number",
+              "description": "Initial base value"
+            },
+            "Category": {
+              "type": "string",
+              "enum": [
+                "Resource",
+                "Statistic",
+                "Meta"
+              ],
+              "default": "Statistic"
+            },
+            "Clamping": {
+              "type": "object",
+              "properties": {
+                "Min": {
+                  "oneOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "Max": {
+                  "oneOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            },
+            "ReplicationMode": {
+              "type": "string",
+              "enum": [
+                "None",
+                "OwnerOnly",
+                "All"
+              ],
+              "default": "All"
+            },
+            "Metadata": {
+              "type": "object",
+              "properties": {
+                "DisplayName": {
+                  "type": "string"
+                },
+                "Description": {
+                  "type": "string"
+                },
+                "UICategory": {
+                  "type": "string"
+                },
+                "Icon": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "gameplay_ability": {
+      "title": "Ability Definition Schema",
+      "description": "Based on UGAS Specification v1.0.0-draft.5 - Appendix B",
+      "type": "object",
+      "required": [
+        "Name"
+      ],
+      "properties": {
+        "Name": {
+          "type": "string",
+          "description": "Unique identifier for this ability"
+        },
+        "Tags": {
+          "type": "object",
+          "properties": {
+            "AbilityTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Tags that describe this ability"
+            },
+            "BlockedByTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Tags that prevent this ability from running"
+            },
+            "BlockAbilitiesWithTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "While this ability is active, block abilities with these tags"
+            },
+            "CancelAbilitiesWithTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Cancel abilities with these tags when this ability activates"
+            },
+            "ActivationRequiredTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Tags required on the GC to activate this ability"
+            },
+            "ActivationBlockedTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Tags that block activation of this ability"
+            },
+            "ActivationOwnedTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Tags granted to the GC while this ability is active"
+            }
+          }
+        },
+        "Cost": {
+          "type": "string",
+          "description": "Reference to cost GameplayEffect"
+        },
+        "Cooldown": {
+          "type": "string",
+          "description": "Reference to cooldown GameplayEffect"
+        },
+        "MaxRange": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Maximum targeting range in engine units (§17.3). Absent or 0 means self-targeted / no range gate; a target-requiring activation MUST be within range (§17.2 Distance), validated server-side per §13.7."
+        },
+        "AsyncValidation": {
+          "type": "object",
+          "description": "Optional asynchronous server-side validation for activation (§8.8). When present and Required is true, an activation that passes the synchronous checks enters PendingConfirmation before Commit instead of committing synchronously.",
+          "properties": {
+            "Required": {
+              "type": "boolean",
+              "description": "If true, route activation through the PendingConfirmation state and await server validation before Commit. Absent or false keeps the synchronous Validating -> Commit behaviour."
+            },
+            "Kind": {
+              "type": "string",
+              "description": "Category of asynchronous validation, e.g. AntiCheat | RemoteInventory | Entitlement | Custom."
+            },
+            "TimeoutMs": {
+              "type": "number",
+              "description": "Maximum time to wait for the validation result before treating it as an asynchronous failure (transition Fail -> Granted, nothing consumed)."
+            },
+            "Predicted": {
+              "type": "boolean",
+              "description": "If true, the owning client MAY speculatively commit and enter Active while the server holds PendingConfirmation, reconciling via the prediction model (§13.8)."
+            }
+          }
+        },
+        "Tasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "Type"
+            ],
+            "properties": {
+              "Type": {
+                "type": "string",
+                "description": "Task type identifier"
+              },
+              "Params": {
+                "type": "object",
+                "description": "Task-specific parameters"
+              },
+              "TickInterval": {
+                "type": "number",
+                "description": "Seconds between task ticks; 0 means every frame. Only meaningful for ticking tasks."
+              },
+              "Priority": {
+                "type": "integer",
+                "description": "Tick scheduling priority when the per-frame tick budget is exhausted; higher ticks first."
+              }
+            }
+          }
+        },
+        "Metadata": {
+          "type": "object",
+          "properties": {
+            "DisplayName": {
+              "type": "string"
+            },
+            "Description": {
+              "type": "string"
+            },
+            "Icon": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "gameplay_controller": {
+      "title": "Gameplay Controller Interface Schema Definition",
+      "description": "Based on UGAS Specification v1.0.0-draft.5 - Section 4",
+      "type": "object",
+      "required": [
+        "OwnerActor",
+        "AttributeSets"
+      ],
+      "properties": {
+        "OwnerActor": {
+          "type": "object",
+          "description": "Logical owner of the GC (responsible for lifecycle, network authority, persistence)",
+          "properties": {
+            "ActorID": {
+              "type": "string",
+              "description": "Unique identifier for the owner actor"
+            },
+            "ActorType": {
+              "type": "string",
+              "description": "Type of the owner actor"
+            }
+          }
+        },
+        "AvatarActor": {
+          "type": "object",
+          "description": "World spatial representation (optional, can be same as Owner)",
+          "properties": {
+            "ActorID": {
+              "type": "string",
+              "description": "Unique identifier for the avatar actor"
+            },
+            "ActorType": {
+              "type": "string",
+              "description": "Type of the avatar actor"
+            }
+          }
+        },
+        "AttributeSets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Name": {
+                "type": "string",
+                "description": "AttributeSet identifier"
+              },
+              "Attributes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Name": {
+                      "type": "string"
+                    },
+                    "BaseValue": {
+                      "type": "number"
+                    },
+                    "CurrentValue": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "minItems": 1,
+          "description": "Registered attribute containers"
+        },
+        "GrantedAbilities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "AbilityClass"
+            ],
+            "properties": {
+              "AbilityClass": {
+                "type": "string",
+                "description": "Ability class identifier"
+              },
+              "Level": {
+                "type": "integer",
+                "default": 1,
+                "minimum": 1,
+                "description": "Ability level"
+              },
+              "InputID": {
+                "type": "string",
+                "description": "Input binding identifier. References an Action Name from the input layer. When the bound Action triggers, the GC calls TryActivateAbility for this grant."
+              },
+              "Handle": {
+                "type": "string",
+                "description": "Unique handle for this granted ability instance"
+              },
+              "bIsActive": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether the ability is currently active"
+              }
+            }
+          },
+          "description": "All abilities granted to this GC"
+        },
+        "ActiveEffects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "Handle",
+              "EffectClass"
+            ],
+            "properties": {
+              "Handle": {
+                "type": "string",
+                "description": "Unique identifier for this active effect"
+              },
+              "EffectClass": {
+                "type": "string",
+                "description": "GameplayEffect class reference"
+              },
+              "DurationPolicy": {
+                "type": "string",
+                "enum": [
+                  "HasDuration",
+                  "Infinite"
+                ],
+                "description": "Duration policy of the originating effect (§14.3)"
+              },
+              "RemainingDuration": {
+                "type": "number",
+                "description": "Remaining duration in seconds. Present only for HasDuration effects (§14.3.1)"
+              },
+              "Stacks": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 1,
+                "description": "Number of effect stacks"
+              },
+              "StartTime": {
+                "type": "number",
+                "description": "Timestamp when effect was applied"
+              },
+              "Level": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 1
+              },
+              "InstigatorGC": {
+                "type": "string",
+                "description": "Reference to the GC that caused this effect"
+              },
+              "SourceAbility": {
+                "type": "string",
+                "description": "Ability that applied this effect (for provenance tracking, §14.3.2)"
+              },
+              "PeriodicState": {
+                "type": "object",
+                "description": "Periodic execution state for effects with Period settings (§14.3.3)",
+                "properties": {
+                  "PeriodElapsed": {
+                    "type": "number",
+                    "description": "Seconds elapsed since last periodic execution"
+                  },
+                  "ExecutionCount": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Total periodic executions fired"
+                  }
+                }
+              },
+              "CapturedAttributes": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "description": "Attribute values captured OnApplication, keyed by attribute name (§14.3)"
+              },
+              "SetByCallerMagnitudes": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "description": "Runtime-provided magnitudes, keyed by data tag (§14.3)"
+              }
+            }
+          },
+          "description": "Currently active effects applied to this GC (serialization protocol §14)"
+        },
+        "ActiveActionSets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Currently active ActionSet names (derived from tag evaluation at runtime)"
+        },
+        "OwnedTags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][a-zA-Z0-9]*(\\.[A-Z][a-zA-Z0-9]*)*$"
+          },
+          "description": "Current semantic state tags (hierarchical dot notation)"
+        },
+        "ReplicationMode": {
+          "type": "string",
+          "enum": [
+            "Minimal",
+            "Mixed",
+            "Full",
+            "None"
+          ],
+          "default": "Mixed",
+          "description": "Replication strategy: Minimal (only cues & tags for AI), Mixed (full to owner, minimal to others for players), Full (complete to all for single-player/spectators), None (no replication for server-only)"
+        },
+        "bIsActive": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether this GC is currently active"
+        },
+        "Metadata": {
+          "type": "object",
+          "description": "Optional metadata for display and debugging",
+          "properties": {
+            "DisplayName": {
+              "type": "string"
+            },
+            "Description": {
+              "type": "string"
+            },
+            "Tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "DebugCategory": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "gameplay_effect": {
+      "title": "GameplayEffect Definition Schema",
+      "description": "Based on UGAS Specification v1.0.0-draft.5 - Appendix B",
+      "type": "object",
+      "required": [
+        "Name",
+        "DurationPolicy"
+      ],
+      "properties": {
+        "Name": {
+          "type": "string",
+          "description": "Unique effect identifier"
+        },
+        "DurationPolicy": {
+          "type": "string",
+          "enum": [
+            "Instant",
+            "HasDuration",
+            "Infinite"
+          ]
+        },
+        "Duration": {
+          "$ref": "#/$defs/gameplay_effect/$defs/MagnitudeDefinition"
+        },
+        "Period": {
+          "type": "object",
+          "properties": {
+            "Period": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Time interval for periodic execution"
+            },
+            "ExecuteOnApplication": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether to execute immediately on application"
+            }
+          }
+        },
+        "ExecutionPolicy": {
+          "type": "string",
+          "enum": [
+            "RunInParallel",
+            "RunInSequence",
+            "RunInMerge"
+          ],
+          "default": "RunInParallel"
+        },
+        "Priority": {
+          "type": "integer",
+          "default": 0,
+          "description": "Override conflict resolution priority. When multiple active effects apply an Override modifier to the same Attribute, the effect with the highest Priority value wins. On equal Priority, last-applied wins (LIFO). Negative values are valid."
+        },
+        "Modifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/gameplay_effect/$defs/Modifier"
+          }
+        },
+        "Executions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "CalculatorClass": {
+                "type": "string",
+                "description": "Custom calculation class reference"
+              }
+            }
+          }
+        },
+        "GrantedTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tags granted while this effect is active"
+        },
+        "ApplicationRequiredTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tags required on target for effect to apply"
+        },
+        "GrantedAbilities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "AbilityClass": {
+                "type": "string",
+                "description": "Ability class to grant"
+              },
+              "Level": {
+                "type": "integer",
+                "default": 1,
+                "description": "Level of the granted ability"
+              },
+              "InputID": {
+                "type": "string",
+                "description": "Optional input binding"
+              },
+              "RemoveOnEffectRemoval": {
+                "type": "boolean",
+                "default": true,
+                "description": "Remove ability when effect expires"
+              }
+            }
+          }
+        },
+        "GameplayCues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Visual/audio cues to trigger"
+        },
+        "Area": {
+          "type": "object",
+          "description": "Optional area application (§17.3). When present, the effect applies to every anchor matching the filter within the shape (via the §17.2 spatial queries) instead of a single target; the execution policy (§9.6) governs per-target combination.",
+          "required": [
+            "Shape"
+          ],
+          "properties": {
+            "Shape": {
+              "type": "string",
+              "enum": [
+                "Sphere",
+                "Cone"
+              ],
+              "description": "Query shape centered at the application origin (EffectContext.WorldOrigin, §9.9)."
+            },
+            "Radius": {
+              "$ref": "#/$defs/gameplay_effect/$defs/MagnitudeDefinition",
+              "description": "Sphere radius / cone range. May be AttributeBased to scale with an attribute (§9.4.2)."
+            },
+            "HalfAngleDeg": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 180,
+              "description": "Cone half-angle in degrees (Cone shape only)."
+            },
+            "RequireTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Candidate must own all these tags (§7, hierarchical). Empty = no requirement."
+            },
+            "ExcludeTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Candidate must own none of these tags."
+            },
+            "Affiliation": {
+              "type": "string",
+              "enum": [
+                "Any",
+                "Allied",
+                "Hostile",
+                "Neutral",
+                "SelfOnly",
+                "ExcludeSelf"
+              ],
+              "default": "ExcludeSelf",
+              "description": "Affiliation of candidates relative to the applying GC (§17.2)."
+            },
+            "MaxTargets": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Cap on affected targets (0 = unbounded), applied after ordering."
+            }
+          }
+        }
+      },
+      "$defs": {
+        "MagnitudeDefinition": {
+          "type": "object",
+          "required": [
+            "Type"
+          ],
+          "properties": {
+            "Type": {
+              "type": "string",
+              "enum": [
+                "ScalableFloat",
+                "AttributeBased",
+                "CustomCalculation",
+                "SetByCaller"
+              ]
+            },
+            "Value": {
+              "type": "number",
+              "description": "Static value for ScalableFloat"
+            },
+            "Curve": {
+              "type": "string",
+              "description": "Curve table reference"
+            },
+            "CurveInput": {
+              "type": "string",
+              "description": "Input parameter for curve evaluation"
+            },
+            "BackingAttribute": {
+              "type": "string",
+              "description": "Attribute to use for AttributeBased magnitude"
+            },
+            "Source": {
+              "type": "string",
+              "enum": [
+                "Source",
+                "Target"
+              ],
+              "description": "Which GC to read the backing attribute from"
+            },
+            "Coefficient": {
+              "type": "number",
+              "default": 1,
+              "description": "Multiplicative coefficient"
+            },
+            "PreMultiplyAdditive": {
+              "type": "number",
+              "default": 0,
+              "description": "Value added before multiplication"
+            },
+            "PostMultiplyAdditive": {
+              "type": "number",
+              "default": 0,
+              "description": "Value added after multiplication"
+            },
+            "CalculatorClass": {
+              "type": "string",
+              "description": "Custom calculation class for CustomCalculation type"
+            },
+            "DataTag": {
+              "type": "string",
+              "description": "Tag for SetByCaller data lookup"
+            }
+          }
+        },
+        "Modifier": {
+          "type": "object",
+          "required": [
+            "Attribute",
+            "Operation",
+            "Magnitude"
+          ],
+          "properties": {
+            "Attribute": {
+              "type": "string",
+              "description": "Target attribute to modify"
+            },
+            "Operation": {
+              "type": "string",
+              "enum": [
+                "Add",
+                "AddPost",
+                "Multiply",
+                "Override"
+              ],
+              "description": "Mathematical operation to apply. Add: pre-multiply flat additive (pipeline step 2, before percentage and multiply steps). AddPost: post-multiply flat additive (pipeline step 7, after all multiply steps; very rare). Multiply: multiplicative factor at step 6 — use a reciprocal magnitude (e.g. 0.5) instead of a Divide operation. Override: replaces the computed result at step 8."
+            },
+            "Magnitude": {
+              "$ref": "#/$defs/gameplay_effect/$defs/MagnitudeDefinition"
+            },
+            "Channel": {
+              "type": "string",
+              "description": "Optional named aggregation channel. Modifiers in the same channel sum together; modifiers in different channels multiply against each other. Used for damage-bucket systems (see §16.3). Defaults to the global channel if omitted."
+            }
+          }
+        }
+      }
+    },
+    "gameplay_tag": {
+      "title": "Tag Registry Schema",
+      "description": "Based on UGAS Specification v1.0.0-draft.5 - Appendix B",
+      "type": "object",
+      "properties": {
+        "Tags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "Tag"
+            ],
+            "properties": {
+              "Tag": {
+                "type": "string",
+                "pattern": "^[A-Z][a-zA-Z0-9]*(\\.[A-Z][a-zA-Z0-9]*)*$",
+                "description": "Hierarchical tag in dot notation (e.g., State.Debuff.Stunned)"
+              },
+              "Description": {
+                "type": "string"
+              },
+              "AllowMultiple": {
+                "type": "boolean",
+                "default": false
+              },
+              "DevComment": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "input_action": {
+      "title": "Input Action Definition Schema",
+      "description": "Based on UGAS Specification v1.0.0-draft.5 - Section 11",
+      "type": "object",
+      "required": [
+        "Name",
+        "ValueType"
+      ],
+      "properties": {
+        "Name": {
+          "type": "string",
+          "description": "Unique identifier for this action, referenced by InputID on granted abilities"
+        },
+        "ValueType": {
+          "type": "string",
+          "enum": [
+            "Digital",
+            "Axis1D",
+            "Axis2D",
+            "Axis3D"
+          ],
+          "description": "Semantic value type this action produces. Digital actions emit trigger events (Started/Ongoing/Completed). Axis actions emit a continuous value each frame while nonzero."
+        },
+        "TriggerBehavior": {
+          "type": "string",
+          "enum": [
+            "OnPressed",
+            "OnReleased",
+            "WhileHeld",
+            "OnTap",
+            "OnDoubleTap"
+          ],
+          "default": "OnPressed",
+          "description": "When this action fires its trigger event. OnPressed fires once on activation. WhileHeld fires every frame while input is nonzero. OnTap requires press-then-release within TapThreshold."
+        },
+        "TapThreshold": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0.2,
+          "description": "Maximum hold duration (seconds) for OnTap and OnDoubleTap"
+        },
+        "DoubleTapWindow": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0.3,
+          "description": "Maximum gap (seconds) between two taps for OnDoubleTap"
+        },
+        "ConsumeInput": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether this action consumes the input event, preventing lower-priority actions from receiving it"
+        },
+        "Tags": {
+          "type": "object",
+          "properties": {
+            "ActionTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Tags describing this action for bulk queries (e.g. disable all combat inputs)"
+            }
+          }
+        },
+        "Metadata": {
+          "type": "object",
+          "properties": {
+            "DisplayName": {
+              "type": "string",
+              "description": "Localization-friendly name shown in control remapping UI"
+            },
+            "Description": {
+              "type": "string"
+            },
+            "Icon": {
+              "type": "string"
+            },
+            "Category": {
+              "type": "string",
+              "description": "UI grouping for settings screens (e.g. Movement, Combat)"
+            }
+          }
+        }
+      }
+    },
+    "input_action_set": {
+      "title": "Input Action Set Definition Schema",
+      "description": "Based on UGAS Specification v1.0.0-draft.5 - Section 11",
+      "type": "object",
+      "required": [
+        "Name",
+        "Actions"
+      ],
+      "properties": {
+        "Name": {
+          "type": "string",
+          "description": "Unique identifier for this action set"
+        },
+        "Actions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Reference to an Action Name"
+          },
+          "minItems": 1,
+          "description": "Actions available when this set is active"
+        },
+        "Priority": {
+          "type": "integer",
+          "default": 0,
+          "description": "When multiple sets are active and contain the same Action, the highest priority wins. Enables layering (e.g. a Dialogue set overlays OnFoot)."
+        },
+        "ActivationTags": {
+          "type": "object",
+          "properties": {
+            "RequiredTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Tags required on the owning GC for this set to be active (AND logic)"
+            },
+            "BlockedTags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Tags that deactivate this set if any are present on the GC"
+            }
+          }
+        },
+        "Exclusive": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, activating this set deactivates all other non-exclusive sets at the same or lower priority. Useful for modal contexts like vehicles or cutscenes."
+        },
+        "InputBuffer": {
+          "type": "object",
+          "description": "Per-set input buffering configuration, overrides the global InputBufferConfig",
+          "properties": {
+            "Enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "BufferWindow": {
+              "type": "number",
+              "minimum": 0,
+              "default": 0.15,
+              "description": "Buffer window in seconds"
+            },
+            "MaxBufferSize": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 3
+            }
+          }
+        },
+        "Metadata": {
+          "type": "object",
+          "properties": {
+            "DisplayName": {
+              "type": "string"
+            },
+            "Description": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "input_mapping": {
+      "title": "Input Mapping Definition Schema",
+      "description": "Based on UGAS Specification v1.0.0-draft.5 - Section 11",
+      "type": "object",
+      "required": [
+        "ActionSet",
+        "Bindings"
+      ],
+      "properties": {
+        "ActionSet": {
+          "type": "string",
+          "description": "The ActionSet this mapping belongs to"
+        },
+        "Platform": {
+          "type": "string",
+          "enum": [
+            "PC",
+            "Console",
+            "Mobile",
+            "VR"
+          ],
+          "description": "Optional platform filter. When set, these bindings only apply on the specified platform. Omit for universal bindings."
+        },
+        "Bindings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/input_mapping/$defs/Binding"
+          },
+          "minItems": 1
+        },
+        "Metadata": {
+          "type": "object",
+          "properties": {
+            "DisplayName": {
+              "type": "string"
+            },
+            "Description": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "$defs": {
+        "DeviceInput": {
+          "type": "object",
+          "required": [
+            "Device",
+            "Input"
+          ],
+          "properties": {
+            "Device": {
+              "type": "string",
+              "enum": [
+                "Keyboard",
+                "Mouse",
+                "Gamepad",
+                "Touch",
+                "Gyro",
+                "Custom"
+              ],
+              "description": "Device family"
+            },
+            "Input": {
+              "type": "string",
+              "description": "Canonical input identifier within the device family, using a standardized naming convention independent of any engine (e.g. Key.Space, Mouse.LeftButton, Gamepad.FaceBottom)"
+            },
+            "CustomDeviceName": {
+              "type": "string",
+              "description": "When Device is Custom, the specific hardware identifier (e.g. FlightStick, SteeringWheel)"
+            }
+          }
+        },
+        "CompositeInputs": {
+          "type": "object",
+          "description": "Composes multiple digital inputs into an axis value. Used for WASD-to-2D-vector, arrow-keys-to-axis, etc.",
+          "properties": {
+            "Up": {
+              "$ref": "#/$defs/input_mapping/$defs/DeviceInput"
+            },
+            "Down": {
+              "$ref": "#/$defs/input_mapping/$defs/DeviceInput"
+            },
+            "Left": {
+              "$ref": "#/$defs/input_mapping/$defs/DeviceInput"
+            },
+            "Right": {
+              "$ref": "#/$defs/input_mapping/$defs/DeviceInput"
+            },
+            "Forward": {
+              "$ref": "#/$defs/input_mapping/$defs/DeviceInput"
+            },
+            "Backward": {
+              "$ref": "#/$defs/input_mapping/$defs/DeviceInput"
+            }
+          }
+        },
+        "Binding": {
+          "type": "object",
+          "required": [
+            "Action"
+          ],
+          "properties": {
+            "Action": {
+              "type": "string",
+              "description": "Reference to an Action Name"
+            },
+            "Inputs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/input_mapping/$defs/DeviceInput"
+              },
+              "minItems": 1,
+              "description": "Device input(s) for this binding. A single entry is a simple binding. Multiple entries create a chord (all must be active simultaneously)."
+            },
+            "CompositeInputs": {
+              "$ref": "#/$defs/input_mapping/$defs/CompositeInputs"
+            },
+            "Modifiers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Ordered list of Modifier references applied to the raw input value (pipeline order)"
+            },
+            "Priority": {
+              "type": "integer",
+              "default": 0,
+              "description": "When multiple bindings map to the same Action within the same ActionSet, the highest priority binding that is satisfiable wins."
+            },
+            "HoldThreshold": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Seconds the input must be held before the binding activates. Useful for distinguishing tap (interact) from hold (pick up)."
+            },
+            "bIsRebindable": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether the player can change this binding in controls settings"
+            },
+            "Tags": {
+              "type": "object",
+              "properties": {
+                "RequiredTags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Additional tag requirements beyond the ActionSet's ActivationTags"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "input_modifier": {
+      "title": "Input Modifier Definition Schema",
+      "description": "Based on UGAS Specification v1.0.0-draft.5 - Section 11",
+      "type": "object",
+      "required": [
+        "Name",
+        "Type"
+      ],
+      "properties": {
+        "Name": {
+          "type": "string",
+          "description": "Unique identifier for this modifier"
+        },
+        "Type": {
+          "type": "string",
+          "enum": [
+            "DeadZone",
+            "Sensitivity",
+            "ResponseCurve",
+            "AxisInvert",
+            "AxisScale",
+            "AxisSwizzle",
+            "RadialScaling",
+            "Normalize",
+            "TriggerThreshold",
+            "Clamp",
+            "Custom"
+          ],
+          "description": "The processing operation this modifier performs"
+        },
+        "Params": {
+          "type": "object",
+          "description": "Type-specific parameters",
+          "properties": {
+            "InnerThreshold": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "DeadZone: values below this threshold are clamped to zero"
+            },
+            "OuterThreshold": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "DeadZone: values above this threshold are clamped to 1.0"
+            },
+            "DeadZoneShape": {
+              "type": "string",
+              "enum": [
+                "Axial",
+                "Radial"
+              ],
+              "description": "DeadZone: Axial applies per-axis, Radial applies to magnitude of 2D vector"
+            },
+            "Multiplier": {
+              "type": "number",
+              "description": "Sensitivity: linear multiplier (1.0 = no change)"
+            },
+            "MultiplierX": {
+              "type": "number",
+              "description": "Sensitivity: per-axis X multiplier for 2D actions"
+            },
+            "MultiplierY": {
+              "type": "number",
+              "description": "Sensitivity: per-axis Y multiplier for 2D actions"
+            },
+            "CurveType": {
+              "type": "string",
+              "enum": [
+                "Linear",
+                "Exponential",
+                "SCurve",
+                "Custom"
+              ],
+              "description": "ResponseCurve: curve shape"
+            },
+            "Exponent": {
+              "type": "number",
+              "description": "ResponseCurve: exponent for Exponential curves (1.0 = linear, 2.0 = quadratic)"
+            },
+            "CurvePoints": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "In": {
+                    "type": "number"
+                  },
+                  "Out": {
+                    "type": "number"
+                  }
+                }
+              },
+              "description": "ResponseCurve: explicit input-to-output mapping points for Custom curves"
+            },
+            "InvertX": {
+              "type": "boolean",
+              "default": false,
+              "description": "AxisInvert: invert horizontal axis"
+            },
+            "InvertY": {
+              "type": "boolean",
+              "default": false,
+              "description": "AxisInvert: invert vertical axis"
+            },
+            "ScaleX": {
+              "type": "number",
+              "description": "AxisScale: horizontal scale factor"
+            },
+            "ScaleY": {
+              "type": "number",
+              "description": "AxisScale: vertical scale factor"
+            },
+            "ScaleZ": {
+              "type": "number",
+              "description": "AxisScale: depth scale factor (for Axis3D)"
+            },
+            "SwizzleOrder": {
+              "type": "string",
+              "description": "AxisSwizzle: axis reordering (e.g. YXZ to swap X and Y)"
+            },
+            "MaxRadius": {
+              "type": "number",
+              "description": "RadialScaling: maximum radius for normalization"
+            },
+            "PressThreshold": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.5,
+              "description": "TriggerThreshold: analog value above which a trigger counts as pressed"
+            },
+            "Min": {
+              "type": "number",
+              "description": "Clamp: minimum value"
+            },
+            "Max": {
+              "type": "number",
+              "description": "Clamp: maximum value"
+            },
+            "CalculatorClass": {
+              "type": "string",
+              "description": "Custom: engine-specific class implementing the modifier logic"
+            }
+          }
+        },
+        "UserConfigurable": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this modifier's params are exposed in the player's settings screen. When true, the runtime SHOULD present relevant params (e.g. sensitivity slider, invert-Y toggle) in the controls menu."
+        },
+        "Metadata": {
+          "type": "object",
+          "properties": {
+            "DisplayName": {
+              "type": "string",
+              "description": "Name shown in settings UI when UserConfigurable"
+            },
+            "Description": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "scene": {
+      "title": "Scene Composition Schema",
+      "description": "Based on UGAS Specification v1.0.0-draft.5 - Section 18",
+      "type": "object",
+      "required": [
+        "Name",
+        "Placements"
+      ],
+      "properties": {
+        "Name": {
+          "type": "string",
+          "description": "Unique scene identifier"
+        },
+        "Extends": {
+          "type": "array",
+          "description": "Names of parent scenes this scene composes on top of, additively",
+          "items": {
+            "type": "string"
+          }
+        },
+        "Placements": {
+          "type": "array",
+          "description": "Gameplay Controller instances placed into the world",
+          "items": {
+            "type": "object",
+            "required": [
+              "Controller"
+            ],
+            "properties": {
+              "Controller": {
+                "type": "string",
+                "description": "Name of the GameplayControllerConfig to instantiate"
+              },
+              "InstanceId": {
+                "type": "string",
+                "description": "Stable identity for this instance, used as the persistence key"
+              },
+              "Position": {
+                "type": "array",
+                "description": "World position as x, y, z",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "Rotation": {
+                "type": "array",
+                "description": "World rotation as a quaternion x, y, z, w",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "StartupTags": {
+                "type": "array",
+                "description": "Tags granted to the instance on spawn",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "StartupEffects": {
+                "type": "array",
+                "description": "Effects applied to the instance on spawn",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "AttributeOverrides": {
+                "type": "object",
+                "description": "Base value overrides applied after the controller defaults",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "Enabled": {
+                "type": "boolean",
+                "description": "Whether the instance spawns active (default true)"
+              }
+            }
+          }
+        },
+        "Regions": {
+          "type": "array",
+          "description": "Standing zones active while the scene is loaded",
+          "items": {
+            "type": "object",
+            "required": [
+              "Name"
+            ],
+            "properties": {
+              "Name": {
+                "type": "string",
+                "description": "Region identifier"
+              },
+              "Shape": {
+                "type": "string",
+                "description": "Volume shape",
+                "enum": [
+                  "Sphere",
+                  "Box",
+                  "Capsule"
+                ]
+              },
+              "Position": {
+                "type": "array",
+                "description": "Region origin as x, y, z",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "Radius": {
+                "type": "number",
+                "description": "Sphere or capsule radius"
+              },
+              "GrantedTags": {
+                "type": "array",
+                "description": "Tags granted to occupants while inside the region",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "SpawnPoints": {
+          "type": "array",
+          "description": "Named poses for dynamic spawning at runtime",
+          "items": {
+            "type": "object",
+            "required": [
+              "Name"
+            ],
+            "properties": {
+              "Name": {
+                "type": "string",
+                "description": "Spawn point identifier"
+              },
+              "Position": {
+                "type": "array",
+                "description": "Spawn position as x, y, z",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "Rotation": {
+                "type": "array",
+                "description": "Spawn rotation as a quaternion x, y, z, w",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "Tags": {
+                "type": "array",
+                "description": "Classification tags for spawn selection",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "Metadata": {
+          "type": "object",
+          "description": "Non-normative authoring metadata",
+          "additionalProperties": true
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "$schema"
+        ],
+        "properties": {
+          "$schema": {
+            "pattern": "/schemas/attribute\\.json$"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/$defs/attribute"
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "$schema"
+        ],
+        "properties": {
+          "$schema": {
+            "pattern": "/schemas/attribute_set\\.json$"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/$defs/attribute_set"
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "$schema"
+        ],
+        "properties": {
+          "$schema": {
+            "pattern": "/schemas/gameplay_ability\\.json$"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/$defs/gameplay_ability"
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "$schema"
+        ],
+        "properties": {
+          "$schema": {
+            "pattern": "/schemas/gameplay_controller\\.json$"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/$defs/gameplay_controller"
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "$schema"
+        ],
+        "properties": {
+          "$schema": {
+            "pattern": "/schemas/gameplay_effect\\.json$"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/$defs/gameplay_effect"
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "$schema"
+        ],
+        "properties": {
+          "$schema": {
+            "pattern": "/schemas/gameplay_tag\\.json$"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/$defs/gameplay_tag"
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "$schema"
+        ],
+        "properties": {
+          "$schema": {
+            "pattern": "/schemas/input_action\\.json$"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/$defs/input_action"
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "$schema"
+        ],
+        "properties": {
+          "$schema": {
+            "pattern": "/schemas/input_action_set\\.json$"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/$defs/input_action_set"
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "$schema"
+        ],
+        "properties": {
+          "$schema": {
+            "pattern": "/schemas/input_mapping\\.json$"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/$defs/input_mapping"
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "$schema"
+        ],
+        "properties": {
+          "$schema": {
+            "pattern": "/schemas/input_modifier\\.json$"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/$defs/input_modifier"
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "$schema"
+        ],
+        "properties": {
+          "$schema": {
+            "pattern": "/schemas/scene\\.json$"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/$defs/scene"
+      }
+    }
+  ]
+}

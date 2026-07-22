@@ -1,0 +1,139 @@
+# Survival / Crafting genre input actions. Each document defines a single action that an ability or
+# movement system listens for. Actions are grouped into Action Sets (see input_action_set_survival.yaml)
+# and bound to hardware in Input Mappings. The action Names are the InputIDs the GrantedAbilities in
+# gameplay_controller.yaml reference (Gather -> GA_Gather, Sprint -> GA_Sprint, etc.).
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action.json
+Name: Move
+ValueType: Axis2D
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Movement
+Metadata:
+  DisplayName: Move
+  Description: Omnidirectional ground movement
+  Icon: ui/icons/move.png
+  Category: Movement
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action.json
+Name: Look
+ValueType: Axis2D
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Movement
+Metadata:
+  DisplayName: Look
+  Description: Camera / aim direction
+  Icon: ui/icons/look.png
+  Category: Movement
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action.json
+Name: Jump
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Movement
+Metadata:
+  DisplayName: Jump
+  Description: Jump or vault over obstacles
+  Icon: ui/icons/jump.png
+  Category: Movement
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action.json
+Name: Sprint
+ValueType: Digital
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Movement
+Metadata:
+  DisplayName: Sprint
+  Description: Hold to sprint at increased speed, draining stamina
+  Icon: ui/icons/sprint.png
+  Category: Movement
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action.json
+Name: Gather
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Gather
+Metadata:
+  DisplayName: Gather / Interact
+  Description: Harvest the targeted resource node or interact with the world
+  Icon: ui/icons/gather.png
+  Category: Survival
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action.json
+Name: Craft
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Craft
+Metadata:
+  DisplayName: Open Crafting
+  Description: Open the crafting menu / craft the selected recipe
+  Icon: ui/icons/craft.png
+  Category: Survival
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action.json
+Name: Build
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Build
+Metadata:
+  DisplayName: Build
+  Description: Enter build mode and place a structure
+  Icon: ui/icons/build.png
+  Category: Survival
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action.json
+Name: ConsumeFood
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Consume
+Metadata:
+  DisplayName: Eat
+  Description: Eat the selected food item to restore satiation
+  Icon: ui/icons/eat.png
+  Category: Survival
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action.json
+Name: Drink
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Consume
+Metadata:
+  DisplayName: Drink
+  Description: Drink from the selected water container to restore hydration
+  Icon: ui/icons/drink.png
+  Category: Survival

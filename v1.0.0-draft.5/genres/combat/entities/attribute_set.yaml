@@ -1,0 +1,128 @@
+# Fighter combat attribute set: survivability, the stagger (poise) and guard (block stamina)
+# meters, the super-meter resource, and the frame-data "feel" stats. Extends the core spec's
+# attribute model (no core attribute is redefined here). Base values describe a default
+# all-rounder fighter so the set is playable as shipped: 200 HP, a 100-point poise bar, an
+# empty 100-point super gauge, and 80 points of guard stamina.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/attribute_set.json
+Name: FighterCombatSet
+Attributes:
+  # --- Survivability (depleted by GE_MeleeDamage; reaching 0 Health is a KO) ---
+  - Name: MaxHealth
+    DefaultBaseValue: 200.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Maximum Health
+      UICategory: Survivability
+  - Name: Health
+    DefaultBaseValue: 200.0
+    Category: Resource
+    Clamping:
+      Min: 0
+      Max: MaxHealth
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Health
+      Description: Hit points; reaching 0 is a KO. ExecCalc_MeleeResolution writes the per-hit loss
+      UICategory: Survivability
+
+  # --- Poise / stagger meter (the signature stagger system) ---
+  - Name: MaxPoise
+    DefaultBaseValue: 100.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Maximum Poise
+      UICategory: Stagger
+  - Name: Poise
+    DefaultBaseValue: 100.0
+    Category: Resource
+    Clamping:
+      Min: 0
+      Max: MaxPoise
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Poise
+      Description: Stagger meter drained by poise damage; at 0 an engine threshold applies GE_Stagger
+      UICategory: Stagger
+
+  # --- Super meter (built by landing/taking hits, spent by GA_Special) ---
+  - Name: MaxSuper
+    DefaultBaseValue: 100.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Maximum Super
+      UICategory: Super
+  - Name: Super
+    DefaultBaseValue: 0.0
+    Category: Resource
+    Clamping:
+      Min: 0
+      Max: MaxSuper
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Super Meter
+      Description: Gauge built by dealing and taking damage (ExecCalc_MeleeResolution); spent by GE_SuperCost
+      UICategory: Super
+
+  # --- Offense & defense (read by the melee-resolution calc) ---
+  - Name: AttackPower
+    DefaultBaseValue: 20.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Attack Power
+      Description: Base offensive stat; scaled by each attack's move multiplier before mitigation
+      UICategory: Offense
+  - Name: Defense
+    DefaultBaseValue: 10.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Defense
+      Description: Flat pre-mitigation damage reduction subtracted by ExecCalc_MeleeResolution
+      UICategory: Defense
+
+  # --- Guard / block stamina (depletes while blocking; empties into a guard break) ---
+  - Name: MaxGuardHealth
+    DefaultBaseValue: 80.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Maximum Guard Health
+      UICategory: Defense
+  - Name: GuardHealth
+    DefaultBaseValue: 80.0
+    Category: Resource
+    Clamping:
+      Min: 0
+      Max: MaxGuardHealth
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Guard Health
+      Description: Block stamina; chipped by guard damage while blocking. At 0 the guard breaks (open to punish)
+      UICategory: Defense
+
+  # --- Movement ---
+  - Name: MoveSpeed
+    DefaultBaseValue: 500.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Movement Speed
+      Description: Ground movement speed; slowed while blocking (GE_Blocking, Block channel)
+      UICategory: Movement
+
+  # --- Runtime state (written by the melee-resolution calc each time a hit lands) ---
+  - Name: IncomingDamage
+    DefaultBaseValue: 0.0
+    Category: Meta
+    Metadata:
+      DisplayName: Incoming Damage
+      Description: Transient per-hit damage magnitude handed to ExecCalc_MeleeResolution before mitigation
+      UICategory: Telemetry
+  - Name: EffectiveDamage
+    DefaultBaseValue: 0.0
+    Category: Meta
+    Metadata:
+      DisplayName: Effective Damage
+      Description: Output of ExecCalc_MeleeResolution after Defense and the Block channel; for telemetry/UI
+      UICategory: Telemetry
+Metadata:
+  DisplayName: Fighter Combat Set
+  Description: Survivability, poise/stagger and guard meters, the super gauge, and frame-data stats for a melee fighter

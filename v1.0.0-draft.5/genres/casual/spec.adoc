@@ -1,0 +1,244 @@
+= UGAS Genre Pack: Casual
+Mickael Bonfill <jbltx>
+:revnumber: 1.0.0-draft.5
+:ugas-version: v1.0.0-draft.5
+:doctype: book
+:toc: left
+:toc-title: Table of Contents
+:toclevels: 4
+:stem: latexmath
+:source-highlighter: highlight.js
+:icons: font
+:sectanchors:
+:sectlinks:
+:docinfo: shared
+
+[[overview]]
+== Overview
+
+This genre pack targets *casual* games — the low-barrier, short-session, broadest-reach corner of
+the medium (the largest player base by reach in the link:taxonomy.html[genre taxonomy],
+<<family-casual-party,Casual & Party family>>). That family spans four flavors: *casual* (light,
+mass-market loops), *hypercasual* (one-thumb, instantly-understood mechanics), *idle / incremental*
+(clickers that play themselves), and *party* (social multiplayer minigames).
+
+Of these, this pack centers on the *idle / incremental* loop, because it is the richest UGAS
+showcase: its signature mechanic — *exponential economic growth* — is exactly the core modifier
+`Channel` mechanism (additive within a channel, multiplicative across channels) driving a *periodic*
+passive-income effect. Idle games turn UGAS's attribute pipeline into the entire game. The same
+pieces generalize directly to the *energy- / lives-gated* loops that define the rest of casual: the
+energy gate here is the same cost-gated-ability pattern a hypercasual "play a round" button or a
+match-3's "lives" system uses.
+
+Unlike the Platformer, Racing, and ARPG packs, the core specification ships no dedicated casual case
+study, so this pack is designed from first principles. It still leans entirely on core constructs —
+the modifier `Channel` mechanism (link:../../SPEC.adoc[core spec] §5.3) for income aggregation, a
+*periodic* `Infinite` effect (§9.3) for the income tick, an `AttributeBased` magnitude (§9.4.2) so
+that tick pays out the live income rate, a custom `ExecutionCalculation` (§9.5) for offline progress,
+and effect-granted tags (§7.5) for the meta-progression state machine.
+
+[[relationship-to-core-spec]]
+== Relationship to the core specification
+
+This document is *additive*. It defines genre-specific Attributes, Tags, Abilities, and
+Effects on top of the core Universal Gameplay Ability System specification.
+
+* It MUST NOT redefine, override, or contradict any concept in the core spec.
+* All entities in `entities/` validate against the same `schemas/*.json` as the core.
+* It *reuses* the core lifecycle tag (`State.Alive`) by reference — the Idle action set activates
+  while the profile is alive — and adds casual-specific states (`Meta.State.Prestiged`,
+  `Booster.State.DoubleIncome`, …).
+* Meta-progression state is mutated *only through Effects* (core spec §7.5) — abilities gate on tags
+  and apply Effects, never write tags directly — and the income stacking is the core modifier
+  `Channel` mechanism, not a new construct.
+
+[[genre-attributes]]
+== Genre Attributes
+
+Defined in `entities/attribute_set.yaml` as the `IdleEconomySet` set. The base values describe a
+fresh save — zero income, full energy, run one — so the set is playable as shipped.
+
+[cols="1,1,3",options="header"]
+|===
+| Attribute | Category | Role
+
+| `Currency` | Resource | Soft currency the loop accumulates; clamped `Min: 0` with no upper bound (idle big numbers). Spent by `GA_BuyGenerator`.
+| `CurrencyPerSecond` | Statistic | The aggregated passive-income rate — driven by the flat `Add` subtotal of installed generators plus the multiplicative `Prestige` and `Booster` channels.
+| `PrestigeMultiplier` | Statistic | Display of the `Prestige`-channel factor; clamped `Min: 1.0` and multiplied up by each `GE_PrestigeBoost`.
+| `MaxEnergy` / `Energy` | Statistic / Resource | `Energy` is clamped to `[0, MaxEnergy]`; spent by `GA_Play` and refilled by `GE_EnergyRegen`. The energy gate.
+| `Stage` / `Level` | Statistic | Run progression — current world and active-area tier; advanced by milestones and reset on prestige.
+| `LifetimeCurrency` | Meta | Total earned this run; the engine compares it against the prestige threshold to grant `Meta.State.PrestigeReady`.
+| `OfflineSeconds` | Meta | Elapsed real time since the session was last seen; read by `ExecCalc_OfflineProgress` to pay accrued income on return.
+|===
+
+[[genre-economic-growth]]
+== Exponential economic growth (the core idle mechanic)
+
+An idle game lives or dies on its *growth curve*, and in UGAS that curve is the modifier pipeline
+itself. The whole economy lands on one attribute — `CurrencyPerSecond` — which a *periodic* effect
+then pays into `Currency` every tick.
+
+=== Income aggregation: flat Add subtotal multiplied by two channels
+
+`CurrencyPerSecond` is the showcase of the core `Channel` mechanism. Recall the pipeline (§5.3): flat
+`Add` modifiers sum first, then each `Multiply` channel contributes an effective factor of
+latexmath:[1 + \sum m_k], and *those channel factors multiply across each other*. The idle economy
+maps cleanly onto this:
+
+[cols="1,3,2",options="header"]
+|===
+| Source | What goes in it | Stacking
+
+| Generators | Flat `Add` to `CurrencyPerSecond`, one per installed generator (`Operation: Add`) | Additive (flat sum — not a channel)
+| `Prestige` channel | `Multiply` from `GE_PrestigeBoost` | Additive within, multiplied across the others
+| `Booster` channel | `Multiply` from `GE_DoubleIncome` | Additive within, multiplied across the others
+|===
+
+Generators contribute *flat* income, so N of them sum in the additive pass — `GE_Generator_Mine`
+(`entities/effect_generator_mine.yaml`) adds latexmath:[+5], `GE_Generator_Factory` adds
+latexmath:[+50]. Prestige and boosters each live in their *own* `Multiply` channel, so they multiply
+*across* the generator total rather than diluting into it — which is exactly what produces the
+runaway big-number growth idle players chase.
+
+.Worked example (`entities/gameplay_controller.yaml`)
+A save with one generator's worth of income, after a single prestige:
+
+[stem]
+++++
+\text{CurrencyPerSecond} = \underbrace{\left(0 + 50\right)}_{\text{base + generators (flat Add)}} \times \underbrace{\left(1 + 2.0\right)}_{\text{Prestige channel}} = 50 \times 3.0 = 150
+++++
+
+The base of `0` matters: because generators use flat `Add`, the channels multiply a *non-zero*
+subtotal (here `50`), so the arithmetic stays clean — a generator-less save earns nothing, exactly as
+intended. The worked controller drives this further with three mines, a factory, *and* a double-income
+booster active at once (see <<genre-passive-income>>).
+
+=== Multiple modifiers within one channel
+
+The "additive within a channel" half of the rule is what lets prestige *tiers* compound smoothly:
+two `GE_PrestigeBoost` instances of latexmath:[+2.0] in the `Prestige` channel yield
+latexmath:[1 + 2.0 + 2.0 = 5.0\times], not latexmath:[3.0 \times 3.0 = 9.0\times] — additive within the
+channel, so prestige power scales predictably rather than exploding. `PrestigeMultiplier` mirrors the
+channel factor for display.
+
+[[genre-passive-income]]
+== Periodic passive income
+
+`GE_PassiveIncome` (`entities/effect_passive_income.yaml`) is the heartbeat of the loop: an `Infinite`
+effect with `Period: { Period: 1.0 }`, which behaves like an `Instant` effect fired once per second
+(§9.3), permanently adding to the `Currency` base value each tick. The amount is *not* static — it is
+the live, fully-aggregated `CurrencyPerSecond` — so the magnitude is `AttributeBased` (§9.4.2) with
+`BackingAttribute: CurrencyPerSecond`:
+
+[stem]
+++++
+\Delta\text{Currency}_{\text{tick}} = \left(\text{CurrencyPerSecond} + 0\right) \times 1.0 + 0
+++++
+
+As generators and prestige push `CurrencyPerSecond` up, every tick automatically pays out more, with
+no change to the effect itself. For the worked save — three mines (latexmath:[3 \times 5 = 15]) plus a
+factory (latexmath:[+50]) = latexmath:[65] flat, the `Prestige` channel (latexmath:[\times 3.0]), and
+the `Booster` channel (latexmath:[\times 2.0]):
+
+[stem]
+++++
+\text{CurrencyPerSecond} = 65 \times 3.0 \times 2.0 = 390 \quad\Rightarrow\quad +390\ \text{Currency / tick}
+++++
+
+These are exactly the `CurrentValue` entries recorded for the example profile.
+
+[[genre-energy-gate]]
+== The energy gate
+
+Active casual play is rationed by *energy* — the same lever as a match-3's lives or a hypercasual
+"plays remaining". `GA_Play` (`entities/ability_play.yaml`) declares a `Cost` effect (`GE_PlayCost`,
+an `Energy` subtraction). Because an ability cannot activate if it cannot pay its cost, an empty
+`Energy` pool simply blocks play — *no explicit energy-check tag is needed*. This is the exact
+analogue of the Shooter pack's ammo gate (`GA_Fire` cannot fire on an empty magazine); here the
+"magazine" is energy and it refills on a timer rather than on reload.
+
+The refill is `GE_EnergyRegen` (`entities/effect_energy_regen.yaml`): an `Infinite` + `Period` effect
+that adds `Energy` every few seconds, capped by the attribute's own `[0, MaxEnergy]` clamp. `GA_Play`
+is additionally blocked while `Session.State.OutOfEnergy` so the UI can present a refill prompt
+instead of a silent failure. `GE_PlayCost` is trivial (a flat resource cost) and is referenced by
+name rather than shipped as a file, the same convention the Racing and Shooter packs use for their
+cost/cooldown effects.
+
+[[genre-tags]]
+== Genre Tags
+
+Defined in `entities/tag_registry.yaml` (additive only):
+
+* *Meta-progression states* — `Meta.State.PrestigeReady` (threshold gate for prestige),
+  `Meta.State.Prestiged` (granted by `GE_PrestigeBoost`).
+* *Booster states* — `Booster.State.DoubleIncome` (granted by `GE_DoubleIncome`).
+* *Generator classification* — `Generator.Type.Mine|Factory|Bank` (`AllowMultiple`, so the engine can
+  count installed generators).
+* *Ability types* — `Ability.Type.Tap|Buy|Prestige|Play`.
+* *Session state* — `Session.State.OutOfEnergy`.
+
+[[genre-abilities]]
+== Genre Abilities
+
+* `entities/ability_tap.yaml` — `GA_Tap`: the active click; applies `GE_TapReward` (`+Currency`). No
+  cost, no cooldown — the lowest-barrier interaction.
+* `entities/ability_buy_generator.yaml` — `GA_BuyGenerator`: spends `Currency` (`Cost:
+  GE_BuyGeneratorCost`, referenced by name) and applies a `GE_Generator_*`, raising
+  `CurrencyPerSecond`. The cost gate prevents buying without enough currency.
+* `entities/ability_prestige.yaml` — `GA_Prestige`: requires the threshold tag
+  `Meta.State.PrestigeReady`; applies `GE_PrestigeBoost`. The reset itself is documented as engine
+  logic.
+* `entities/ability_play.yaml` — `GA_Play`: spends `Energy` (`Cost: GE_PlayCost`); blocked while
+  `Session.State.OutOfEnergy`. The energy-gated active round.
+
+[[genre-effects]]
+== Genre Effects
+
+* `entities/effect_passive_income.yaml` — `GE_PassiveIncome`: `Infinite` + `Period`; `AttributeBased`
+  `+Currency` from `CurrencyPerSecond` each tick.
+* `entities/effect_generator_mine.yaml` — `GE_Generator_Mine`: `Infinite`; flat `+5`
+  `CurrencyPerSecond`; grants `Generator.Type.Mine`.
+* `entities/effect_generator_factory.yaml` — `GE_Generator_Factory`: `Infinite`; flat `+50`
+  `CurrencyPerSecond`; grants `Generator.Type.Factory`.
+* `entities/effect_prestige_boost.yaml` — `GE_PrestigeBoost`: `Infinite`; `Multiply` in the
+  `Prestige` channel on `CurrencyPerSecond` and `PrestigeMultiplier`; grants `Meta.State.Prestiged`.
+* `entities/effect_energy_regen.yaml` — `GE_EnergyRegen`: `Infinite` + `Period`; `+Energy` each tick.
+* `entities/effect_double_income.yaml` — `GE_DoubleIncome`: `HasDuration` reward; latexmath:[\times 2]
+  `CurrencyPerSecond` in the `Booster` channel; grants `Booster.State.DoubleIncome`.
+* `entities/effect_offline_progress.yaml` — `GE_OfflineProgress`: `Instant`; runs the
+  `ExecCalc_OfflineProgress` `ExecutionCalculation` to pay accrued offline income into `Currency`.
+* `entities/effect_tap_reward.yaml` — `GE_TapReward`: `Instant`; flat `+Currency`, the payload of
+  `GA_Tap`.
+
+[[genre-engine-seams]]
+== Engine seams
+
+Three pieces are deliberately left to the adopting engine — the rest is data:
+
+* *Prestige reset* — `GA_Prestige` triggers the bookkeeping wipe (zero `Currency`, remove the
+  generator effects, reset `Stage`/`Level`, re-grant `GE_PassiveIncome`). UGAS captures the *reward*
+  (`GE_PrestigeBoost`) and the *gate*; the wipe itself is engine logic.
+* *Threshold detection* — attribute comparisons cannot be activation tags, so the engine watches
+  `LifetimeCurrency` against the prestige requirement and grants `Meta.State.PrestigeReady` (and
+  `Session.State.OutOfEnergy` when `Energy` hits 0).
+* *`ExecCalc_OfflineProgress`* — the idle "welcome back" payout reads `CurrencyPerSecond` and
+  `OfflineSeconds` and writes a capped/discounted lump sum into `Currency`. This is the idle analogue
+  of the Racing pack's traction calculator and the Shooter pack's hit-resolution calculator — the
+  seam where the genre's signature math plugs into UGAS.
+
+[[using-this-pack]]
+== Using this pack
+
+. Copy `genres/casual/` into your project (or load `entities/` directly via the
+  `ugas-schema-author` skill).
+. Tune the economy in `IdleEconomySet` first — generator income values and the prestige magnitude
+  set the whole growth curve — then add generator tiers as new `GE_Generator_*` effects and rewards as
+  `Booster`-channel effects.
+. Author new income modifiers by choosing the right home: per-generator income is flat `Add`;
+  permanent multipliers go in the `Prestige` channel; timed multipliers in the `Booster` channel.
+  Reserve an `ExecutionCalculation` for non-linear math like offline progress.
+. Implement the engine seams (the prestige reset, threshold detection, and `ExecCalc_OfflineProgress`);
+  everything else is data.
+. Add new states as `State.*` / `Meta.State.*` tags granted by Effects (never mutate tags directly),
+  and new mechanics as Effects + Abilities.
+. Validate with `python scripts/validate_schema_examples.py` before committing.

@@ -1,0 +1,35 @@
+# Area strike: a caster ability that spends Energy to hit an area with Magic damage and a slow. Costs
+# Energy (GE_AreaStrikeCost: a flat Energy subtraction) and goes on a cooldown (GE_AreaStrikeCooldown).
+# It applies GE_AreaStrikeDamage (instant Magic damage, via ExecCalc_ArmorMitigation) and GE_Slow to
+# every hostile caught in the blast via ApplyEffectToActorsInRadius — sparing Faction.Friendly. The
+# reference blast is centered on the caster; picking a ground location is an engine targeting seam
+# (§17.2). Energy refills over time via the periodic GE_EnergyRegen. GE_AreaStrikeCost and
+# GE_AreaStrikeCooldown are trivial and referenced by name rather than shipped as files.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_ability.json
+Name: GA_AreaStrike
+Tags:
+  AbilityTags:
+    - Ability.Type.Cast
+    - DamageType.Magic
+  ActivationRequiredTags:
+    - State.Alive
+  ActivationBlockedTags:
+    - Unit.State.Constructing
+Cost: GE_AreaStrikeCost
+Cooldown: GE_AreaStrikeCooldown
+Tasks:
+  - Type: ApplyEffectToActorsInRadius
+    Params:
+      EffectClass: GE_AreaStrikeDamage
+      Radius: 4.0
+      IgnoreTargetsWithTag: Faction.Friendly
+  - Type: ApplyEffectToActorsInRadius
+    Params:
+      EffectClass: GE_Slow
+      Radius: 4.0
+      IgnoreTargetsWithTag: Faction.Friendly
+Metadata:
+  DisplayName: Area Strike
+  Description: Spend energy to blast a target area with magic damage and a slowing field
+  Icon: ui/icons/area_strike.png

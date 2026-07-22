@@ -1,0 +1,34 @@
+# Default single-target weapon strike. Free (no cost), short montage, applies weapon damage to the
+# acquired target. PlayMontage / WaitGameplayEvent are engine seams (the montage plays the swing and the
+# hit-window event fires mid-anim); a reference runtime treats them as no-ops. The actual hit is the
+# modeled ApplyEffectToTarget, which needs a MaxRange + a target filter to self-acquire in the reference
+# runtime — it applies GE_BasicAttackDamage to the nearest Team.Hostile in range. Affiliation (who is
+# Team.Hostile) is the engine team model's job (§17.2). A real title supplies the exact victim from the
+# player's target / the montage hit-window instead.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_ability.json
+Name: GA_BasicAttack
+Tags:
+  AbilityTags:
+    - Ability.Type.Melee
+    - DamageType.Physical
+  ActivationBlockedTags:
+    - State.Dead
+    - State.Debuff.Stunned
+Tasks:
+  - Type: PlayMontage
+    Params:
+      MontageToPlay: Anim_BasicAttack
+      PlayRate: 1.0
+  - Type: WaitGameplayEvent
+    Params:
+      EventTag: Event.Montage.HitWindow
+  - Type: ApplyEffectToTarget
+    Params:
+      EffectClass: GE_BasicAttackDamage
+      MaxRange: 2.5
+      RequireTag: Team.Hostile
+Metadata:
+  DisplayName: Basic Attack
+  Description: Strike a single target for weapon damage
+  Icon: ui/icons/basic_attack.png

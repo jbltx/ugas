@@ -1,0 +1,30 @@
+# Construct building: pay the resource cost, place the structure as a site, and raise it over the
+# build window. Costs Minerals (GE_BuildCost: a flat Minerals subtraction) - because an ability
+# cannot activate if it cannot pay its cost, an under-resourced player simply cannot start the build,
+# so no explicit "enough minerals" tag is needed. On activation it applies GE_Constructing to the new
+# site (granting Unit.State.Constructing, which blocks the site's own abilities), waits the build
+# window, then the state expires and the structure is live. GE_BuildCost is trivial (a flat resource
+# cost) and is referenced by name rather than shipped as a file, the convention the racing/shooter
+# packs use for their cost/cooldown effects.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_ability.json
+Name: GA_ConstructBuilding
+Tags:
+  AbilityTags:
+    - Ability.Type.Build
+  ActivationRequiredTags:
+    - State.Alive
+  ActivationBlockedTags:
+    - Unit.State.Constructing
+Cost: GE_BuildCost
+Tasks:
+  - Type: ApplyEffectToTarget
+    Params:
+      EffectClass: GE_Constructing
+  - Type: WaitDelay
+    Params:
+      Duration: 20.0
+Metadata:
+  DisplayName: Construct Building
+  Description: Spend minerals to place a structure and build it over time
+  Icon: ui/icons/build.png

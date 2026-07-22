@@ -1,0 +1,1306 @@
+{
+  "spec": "ugas",
+  "version": "1.0.0-draft.5",
+  "packs": [
+    {
+      "id": "action",
+      "title": "Action / Action-Adventure",
+      "scope": "Action / platformer — Mario, Celeste, Hollow Knight.",
+      "signatureMechanic": "Movement state machine (grounded / airborne / coyote time) with a variable-height jump, kept consistent as abilities, physics, and power-ups all read and write it.",
+      "specPath": "v1.0.0-draft.5/genres/action/spec.adoc",
+      "entities": [
+        {
+          "id": "GA_GroundPound",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/action/entities/ability_ground_pound.yaml"
+        },
+        {
+          "id": "GA_Jump",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/action/entities/ability_jump.yaml"
+        },
+        {
+          "id": "PlatformerMovementSet",
+          "type": "attribute_set",
+          "path": "v1.0.0-draft.5/genres/action/entities/attribute_set.yaml"
+        },
+        {
+          "id": "GE_ContactDamage",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/action/entities/effect_contact_damage.yaml"
+        },
+        {
+          "id": "GE_Grounded",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/action/entities/effect_grounded.yaml"
+        },
+        {
+          "id": "GE_InAir",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/action/entities/effect_in_air.yaml"
+        },
+        {
+          "id": "GE_InvincibilityStar",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/action/entities/effect_invincibility_star.yaml"
+        },
+        {
+          "id": "GE_JumpCut",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/action/entities/effect_jump_cut.yaml"
+        },
+        {
+          "id": "GE_SuperMushroom",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/action/entities/effect_super_mushroom.yaml"
+        },
+        {
+          "id": "gameplay_controller",
+          "type": "controller",
+          "path": "v1.0.0-draft.5/genres/action/entities/gameplay_controller.yaml"
+        },
+        {
+          "id": "OnFoot",
+          "type": "input_action_set",
+          "path": "v1.0.0-draft.5/genres/action/entities/input_action_set_onfoot.yaml"
+        },
+        {
+          "id": "Move",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/action/entities/input_actions.yaml"
+        },
+        {
+          "id": "Jump",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/action/entities/input_actions.yaml"
+        },
+        {
+          "id": "GroundPound",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/action/entities/input_actions.yaml"
+        },
+        {
+          "id": "input_mapping_onfoot_gamepad",
+          "type": "input_mapping",
+          "path": "v1.0.0-draft.5/genres/action/entities/input_mapping_onfoot_gamepad.yaml"
+        },
+        {
+          "id": "input_mapping_onfoot_pc",
+          "type": "input_mapping",
+          "path": "v1.0.0-draft.5/genres/action/entities/input_mapping_onfoot_pc.yaml"
+        },
+        {
+          "id": "StickDeadzone",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/action/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "tag_registry",
+          "type": "tag",
+          "path": "v1.0.0-draft.5/genres/action/entities/tag_registry.yaml"
+        }
+      ]
+    },
+    {
+      "id": "casual",
+      "title": "Casual",
+      "scope": "Casual / hypercasual / idle / party — low-barrier, short-session, mass-market loops.",
+      "signatureMechanic": "Lightweight tap / one-thumb / idle-incremental loops with simple score and progression resources.",
+      "specPath": "v1.0.0-draft.5/genres/casual/spec.adoc",
+      "entities": [
+        {
+          "id": "GA_BuyGenerator",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/casual/entities/ability_buy_generator.yaml"
+        },
+        {
+          "id": "GA_Play",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/casual/entities/ability_play.yaml"
+        },
+        {
+          "id": "GA_Prestige",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/casual/entities/ability_prestige.yaml"
+        },
+        {
+          "id": "GA_Tap",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/casual/entities/ability_tap.yaml"
+        },
+        {
+          "id": "IdleEconomySet",
+          "type": "attribute_set",
+          "path": "v1.0.0-draft.5/genres/casual/entities/attribute_set.yaml"
+        },
+        {
+          "id": "GE_DoubleIncome",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/casual/entities/effect_double_income.yaml"
+        },
+        {
+          "id": "GE_EnergyRegen",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/casual/entities/effect_energy_regen.yaml"
+        },
+        {
+          "id": "GE_Generator_Factory",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/casual/entities/effect_generator_factory.yaml"
+        },
+        {
+          "id": "GE_Generator_Mine",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/casual/entities/effect_generator_mine.yaml"
+        },
+        {
+          "id": "GE_OfflineProgress",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/casual/entities/effect_offline_progress.yaml"
+        },
+        {
+          "id": "GE_PassiveIncome",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/casual/entities/effect_passive_income.yaml"
+        },
+        {
+          "id": "GE_PrestigeBoost",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/casual/entities/effect_prestige_boost.yaml"
+        },
+        {
+          "id": "GE_TapReward",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/casual/entities/effect_tap_reward.yaml"
+        },
+        {
+          "id": "gameplay_controller",
+          "type": "controller",
+          "path": "v1.0.0-draft.5/genres/casual/entities/gameplay_controller.yaml"
+        },
+        {
+          "id": "Idle",
+          "type": "input_action_set",
+          "path": "v1.0.0-draft.5/genres/casual/entities/input_action_set_idle.yaml"
+        },
+        {
+          "id": "Tap",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/casual/entities/input_actions.yaml"
+        },
+        {
+          "id": "BuyGenerator",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/casual/entities/input_actions.yaml"
+        },
+        {
+          "id": "Prestige",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/casual/entities/input_actions.yaml"
+        },
+        {
+          "id": "Play",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/casual/entities/input_actions.yaml"
+        },
+        {
+          "id": "input_mapping_idle_pc",
+          "type": "input_mapping",
+          "path": "v1.0.0-draft.5/genres/casual/entities/input_mapping_idle_pc.yaml"
+        },
+        {
+          "id": "input_mapping_idle_touch",
+          "type": "input_mapping",
+          "path": "v1.0.0-draft.5/genres/casual/entities/input_mapping_idle_touch.yaml"
+        },
+        {
+          "id": "TapDebounce",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/casual/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "TouchPressThreshold",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/casual/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "tag_registry",
+          "type": "tag",
+          "path": "v1.0.0-draft.5/genres/casual/entities/tag_registry.yaml"
+        }
+      ]
+    },
+    {
+      "id": "combat",
+      "title": "Combat",
+      "scope": "Skill-based melee combat — fighters, brawlers, hack-and-slash (Street Fighter, Tekken, God of War).",
+      "signatureMechanic": "Frame-data states (hitstun / blockstun) with a poise -> stagger punish system, a guard / block-damage channel, and meter-spent specials expressed through cancel tags.",
+      "specPath": "v1.0.0-draft.5/genres/combat/spec.adoc",
+      "entities": [
+        {
+          "id": "GA_Block",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/combat/entities/ability_block.yaml"
+        },
+        {
+          "id": "GA_HeavyAttack",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/combat/entities/ability_heavy_attack.yaml"
+        },
+        {
+          "id": "GA_LightAttack",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/combat/entities/ability_light_attack.yaml"
+        },
+        {
+          "id": "GA_Special",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/combat/entities/ability_special.yaml"
+        },
+        {
+          "id": "FighterCombatSet",
+          "type": "attribute_set",
+          "path": "v1.0.0-draft.5/genres/combat/entities/attribute_set.yaml"
+        },
+        {
+          "id": "GE_Blocking",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/combat/entities/effect_blocking.yaml"
+        },
+        {
+          "id": "GE_Blockstun",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/combat/entities/effect_blockstun.yaml"
+        },
+        {
+          "id": "GE_Hitstun",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/combat/entities/effect_hitstun.yaml"
+        },
+        {
+          "id": "GE_MeleeDamage",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/combat/entities/effect_melee_damage.yaml"
+        },
+        {
+          "id": "GE_Stagger",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/combat/entities/effect_stagger.yaml"
+        },
+        {
+          "id": "gameplay_controller",
+          "type": "controller",
+          "path": "v1.0.0-draft.5/genres/combat/entities/gameplay_controller.yaml"
+        },
+        {
+          "id": "Brawl",
+          "type": "input_action_set",
+          "path": "v1.0.0-draft.5/genres/combat/entities/input_action_set_brawl.yaml"
+        },
+        {
+          "id": "LightAttack",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/combat/entities/input_actions.yaml"
+        },
+        {
+          "id": "HeavyAttack",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/combat/entities/input_actions.yaml"
+        },
+        {
+          "id": "Block",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/combat/entities/input_actions.yaml"
+        },
+        {
+          "id": "Special",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/combat/entities/input_actions.yaml"
+        },
+        {
+          "id": "Move",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/combat/entities/input_actions.yaml"
+        },
+        {
+          "id": "input_mapping_brawl_gamepad",
+          "type": "input_mapping",
+          "path": "v1.0.0-draft.5/genres/combat/entities/input_mapping_brawl_gamepad.yaml"
+        },
+        {
+          "id": "StickDeadzone",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/combat/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "RadialScaling",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/combat/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "TriggerThreshold",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/combat/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "tag_registry",
+          "type": "tag",
+          "path": "v1.0.0-draft.5/genres/combat/entities/tag_registry.yaml"
+        }
+      ]
+    },
+    {
+      "id": "puzzle",
+      "title": "Puzzle",
+      "scope": "Match / board puzzle — Bejeweled, Candy Crush, Puzzle & Dragons.",
+      "signatureMechanic": "Match-scoring pipeline: a base match score multiplied by a combo factor (consecutive matches) and a chain factor (cascade depth), against a spent move economy.",
+      "specPath": "v1.0.0-draft.5/genres/puzzle/spec.adoc",
+      "entities": [
+        {
+          "id": "GA_ActivatePowerup",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/ability_activate_powerup.yaml"
+        },
+        {
+          "id": "GA_SwapTiles",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/ability_swap_tiles.yaml"
+        },
+        {
+          "id": "GA_UseHint",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/ability_use_hint.yaml"
+        },
+        {
+          "id": "PuzzleBoardSet",
+          "type": "attribute_set",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/attribute_set.yaml"
+        },
+        {
+          "id": "GE_CascadeChain",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/effect_cascade_chain.yaml"
+        },
+        {
+          "id": "GE_ComboBuild",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/effect_combo_build.yaml"
+        },
+        {
+          "id": "GE_MatchClear",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/effect_match_clear.yaml"
+        },
+        {
+          "id": "GE_PowerupBomb",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/effect_powerup_bomb.yaml"
+        },
+        {
+          "id": "GE_ResetChain",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/effect_reset_chain.yaml"
+        },
+        {
+          "id": "GE_TimeBonus",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/effect_time_bonus.yaml"
+        },
+        {
+          "id": "gameplay_controller",
+          "type": "controller",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/gameplay_controller.yaml"
+        },
+        {
+          "id": "BoardControls",
+          "type": "input_action_set",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/input_action_set_board.yaml"
+        },
+        {
+          "id": "SelectTile",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/input_actions.yaml"
+        },
+        {
+          "id": "ActivatePowerup",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/input_actions.yaml"
+        },
+        {
+          "id": "UseHint",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/input_actions.yaml"
+        },
+        {
+          "id": "input_mapping_board_pc",
+          "type": "input_mapping",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/input_mapping_board_pc.yaml"
+        },
+        {
+          "id": "input_mapping_board_touch",
+          "type": "input_mapping",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/input_mapping_board_touch.yaml"
+        },
+        {
+          "id": "tag_registry",
+          "type": "tag",
+          "path": "v1.0.0-draft.5/genres/puzzle/entities/tag_registry.yaml"
+        }
+      ]
+    },
+    {
+      "id": "racing",
+      "title": "Racing",
+      "scope": "Driving & racing — Forza, Gran Turismo, arcade-kart.",
+      "signatureMechanic": "Traction pipeline that stays coherent as track surfaces, tuning parts, and physics all push on grip at once.",
+      "specPath": "v1.0.0-draft.5/genres/racing/spec.adoc",
+      "entities": [
+        {
+          "id": "GA_Drift",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/racing/entities/ability_drift.yaml"
+        },
+        {
+          "id": "GA_NitroBoost",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/racing/entities/ability_nitro_boost.yaml"
+        },
+        {
+          "id": "VehiclePerformanceSet",
+          "type": "attribute_set",
+          "path": "v1.0.0-draft.5/genres/racing/entities/attribute_set.yaml"
+        },
+        {
+          "id": "GE_Biome_Asphalt",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/racing/entities/effect_biome_asphalt.yaml"
+        },
+        {
+          "id": "GE_Biome_Mud",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/racing/entities/effect_biome_mud.yaml"
+        },
+        {
+          "id": "GE_DriftCharge",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/racing/entities/effect_drift_charge.yaml"
+        },
+        {
+          "id": "GE_NitroBoost",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/racing/entities/effect_nitro_boost.yaml"
+        },
+        {
+          "id": "GE_Traction_Update",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/racing/entities/effect_traction_update.yaml"
+        },
+        {
+          "id": "GE_Tuning_Sport",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/racing/entities/effect_tuning_sport.yaml"
+        },
+        {
+          "id": "gameplay_controller",
+          "type": "controller",
+          "path": "v1.0.0-draft.5/genres/racing/entities/gameplay_controller.yaml"
+        },
+        {
+          "id": "RacingOnTrack",
+          "type": "input_action_set",
+          "path": "v1.0.0-draft.5/genres/racing/entities/input_action_set_racing.yaml"
+        },
+        {
+          "id": "Steer",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/racing/entities/input_actions.yaml"
+        },
+        {
+          "id": "Throttle",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/racing/entities/input_actions.yaml"
+        },
+        {
+          "id": "Brake",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/racing/entities/input_actions.yaml"
+        },
+        {
+          "id": "Boost",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/racing/entities/input_actions.yaml"
+        },
+        {
+          "id": "Drift",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/racing/entities/input_actions.yaml"
+        },
+        {
+          "id": "Look",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/racing/entities/input_actions.yaml"
+        },
+        {
+          "id": "input_mapping_racing_gamepad",
+          "type": "input_mapping",
+          "path": "v1.0.0-draft.5/genres/racing/entities/input_mapping_racing_gamepad.yaml"
+        },
+        {
+          "id": "StickDeadzone",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/racing/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "TriggerDeadzone",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/racing/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "SteeringSensitivity",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/racing/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "tag_registry",
+          "type": "tag",
+          "path": "v1.0.0-draft.5/genres/racing/entities/tag_registry.yaml"
+        }
+      ]
+    },
+    {
+      "id": "rpg",
+      "title": "Role-Playing (RPG)",
+      "scope": "Action-RPG (ARPG) — Diablo, Path of Exile.",
+      "signatureMechanic": "Multiplicative damage pipeline across item-driven modifier channels that stays sane as item counts grow.",
+      "specPath": "v1.0.0-draft.5/genres/rpg/spec.adoc",
+      "entities": [
+        {
+          "id": "GA_BasicAttack",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/rpg/entities/ability_basic_attack.yaml"
+        },
+        {
+          "id": "GA_Whirlwind",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/rpg/entities/ability_whirlwind.yaml"
+        },
+        {
+          "id": "RPGCoreAttributes",
+          "type": "attribute_set",
+          "path": "v1.0.0-draft.5/genres/rpg/entities/attribute_set.yaml"
+        },
+        {
+          "id": "GE_BasicAttackDamage",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/rpg/entities/effect_basic_attack_damage.yaml"
+        },
+        {
+          "id": "GE_MainStat_Strength",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/rpg/entities/effect_mainstat_strength.yaml"
+        },
+        {
+          "id": "GE_Regeneration",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/rpg/entities/effect_regeneration.yaml"
+        },
+        {
+          "id": "GE_Weapon_FireSword",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/rpg/entities/effect_weapon_firesword.yaml"
+        },
+        {
+          "id": "gameplay_controller",
+          "type": "controller",
+          "path": "v1.0.0-draft.5/genres/rpg/entities/gameplay_controller.yaml"
+        },
+        {
+          "id": "OnFoot",
+          "type": "input_action_set",
+          "path": "v1.0.0-draft.5/genres/rpg/entities/input_action_set_onfoot.yaml"
+        },
+        {
+          "id": "BasicAttack",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/rpg/entities/input_actions.yaml"
+        },
+        {
+          "id": "Ability1",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/rpg/entities/input_actions.yaml"
+        },
+        {
+          "id": "Move",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/rpg/entities/input_actions.yaml"
+        },
+        {
+          "id": "Look",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/rpg/entities/input_actions.yaml"
+        },
+        {
+          "id": "input_mapping_onfoot_pc",
+          "type": "input_mapping",
+          "path": "v1.0.0-draft.5/genres/rpg/entities/input_mapping_onfoot_pc.yaml"
+        },
+        {
+          "id": "MouseSensitivity",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/rpg/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "tag_registry",
+          "type": "tag",
+          "path": "v1.0.0-draft.5/genres/rpg/entities/tag_registry.yaml"
+        }
+      ]
+    },
+    {
+      "id": "shooter",
+      "title": "Shooter",
+      "scope": "FPS / shooter — Call of Duty, Halo, Apex, Counter-Strike.",
+      "signatureMechanic": "Accuracy aggregated across modifier channels, an ammo economy (magazine plus reserve), and hit resolution coupling regenerating shields, hitzone multipliers, and range falloff.",
+      "specPath": "v1.0.0-draft.5/genres/shooter/spec.adoc",
+      "entities": [
+        {
+          "id": "GA_Aim",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/ability_aim.yaml"
+        },
+        {
+          "id": "GA_Fire",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/ability_fire.yaml"
+        },
+        {
+          "id": "GA_Reload",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/ability_reload.yaml"
+        },
+        {
+          "id": "ShooterCombatSet",
+          "type": "attribute_set",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/attribute_set.yaml"
+        },
+        {
+          "id": "GE_ADS",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/effect_ads.yaml"
+        },
+        {
+          "id": "GE_AttachmentBarrel",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/effect_attachment_barrel.yaml"
+        },
+        {
+          "id": "GE_BallisticDamage",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/effect_ballistic_damage.yaml"
+        },
+        {
+          "id": "GE_EquipRifle",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/effect_equip_rifle.yaml"
+        },
+        {
+          "id": "GE_Reload",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/effect_reload.yaml"
+        },
+        {
+          "id": "GE_Reloading",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/effect_reloading.yaml"
+        },
+        {
+          "id": "gameplay_controller",
+          "type": "controller",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/gameplay_controller.yaml"
+        },
+        {
+          "id": "OnFoot",
+          "type": "input_action_set",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_action_set_onfoot.yaml"
+        },
+        {
+          "id": "Fire",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_actions.yaml"
+        },
+        {
+          "id": "Aim",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_actions.yaml"
+        },
+        {
+          "id": "Reload",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_actions.yaml"
+        },
+        {
+          "id": "Move",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_actions.yaml"
+        },
+        {
+          "id": "Look",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_actions.yaml"
+        },
+        {
+          "id": "Jump",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_actions.yaml"
+        },
+        {
+          "id": "Sprint",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_actions.yaml"
+        },
+        {
+          "id": "Interact",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_actions.yaml"
+        },
+        {
+          "id": "CycleWeapon",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_actions.yaml"
+        },
+        {
+          "id": "input_mapping_onfoot_gamepad",
+          "type": "input_mapping",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_mapping_onfoot_gamepad.yaml"
+        },
+        {
+          "id": "input_mapping_onfoot_pc",
+          "type": "input_mapping",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_mapping_onfoot_pc.yaml"
+        },
+        {
+          "id": "StickDeadzone",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "MouseSensitivity",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "TriggerThreshold",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "AimAssistCurve",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "RadialScaling",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "tag_registry",
+          "type": "tag",
+          "path": "v1.0.0-draft.5/genres/shooter/entities/tag_registry.yaml"
+        }
+      ]
+    },
+    {
+      "id": "sports",
+      "title": "Sports",
+      "scope": "Team & athlete sports — FIFA, NBA 2K, Madden (and arcade sports).",
+      "signatureMechanic": "Stamina-driven performance coupling: speed and finishing degrade proportionally as an athlete tires, multiplied by a swinging team-momentum meter.",
+      "specPath": "v1.0.0-draft.5/genres/sports/spec.adoc",
+      "entities": [
+        {
+          "id": "GA_Pass",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/sports/entities/ability_pass.yaml"
+        },
+        {
+          "id": "GA_Shoot",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/sports/entities/ability_shoot.yaml"
+        },
+        {
+          "id": "GA_SkillMove",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/sports/entities/ability_skill_move.yaml"
+        },
+        {
+          "id": "GA_Sprint",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/sports/entities/ability_sprint.yaml"
+        },
+        {
+          "id": "GA_Tackle",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/sports/entities/ability_tackle.yaml"
+        },
+        {
+          "id": "AthletePerformanceSet",
+          "type": "attribute_set",
+          "path": "v1.0.0-draft.5/genres/sports/entities/attribute_set.yaml"
+        },
+        {
+          "id": "GE_Fatigue",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/sports/entities/effect_fatigue.yaml"
+        },
+        {
+          "id": "GE_Injury",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/sports/entities/effect_injury.yaml"
+        },
+        {
+          "id": "GE_MomentumBoost",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/sports/entities/effect_momentum_boost.yaml"
+        },
+        {
+          "id": "GE_ShotAttempt",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/sports/entities/effect_shot_attempt.yaml"
+        },
+        {
+          "id": "GE_SprintDrain",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/sports/entities/effect_sprint_drain.yaml"
+        },
+        {
+          "id": "GE_StaminaRecover",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/sports/entities/effect_stamina_recover.yaml"
+        },
+        {
+          "id": "gameplay_controller",
+          "type": "controller",
+          "path": "v1.0.0-draft.5/genres/sports/entities/gameplay_controller.yaml"
+        },
+        {
+          "id": "Outfield",
+          "type": "input_action_set",
+          "path": "v1.0.0-draft.5/genres/sports/entities/input_action_set_outfield.yaml"
+        },
+        {
+          "id": "Move",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/sports/entities/input_actions.yaml"
+        },
+        {
+          "id": "Look",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/sports/entities/input_actions.yaml"
+        },
+        {
+          "id": "Sprint",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/sports/entities/input_actions.yaml"
+        },
+        {
+          "id": "Pass",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/sports/entities/input_actions.yaml"
+        },
+        {
+          "id": "Shoot",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/sports/entities/input_actions.yaml"
+        },
+        {
+          "id": "Tackle",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/sports/entities/input_actions.yaml"
+        },
+        {
+          "id": "SkillMove",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/sports/entities/input_actions.yaml"
+        },
+        {
+          "id": "input_mapping_outfield_gamepad",
+          "type": "input_mapping",
+          "path": "v1.0.0-draft.5/genres/sports/entities/input_mapping_outfield_gamepad.yaml"
+        },
+        {
+          "id": "StickDeadzone",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/sports/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "RadialScaling",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/sports/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "TriggerThreshold",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/sports/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "tag_registry",
+          "type": "tag",
+          "path": "v1.0.0-draft.5/genres/sports/entities/tag_registry.yaml"
+        }
+      ]
+    },
+    {
+      "id": "strategy",
+      "title": "Strategy",
+      "scope": "Strategy / RTS / 4X / tower-defense — StarCraft, Age of Empires, Command & Conquer.",
+      "signatureMechanic": "Rock-paper-scissors matrix of damage types against armor classes, layered on flat armor, over a resource economy that grows over time.",
+      "specPath": "v1.0.0-draft.5/genres/strategy/spec.adoc",
+      "entities": [
+        {
+          "id": "GA_AreaStrike",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/ability_area_strike.yaml"
+        },
+        {
+          "id": "GA_AutoAttack",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/ability_auto_attack.yaml"
+        },
+        {
+          "id": "GA_ConstructBuilding",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/ability_construct_building.yaml"
+        },
+        {
+          "id": "GA_TrainUnit",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/ability_train_unit.yaml"
+        },
+        {
+          "id": "UnitStatsSet",
+          "type": "attribute_set",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/attribute_set.yaml"
+        },
+        {
+          "id": "GE_AreaStrikeDamage",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/effect_areastrike_damage.yaml"
+        },
+        {
+          "id": "GE_ArmorUpgrade",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/effect_armor_upgrade.yaml"
+        },
+        {
+          "id": "GE_Constructing",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/effect_constructing.yaml"
+        },
+        {
+          "id": "GE_EnergyRegen",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/effect_energy_regen.yaml"
+        },
+        {
+          "id": "GE_MineralIncome",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/effect_mineral_income.yaml"
+        },
+        {
+          "id": "GE_Slow",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/effect_slow.yaml"
+        },
+        {
+          "id": "GE_UnitDamage",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/effect_unit_damage.yaml"
+        },
+        {
+          "id": "GE_WeaponUpgrade",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/effect_weapon_upgrade.yaml"
+        },
+        {
+          "id": "gameplay_controller",
+          "type": "controller",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/gameplay_controller.yaml"
+        },
+        {
+          "id": "Command",
+          "type": "input_action_set",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/input_action_set_command.yaml"
+        },
+        {
+          "id": "Select",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/input_actions.yaml"
+        },
+        {
+          "id": "AttackMove",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/input_actions.yaml"
+        },
+        {
+          "id": "Build",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/input_actions.yaml"
+        },
+        {
+          "id": "Train",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/input_actions.yaml"
+        },
+        {
+          "id": "CastAbility",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/input_actions.yaml"
+        },
+        {
+          "id": "CameraPan",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/input_actions.yaml"
+        },
+        {
+          "id": "input_mapping_command_pc",
+          "type": "input_mapping",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/input_mapping_command_pc.yaml"
+        },
+        {
+          "id": "EdgePanScaling",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "CameraDeadzone",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "CameraSmoothing",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "tag_registry",
+          "type": "tag",
+          "path": "v1.0.0-draft.5/genres/strategy/entities/tag_registry.yaml"
+        }
+      ]
+    },
+    {
+      "id": "survival-crafting",
+      "title": "Survival / Crafting",
+      "scope": "Survival & crafting — Rust, The Forest, Don't Starve, Valheim.",
+      "signatureMechanic": "A draining needs clock (hunger, thirst, stamina, body temperature) with a gather -> craft -> build loop and an encumbrance weight limit.",
+      "specPath": "v1.0.0-draft.5/genres/survival-crafting/spec.adoc",
+      "entities": [
+        {
+          "id": "GA_Build",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/ability_build.yaml"
+        },
+        {
+          "id": "GA_ConsumeFood",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/ability_consume_food.yaml"
+        },
+        {
+          "id": "GA_Craft",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/ability_craft.yaml"
+        },
+        {
+          "id": "GA_Drink",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/ability_drink.yaml"
+        },
+        {
+          "id": "GA_Gather",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/ability_gather.yaml"
+        },
+        {
+          "id": "GA_Sprint",
+          "type": "ability",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/ability_sprint.yaml"
+        },
+        {
+          "id": "SurvivorVitalsSet",
+          "type": "attribute_set",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/attribute_set.yaml"
+        },
+        {
+          "id": "GE_CraftedTool",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_crafted_tool.yaml"
+        },
+        {
+          "id": "GE_Crafting",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_crafting.yaml"
+        },
+        {
+          "id": "GE_Dehydration",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_dehydration.yaml"
+        },
+        {
+          "id": "GE_DrinkWater",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_drink_water.yaml"
+        },
+        {
+          "id": "GE_EatFood",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_eat_food.yaml"
+        },
+        {
+          "id": "GE_Exhaustion",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_exhaustion.yaml"
+        },
+        {
+          "id": "GE_Exposure_Cold",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_exposure_cold.yaml"
+        },
+        {
+          "id": "GE_Exposure_Heat",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_exposure_heat.yaml"
+        },
+        {
+          "id": "GE_GatherResource",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_gather_resource.yaml"
+        },
+        {
+          "id": "GE_Gathering",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_gathering.yaml"
+        },
+        {
+          "id": "GE_HungerDecay",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_hunger_decay.yaml"
+        },
+        {
+          "id": "GE_Hypothermia",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_hypothermia.yaml"
+        },
+        {
+          "id": "GE_Overencumbered",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_overencumbered.yaml"
+        },
+        {
+          "id": "GE_Sprinting",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_sprinting.yaml"
+        },
+        {
+          "id": "GE_StaminaRegen",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_stamina_regen.yaml"
+        },
+        {
+          "id": "GE_Starvation",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_starvation.yaml"
+        },
+        {
+          "id": "GE_SurvivalTick",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_survival_tick.yaml"
+        },
+        {
+          "id": "GE_ThirstDecay",
+          "type": "effect",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/effect_thirst_decay.yaml"
+        },
+        {
+          "id": "gameplay_controller",
+          "type": "controller",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/gameplay_controller.yaml"
+        },
+        {
+          "id": "SurvivalOnFoot",
+          "type": "input_action_set",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/input_action_set_survival.yaml"
+        },
+        {
+          "id": "Move",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/input_actions.yaml"
+        },
+        {
+          "id": "Look",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/input_actions.yaml"
+        },
+        {
+          "id": "Jump",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/input_actions.yaml"
+        },
+        {
+          "id": "Sprint",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/input_actions.yaml"
+        },
+        {
+          "id": "Gather",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/input_actions.yaml"
+        },
+        {
+          "id": "Craft",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/input_actions.yaml"
+        },
+        {
+          "id": "Build",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/input_actions.yaml"
+        },
+        {
+          "id": "ConsumeFood",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/input_actions.yaml"
+        },
+        {
+          "id": "Drink",
+          "type": "input_action",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/input_actions.yaml"
+        },
+        {
+          "id": "input_mapping_survival_pc",
+          "type": "input_mapping",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/input_mapping_survival_pc.yaml"
+        },
+        {
+          "id": "MouseSensitivity",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "StickDeadzone",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "MovementNormalize",
+          "type": "input_modifier",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/input_modifiers.yaml"
+        },
+        {
+          "id": "tag_registry",
+          "type": "tag",
+          "path": "v1.0.0-draft.5/genres/survival-crafting/entities/tag_registry.yaml"
+        }
+      ]
+    }
+  ]
+}

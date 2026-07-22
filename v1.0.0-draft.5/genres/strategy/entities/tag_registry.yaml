@@ -1,0 +1,84 @@
+# Strategy genre tag taxonomy. ADDITIVE: introduces genre-specific tags only.
+# It does NOT redefine the core lifecycle tags (State.Alive / State.Dead) - those are referenced by
+# the pack's entities (e.g. the worked controller's OwnedTags), not declared here.
+#
+# Two tag families drive the signature mechanic and never become attributes:
+#   - DamageType.* : carried by the attacker (its weapon), read by ExecCalc_ArmorMitigation.
+#   - Armor.Class.*: carried by the target, read by the same calc to pick the RPS multiplier.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_tag.json
+Tags:
+  # --- Unit type / role (set on the unit by its production effect; used for bulk queries) ---
+  - Tag: Unit.Type.Infantry
+    Description: Foot soldier; typically Armor.Class.Light
+    AllowMultiple: false
+  - Tag: Unit.Type.Vehicle
+    Description: Ground vehicle; typically Armor.Class.Heavy
+    AllowMultiple: false
+  - Tag: Unit.Type.Air
+    Description: Flying unit; typically Armor.Class.Light and only hit by anti-air weapons
+    AllowMultiple: false
+  - Tag: Unit.Type.Structure
+    Description: Building; typically Armor.Class.Fortified, immobile
+    AllowMultiple: false
+
+  # --- Armor classes (target side of the damage matrix; selected by ExecCalc_ArmorMitigation) ---
+  - Tag: Armor.Class.Light
+    Description: Light armour; extra damage from Piercing, slightly less from Magic
+    AllowMultiple: false
+  - Tag: Armor.Class.Heavy
+    Description: Heavy armour; resists Siege, neutral to most other damage
+    AllowMultiple: false
+  - Tag: Armor.Class.Fortified
+    Description: Fortified structure armour; takes bonus Siege but resists Normal/Piercing/Magic
+    AllowMultiple: false
+  - Tag: Armor.Class.Shielded
+    Description: Energy-shielded armour; weak to Magic, resists Siege and Piercing
+    AllowMultiple: false
+
+  # --- Damage types (attacker side of the matrix; carried by the weapon / GA_AutoAttack) ---
+  - Tag: DamageType.Normal
+    Description: Standard kinetic damage; no strong matchups, never penalised
+    AllowMultiple: false
+  - Tag: DamageType.Piercing
+    Description: Armour-piercing rounds; strong vs Light, weak vs Fortified
+    AllowMultiple: false
+  - Tag: DamageType.Siege
+    Description: Explosive siege damage; strong vs Fortified, weak vs Heavy/Shielded
+    AllowMultiple: false
+  - Tag: DamageType.Magic
+    Description: Energy/spell damage; strong vs Shielded, weak vs Light/Fortified
+    AllowMultiple: false
+
+  # --- Unit dynamic states (granted by Effects; never written directly by abilities) ---
+  - Tag: Unit.State.Constructing
+    Description: Unit/structure is under construction; granted by GE_Constructing, blocks its abilities
+    AllowMultiple: false
+  - Tag: Unit.State.Slowed
+    Description: Movement is reduced by a slow field; granted by GE_Slow
+    AllowMultiple: false
+  - Tag: Unit.State.Cloaked
+    Description: Unit is cloaked and untargetable by normal attacks
+    AllowMultiple: false
+
+  # --- Ability classification ---
+  - Tag: Ability.Type.Attack
+    Description: Weapon attack ability (GA_AutoAttack)
+    AllowMultiple: false
+  - Tag: Ability.Type.Build
+    Description: Construction ability that places a structure (GA_ConstructBuilding)
+    AllowMultiple: false
+  - Tag: Ability.Type.Train
+    Description: Production ability that queues a unit (GA_TrainUnit)
+    AllowMultiple: false
+  - Tag: Ability.Type.Cast
+    Description: Caster ability that spends Energy for an effect (GA_AreaStrike)
+    AllowMultiple: false
+
+  # --- Faction (relationship gating for targeting and area effects) ---
+  - Tag: Faction.Friendly
+    Description: Same faction as the source; skipped by hostile-only area effects
+    AllowMultiple: false
+  - Tag: Faction.Hostile
+    Description: Opposing faction; a valid attack/area-strike target
+    AllowMultiple: false

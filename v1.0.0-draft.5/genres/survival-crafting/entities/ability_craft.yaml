@@ -1,0 +1,34 @@
+# Craft: spend materials to produce a tool. Because an ability cannot activate if it cannot pay its
+# Cost, GE_CraftCost (Materials -20) is exactly what gates crafting on having enough materials - no
+# explicit resource-check tag is needed, the same convention the shooter pack uses for GE_FireCost.
+# On activation it enters the crafting state (GE_Crafting grants Survival.State.Crafting), waits the
+# craft window, then applies the crafted item's effect (GE_CraftedTool). Blocked while gathering or
+# already crafting. GE_CraftCost is a trivial flat resource cost referenced by name, not shipped as a file.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_ability.json
+Name: GA_Craft
+Tags:
+  AbilityTags:
+    - Ability.Type.Craft
+  ActivationRequiredTags:
+    - State.Alive
+  ActivationBlockedTags:
+    - Survival.State.Gathering
+    - Survival.State.Crafting
+  ActivationOwnedTags:
+    - Survival.State.Crafting
+Cost: GE_CraftCost
+Tasks:
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_Crafting
+  - Type: WaitDelay
+    Params:
+      Duration: 3.0
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_CraftedTool
+Metadata:
+  DisplayName: Craft
+  Description: Spend materials at a workbench to craft a tool
+  Icon: ui/icons/craft.png

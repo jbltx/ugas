@@ -1,0 +1,15 @@
+# Gathering activity state: a HasDuration effect granting Survival.State.Gathering for the length of
+# the harvest. GA_Gather applies this, waits the same duration, then applies the GE_GatherResource
+# payload. The state both drives the harvest animation/cue and blocks conflicting actions (you can't
+# craft mid-swing). Duration mirrors the gather wait in GA_Gather.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_Gathering
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 2.5
+GrantedTags:
+  - Survival.State.Gathering
+GameplayCues:
+  - GameplayCue.Survival.Gathering

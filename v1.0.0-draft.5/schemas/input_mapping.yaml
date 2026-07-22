@@ -1,0 +1,127 @@
+# Input Mapping Definition Schema
+# Based on UGAS Specification v1.0.0-draft.5 - Section 11
+
+type: object
+required:
+  - ActionSet
+  - Bindings
+properties:
+  ActionSet:
+    type: string
+    description: The ActionSet this mapping belongs to
+  Platform:
+    type: string
+    enum:
+      - PC
+      - Console
+      - Mobile
+      - VR
+    description: >-
+      Optional platform filter. When set, these bindings only apply on the
+      specified platform. Omit for universal bindings.
+  Bindings:
+    type: array
+    items:
+      $ref: "#/$defs/Binding"
+    minItems: 1
+  Metadata:
+    type: object
+    properties:
+      DisplayName:
+        type: string
+      Description:
+        type: string
+
+$defs:
+  DeviceInput:
+    type: object
+    required:
+      - Device
+      - Input
+    properties:
+      Device:
+        type: string
+        enum:
+          - Keyboard
+          - Mouse
+          - Gamepad
+          - Touch
+          - Gyro
+          - Custom
+        description: Device family
+      Input:
+        type: string
+        description: >-
+          Canonical input identifier within the device family, using a
+          standardized naming convention independent of any engine
+          (e.g. Key.Space, Mouse.LeftButton, Gamepad.FaceBottom)
+      CustomDeviceName:
+        type: string
+        description: When Device is Custom, the specific hardware identifier (e.g. FlightStick, SteeringWheel)
+
+  CompositeInputs:
+    type: object
+    description: >-
+      Composes multiple digital inputs into an axis value.
+      Used for WASD-to-2D-vector, arrow-keys-to-axis, etc.
+    properties:
+      Up:
+        $ref: "#/$defs/DeviceInput"
+      Down:
+        $ref: "#/$defs/DeviceInput"
+      Left:
+        $ref: "#/$defs/DeviceInput"
+      Right:
+        $ref: "#/$defs/DeviceInput"
+      Forward:
+        $ref: "#/$defs/DeviceInput"
+      Backward:
+        $ref: "#/$defs/DeviceInput"
+
+  Binding:
+    type: object
+    required:
+      - Action
+    properties:
+      Action:
+        type: string
+        description: Reference to an Action Name
+      Inputs:
+        type: array
+        items:
+          $ref: "#/$defs/DeviceInput"
+        minItems: 1
+        description: >-
+          Device input(s) for this binding. A single entry is a simple binding.
+          Multiple entries create a chord (all must be active simultaneously).
+      CompositeInputs:
+        $ref: "#/$defs/CompositeInputs"
+      Modifiers:
+        type: array
+        items:
+          type: string
+        description: Ordered list of Modifier references applied to the raw input value (pipeline order)
+      Priority:
+        type: integer
+        default: 0
+        description: >-
+          When multiple bindings map to the same Action within the same
+          ActionSet, the highest priority binding that is satisfiable wins.
+      HoldThreshold:
+        type: number
+        minimum: 0
+        description: >-
+          Seconds the input must be held before the binding activates.
+          Useful for distinguishing tap (interact) from hold (pick up).
+      bIsRebindable:
+        type: boolean
+        default: true
+        description: Whether the player can change this binding in controls settings
+      Tags:
+        type: object
+        properties:
+          RequiredTags:
+            type: array
+            items:
+              type: string
+            description: Additional tag requirements beyond the ActionSet's ActivationTags

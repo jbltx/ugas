@@ -4,39 +4,98 @@
 
 The specification covers four pillars: Attributes (numeric state with a modifier pipeline), Gameplay Tags (hierarchical semantic labels), Gameplay Abilities (asynchronous stateful actions), and Gameplay Effects (the sole mutation mechanism for attributes and tags).
 
+
 ## Specification
 
-- [UGAS Specification (Markdown)](v1.0.0-draft.4/SPEC.md): The full technical specification in Markdown format
-- [UGAS Specification (HTML)](v1.0.0-draft.4/index.html): The full technical specification rendered as HTML
-- [UGAS Specification (AsciiDoc)](v1.0.0-draft.4/SPEC.adoc): The full technical specification in AsciiDoc source format
-- [Complete LLM context file](llms-full.txt): The entire specification plus all schema definitions and examples in a single file
+- [UGAS Specification (AsciiDoc)](v1.0.0-draft.5/SPEC.adoc): AsciiDoc source
+- [UGAS Specification (Markdown)](v1.0.0-draft.5/SPEC.md): full spec, Markdown
+- [UGAS Specification (HTML)](v1.0.0-draft.5/index.html): full spec, HTML
+- [Complete LLM context file](llms-full.txt): entire spec + all schemas + examples in one file
+
+## Machine-readable manifests
+
+- [Resource manifest (index.json)](index.json): checksummed listing of every resource at this version
+- [Genre pack index](v1.0.0-draft.5/genres/index.json): Genre pack + entity index
+- [Offline JSON-Schema bundle](v1.0.0-draft.5/schemas/bundle.json): Offline JSON-Schema validation bundle
+- [Spec section index](v1.0.0-draft.5/sections/index.json): Spec section index (stable ids + anchors)
+- [Versions manifest](../versions.json): all published versions + latest alias
+
+## Spec sections
+
+Each spec section is individually fetchable; load one instead of the whole spec.
+
+- [Preamble](v1.0.0-draft.5/sections/00-preamble.md)
+- [1. Introduction](v1.0.0-draft.5/sections/01-introduction.md)
+- [2. Terminology](v1.0.0-draft.5/sections/02-terminology.md)
+- [3. Architectural Overview](v1.0.0-draft.5/sections/03-architectural-overview.md)
+- [4. Gameplay Controller(GC)](v1.0.0-draft.5/sections/04-gameplay-controllergc.md)
+- [5. Attributes](v1.0.0-draft.5/sections/05-attributes.md)
+- [6. Attribute Sets](v1.0.0-draft.5/sections/06-attribute-sets.md)
+- [7. Gameplay Tags](v1.0.0-draft.5/sections/07-gameplay-tags.md)
+- [8. Gameplay Abilities](v1.0.0-draft.5/sections/08-gameplay-abilities.md)
+- [9. Gameplay Effects](v1.0.0-draft.5/sections/09-gameplay-effects.md)
+- [10. Ability Tasks](v1.0.0-draft.5/sections/10-ability-tasks.md)
+- [11. Input Integration](v1.0.0-draft.5/sections/11-input-integration.md)
+- [12. Gameplay Cues](v1.0.0-draft.5/sections/12-gameplay-cues.md)
+- [13. Network Replication](v1.0.0-draft.5/sections/13-network-replication.md)
+- [14. State Persistence](v1.0.0-draft.5/sections/14-state-persistence.md)
+- [15. Implementation Examples](v1.0.0-draft.5/sections/15-implementation-examples.md)
+- [16. Case Studies](v1.0.0-draft.5/sections/16-case-studies.md)
+- [17. World & Spatial Model](v1.0.0-draft.5/sections/17-world-spatial-model.md)
+- [18. Scene Composition](v1.0.0-draft.5/sections/18-scene-composition.md)
+- [Mathematical Notation](v1.0.0-draft.5/sections/19-mathematical-notation.md)
+- [Complete Schema Reference](v1.0.0-draft.5/sections/20-complete-schema-reference.md)
+- [References and Citations](v1.0.0-draft.5/sections/21-references-and-citations.md)
+- [Document History](v1.0.0-draft.5/sections/22-document-history.md)
 
 ## Schema Definitions
 
-- [Gameplay Controller Schema](v1.0.0-draft.4/schemas/gameplay_controller.yaml): Central hub managing abilities, effects, attributes, and tags
-- [Attribute Schema](v1.0.0-draft.4/schemas/attribute.yaml): Individual attribute definitions with base values, clamping, replication
-- [Attribute Set Schema](v1.0.0-draft.4/schemas/attribute_set.yaml): Logical groupings of related attributes
-- [Gameplay Effect Schema](v1.0.0-draft.4/schemas/gameplay_effect.yaml): Effects that modify attributes and grant tags/abilities
-- [Gameplay Ability Schema](v1.0.0-draft.4/schemas/gameplay_ability.yaml): Ability definitions with tag-based activation rules
-- [Gameplay Tag Schema](v1.0.0-draft.4/schemas/gameplay_tag.yaml): Tag registry for hierarchical semantic state labels
+- [Attribute schema](v1.0.0-draft.5/schemas/attribute.json)
+- [Attribute schema (YAML)](v1.0.0-draft.5/schemas/attribute.yaml)
+- [Attribute Set schema](v1.0.0-draft.5/schemas/attribute_set.json)
+- [Attribute Set schema (YAML)](v1.0.0-draft.5/schemas/attribute_set.yaml)
+- [Gameplay Ability schema](v1.0.0-draft.5/schemas/gameplay_ability.json)
+- [Gameplay Ability schema (YAML)](v1.0.0-draft.5/schemas/gameplay_ability.yaml)
+- [Gameplay Controller schema](v1.0.0-draft.5/schemas/gameplay_controller.json)
+- [Gameplay Controller schema (YAML)](v1.0.0-draft.5/schemas/gameplay_controller.yaml)
+- [Gameplay Effect schema](v1.0.0-draft.5/schemas/gameplay_effect.json)
+- [Gameplay Effect schema (YAML)](v1.0.0-draft.5/schemas/gameplay_effect.yaml)
+- [Gameplay Tag schema](v1.0.0-draft.5/schemas/gameplay_tag.json)
+- [Gameplay Tag schema (YAML)](v1.0.0-draft.5/schemas/gameplay_tag.yaml)
+- [Input Action schema](v1.0.0-draft.5/schemas/input_action.json)
+- [Input Action schema (YAML)](v1.0.0-draft.5/schemas/input_action.yaml)
+- [Input Action Set schema](v1.0.0-draft.5/schemas/input_action_set.json)
+- [Input Action Set schema (YAML)](v1.0.0-draft.5/schemas/input_action_set.yaml)
+- [Input Mapping schema](v1.0.0-draft.5/schemas/input_mapping.json)
+- [Input Mapping schema (YAML)](v1.0.0-draft.5/schemas/input_mapping.yaml)
+- [Input Modifier schema](v1.0.0-draft.5/schemas/input_modifier.json)
+- [Input Modifier schema (YAML)](v1.0.0-draft.5/schemas/input_modifier.yaml)
+- [Scene schema](v1.0.0-draft.5/schemas/scene.json)
+- [Scene schema (YAML)](v1.0.0-draft.5/schemas/scene.yaml)
 
 ## Examples
 
-- [Health Attribute](v1.0.0-draft.4/schemas/examples/health_attribute.yaml): Resource attribute with clamping
-- [Damage Effect](v1.0.0-draft.4/schemas/examples/damage_effect.yaml): Instant effect that modifies Health
-- [Fireball Ability](v1.0.0-draft.4/schemas/examples/fireball_ability.yaml): Offensive ability with tag requirements
-- [Tag Registry](v1.0.0-draft.4/schemas/examples/tag_registry.yaml): Example tag hierarchy
+- [Arena Scene](v1.0.0-draft.5/schemas/examples/arena_scene.yaml)
+- [Damage Effect](v1.0.0-draft.5/schemas/examples/damage_effect.yaml)
+- [Fire Action](v1.0.0-draft.5/schemas/examples/fire_action.yaml)
+- [Fireball Ability](v1.0.0-draft.5/schemas/examples/fireball_ability.yaml)
+- [Health Attribute](v1.0.0-draft.5/schemas/examples/health_attribute.yaml)
+- [Onfoot Action Set](v1.0.0-draft.5/schemas/examples/onfoot_action_set.yaml)
+- [Onfoot Pc Mapping](v1.0.0-draft.5/schemas/examples/onfoot_pc_mapping.yaml)
+- [Stick Deadzone Modifier](v1.0.0-draft.5/schemas/examples/stick_deadzone_modifier.yaml)
+- [Tag Registry](v1.0.0-draft.5/schemas/examples/tag_registry.yaml)
 
 ## Genre Packs (templates)
 
 Additive, copy-and-extend starter kits per genre: a genre spec that extends (never replaces) the core spec, plus schema-conformant template entities you can load directly.
 
-- [Genre Packs index](v1.0.0-draft.4/genres/index.html): Navigable landing page listing every published genre pack
-- [Genre taxonomy](v1.0.0-draft.4/genres/taxonomy.html): Non-normative map of game genres/subgenres that scopes the pack work
-- [RPG pack spec](v1.0.0-draft.4/genres/rpg/spec.adoc): Role-Playing genre extension; template entities under v1.0.0-draft.4/genres/rpg/entities/
-- [Racing pack spec](v1.0.0-draft.4/genres/racing/spec.adoc): Racing (Forza-style) genre extension; template entities under v1.0.0-draft.4/genres/racing/entities/
-- [Action pack spec](v1.0.0-draft.4/genres/action/spec.adoc): Action / Action-Adventure genre extension; template entities under v1.0.0-draft.4/genres/action/entities/
-
-## Optional
-
-- [Schema README](v1.0.0-draft.4/schemas/README.md): Documentation for schema usage and validation
+- [Action pack spec](v1.0.0-draft.5/genres/action/spec.adoc): template entities under v1.0.0-draft.5/genres/action/entities/
+- [Casual pack spec](v1.0.0-draft.5/genres/casual/spec.adoc): template entities under v1.0.0-draft.5/genres/casual/entities/
+- [Combat pack spec](v1.0.0-draft.5/genres/combat/spec.adoc): template entities under v1.0.0-draft.5/genres/combat/entities/
+- [Puzzle pack spec](v1.0.0-draft.5/genres/puzzle/spec.adoc): template entities under v1.0.0-draft.5/genres/puzzle/entities/
+- [Racing pack spec](v1.0.0-draft.5/genres/racing/spec.adoc): template entities under v1.0.0-draft.5/genres/racing/entities/
+- [Rpg pack spec](v1.0.0-draft.5/genres/rpg/spec.adoc): template entities under v1.0.0-draft.5/genres/rpg/entities/
+- [Shooter pack spec](v1.0.0-draft.5/genres/shooter/spec.adoc): template entities under v1.0.0-draft.5/genres/shooter/entities/
+- [Sports pack spec](v1.0.0-draft.5/genres/sports/spec.adoc): template entities under v1.0.0-draft.5/genres/sports/entities/
+- [Strategy pack spec](v1.0.0-draft.5/genres/strategy/spec.adoc): template entities under v1.0.0-draft.5/genres/strategy/entities/
+- [Survival Crafting pack spec](v1.0.0-draft.5/genres/survival-crafting/spec.adoc): template entities under v1.0.0-draft.5/genres/survival-crafting/entities/

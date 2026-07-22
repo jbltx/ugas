@@ -1,0 +1,24 @@
+# Cold exposure: a snow-biome / night area effect that pushes BodyTemperature DOWN, out of the
+# comfort window. INFINITE + PERIOD while the survivor is exposed (applied/removed by the biome's
+# area volume). Each tick it subtracts from BodyTemperature, which is clamped to the survivable
+# [25, 43]. It grants Survival.State.Cold so abilities and cues can react. Insulation (clothing,
+# shelter, a campfire) counters it by adding warmth in the Warmth channel and via Survival.State.Sheltered.
+# Once BodyTemperature sits below the comfort window, the engine keeps Survival.State.Cold applied and
+# the cold becomes a Health drain through GE_Hypothermia.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_Exposure_Cold
+DurationPolicy: Infinite
+Period:
+  Period: 1.0
+  ExecuteOnApplication: false
+Modifiers:
+  - Attribute: BodyTemperature
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -0.4
+GrantedTags:
+  - Survival.State.Cold
+GameplayCues:
+  - GameplayCue.Survival.Shivering

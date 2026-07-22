@@ -1,0 +1,37 @@
+# PC keyboard bindings for the OnFoot action set.
+# Move uses a WASD composite that the runtime promotes to an Axis2D vector.
+# Jump maps to Space; GroundPound maps to S but is gated behind State.InAir so
+# it only activates when airborne (prevents conflict with the downward Move axis).
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_mapping.json
+ActionSet: OnFoot
+Platform: PC
+Bindings:
+  - Action: Move
+    CompositeInputs:
+      Up:
+        Device: Keyboard
+        Input: Key.W
+      Down:
+        Device: Keyboard
+        Input: Key.S
+      Left:
+        Device: Keyboard
+        Input: Key.A
+      Right:
+        Device: Keyboard
+        Input: Key.D
+  - Action: Jump
+    Inputs:
+      - Device: Keyboard
+        Input: Key.Space
+  - Action: GroundPound
+    Inputs:
+      - Device: Keyboard
+        Input: Key.S
+    Tags:
+      RequiredTags:
+        - State.InAir
+Metadata:
+  DisplayName: On Foot (Keyboard)
+  Description: WASD + Space keyboard layout for the platformer on-foot controls

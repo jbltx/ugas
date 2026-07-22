@@ -1,0 +1,255 @@
+## 17. World & Spatial Model
+
+UGAS is otherwise position-agnostic: Attributes, Tags, Effects, and Abilities describe *what* an entity is and *what happens to it*, not *where* it is. Yet most genres need spatial reasoning — an area-of-effect blast, a weapon’s range, a perception radius, a capture zone. Until now the specification only *gestured* at space: `EffectContext.WorldOrigin` and `HitResult` (§9.9), the `WaitOverlap` / `WaitForTarget` tasks categorised "Spatial" with their tick budgets (§10.3, §10.6), the Avatar’s "spatial position for targeting" (§4.2), and the "range, line-of-sight" reachability check delegated to the title (§13.7). This section makes the spatial model **first-class and normative**.
+
+Like Execution Calculations (§9.5), the spatial model is an **engine seam**: this specification defines the *data model* and the *query contract*; the implementing engine provides the spatial index (uniform grid, BVH, physics scene, tilemap, …) that answers the queries. UGAS does not mandate a partitioning structure — that is the subject of §17.6 — only that the queries defined here are answerable and behave as specified.
+
+<div class="note">
+
+This pillar is appended at §17 (rather than inserted among the Part II pillars) to avoid renumbering §4–§16 and the many cross-references to them, including those in the genre packs. It is nonetheless a core gameplay concept and is intended to be read alongside the Part II pillars.
+
+</div>
+
+### 17.1 Spatial Anchors
+
+A **spatial anchor** is the position — and optional orientation — at which a Gameplay Controller exists in the world. Spatial queries operate over anchors, not over GCs directly, so a purely non-spatial GC (an inventory, a party roster, a global rules controller) simply has no anchor and is invisible to spatial queries.
+
+``` typescript
+struct SpatialAnchor {
+  /**
+   * The world position. The coordinate frame, units, and handedness are engine-defined; this
+   * specification treats positions as opaque points and requires only that the §17.2 queries behave
+   * as specified over them.
+   */
+  Position: Vector3;
+
+  /** Optional facing, used by directional queries (cones, forward line-of-sight). Identity if absent. */
+  Orientation?: Quaternion;
+
+  /** The GC this anchor represents. */
+  Owner: GameplayController;
+}
+```
+
+The Avatar (§4.2) is the canonical source of a GC’s anchor: a spatially-present GC’s anchor position is its Avatar’s world position. A GC MAY also expose an anchor without an Avatar — for example a ground-targeted area effect anchored at a `WorldOrigin`; `EffectContext.WorldOrigin` (§9.9) is exactly the anchor of a positional effect application.
+
+- A GC’s anchor, when it has one, MUST reflect its Avatar’s current world position at the time a query is evaluated.
+
+- An implementation MUST treat a GC with neither an Avatar nor an explicit position as **non-spatial**: it is never returned by a spatial query and never participates in range, zone, or perception checks.
+
+### 17.2 Spatial Query Model
+
+All spatial gameplay reduces to a small set of **queries** over anchors. An implementation MUST provide a query provider satisfying the contract below; how it indexes anchors to answer them efficiently is its own concern (§17.6).
+
+``` typescript
+/** Restricts a query's candidate set before distance/shape tests are applied. */
+struct SpatialFilter {
+  /** Candidate must own ALL of these tags (§7, hierarchical). Empty = no tag requirement. */
+  RequireTags?: GameplayTag[];
+
+  /** Candidate must own NONE of these tags. */
+  ExcludeTags?: GameplayTag[];
+
+  /**
+   * Affiliation of the candidate relative to the querying GC, resolved by the implementation's team
+   * model: Any | Allied | Hostile | Neutral | SelfOnly | ExcludeSelf.
+   */
+  Affiliation?: Affiliation;
+
+  /** Hard cap on the number of results (0 = unbounded), combined with a query's own ordering. */
+  MaxResults?: int;
+}
+
+interface SpatialQuery {
+  /** Distance between two anchors (or anchor and point), in engine units. */
+  Distance(a: SpatialAnchor | Vector3, b: SpatialAnchor | Vector3): float;
+
+  /** Anchors whose position lies within `radius` of `center`, matching `filter`. */
+  OverlapSphere(center: Vector3, radius: float, filter: SpatialFilter): SpatialAnchor[];
+
+  /** Anchors within an oriented box, a capsule, or a forward cone (directional shapes use Orientation). */
+  OverlapBox(center: Vector3, halfExtents: Vector3, orientation: Quaternion, filter: SpatialFilter): SpatialAnchor[];
+  OverlapCapsule(p0: Vector3, p1: Vector3, radius: float, filter: SpatialFilter): SpatialAnchor[];
+  OverlapCone(apex: Vector3, direction: Vector3, range: float, halfAngleDeg: float, filter: SpatialFilter): SpatialAnchor[];
+
+  /** Whether `b` is visible from `a` with no occluder between them. Occlusion is engine-defined. */
+  LineOfSight(a: Vector3, b: Vector3): boolean;
+
+  /** The `count` nearest anchors to `center` matching `filter`, ordered nearest-first. */
+  Nearest(center: Vector3, count: int, filter: SpatialFilter): SpatialAnchor[];
+}
+```
+
+#### Query semantics (normative)
+
+1.  **Filter, then test.** `SpatialFilter` MUST be applied so only matching anchors are considered. Tag tests use the hierarchical semantics of §7 (a `RequireTags` of `Faction.Enemy` matches `Faction.Enemy.Elite`). `Affiliation` is resolved relative to the querying GC by the implementation’s team model.
+
+2.  **Self handling.** A query MUST exclude the querying GC’s own anchor unless `Affiliation` is `SelfOnly` or otherwise includes self. `ExcludeSelf` is the appropriate default for area effects.
+
+3.  **Determinism.** For a fixed world state and identical inputs, a query MUST return the same set, and ordered queries (`Nearest`) MUST return a stable order, with ties broken deterministically (e.g. by GC id). This is required for the predicted spatial queries of §17.7.
+
+4.  **Non-spatial GCs** (§17.1) are never returned.
+
+5.  **Cost.** Queries are not free. Their tick cadence is governed by the §10.6 spatial task budgets (gameplay-critical hit/target detection every frame; ambient/aura acquisition every 50–100 ms). Implementations SHOULD answer queries from a spatial partition (§17.6) rather than scanning all GCs.
+
+<div class="note">
+
+The remaining subsections build directly on this contract: range and area effects (§17.3) combine `OverlapSphere`/`OverlapCone` with a `MaxRange`; zones (§17.4) are standing region queries that grant tags on entry/exit; perception (§17.5) composes `OverlapSphere` with `LineOfSight`; partitioning (§17.6) is how an engine answers all of the above efficiently; and predicted spatial queries (§17.7) rely on the determinism of semantic rule 3.
+
+</div>
+
+### 17.3 Range and Area Application
+
+The two most common spatial needs are expressed directly on the existing pillars via the §17.2 query model: an ability’s **range** and an effect’s **area** application.
+
+#### Targeting range
+
+An ability MAY declare a `MaxRange` (schema §8.7). When it targets another GC, the activation is valid only while the target’s anchor is within `MaxRange` of the instigator’s anchor (`SpatialQuery.Distance`, §17.2):
+
+- A range-gated activation whose target is out of range MUST fail activation — it does not commit (§8.3). Under prediction the client MAY predict the range check, but the server’s reachability validation (§13.7) is authoritative.
+
+- `MaxRange` absent or `0` means the ability is self-targeted or imposes no range gate.
+
+- Range is measured between anchors (§17.1); an instigator or target without an anchor is, by definition, out of range for a range-gated ability.
+
+#### Area application
+
+By default an effect applies to a single target (`ApplyGameplayEffectToTarget`, §13.7). An effect MAY instead declare an `Area` (schema §9): it is applied to *every* anchor matching a filter within a shape, resolved by a single §17.2 query at the moment of application.
+
+``` typescript
+// Resolve the target set once, then apply to each, honoring the §9.6 execution policy.
+function ApplyAreaEffect(instigator: GC, origin: Vector3, spec: EffectSpec, area: Area): void {
+  const hits = area.Shape === "Cone"
+    ? query.OverlapCone(origin, instigator.Facing, resolve(area.Radius), area.HalfAngleDeg, area.Filter)
+    : query.OverlapSphere(origin, resolve(area.Radius), area.Filter); // Sphere
+  for (const anchor of hits) // set already ordered + capped by MaxTargets
+    ApplyGameplayEffectToTarget(anchor.Owner, spec);
+}
+```
+
+Normative:
+
+1.  The target set MUST be resolved by a single query at application time — an area effect *snapshots* who is in the area then; anchors entering the shape afterwards are not retroactively affected.
+
+2.  `Area.Radius` MAY be `AttributeBased` (§9.4.2), so an upgrade or stat can scale the radius — the capability genre packs previously lacked (they hard-coded a constant radius in a task parameter).
+
+3.  The origin is the application anchor: `EffectContext.WorldOrigin` (§9.9) for a ground-targeted cast, otherwise the instigator’s or target’s anchor.
+
+4.  Each per-target application obeys the effect’s execution policy (§9.6) and the §13.7 authorization checks exactly as a single-target application would; `MaxTargets` caps the set after ordering.
+
+5.  Under client-side prediction an area application is predicted only if its query is deterministic (§17.2 rule 3, §17.7); otherwise it defers to server authority.
+
+### 17.4 Zones and Regions
+
+A **zone** (region) is a standing volume in the world that grants Gameplay Tags to the GCs whose anchor is inside it, and removes them on exit. Zones formalise a pattern the specification previously only illustrated — the biome effects of §16.2 (mud/asphalt applied by vehicle position) and the "zone transition" buff-clearing of §14 — as a first-class, query-driven construct.
+
+``` typescript
+struct Region {
+  /** Region identity, for authoring and debugging. */
+  Name: string;
+
+  /** The volume, as a §17.2 shape anchored in the world. */
+  Shape: "Sphere" | "Box" | "Capsule";
+  Origin: Vector3;             // sphere / box centre, or capsule reference point
+  Radius?: float;              // Sphere and Capsule
+  HalfExtents?: Vector3;       // Box
+  Orientation?: Quaternion;    // Box
+  P0?: Vector3; P1?: Vector3;  // Capsule endpoints
+
+  /** Which GCs the region acts on (§17.2 SpatialFilter); empty = all spatial GCs. */
+  Filter?: SpatialFilter;
+
+  /** Tags granted to a GC while its anchor is inside the region; removed on exit. */
+  GrantedTags: GameplayTag[];
+}
+```
+
+#### Membership semantics (normative)
+
+A region’s occupancy is a standing §17.2 query: the anchors inside `Shape` matching `Filter`.
+
+1.  **Grant on entry, remove on exit.** When a GC’s anchor enters a region, the region MUST grant each of its `GrantedTags` to that GC; when the anchor leaves, the region MUST remove them. Grants use the reference-counted tag container of §7.2 — a GC inside two overlapping regions that grant the same tag holds it once per region and keeps it until it leaves both.
+
+2.  **Tags, not direct mutation.** A region affects occupants only by granting tags (§3.1: state flows through tags and effects, never direct mutation). Gameplay reacts to those tags — e.g. a `Zone.Hazard.Fire` tag is the `ApplicationRequiredTags` of a burning Effect, or a `Biome.Snow` tag gates a cold-exposure Effect (as in §16.2).
+
+3.  **Evaluation cadence.** Region membership is re-evaluated on the ambient §10.6 spatial budget (50–100 ms is sufficient for entry/exit). An implementation MAY instead use engine trigger-volume callbacks, provided the observable grant/remove semantics match.
+
+4.  **Zone transition.** Leaving a region removes its granted tags, which in turn expires any Effect gated on them — the mechanism behind the §14 "clear temporary combat buffs on zone transition".
+
+5.  **Persistence.** Region-granted tags are derived from occupancy and MUST NOT be persisted as owned state (§14 treats tags as derived); on load, occupancy is re-evaluated and the correct tags re-granted.
+
+<div class="note">
+
+A region is authored world content — the engine typically owns its placement (a trigger volume, a tilemap cell, a nav area). This section defines the *membership → tag-grant* contract; the authored/serialized representation of regions (a `RegionDefinition`) is provided by the reference implementation alongside the spatial pillar’s engine binding (§15 of the roadmap), not mandated here.
+
+</div>
+
+### 17.5 Perception and Awareness
+
+Perception composes a range query with line-of-sight: an observer becomes *aware* of a target when the target is within the observer’s sense range AND visible to it. It is the basis of aggro, stealth detection, and AI target acquisition.
+
+``` typescript
+struct PerceptionConfig {
+  /** Maximum sense range; MAY be AttributeBased (§9.4.2), e.g. reduced while blinded. */
+  Range: float;
+
+  /** Forward field-of-view half-angle in degrees; omitted = omnidirectional. */
+  FovHalfAngleDeg?: float;
+
+  /** Require unobstructed line-of-sight (§17.2) to sense the target. */
+  RequireLineOfSight: boolean;
+
+  /** Which GCs are sensed (§17.2 SpatialFilter) — typically Hostile. */
+  Filter: SpatialFilter;
+}
+```
+
+#### Semantics (normative)
+
+Perception is a §17.2 query from the observer’s anchor:
+
+1.  **Composition.** A target is perceived iff it is returned by `OverlapSphere(observerPos, Range, Filter)` — narrowed to `OverlapCone` when `FovHalfAngleDeg` is set — AND, when `RequireLineOfSight`, `LineOfSight(observerPos, targetPos)` is true.
+
+2.  **Awareness as tags.** Perception state MUST be expressed as tags (or an Effect) on the observer, never as hidden state — e.g. acquiring a target grants `State.Perceiving` / triggers an aggro Effect; losing it removes the tag. This is the §17.4 zone pattern with the "region" being the observer’s own dynamic sense volume.
+
+3.  **Cadence.** Perception is an ambient acquisition query and MUST honour the §10.6 budget (50–100 ms); it is not a per-frame gameplay-critical query unless a title requires it.
+
+4.  **No implied symmetry.** A perceiving B does not imply B perceives A; each observer evaluates its own `PerceptionConfig`.
+
+5.  **Determinism.** Like all §17.2 queries, perception is deterministic (for §17.7), though it is typically server-authoritative (AI runs on the server).
+
+### 17.6 Spatial Partitioning
+
+§17.2 defines the query contract; this section governs how an implementation answers it at scale. UGAS does not mandate a structure, but it bounds the cost.
+
+#### Requirements
+
+1.  **Sub-linear queries.** An implementation SHOULD answer `OverlapSphere` / `OverlapCone` / `Nearest` in better than O(n) over all GCs — via a spatial partition (uniform or hierarchical grid, BVH, k-d tree) or the host engine’s physics broadphase. A full scan is permitted only for small worlds.
+
+2.  **Budget alignment.** Query cadence MUST respect the §10.6 spatial tick budgets: hit detection and targeting are gameplay-critical (evaluated the frame they are needed); lingering area effects, auras, and perception are ambient (50–100 ms). The partition exists so the ambient set can be re-queried at that cadence without a per-frame full scan.
+
+3.  **Result bounds.** `SpatialFilter.MaxResults` (and `Area.MaxTargets`, `Nearest.count`) bound worst-case result size; an implementation MUST NOT allocate unboundedly per query (the reference implementation aggregates into reusable buffers, as the §5 attribute kernel does).
+
+4.  **Staleness.** A partition MAY be rebuilt or incrementally updated; between updates an *ambient* query MAY reflect positions up to one ambient tick stale, but a gameplay-critical query MUST use current positions.
+
+#### Non-normative guidance
+
+For most titles a *uniform grid* keyed by `floor(position / cellSize)` (with `cellSize` ≈ the largest common query radius) gives near-O(1) neighbourhood queries and cheap incremental updates — this is what the reference implementation’s optional DOTS backend uses (a parallel spatial hash). Large open worlds benefit from a hierarchical grid or the engine’s broadphase; tile/grid games (§16.4) already *are* a partition — adjacency is a cell-index lookup, not a distance query.
+
+### 17.7 Prediction of Spatial Queries
+
+Client-side prediction (§13.4, §13.8) extends to spatial gameplay only under the determinism guarantee of §17.2 (semantic rule 3). A predicted ability whose activation depends on a spatial query — a range check (§17.3), an area target set (§17.3), a perceived target (§17.5) — MUST resolve that query identically on the predicting client and the authoritative server, or reconcile.
+
+#### Semantics (normative)
+
+1.  **Deterministic inputs.** A predicted query MUST run against state both ends agree on: positions in the prediction’s `CaptureState()` scope (§13.8.3) for the owning GC, and replicated positions for others. Where positions differ across the wire the query may mis-predict and MUST reconcile via §13.5 against the server’s authoritative result.
+
+2.  **Stable ordering.** Ordered results (`Nearest`, and any `MaxTargets` / `MaxResults` truncation) MUST use the deterministic tie-break of §17.2 rule 3 so client and server select the same subset; an ambiguous order MUST NOT pick different targets on each end.
+
+3.  **Cross-GC targets.** A predicted area or targeted effect hitting GCs the client does not own is speculative / local-visual only, reconciled from the server (§13.8.4) — the client MAY show the blast, but non-owned GCs change only on server confirmation.
+
+4.  **Non-predictable queries.** A query depending on state the client cannot reproduce (server-only perception, hidden actors) MUST be marked non-predictable so the dependent activation aborts to server authority — the same escape hatch as §9.5 (randomised ExecutionCalculations) and §13.8.2 (prediction window).
+
+This closes the World & Spatial Model: §17.1–17.2 define anchors and queries; §17.3 range and area; §17.4 zones; §17.5 perception; §17.6 how queries scale; §17.7 how they behave under prediction — the whole pillar resting on the single determinism guarantee of §17.2.
+
+# Part VII: Scene Composition

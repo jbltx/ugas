@@ -1,0 +1,55 @@
+# Input actions for the RPG genre pack.
+# BasicAttack is the primary left-click attack. Ability1 is the first hotbar slot.
+# Move and Look are standard 2D axes for character movement and camera control.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action.json
+Name: BasicAttack
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Attack
+Metadata:
+  DisplayName: Basic Attack
+  Description: Primary melee or ranged attack
+  Category: Combat
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action.json
+Name: Ability1
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Active
+Metadata:
+  DisplayName: Ability 1
+  Description: First ability hotbar slot
+  Category: Combat
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action.json
+Name: Move
+ValueType: Axis2D
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Movement
+Metadata:
+  DisplayName: Move
+  Description: Directional movement vector
+  Category: Movement
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_action.json
+Name: Look
+ValueType: Axis2D
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Movement
+Metadata:
+  DisplayName: Look
+  Description: Camera orientation
+  Category: Movement

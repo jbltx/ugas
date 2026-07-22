@@ -1,0 +1,30 @@
+# Prestige boost: the permanent reward for performing a prestige reset. Infinite. It multiplies
+# income in the dedicated "Prestige" channel: a Multiply of +2.0 means a channel factor of
+# 1 + 2.0 = 3.0 (spec section 5.3 Channel Aggregation). Because Prestige is its own channel, it
+# multiplies ACROSS the generators' flat income and across the Booster channel rather than diluting
+# into them - this is what produces idle's exponential big-number growth. The same factor is mirrored
+# onto PrestigeMultiplier for display. Grants Meta.State.Prestiged.
+#
+# NOTE: the reset itself (zeroing Currency / generators / Stage and re-granting GE_PassiveIncome) is
+# engine logic GA_Prestige triggers; this effect only applies the resulting permanent multiplier.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_PrestigeBoost
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: CurrencyPerSecond
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 2.0
+    Channel: Prestige
+  - Attribute: PrestigeMultiplier
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 2.0
+    Channel: Prestige
+GrantedTags:
+  - Meta.State.Prestiged
+GameplayCues:
+  - GameplayCue.Idle.Prestige

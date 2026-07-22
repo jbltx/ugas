@@ -1,0 +1,60 @@
+# Sports genre tag taxonomy. ADDITIVE: introduces genre-specific tags only.
+# It does not redefine the core lifecycle tags (State.Alive / State.Combat / State.Dead) -
+# those are referenced by the pack's entities, not declared here.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_tag.json
+Tags:
+  # --- Athlete states (granted by Effects; tag ownership follows responsibility) ---
+  - Tag: Athlete.State.Sprinting
+    Description: Athlete is sprinting; granted by GE_SprintDrain while GA_Sprint is held, draining stamina
+    AllowMultiple: false
+  - Tag: Athlete.State.Fatigued
+    Description: Stamina has fallen below the fatigue threshold; granted by GE_Fatigue, blocks GA_Sprint and GA_SkillMove
+    AllowMultiple: false
+  - Tag: Athlete.State.Injured
+    Description: Athlete is carrying a knock; granted by GE_Injury, suppresses physical performance
+    AllowMultiple: false
+
+  # --- Team states (the momentum meter swings these on) ---
+  - Tag: Team.State.HighMomentum
+    Description: The team is on top; granted by GE_MomentumBoost, multiplies offensive skill in the Momentum channel
+    AllowMultiple: false
+
+  # --- Team affiliation (target gating; reused by abilities and the shot calc) ---
+  - Tag: Team.Friendly
+    Description: Same side as the source; used to skip own-team targets
+    AllowMultiple: false
+  - Tag: Team.Hostile
+    Description: Opposing side; a valid tackle/shot-pressure target
+    AllowMultiple: false
+
+  # --- Player roles (positional classification; tune base stats and AI behaviour) ---
+  - Tag: Role.Striker
+    Description: Forward; finishing and off-ball movement
+    AllowMultiple: false
+  - Tag: Role.Midfielder
+    Description: Central player; passing range and stamina
+    AllowMultiple: false
+  - Tag: Role.Defender
+    Description: Back-line player; tackling and strength
+    AllowMultiple: false
+  - Tag: Role.Goalkeeper
+    Description: Last line; shot-stopping and distribution
+    AllowMultiple: false
+
+  # --- Ability classification ---
+  - Tag: Ability.Type.Sprint
+    Description: Burst-movement ability that drains stamina
+    AllowMultiple: false
+  - Tag: Ability.Type.Pass
+    Description: Distribute the ball to a team-mate
+    AllowMultiple: false
+  - Tag: Ability.Type.Shoot
+    Description: Attempt on goal
+    AllowMultiple: false
+  - Tag: Ability.Type.Tackle
+    Description: Challenge for the ball
+    AllowMultiple: false
+  - Tag: Ability.Type.Skill
+    Description: Technical dribbling/skill move
+    AllowMultiple: false

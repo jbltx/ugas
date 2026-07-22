@@ -1,0 +1,17 @@
+# Armor tech upgrade: the defensive counterpart to GE_WeaponUpgrade. Infinite duration; a flat
+# +2 Armor per researched tier. Because Armor is subtracted AFTER the damage-type x armor-class
+# multiplier in ExecCalc_ArmorMitigation, flat armor is most valuable against many small hits and
+# weakest against high-multiplier siege - which keeps the rock-paper-scissors matrix meaningful even
+# at full upgrades. Stacks by applying multiple instances (additive flat Add). Requires a built unit.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_ArmorUpgrade
+DurationPolicy: Infinite
+ApplicationRequiredTags:
+  - State.Alive
+Modifiers:
+  - Attribute: Armor
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 2.0

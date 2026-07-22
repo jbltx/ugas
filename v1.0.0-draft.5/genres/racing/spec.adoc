@@ -1,0 +1,154 @@
+= UGAS Genre Pack: Racing
+Mickael Bonfill <jbltx>
+:revnumber: 1.0.0-draft.5
+:ugas-version: v1.0.0-draft.5
+:doctype: book
+:toc: left
+:toc-title: Table of Contents
+:toclevels: 4
+:stem: latexmath
+:source-highlighter: highlight.js
+:icons: font
+:sectanchors:
+:sectlinks:
+:docinfo: shared
+
+[[overview]]
+== Overview
+
+This genre pack targets *driving and racing games* in the Forza / Gran Turismo / arcade-kart
+mould: a vehicle defined by drivetrain and chassis attributes, track surfaces and tuning parts
+that modify performance, signature driver abilities (nitro, drift), and — at its core — a
+*traction pipeline* that has to stay coherent as surfaces, upgrades, and physics all push on grip
+at once.
+
+It is the practical, copy-and-extend companion to the *Racing (Forza-style)* case study in
+link:../../SPEC.adoc[the core specification] (Section 16.2). Where the case study sketches the
+vehicle attribute set, biome surface effects, and the traction `ExecutionCalculation`, this pack
+ships the matching schema-conformant Attributes, Tags, Abilities, and Effects in `entities/`, plus
+a worked vehicle in `entities/gameplay_controller.yaml`.
+
+[[relationship-to-core-spec]]
+== Relationship to the core specification
+
+This document is *additive*. It defines genre-specific Attributes, Tags, Abilities, and
+Effects on top of the core Universal Gameplay Ability System specification.
+
+* It MUST NOT redefine, override, or contradict any concept in the core spec.
+* All entities in `entities/` validate against the same `schemas/*.json` as the core.
+* It *reuses* core state tags (`State.Alive`, `State.Combat`, …) by reference where relevant —
+  it never re-declares them.
+* The grip stacking it relies on is the core modifier `Channel` mechanism
+  (link:../../SPEC.adoc[core spec] §5.3 and §16.2), and the non-linear physics coupling is a core
+  `ExecutionCalculation` — neither is a new construct.
+
+[[genre-attributes]]
+== Genre Attributes
+
+Defined in `entities/attribute_set.yaml` as the `VehiclePerformanceSet` set.
+
+[cols="1,1,3",options="header"]
+|===
+| Attribute | Category | Role
+
+| `EngineTorque` | Statistic | Drive torque (Nm); raised by tuning upgrades.
+| `MaxSpeed` | Statistic | Top speed (km/h); lowered by low-grip surfaces, raised by boost.
+| `AeroDownforce` | Statistic | Downforce coefficient; scales effective traction with speed.
+| `TireGripMultiplier` | Statistic | The aggregated grip stat targeted by the traction channels.
+| `TireTemperature` | Statistic | Tire core temperature (°C), clamped to `[20, 150]`; grip peaks in the 80–100 window.
+| `MaxBoost` / `Boost` | Statistic / Resource | `Boost` is clamped to `[0, MaxBoost]`; spent by the nitro ability and refilled by drifting.
+| `EngineRPM`, `CurrentSpeed`, `AvailableTraction` | Meta | Runtime telemetry written each frame by the physics simulation and the traction calc.
+|===
+
+[[genre-traction-pipeline]]
+== The traction pipeline (the core racing mechanic)
+
+Grip in a racing game is pushed on from several directions at once — the surface under the tires,
+the parts bolted to the car, downforce that grows with speed, and tire temperature. UGAS expresses
+this in two complementary layers, both landing on `TireGripMultiplier` / `AvailableTraction`.
+
+=== Declarative grip channels
+
+Surface and upgrade modifiers stack through *named channels*: additive *within* a channel,
+multiplicative *across* channels — exactly the damage-bucket mechanism from §16.3, reused for grip.
+
+[cols="1,3,2",options="header"]
+|===
+| Channel | What goes in it | Stacking
+
+| `Surface` | The current track surface (asphalt, mud, gravel, ice, wet) | Additive within
+| `Upgrades` | Tuning parts and tire compounds | Additive within, multiplied across the others
+|===
+
+Because channels are part of the core modifier pipeline, surface and tuning effects stack
+*declaratively* in Effect YAML — no custom calculation code is needed for them.
+
+.Worked example (`entities/gameplay_controller.yaml`)
+A Sport-class car with the sport tuning package fitted, driving on mud:
+
+* `Surface` factor (mud, latexmath:[-0.6]): latexmath:[1 + (-0.6) = 0.40]
+* `Upgrades` factor (tuning, latexmath:[+0.10]): latexmath:[1 + 0.10 = 1.10]
+* Final `TireGripMultiplier`: latexmath:[1.0 \times 0.40 \times 1.10 = 0.44]
+
+The same two effects add flat drivetrain changes: `EngineTorque` latexmath:[400 + 80 = 480] and
+`MaxSpeed` latexmath:[250 + 20 - 30 = 240]. These are exactly the `CurrentValue` entries recorded
+for the example vehicle.
+
+=== Physics coupling via ExecutionCalculation
+
+Downforce scaling (latexmath:[\propto \text{speed}^2]) and the tire-temperature window are
+*non-linear*, so they live in an `ExecutionCalculation` rather than a channel. `GE_Traction_Update`
+(`entities/effect_traction_update.yaml`) invokes `ExecCalc_VehicleTraction`, which reads the
+aggregated `TireGripMultiplier`, `AeroDownforce`, `TireTemperature`, and `CurrentSpeed` and writes
+`AvailableTraction`. The simulation re-applies this instant effect each physics step. See §16.2 for
+the reference calculation body.
+
+[[genre-tags]]
+== Genre Tags
+
+Defined in `entities/tag_registry.yaml` (additive only):
+
+* *Surfaces* — `Surface.Asphalt|Mud|Gravel|Ice|Wet`.
+* *Vehicle classification* — the base `Vehicle` tag (required by surface effects),
+  `Vehicle.Class.Sport|Kart|Formula`, and `Vehicle.Tuned`.
+* *Vehicle states* — `Vehicle.State.Boosting|Drifting|SpunOut`.
+* *Ability types* — `Ability.Type.Boost|Handling`.
+* *Race progression* — `Race.Phase.Countdown|Racing|Finished`, `Race.Status.FinalLap`.
+
+[[genre-abilities]]
+== Genre Abilities
+
+* `entities/ability_nitro_boost.yaml` — `GA_NitroBoost`: spends the `Boost` resource
+  (`Cost: GE_NitroCost`) on a cooldown (`GE_NitroCooldown`) and applies `GE_NitroBoost` to the
+  vehicle. Blocked while `Vehicle.State.SpunOut`; requires `Race.Phase.Racing`.
+* `entities/ability_drift.yaml` — `GA_Drift`: hold-to-slide handling technique. Grants
+  `Vehicle.State.Drifting` while active and applies the periodic `GE_DriftCharge`, trading
+  cornering grip for boost charge. Ends on input release (`WaitInputRelease`).
+
+[[genre-effects]]
+== Genre Effects
+
+* `entities/effect_tuning_sport.yaml` — `GE_Tuning_Sport`: infinite upgrade; flat
+  `+EngineTorque` / `+MaxSpeed` and `+10%` grip in the `Upgrades` channel; grants `Vehicle.Tuned`.
+* `entities/effect_biome_mud.yaml` — `GE_Biome_Mud`: infinite surface; `-60%` grip in the
+  `Surface` channel and `-30` `MaxSpeed`; grants `Surface.Mud`. Requires the `Vehicle` tag.
+* `entities/effect_biome_asphalt.yaml` — `GE_Biome_Asphalt`: infinite surface; `Override`s the
+  `Surface`-channel grip back to the `1.0` baseline; grants `Surface.Asphalt`.
+* `entities/effect_nitro_boost.yaml` — `GE_NitroBoost`: `HasDuration` burst; flat
+  `+EngineTorque` / `+MaxSpeed`; grants `Vehicle.State.Boosting`.
+* `entities/effect_drift_charge.yaml` — `GE_DriftCharge`: `HasDuration` + `Period`; restores
+  `Boost` every half-second; grants `Vehicle.State.Drifting`.
+* `entities/effect_traction_update.yaml` — `GE_Traction_Update`: instant; runs the
+  `ExecCalc_VehicleTraction` `ExecutionCalculation` to recompute `AvailableTraction`.
+
+[[using-this-pack]]
+== Using this pack
+
+. Copy `genres/racing/` into your project (or load `entities/` directly via the
+  `ugas-schema-author` skill).
+. Keep, rename, or extend the `VehiclePerformanceSet`; add vehicle classes/parts as new
+  Effects, and driver techniques as new Abilities.
+. Author new grip modifiers by choosing the right `Channel` — surface conditions go in
+  `Surface`, parts and compounds in `Upgrades`; reserve `ExecutionCalculation`s for non-linear
+  physics coupling.
+. Validate with `python scripts/validate_schema_examples.py` before committing.

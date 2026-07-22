@@ -1,0 +1,119 @@
+# Scene Composition Schema Definition
+# Based on UGAS Specification v1.0.0-draft.5 - Section 18
+
+type: object
+required:
+  - Name
+  - Placements
+properties:
+  Name:
+    type: string
+    description: Unique scene identifier
+  Extends:
+    type: array
+    description: Names of parent scenes this scene composes on top of, additively
+    items:
+      type: string
+  Placements:
+    type: array
+    description: Gameplay Controller instances placed into the world
+    items:
+      type: object
+      required:
+        - Controller
+      properties:
+        Controller:
+          type: string
+          description: Name of the GameplayControllerConfig to instantiate
+        InstanceId:
+          type: string
+          description: Stable identity for this instance, used as the persistence key
+        Position:
+          type: array
+          description: World position as x, y, z
+          items:
+            type: number
+        Rotation:
+          type: array
+          description: World rotation as a quaternion x, y, z, w
+          items:
+            type: number
+        StartupTags:
+          type: array
+          description: Tags granted to the instance on spawn
+          items:
+            type: string
+        StartupEffects:
+          type: array
+          description: Effects applied to the instance on spawn
+          items:
+            type: string
+        AttributeOverrides:
+          type: object
+          description: Base value overrides applied after the controller defaults
+          additionalProperties:
+            type: number
+        Enabled:
+          type: boolean
+          description: Whether the instance spawns active (default true)
+  Regions:
+    type: array
+    description: Standing zones active while the scene is loaded
+    items:
+      type: object
+      required:
+        - Name
+      properties:
+        Name:
+          type: string
+          description: Region identifier
+        Shape:
+          type: string
+          description: Volume shape
+          enum:
+            - Sphere
+            - Box
+            - Capsule
+        Position:
+          type: array
+          description: Region origin as x, y, z
+          items:
+            type: number
+        Radius:
+          type: number
+          description: Sphere or capsule radius
+        GrantedTags:
+          type: array
+          description: Tags granted to occupants while inside the region
+          items:
+            type: string
+  SpawnPoints:
+    type: array
+    description: Named poses for dynamic spawning at runtime
+    items:
+      type: object
+      required:
+        - Name
+      properties:
+        Name:
+          type: string
+          description: Spawn point identifier
+        Position:
+          type: array
+          description: Spawn position as x, y, z
+          items:
+            type: number
+        Rotation:
+          type: array
+          description: Spawn rotation as a quaternion x, y, z, w
+          items:
+            type: number
+        Tags:
+          type: array
+          description: Classification tags for spawn selection
+          items:
+            type: string
+  Metadata:
+    type: object
+    description: Non-normative authoring metadata
+    additionalProperties: true

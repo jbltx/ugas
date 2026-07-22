@@ -1,0 +1,22 @@
+# Surface area effect: driving onto mud. Cuts grip in the "Surface" channel and lowers top speed.
+# Infinite while the vehicle is on the surface; applied/removed by the track's area volumes.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_Biome_Mud
+DurationPolicy: Infinite
+ApplicationRequiredTags:
+  - Vehicle
+Modifiers:
+  - Attribute: TireGripMultiplier
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: -0.6
+    Channel: Surface
+  - Attribute: MaxSpeed
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -30.0
+GrantedTags:
+  - Surface.Mud

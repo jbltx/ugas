@@ -1,0 +1,17 @@
+# Energy regeneration: a second periodic infinite effect, applied to caster units so GA_AreaStrike
+# becomes available again over time. +5 Energy every 2 seconds, clamped to MaxEnergy by the
+# attribute's own clamp. Demonstrates that periodic income is not economy-only - the same construct
+# regenerates a per-unit caster pool.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_EnergyRegen
+DurationPolicy: Infinite
+Period:
+  Period: 2.0
+  ExecuteOnApplication: false
+Modifiers:
+  - Attribute: Energy
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 5.0

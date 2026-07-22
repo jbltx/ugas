@@ -1,0 +1,36 @@
+# Touch mapping for the Idle action set (Mobile platform) - the primary control scheme for casual.
+# Tap is the whole-screen click; the economy/meta actions are on-screen buttons (distinct touch
+# targets). Tap runs through TapDebounce so an accidental double-fire within a few frames is
+# swallowed, keeping rapid tapping clean. Buttons are not rebindable (they are UI elements).
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/input_mapping.json
+ActionSet: Idle
+Platform: Mobile
+Bindings:
+  - Action: Tap
+    Inputs:
+      - Device: Touch
+        Input: Touch.Tap
+    Modifiers:
+      - TapDebounce
+
+  - Action: BuyGenerator
+    Inputs:
+      - Device: Touch
+        Input: Touch.Button.Buy
+    bIsRebindable: false
+
+  - Action: Prestige
+    Inputs:
+      - Device: Touch
+        Input: Touch.Button.Prestige
+    bIsRebindable: false
+
+  - Action: Play
+    Inputs:
+      - Device: Touch
+        Input: Touch.Button.Play
+    bIsRebindable: false
+Metadata:
+  DisplayName: Idle - Touch
+  Description: Touch bindings for the idle action set; whole-screen tap plus on-screen economy buttons

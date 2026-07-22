@@ -1,0 +1,17 @@
+# Eat food: an INSTANT effect that restores Hunger. Because it is Instant it modifies the Hunger
+# BASE VALUE (core spec 5.2), permanently topping the need back up - which is exactly what lifts
+# Hunger off its 0 floor and lets the engine clear Survival.State.Starving and remove GE_Starvation.
+# Applied by GA_ConsumeFood at the end of its eat wait. Hunger is clamped to [0, MaxHunger], so a
+# big meal can't overfill the survivor.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.5/schemas/gameplay_effect.json
+Name: GE_EatFood
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Hunger
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 40.0
+GameplayCues:
+  - GameplayCue.Survival.Eat
