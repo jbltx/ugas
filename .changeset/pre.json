@@ -5,8 +5,11 @@
     "ugas": "1.0.0-draft.1"
   },
   "changesets": [
+    "combat-pack-modeled-tasks",
+    "durations-are-tick-time",
     "fix-genre-pack-section-refs",
     "gameplay-creator-assistant-skill",
+    "genre-manifest-versioning-canonical-urls",
     "genre-pack-action",
     "genre-pack-casual",
     "genre-pack-combat",
@@ -20,9 +23,26 @@
     "genre-pack-survival-crafting",
     "genre-taxonomy",
     "gentle-clocks-hum",
+    "instant-multiply-base-semantics",
     "link-templates-docs",
     "llm-discoverability",
+    "machine-readable-manifest-sections",
+    "portable-skills-consuming-guide",
+    "rag-artifacts",
+    "rpg-pack-basic-attack-modeled",
+    "schema-bundle-conformance",
+    "spec-async-validation-lifecycle",
+    "spec-deterministic-predicted-rng",
+    "spec-networking-prediction-model",
+    "spec-periodic-clamp-note",
+    "spec-scene-composition",
+    "spec-scene-schema",
+    "spec-world-spatial-final",
+    "spec-world-spatial-model",
+    "spec-world-spatial-range-area",
+    "spec-world-spatial-zones",
     "state-persistence-protocol",
+    "strategy-pack-modeled-tasks",
     "warm-inputs-land"
   ]
 }
