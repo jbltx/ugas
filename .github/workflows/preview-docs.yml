@@ -40,7 +40,6 @@ jobs:
         run: |
           find schemas genres -type f \( -name '*.json' -o -name '*.yaml' -o -name '*.md' \) \
             -exec sed -i "s/%%UGAS_VERSION%%/${{ steps.ver.outputs.version }}/g" {} +
-          sed -i "s/%%UGAS_VERSION%%/${{ steps.ver.outputs.version }}/g" llms.txt
 
       - name: Install Asciidoctor and Pandoc
         run: |
@@ -98,7 +97,22 @@ jobs:
       - name: Generate LLM files
         run: |
           bash scripts/generate-llm-files.sh . dist "${{ steps.ver.outputs.version }}"
-          cp llms.txt dist/llms.txt
+
+      - name: Set up Python for artifacts
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install artifact deps
+        run: python3 -m pip install --quiet jsonschema PyYAML
+
+      - name: Generate + verify consumer artifacts
+        run: |
+          # dist/ is the preview's version tree; give it the schemas the manifest lists.
+          cp -r schemas dist/schemas
+          cp SPEC.adoc dist/SPEC.adoc
+          bash scripts/build-artifacts.sh dist "${{ steps.ver.outputs.version }}" dist/llms.txt
+          python3 scripts/check_artifacts.py dist dist/llms.txt
 
       - name: Deploy to Cloudflare Pages (preview)
         id: deploy
