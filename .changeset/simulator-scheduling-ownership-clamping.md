@@ -12,4 +12,8 @@
 
 **Unrecognised operations were silently dropped.** The operation dispatch had no `else` branch and `parse_effects` defaulted a *missing* `operation` to `Add`, so `Divide`, lowercase `add`, and uppercase `MULTIPLY` all no-opped while the run still logged the effect as applied — and a modifier with no `operation` silently became a flat `Add` nobody authored. §5.2 requires that an implementation MUST NOT silently drop any operation. `operation` is now required and validated case-sensitively, `duration_policy` likewise, and the CLI reports the offending effect and attribute and exits `2` instead of emitting a plausible-looking wrong curve.
 
+The config is validated more broadly in the same spirit: a modifier naming an attribute that was never declared is rejected rather than silently ignored, `period` must be positive (a `period` of `0` previously hung the run forever, and a negative one hung it too), `period` on an `Instant` effect is rejected as meaningless, and a negative `HasDuration` duration is rejected in favour of `Infinite`. Attributes whose initial value starts outside their declared bounds are normalised once at t=0, before any effect is active — restoring behaviour the old per-step clamp sweep provided incidentally, without reintroducing the write-through it caused.
+
+Clamping is also now deterministic. It is order-sensitive when one attribute's bound references another, and the set of just-written attributes was previously unordered, so the same config could produce different Base Values between runs depending on the interpreter's hash seed. Base clamping now follows authored modifier order.
+
 No schema, spec, or gameplay-data changes; this is entirely the bundled simulator plus its config reference.

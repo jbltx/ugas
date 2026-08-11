@@ -23,7 +23,18 @@ import io
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Set
+from typing import Any, Dict, Iterable, List, Optional
+
+# Schedule timestamps are quantised to the same precision as the simulation clock
+# (`t = round(step * timestep, TIME_DP)`). Without this, accumulating a period of
+# 0.1 reaches 0.30000000000000004, which compares greater than an `expire_at` of
+# 0.3 and silently drops the execution landing exactly on the expiry boundary.
+TIME_DP = 10
+
+
+def qtime(value: float) -> float:
+    """Quantise a schedule timestamp onto the simulation clock's grid."""
+    return round(value, TIME_DP)
 
 import yaml
 
@@ -116,6 +127,26 @@ def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
                 f"{list(VALID_DURATION_POLICIES)}"
             )
 
+        # A non-positive period would never advance the tick schedule, hanging the
+        # run; a negative duration would expire the effect before it applied.
+        period = edef.get("period")
+        if period is not None:
+            if policy == "Instant":
+                raise ConfigError(
+                    f"effect {name!r}: 'period' is meaningless on an Instant effect "
+                    f"(use duration_policy HasDuration or Infinite)"
+                )
+            if period <= 0:
+                raise ConfigError(
+                    f"effect {name!r}: period must be > 0, got {period!r}"
+                )
+        duration = edef.get("duration", 0.0)
+        if policy == "HasDuration" and duration < 0:
+            raise ConfigError(
+                f"effect {name!r}: duration must be >= 0 for HasDuration, got "
+                f"{duration!r} (use duration_policy Infinite for no expiry)"
+            )
+
         modifiers = []
         for mdef in edef.get("modifiers", []):
             if "operation" not in mdef:
@@ -145,8 +176,8 @@ def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
                 instance_id=index,
                 name=edef["name"],
                 duration_policy=policy,
-                duration=edef.get("duration", 0.0),
-                period=edef.get("period"),
+                duration=duration,
+                period=period,
                 execute_on_application=edef.get("execute_on_application", False),
                 modifiers=modifiers,
                 apply_at=edef.get("apply_at", 0.0),
@@ -215,18 +246,22 @@ def compute_current(state: AttributeState) -> float:
 def apply_instant_modifiers(
     modifiers: List[Modifier],
     attributes: Dict[str, AttributeState],
-) -> Set[str]:
+) -> List[str]:
     """Instant effects permanently change the base value.
 
-    Returns the names of the attributes whose Base Value was written, so the
-    caller can clamp exactly those (see `clamp_base_values`).
+    Returns the attributes whose Base Value was written, in authored write order
+    and without duplicates, so the caller can clamp exactly those. The order is
+    deliberate: clamping is order-sensitive when one attribute's bound references
+    another, and a set would make results depend on the hash seed and so differ
+    between runs of the same config.
     """
-    written: Set[str] = set()
+    written: List[str] = []
     for mod in modifiers:
         if mod.attribute not in attributes:
             continue
         state = attributes[mod.attribute]
-        written.add(mod.attribute)
+        if mod.attribute not in written:
+            written.append(mod.attribute)
         if mod.operation == "Add":
             state.base_value += mod.value
         elif mod.operation == "Multiply":
@@ -245,7 +280,7 @@ def apply_instant_modifiers(
 def apply_periodic_modifiers(
     modifiers: List[Modifier],
     attributes: Dict[str, AttributeState],
-) -> Set[str]:
+) -> List[str]:
     """Apply one periodic execution of a durational effect to the Base Value.
 
     Spec §5.2: a periodic execution applies only `Add` / `AddPost` / `Override` to
@@ -350,6 +385,22 @@ def simulate(
     # Parse effects
     effects = parse_effects(config.get("effects", []))
 
+    # A modifier naming an attribute that does not exist would silently no-op
+    # while the run still reported the effect as applied.
+    for effect in effects:
+        for mod in effect.modifiers:
+            if mod.attribute not in attributes:
+                raise ConfigError(
+                    f"effect {effect.name!r}: modifier targets unknown attribute "
+                    f"{mod.attribute!r}; declared attributes are "
+                    f"{sorted(attributes)}"
+                )
+
+    # Normalise any initial state that starts outside its declared bounds. Done
+    # once, before any effect is active, so no temporary Current-Value modifier
+    # can leak into a Base Value here (the bug §5.2 forbids).
+    clamp_base_values(sorted(attributes), attributes, clamp_rules)
+
     active_effects: List[ActiveEffect] = []
 
     attr_names = sorted(attributes.keys())
@@ -374,7 +425,7 @@ def simulate(
                     # not from the step the effect happened to be noticed on, so they
                     # are independent of `--timestep`. Infinite effects never expire.
                     if effect.duration_policy == "HasDuration":
-                        effect.expire_at = effect.apply_at + effect.duration
+                        effect.expire_at = qtime(effect.apply_at + effect.duration)
                     active_effects.append(effect)
 
                     if effect.period is None:
@@ -397,7 +448,7 @@ def simulate(
 
                         # The first execution lands at `apply_at` when the effect
                         # executes on application, otherwise one full period later.
-                        effect.next_tick_at = effect.apply_at + effect.period
+                        effect.next_tick_at = qtime(effect.apply_at + effect.period)
                         if effect.execute_on_application:
                             written = apply_periodic_modifiers(
                                 effect.modifiers, attributes
@@ -418,7 +469,9 @@ def simulate(
                     written = apply_periodic_modifiers(effect.modifiers, attributes)
                     clamp_base_values(written, attributes, clamp_rules)
                     events.append(f"tick:{effect.name}")
-                    effect.next_tick_at += effect.period
+                    effect.next_tick_at = qtime(
+                        effect.next_tick_at + effect.period
+                    )
 
             if effect.expire_at is not None and t >= effect.expire_at:
                 events.append(f"expire:{effect.name}")
