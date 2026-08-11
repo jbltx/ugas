@@ -129,6 +129,30 @@ expect_error("rule keyed on unknown attribute",
              {"attributes": {"Health": 1.0},
               "clamping": {"Helth": {"min": 0}}, "effects": []},
              "Helth", "unknown")
+# Assert these are caught while PARSING, not later while resolving. Both layers
+# raise ConfigError, so a whole-simulation check above cannot tell them apart —
+# and the point of the parse-time check is to reject before anything runs.
+for label, clamping in (
+    ("parse-time: unknown reference", {"Health": {"max": "MaxHelth"}}),
+    ("parse-time: rule on unknown attribute", {"Helth": {"min": 0}}),
+):
+    try:
+        S.parse_clamping(clamping, {"Health": None, "MaxHealth": None})
+        check(label, False, "parse_clamping accepted it")
+    except S.ConfigError:
+        check(label, True)
+
+print("== 5b. Malformed clamp shapes rejected, not tracebacked ==")
+for label, clamping in (
+    ("rule value not a mapping", {"Health": "nonsense"}),
+    ("rule value is a list", {"Health": [1, 2]}),
+    ("rule value is null", {"Health": None}),
+    ("clamping itself not a mapping", [1, 2]),
+    ("bound is a bool", {"Health": {"max": True}}),
+    ("bound is a list", {"Health": {"min": [1, 2]}}),
+):
+    expect_error(label, {"attributes": {"Health": 5.0}, "clamping": clamping,
+                        "effects": []})
 
 print("== 6. min > max: formula's answer (min wins) ==")
 # min 50, max 30, value 100 -> max(50, min(30, 100)) = 50 (old code gave 30)
@@ -151,37 +175,41 @@ rows = run(cfg6b, duration=1)
 check("min>max base write gives 50", col(rows, 1.0, "X") == 50.0,
       f"got {col(rows, 1.0, 'X')}")
 
-print("== 7. Interdependent batch: topological order ==")
-# Health max: MaxHealth (static max 200). One Instant effect writes BOTH in
-# authored order Health first, MaxHealth second:
-#   Health += 600 (base 100->700), MaxHealth += 400 (base 100->500).
-# Authored order would clamp Health against MaxHealth's clamped current
-# BEFORE MaxHealth's base is clamped... let's construct the 150 vs 200 case:
-# referenced attribute written in the SAME batch, dependent listed first.
-cfg7 = {
-    "attributes": {"Health": 100.0, "MaxHealth": 150.0},
-    "clamping": {"Health": {"max": "MaxHealth"}, "MaxHealth": {"max": 200}},
-    "effects": [{"name": "Both", "apply_at": 0.0, "duration_policy": "Instant",
-                 "modifiers": [
-                     {"attribute": "Health", "operation": "Add", "value": 600.0},
-                     {"attribute": "MaxHealth", "operation": "Add", "value": 400.0},
-                 ]}],
-}
-rows = run(cfg7, duration=1)
-# Topological: MaxHealth clamped first: 550 -> 200. Then Health: 700 -> 200.
-# Authored order would have clamped Health against MaxHealth's clamped current
-# at that moment: min(200, 550-clamped-to-200?) — actually clamped resolution of
-# MaxHealth current (base 550, rule max 200) = 200 either way HERE because
-# read-clamping already caps it. The 150-vs-200 divergence needs the reference
-# to resolve differently before/after the referenced BASE clamp. That only
-# differs when the referenced attribute's rule is itself reference-valued or
-# when reading unclamped. With clamped-read resolution, is authored order
-# already sufficient? Check a case where it is NOT: MaxHealth has NO static
-# rule but a temporary debuff? No — base clamp of MaxHealth then does nothing.
-# See analysis in the design doc; assert the topological result here.
-check("batch: Health = MaxHealth = 200", col(rows, 1.0, "Health") == 200.0
-      and col(rows, 1.0, "MaxHealth") == 200.0,
-      f"got H={col(rows, 1.0, 'Health')} M={col(rows, 1.0, 'MaxHealth')}")
+print("== 7. Interdependent batch is clamped in dependency order ==")
+# One Instant effect writes a dependent attribute and the attribute its bound
+# references. Order matters because clamping the referenced attribute's BASE
+# changes its clamped Current Value, which is what the dependent clamps against.
+#
+# Making the difference observable needs a live Current-Value modifier on the
+# referenced attribute — without one, its clamped current is the same before and
+# after its base is clamped, and both orders agree (which is why a display-only
+# assertion here tests nothing).
+#
+#   MaxHealth: base 100, static max 200, live Multiply -0.5
+#   one Instant: Health += 600  (authored FIRST, the dependent)
+#                MaxHealth += 450 (authored second, the referenced)
+#
+#   dependency order: MaxHealth base 550 -> 200 first, so its clamped current is
+#                     200 * 0.5 = 100, and Health's base clamps to 100.
+#   authored order:   Health clamps first against min(550*0.5, 200) = 200.
+#
+# Assert the BASE, not the display: display clamps on read, so it cannot tell a
+# base of 200 from a base of 100 here.
+attrs7 = {"Health": S.AttributeState(100.0), "MaxHealth": S.AttributeState(100.0)}
+rules7 = S.parse_clamping(
+    {"Health": {"max": "MaxHealth"}, "MaxHealth": {"max": 200}}, attrs7
+)
+S.add_duration_modifiers(0, [S.Modifier("MaxHealth", "Multiply", -0.5)], attrs7)
+written7 = S.apply_instant_modifiers(
+    [S.Modifier("Health", "Add", 600.0), S.Modifier("MaxHealth", "Add", 450.0)], attrs7
+)
+check("written order is the authored order (dependent first)",
+      written7 == ["Health", "MaxHealth"], f"got {written7}")
+S.clamp_base_values(written7, attrs7, rules7)
+check("referenced attribute's base clamped to 200",
+      attrs7["MaxHealth"].base_value == 200.0, f"got {attrs7['MaxHealth'].base_value}")
+check("dependent base is 100 (dependency order), not 200 (authored order)",
+      attrs7["Health"].base_value == 100.0, f"got {attrs7['Health'].base_value}")
 
 print("== 8. #101 regression: temp debuff must not destroy dependent base ==")
 cfg8 = {

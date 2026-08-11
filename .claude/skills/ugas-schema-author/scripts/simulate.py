@@ -267,6 +267,11 @@ def parse_clamping(
     and would make clamped resolution recurse forever, so they are rejected
     here with the full cycle path.
     """
+    if not isinstance(clamp_defs, dict):
+        raise ConfigError(
+            f"clamping must be a mapping of attribute name to bounds, got "
+            f"{clamp_defs!r}"
+        )
     known = set(attribute_names)
     rules: Dict[str, ClampRule] = {}
     for attr_name, rule in clamp_defs.items():
@@ -275,16 +280,29 @@ def parse_clamping(
                 f"clamping: rule for unknown attribute {attr_name!r}; "
                 f"declared attributes are {sorted(known)}"
             )
+        if not isinstance(rule, dict):
+            raise ConfigError(
+                f"clamping for {attr_name!r}: bounds must be a mapping with 'min' "
+                f"and/or 'max', got {rule!r}"
+            )
         min_val = rule.get("min")
         max_val = rule.get("max")
         parsed = ClampRule(min_val=min_val, max_val=max_val)
         for label, ref in (("min", min_val), ("max", max_val)):
-            if ref is not None and not isinstance(ref, (int, float)):
-                if not isinstance(ref, str) or ref not in known:
-                    raise ConfigError(
-                        f"clamping for {attr_name!r}: {label} references unknown "
-                        f"attribute {ref!r}; declared attributes are {sorted(known)}"
-                    )
+            if ref is None:
+                continue
+            # `bool` is an int subclass; a YAML `max: true` would otherwise become
+            # a silent ceiling of 1.0, which `require_number` rejects everywhere else.
+            if isinstance(ref, bool) or not isinstance(ref, (int, float, str)):
+                raise ConfigError(
+                    f"clamping for {attr_name!r}: {label} must be a number or an "
+                    f"attribute name, got {ref!r}"
+                )
+            if isinstance(ref, str) and ref not in known:
+                raise ConfigError(
+                    f"clamping for {attr_name!r}: {label} references unknown "
+                    f"attribute {ref!r}; declared attributes are {sorted(known)}"
+                )
         rules[attr_name] = parsed
 
     # Cycle detection (§5.4: circular dependencies MUST NOT be created). DFS over
