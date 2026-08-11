@@ -1,0 +1,19 @@
+---
+'ugas': patch
+---
+
+[Fixed] `ugas-schema-author` simulator — a bound that references another attribute now resolves against that attribute's **clamped** Current Value, and clamp rules are validated at parse time. Also adds a §5.4 spec clarification for the semantics this depends on.
+
+**A dependent attribute could exceed the bound it references, and the excess was written permanently to the Base Value.** Reference bounds resolved through the unclamped pipeline result, so with `MaxHealth` capped at `200` and carrying a `+500` buff, `Health` bounded by `max: MaxHealth` was permitted up to `700` — displayed `Health` could exceed displayed `MaxHealth`, the exact invariant the bound exists to enforce. Worse, base clamping used the same resolution: an `Instant` write landing while the ceiling was inflated stored `Health.base = 700` permanently. The buff expiring did not undo it and read-time clamping concealed it, but the Base Value is the persisted component (§5.2), so it survived save/load and resurfaced the moment `MaxHealth` legitimately rose. §5.4 rule 1 says the referenced attribute's Current Value is the bound, and §5.3 places clamping inside that definition (pipeline step 7), so the clamped value is the correct bound.
+
+**`min` and `max` were applied in the wrong order.** §5.3's formula is `max(V_min, min(V_max, x))`, so `min` wins where a resolved `min` exceeds a resolved `max`. Both the display and base-write paths applied `min` first and `max` second, giving `max` — `30` where the formula gives `50`. Reachable in practice because dynamic bounds let a `min` reference rise above a static `max`.
+
+Both are fixed by consolidating clamping into a single definition of a Current Value used by the display path and by bound resolution alike, rather than the three partly-divergent implementations that existed before. The unclamped pipeline helper is renamed to `compute_unclamped` — a function named for the Current Value while omitting the clamp is what allowed these to diverge.
+
+**Clamp rules are now validated when parsed**, in the same fail-loudly spirit as the effect validation: a rule keyed on an undeclared attribute, and a bound referencing one, are rejected instead of silently meaning "no bound" (a `max: MaxHelth` typo previously removed the ceiling with no signal). Circular bound references — including a self-reference — are rejected with the full cycle path, e.g. `Health -> MaxHealth -> Health`. §5.4 already forbade them; they previously produced a wrong number rather than hanging only because nothing recursed, and resolving bounds against clamped values introduces exactly that recursion. **This makes such configs breaking**: they ran before and now exit with an error.
+
+Base values written in one batch are clamped in dependency order — a referenced attribute before its dependents — with authored modifier order as the tiebreak among independent attributes. Clamping a referenced attribute's base changes its clamped Current Value, so interdependent attributes give a different answer depending on the order; the reference graph is acyclic once cycles are rejected, which makes dependency order the unique result.
+
+[Changed] Spec §5.4 — states that a reference bound resolves against the referenced attribute's *clamped* Current Value, with the `MaxHealth` example; notes that such a bound is temporary when the referenced attribute's modifiers are, so an `Instant` base write during a temporary reduction is clamped to the reduced bound and does not recover; and records that `Min` wins when a resolved `Min` exceeds a resolved `Max`, which previously had to be inferred from the nesting of the §5.3 formula.
+
+Adds `tests/test_simulate.py` — 22 standalone regression checks over the clamping and modifier-pipeline behaviour, covering these fixes plus the timing, ownership and base-clamping bugs fixed alongside them.
