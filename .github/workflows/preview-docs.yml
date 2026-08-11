@@ -123,6 +123,14 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Pinned deliberately. Unpinned, the action installs whatever `wrangler@4`
+          # currently resolves to, so a broken upstream publish breaks every PR here
+          # within seconds of hitting npm — which is exactly what happened on
+          # 2026-08-11: wrangler 4.121.0 shipped exact-pinning
+          # `miniflare@5.20260804.1-alpha`, a version that was never published, so
+          # `npm i wrangler@4` failed with ETARGET. Bump this after checking the
+          # release resolves and is provenance-signed.
+          wranglerVersion: "4.120.1"
           command: pages deploy dist --project-name=ugas --branch=${{ steps.ver.outputs.branch }}
 
       - name: Post preview URL as PR comment
