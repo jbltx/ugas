@@ -181,10 +181,9 @@ struct Modifier {
   /**
    * Modification operation.
    * - Add:      Pre-multiply flat additive (pipeline step 2)
-   * - AddPost:  Post-multiply flat additive (pipeline step 7; very rare)
-   * - Multiply: Multiplicative factor (pipeline step 6)
-
-   * - Override: Replace the computed value entirely (pipeline step 8)
+   * - Multiply: Signed bonus, channel-aggregated as (1 + Σm) (pipeline step 4)
+   * - AddPost:  Post-multiply flat additive (pipeline step 5; very rare)
+   * - Override: Replace the computed value entirely (pipeline step 6)
    */
   Operation: ModifierOperation;
 

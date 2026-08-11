@@ -89,8 +89,8 @@ The result is then clamped to the Attribute's declared bounds. These per-operati
 implementation MUST NOT silently drop any operation (a `Multiply` on an Instant effect is a Base-Value
 scale, not a no-op). An Instant `Multiply` with magnitude `0` is the identity (`stem:[times 1]`).
 
-This applies only to *Instant* effects. A durational (Infinite / HasDuration) effect's `Multiply` and
-`Divide` modifiers are Current-Value modifiers (§5.3) and are never written to the Base Value — including
+This applies only to *Instant* effects. A durational (Infinite / HasDuration) effect's `Multiply`
+modifiers are Current-Value modifiers (§5.3) and are never written to the Base Value — including
 on the periodic ticks of a periodic durational effect, whose executions apply only `Add` / `AddPost` /
 `Override` to the Base Value (a periodic `Multiply`-to-base would double-count against the effect's own
 Current-Value contribution and compound every tick). A percentage change that must be *permanent* is
