@@ -18,7 +18,7 @@ The config is validated more broadly in the same spirit — the first three belo
 - `period` must be positive. A `period` of `0` used to spin the tick loop forever, as did a negative one; the loop now also fails loudly if a period is too small to advance the schedule at all, which a positive-value check alone does not catch.
 - `period` on an `Instant` effect is rejected as meaningless, and a negative `HasDuration` duration is rejected in favour of `Infinite`.
 - `period`, `duration`, and `apply_at` must be numbers. YAML hands back a string more readily than it looks — `1.0e16` fails PyYAML's float pattern, which requires a signed exponent — and comparing one later raised a bare `TypeError`.
-- A missing effect `name`, or a modifier missing `attribute` or `value`, raises a config error instead of a `KeyError` traceback; a non-numeric modifier `value` is rejected rather than failing later in the arithmetic.
+- A missing effect `name`, or a modifier missing `attribute` or `value`, raises a config error instead of a `KeyError` traceback; a non-numeric modifier `value` is rejected rather than failing later in the arithmetic; a `channel` that is not a string is rejected rather than failing when Multiply modifiers are grouped by it; and a modifier that is not a mapping at all is reported instead of raising `AttributeError`.
 
 Attributes whose initial value starts outside their declared bounds are normalised once at t=0, before any effect is active — restoring behaviour the old per-step clamp sweep provided incidentally, without reintroducing the write-through it caused.
 

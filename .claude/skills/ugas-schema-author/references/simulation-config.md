@@ -10,8 +10,9 @@ the effect and attribute. The script exits `2` without producing output rather t
 silently no-opping the modifier — a dropped modifier would otherwise yield a
 plausible-looking but wrong curve.
 
-Also rejected: a missing effect `name`; a modifier missing `attribute` or `value`, or
-whose `value` is not a number; a modifier targeting an attribute not listed under
+Also rejected: a missing effect `name`; a modifier that is not a mapping, or is
+missing `attribute` or `value`, or whose `value` is not a number or whose `channel` is
+not a string; a modifier targeting an attribute not listed under
 `attributes`; a `period` that is zero, negative, or too small to advance the tick
 schedule; a `period` on an `Instant` effect; a negative `duration` on `HasDuration` (use
 `Infinite` for no expiry); and a non-numeric `period`, `duration`, or `apply_at` — note

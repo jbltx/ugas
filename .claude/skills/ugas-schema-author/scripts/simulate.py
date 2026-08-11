@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import math
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -31,21 +32,31 @@ import yaml
 # 0.1 reaches 0.30000000000000004, which compares greater than an `expire_at` of
 # 0.3 and silently drops the execution landing exactly on the expiry boundary.
 #
-# The grid is absolute, so it only discriminates while one ulp stays below 1e-10 —
-# i.e. for |t| below 2**20 (ulp(2**20) is already 2.3e-10). At or beyond that,
-# `round(x, TIME_DP)` is an identity and the boundary-tick drift returns: an
-# effect at `apply_at: 2**20` with period 0.1 and duration 0.3 fires 2 executions
-# where the same effect near t=0 fires 3. That is ~12 simulated days, so it is far
-# outside any plausible balance simulation, but it is reachable in ~1e6 steps
-# rather than being numerically impossible — so it is a documented limit, not a
-# guarantee. The tick loop separately refuses to spin when a schedule fails to
-# advance at all, which is the failure mode that actually hangs a run.
+# Quantising is not a proof of exactness, only a normalisation: `round(x, TIME_DP)`
+# stops changing anything once one ulp exceeds the grid step (from |t| = 2**19),
+# and an `apply_at` carrying full float precision can leave a residue larger than
+# the grid at magnitudes as low as a few hundred. So the boundary comparison uses
+# `at_or_before` rather than a bare `<=`, which is what actually makes an execution
+# landing on the expiry instant reliable.
 TIME_DP = 10
+
+# Half a grid step. Two schedule timestamps closer than this are the same instant
+# as far as the clock can express.
+TIME_EPS = 0.5 * 10 ** -TIME_DP
 
 
 def qtime(value: float) -> float:
     """Quantise a schedule timestamp onto the simulation clock's grid."""
     return round(value, TIME_DP)
+
+
+def at_or_before(a: float, b: float) -> bool:
+    """Is schedule time `a` at or before `b`, treating near-equal as equal?
+
+    Uses a relative tolerance so it holds at large `t`, where one ulp is itself
+    wider than the quantisation grid, plus an absolute floor for times near zero.
+    """
+    return a <= b or math.isclose(a, b, rel_tol=1e-12, abs_tol=TIME_EPS)
 
 
 @dataclass
@@ -177,6 +188,11 @@ def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
 
         modifiers = []
         for mdef in edef.get("modifiers", []):
+            if not isinstance(mdef, dict):
+                raise ConfigError(
+                    f"effect {name!r}: each modifier must be a mapping, got "
+                    f"{mdef!r}"
+                )
             if "operation" not in mdef:
                 raise ConfigError(
                     f"effect {name!r}: modifier on {mdef.get('attribute')!r} has no "
@@ -196,6 +212,14 @@ def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
                         f"effect {name!r}: modifier is missing required {key!r} "
                         f"(got keys {sorted(mdef)})"
                     )
+            # `channel` becomes a dict key when Multiply modifiers are grouped, so
+            # an unhashable value would fail there instead of here.
+            channel = mdef.get("channel")
+            if channel is not None and not isinstance(channel, str):
+                raise ConfigError(
+                    f"effect {name!r}: channel on {mdef['attribute']!r} must be a "
+                    f"string or omitted, got {channel!r}"
+                )
             modifiers.append(
                 Modifier(
                     attribute=mdef["attribute"],
@@ -203,7 +227,7 @@ def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
                     value=require_number(
                         mdef["value"], f"modifier value on {mdef['attribute']!r}", name
                     ),
-                    channel=mdef.get("channel"),
+                    channel=channel,
                 )
             )
 
@@ -498,7 +522,8 @@ def simulate(
         for effect in active_effects:
             if effect.period is not None and effect.next_tick_at is not None:
                 while t >= effect.next_tick_at and (
-                    effect.expire_at is None or effect.next_tick_at <= effect.expire_at
+                    effect.expire_at is None
+                    or at_or_before(effect.next_tick_at, effect.expire_at)
                 ):
                     # Each periodic execution writes the Base Value (§5.2: Add/AddPost/
                     # Override only — Multiply is skipped so it cannot compound per tick)
