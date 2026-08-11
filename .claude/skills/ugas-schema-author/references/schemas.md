@@ -222,10 +222,11 @@ properties:
     enum: [Add, AddPost, Multiply, Override]
     description: >
       Add: pre-multiply flat additive (pipeline step 2).
-      AddPost: post-multiply flat additive (pipeline step 7, very rare).
-      Multiply: multiplicative factor at step 6 — use reciprocal for reduction
-        (e.g., 0.5 to halve).
-      Override: replaces computed result at step 8.
+      Multiply: signed bonus aggregated per Channel at step 4 — the channel factor
+        is (1 + sum of magnitudes), so +0.25 means +25% and -0.25 means -25%.
+        There is no Divide operation: express a 50% reduction as magnitude -0.5.
+      AddPost: post-multiply flat additive (pipeline step 5, very rare).
+      Override: replaces computed result at step 6.
   Magnitude:
     # MagnitudeDefinition — see below
   Channel:

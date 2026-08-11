@@ -95,11 +95,9 @@ include::spec/part-7-scene-composition.adoc[]
 | stem:[V_{min}], stem:[V_{max}]
 | Minimum/Maximum bounds
 | stem:[a]
-| Additive modifier magnitude
-| stem:[p]
-| Percentage modifier magnitude
+| Additive modifier magnitude (`Add` / `AddPost`)
 | stem:[m]
-| Multiplicative factor
+| Signed bonus magnitude of a `Multiply` modifier (`+0.25` = +25%)
 | stem:[t]
 | Time variable
 | stem:[\Delta_t]

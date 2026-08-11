@@ -2,10 +2,14 @@
 """UGAS Attribute Simulation Engine.
 
 Simulates how attributes evolve over time under gameplay effects,
-following the UGAS modifier pipeline:
+following the UGAS modifier pipeline (spec §5.3):
 
-  CurrentValue = (BaseValue + Σ Add) × (1 + Σ Additive%) × Π Multiply
-  then apply AddPost, then Override.
+  CurrentValue = (BaseValue + Σ Add) × Π_channels (1 + Σ magnitudes) + Σ AddPost
+  then apply Override, then clamp.
+
+`Multiply` magnitudes are SIGNED BONUSES (+0.25 = +25%, -0.25 = -25%), not raw
+factors. Modifiers sharing a Channel add their magnitudes into one factor;
+distinct channels multiply. A modifier with no Channel is its own singleton.
 
 Usage:
   python simulate.py --config config.yaml [--duration 20] [--timestep 0.1] [--output results.csv]
@@ -27,8 +31,10 @@ import yaml
 @dataclass
 class Modifier:
     attribute: str
-    operation: str  # Add, Multiply, Override, AddPost
+    operation: str  # Add, Multiply, AddPost, Override
     value: float
+    # Aggregation channel for Multiply modifiers. None = own implicit singleton channel.
+    channel: Optional[str] = None
 
 
 @dataclass
@@ -52,7 +58,8 @@ class AttributeState:
     base_value: float
     # Active modifiers from duration/infinite effects
     add_modifiers: List[float] = field(default_factory=list)
-    multiply_modifiers: List[float] = field(default_factory=list)
+    # (channel, signed magnitude) pairs; channel None = own singleton channel
+    multiply_modifiers: List[tuple] = field(default_factory=list)
     add_post_modifiers: List[float] = field(default_factory=list)
     override_value: Optional[float] = None
 
@@ -78,6 +85,7 @@ def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
                     attribute=mdef["attribute"],
                     operation=mdef.get("operation", "Add"),
                     value=mdef["value"],
+                    channel=mdef.get("channel"),
                 )
             )
         effects.append(
@@ -127,20 +135,27 @@ def compute_current(state: AttributeState) -> float:
     # Step 2: Add modifiers (pre-multiply)
     result += sum(state.add_modifiers)
 
-    # Steps 3-4: Additive percentages not separately modeled here;
-    # users model them as Multiply modifiers with value (1 + pct)
+    # Step 3: group Multiply modifiers by Channel. Each channel's effective factor is
+    # (1 + Σ magnitudes) — magnitudes are SIGNED BONUSES (+0.25 = +25%, -0.25 = -25%),
+    # not raw factors. A modifier with no Channel is its own implicit singleton channel,
+    # contributing (1 + magnitude) independently of every other modifier.
+    channel_sums: Dict[Any, float] = {}
+    for i, (channel, magnitude) in enumerate(state.multiply_modifiers):
+        key = channel if channel is not None else ("<singleton>", i)
+        channel_sums[key] = channel_sums.get(key, 0.0) + magnitude
 
-    # Steps 5-6: Multiplicative
-    for m in state.multiply_modifiers:
-        result *= m
+    # Step 4: multiply all channel factors together
+    for channel_total in channel_sums.values():
+        result *= 1.0 + channel_total
 
-    # Step 7: AddPost
+    # Step 5: AddPost
     result += sum(state.add_post_modifiers)
 
-    # Step 8: Override
+    # Step 6: Override
     if state.override_value is not None:
         result = state.override_value
 
+    # Step 7 (clamping) is applied by the caller against the attribute's ClampRule.
     return result
 
 
@@ -156,7 +171,11 @@ def apply_instant_modifiers(
         if mod.operation == "Add":
             state.base_value += mod.value
         elif mod.operation == "Multiply":
-            state.base_value *= mod.value
+            # Spec §5.2: an Instant Multiply scales the Base Value by (1 + magnitude),
+            # the same signed-bonus convention the Current-Value pipeline uses. Channel
+            # grouping does not apply to a Base-Value write; each Instant Multiply scales
+            # independently in authored order. Magnitude 0 is therefore the identity.
+            state.base_value *= 1.0 + mod.value
         elif mod.operation == "Override":
             state.base_value = mod.value
         elif mod.operation == "AddPost":
@@ -181,7 +200,7 @@ def add_duration_modifiers(
                 (mod.attribute, "add", len(state.add_modifiers) - 1)
             )
         elif mod.operation == "Multiply":
-            state.multiply_modifiers.append(mod.value)
+            state.multiply_modifiers.append((mod.channel, mod.value))
             active_mod_map.setdefault(effect_name, []).append(
                 (mod.attribute, "multiply", len(state.multiply_modifiers) - 1)
             )

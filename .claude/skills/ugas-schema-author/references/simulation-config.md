@@ -73,10 +73,12 @@ simulation:
 
 The simulation applies modifiers following the UGAS pipeline:
 
-- **Add**: Flat additive, applied before multiplicative factors
-- **Multiply**: Multiplicative factor (use 1.5 for +50%, 0.5 for -50%)
+- **Add**: Flat additive, applied before the multiply steps
+- **Multiply**: Signed bonus, aggregated per `Channel` as `(1 + Σ magnitudes)` — use `0.5`
+  for +50% and `-0.5` for −50%. Modifiers sharing a channel add their magnitudes; distinct
+  channels multiply. A modifier with no channel is its own singleton.
+- **AddPost**: Flat additive applied after the multiply steps (rare)
 - **Override**: Replaces the computed value entirely
-- **AddPost**: Flat additive applied after multiplicative (rare)
 
 ## Output
 
