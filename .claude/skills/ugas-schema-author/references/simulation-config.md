@@ -10,10 +10,16 @@ the effect and attribute. The script exits `2` without producing output rather t
 silently no-opping the modifier — a dropped modifier would otherwise yield a
 plausible-looking but wrong curve.
 
-Also rejected: a modifier targeting an attribute not listed under `attributes`; a
-`period` that is zero or negative; a `period` on an `Instant` effect; and a negative
-`duration` on `HasDuration` (use `Infinite` for no expiry). An attribute whose initial
-value falls outside its declared bounds is clamped once at `t = 0`.
+Also rejected: a missing effect `name`; a modifier targeting an attribute not listed
+under `attributes`; a `period` that is zero, negative, or too small to advance the tick
+schedule; a `period` on an `Instant` effect; a negative `duration` on `HasDuration` (use
+`Infinite` for no expiry); and a non-numeric `period`, `duration`, or `apply_at` — note
+that YAML parses `1.0e16` as a *string*, since its float pattern requires a signed
+exponent, so write `1.0e+16`.
+
+An attribute whose initial value falls outside its declared bounds is clamped once at
+`t = 0`. Bounds that reference another attribute currently resolve against that
+attribute's unclamped Current Value; see issue #104.
 
 Timing (`apply_at`, `duration`, `period`) is evaluated on absolute simulation time, so
 results do not depend on `--timestep`; a finer timestep only adds resolution.

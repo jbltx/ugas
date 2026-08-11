@@ -19,24 +19,29 @@ from __future__ import annotations
 
 import argparse
 import csv
-import io
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
+import yaml
+
 # Schedule timestamps are quantised to the same precision as the simulation clock
 # (`t = round(step * timestep, TIME_DP)`). Without this, accumulating a period of
 # 0.1 reaches 0.30000000000000004, which compares greater than an `expire_at` of
 # 0.3 and silently drops the execution landing exactly on the expiry boundary.
+#
+# The grid is absolute, so it only discriminates while one ulp stays below 1e-10 —
+# i.e. for |t| up to roughly 2**24. Beyond that `round(x, TIME_DP)` is an identity
+# and the drift returns. Reaching such a `t` requires ~1e8 steps, so it is out of
+# reach of a real run, but the tick loop guards against a schedule that fails to
+# advance for this or any other reason rather than spinning.
 TIME_DP = 10
 
 
 def qtime(value: float) -> float:
     """Quantise a schedule timestamp onto the simulation clock's grid."""
     return round(value, TIME_DP)
-
-import yaml
 
 
 @dataclass
@@ -108,6 +113,21 @@ class ConfigError(ValueError):
     """Raised when a simulation config is malformed."""
 
 
+def require_number(value: Any, label: str, effect_name: str) -> float:
+    """Coerce a config field to float, rejecting non-numbers loudly.
+
+    YAML readily yields strings and bools where a number was meant — notably
+    `1.0e16`, which PyYAML's float pattern rejects (it requires a signed
+    exponent) and hands back as a string. Comparing that against a number later
+    raises a bare TypeError traceback, so it is caught here instead.
+    """
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ConfigError(
+            f"effect {effect_name!r}: {label} must be a number, got {value!r}"
+        )
+    return float(value)
+
+
 def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
     """Parse effect definitions, rejecting anything that would silently no-op.
 
@@ -118,7 +138,9 @@ def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
     """
     effects = []
     for index, edef in enumerate(effect_defs):
-        name = edef.get("name", f"<effect #{index}>")
+        if "name" not in edef:
+            raise ConfigError(f"effect #{index}: missing required 'name'")
+        name = edef["name"]
 
         policy = edef.get("duration_policy", "Instant")
         if policy not in VALID_DURATION_POLICIES:
@@ -136,11 +158,13 @@ def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
                     f"effect {name!r}: 'period' is meaningless on an Instant effect "
                     f"(use duration_policy HasDuration or Infinite)"
                 )
+            period = require_number(period, "period", name)
             if period <= 0:
                 raise ConfigError(
                     f"effect {name!r}: period must be > 0, got {period!r}"
                 )
-        duration = edef.get("duration", 0.0)
+        duration = require_number(edef.get("duration", 0.0), "duration", name)
+        apply_at = require_number(edef.get("apply_at", 0.0), "apply_at", name)
         if policy == "HasDuration" and duration < 0:
             raise ConfigError(
                 f"effect {name!r}: duration must be >= 0 for HasDuration, got "
@@ -180,7 +204,7 @@ def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
                 period=period,
                 execute_on_application=edef.get("execute_on_application", False),
                 modifiers=modifiers,
-                apply_at=edef.get("apply_at", 0.0),
+                apply_at=apply_at,
             )
         )
     return effects
@@ -469,9 +493,20 @@ def simulate(
                     written = apply_periodic_modifiers(effect.modifiers, attributes)
                     clamp_base_values(written, attributes, clamp_rules)
                     events.append(f"tick:{effect.name}")
-                    effect.next_tick_at = qtime(
-                        effect.next_tick_at + effect.period
-                    )
+                    # A positive period is not sufficient for progress: quantising
+                    # onto the TIME_DP grid can round the advance away entirely if
+                    # the period is tiny, and at very large `t` the float addition
+                    # itself is a no-op. Either way the loop would spin forever, so
+                    # fail loudly instead of hanging.
+                    advanced = qtime(effect.next_tick_at + effect.period)
+                    if advanced <= effect.next_tick_at:
+                        raise ConfigError(
+                            f"effect {effect.name!r}: period {effect.period!r} does "
+                            f"not advance the tick schedule at t="
+                            f"{effect.next_tick_at!r} (schedules are quantised to "
+                            f"{TIME_DP} decimal places); use a larger period"
+                        )
+                    effect.next_tick_at = advanced
 
             if effect.expire_at is not None and t >= effect.expire_at:
                 events.append(f"expire:{effect.name}")
