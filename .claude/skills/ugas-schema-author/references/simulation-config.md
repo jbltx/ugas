@@ -3,6 +3,16 @@
 The simulation script accepts a YAML configuration file that describes the initial
 state of attributes and a timeline of effect applications.
 
+`operation` is **required** on every modifier and is matched case-sensitively against
+`Add`, `AddPost`, `Multiply`, `Override`; `duration_policy` likewise against `Instant`,
+`HasDuration`, `Infinite`. Anything else is rejected at parse time with an error naming
+the effect and attribute. The script exits `2` without producing output rather than
+silently no-opping the modifier — a dropped modifier would otherwise yield a
+plausible-looking but wrong curve.
+
+Timing (`apply_at`, `duration`, `period`) is evaluated on absolute simulation time, so
+results do not depend on `--timestep`; a finer timestep only adds resolution.
+
 ## Config Schema
 
 ```yaml
