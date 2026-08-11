@@ -285,6 +285,22 @@ def parse_clamping(
                 f"clamping for {attr_name!r}: bounds must be a mapping with 'min' "
                 f"and/or 'max', got {rule!r}"
             )
+        # Unknown keys would silently mean "no bound". The trap is real: the spec's
+        # own §5.4 examples write `Min:`/`Max:` capitalised, while this config
+        # format is lowercase, so copying one in would remove the bound with no
+        # signal — the same silent-typo class the reference-name check closes.
+        unknown = sorted(set(rule) - {"min", "max"})
+        if unknown:
+            hint = (
+                " (bounds are lowercase 'min'/'max' here, unlike the capitalised"
+                " form in the spec's entity examples)"
+                if any(k.lower() in ("min", "max") for k in unknown)
+                else ""
+            )
+            raise ConfigError(
+                f"clamping for {attr_name!r}: unknown bound key(s) {unknown}; "
+                f"expected 'min' and/or 'max'{hint}"
+            )
         min_val = rule.get("min")
         max_val = rule.get("max")
         parsed = ClampRule(min_val=min_val, max_val=max_val)

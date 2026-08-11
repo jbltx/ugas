@@ -150,6 +150,11 @@ for label, clamping in (
     ("clamping itself not a mapping", [1, 2]),
     ("bound is a bool", {"Health": {"max": True}}),
     ("bound is a list", {"Health": {"min": [1, 2]}}),
+    # The spec's §5.4 entity examples write Min:/Max: capitalised; this config
+    # format is lowercase, so a copied example must error rather than silently
+    # dropping the bound.
+    ("capitalised Min/Max", {"Health": {"Min": 0, "Max": 100}}),
+    ("misspelled bound key", {"Health": {"mim": 0, "max": 100}}),
 ):
     expect_error(label, {"attributes": {"Health": 5.0}, "clamping": clamping,
                         "effects": []})
@@ -210,6 +215,96 @@ check("referenced attribute's base clamped to 200",
       attrs7["MaxHealth"].base_value == 200.0, f"got {attrs7['MaxHealth'].base_value}")
 check("dependent base is 100 (dependency order), not 200 (authored order)",
       attrs7["Health"].base_value == 100.0, f"got {attrs7['Health'].base_value}")
+
+print("== 7a. Out-of-bounds initial state is normalised at t=0 ==")
+# X starts at 500 against a static max of 100. The t=0 normalisation must write the
+# BASE down to 100; a display-only assertion at t=0 cannot see it, since read-time
+# clamping shows 100 either way. A later small Instant reveals which happened:
+# normalised base 100 - 10 -> 90; un-normalised base 500 - 10 -> 490, displayed 100.
+cfg7a = {
+    "attributes": {"X": 500.0},
+    "clamping": {"X": {"max": 100}},
+    "effects": [{"name": "Chip", "apply_at": 1.0, "duration_policy": "Instant",
+                 "modifiers": [{"attribute": "X", "operation": "Add", "value": -10.0}]}],
+}
+rows = run(cfg7a, duration=2)
+check("t=0 normalisation wrote the base, so the chip shows 90 (not 100)",
+      col(rows, 1.0, "X") == 90.0, f"got {col(rows, 1.0, 'X')}")
+
+print("== 7b. Base clamping is actually WIRED IN, end to end ==")
+# Cases 2 and 7 compose apply_instant_modifiers + clamp_base_values by hand, which
+# proves the functions but not that `simulate()` calls them. Removing either call
+# from the loop leaves those cases green, so assert through simulate() instead —
+# and read the base indirectly by letting the bound RECOVER afterwards, since a
+# clamped display hides an over-large base while the bound is still low.
+#
+# Health starts 100, bounded min 0. A -250 Instant would drive the base to -150
+# without clamping; clamped it stops at 0. Then a +50 heal reveals which happened:
+# clamped -> 50, unclamped -> -100.
+cfg7b = {
+    "attributes": {"Health": 100.0},
+    "clamping": {"Health": {"min": 0, "max": 1000}},
+    "effects": [
+        {"name": "Overkill", "apply_at": 1.0, "duration_policy": "Instant",
+         "modifiers": [{"attribute": "Health", "operation": "Add", "value": -250.0}]},
+        {"name": "Heal", "apply_at": 2.0, "duration_policy": "Instant",
+         "modifiers": [{"attribute": "Health", "operation": "Add", "value": 50.0}]},
+    ],
+}
+rows = run(cfg7b, duration=3)
+check("Instant path: base floored at 0, so the heal shows 50 (not -100)",
+      col(rows, 2.0, "Health") == 50.0, f"got {col(rows, 2.0, 'Health')}")
+
+# Same for the periodic execution path: a DOT overshooting the floor must not
+# bank a negative base that a later heal has to climb out of.
+cfg7c = {
+    "attributes": {"Health": 30.0},
+    "clamping": {"Health": {"min": 0, "max": 1000}},
+    "effects": [
+        {"name": "DOT", "apply_at": 0.0, "duration_policy": "HasDuration",
+         "duration": 3.0, "period": 1.0,
+         "modifiers": [{"attribute": "Health", "operation": "Add", "value": -20.0}]},
+        {"name": "Heal", "apply_at": 5.0, "duration_policy": "Instant",
+         "modifiers": [{"attribute": "Health", "operation": "Add", "value": 50.0}]},
+    ],
+}
+rows = run(cfg7c, duration=6)
+check("periodic path: base floored at 0, so the heal shows 50 (not -10)",
+      col(rows, 5.0, "Health") == 50.0, f"got {col(rows, 5.0, 'Health')}")
+
+print("== 7d. Ordering uses TRANSITIVE references (skip-intermediate) ==")
+# A max: C, C max: B, B max: 200. A batch writes A and B but NOT C, so A depends
+# on B only *through* C — ordering on direct references alone would clamp A first.
+#
+# C must start ABOVE its own bound, or its clamped value is identical before and
+# after B's base is clamped and both orderings agree (which is what made an
+# earlier version of this case pass under the direct-only mutation).
+#
+#   B: base 100 +450 -> 550, live Multiply -0.5, static max 200
+#      clamped current 200 before its base is clamped, 100 after (200 x 0.5)
+#   C: base 500, bound = B's clamped current -> 200 before, 100 after
+#   A: base 100 +600 -> 700, bound = C's clamped current
+#
+#   transitive: B's base clamped first (550 -> 200), so A's bound is 100
+#   direct-only: A clamped first against C's 200, giving 200
+attrs7d = {
+    "A": S.AttributeState(100.0),
+    "B": S.AttributeState(100.0),
+    "C": S.AttributeState(500.0),
+}
+rules7d = S.parse_clamping(
+    {"A": {"max": "C"}, "C": {"max": "B"}, "B": {"max": 200}}, attrs7d
+)
+check("A reaches B transitively through C",
+      S.transitive_references("A", rules7d) == {"B", "C"},
+      f"got {S.transitive_references('A', rules7d)}")
+S.add_duration_modifiers(0, [S.Modifier("B", "Multiply", -0.5)], attrs7d)
+written7d = S.apply_instant_modifiers(
+    [S.Modifier("A", "Add", 600.0), S.Modifier("B", "Add", 450.0)], attrs7d
+)
+S.clamp_base_values(written7d, attrs7d, rules7d)
+check("transitive ordering: A base is 100, not 200 (direct-only)",
+      attrs7d["A"].base_value == 100.0, f"got {attrs7d['A'].base_value}")
 
 print("== 8. #101 regression: temp debuff must not destroy dependent base ==")
 cfg8 = {

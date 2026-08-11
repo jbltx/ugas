@@ -21,7 +21,13 @@ exponent, so write `1.0e+16`.
 
 Clamp rules are validated too: a rule keyed on an undeclared attribute, a bound referencing
 one, and a circular set of bound references (`A max: B`, `B max: A`, or a self-reference) are
-all rejected, the last with the full cycle path.
+all rejected, the last with the full cycle path. So are malformed shapes — a non-mapping
+`clamping` block or rule, a bound that is neither a number nor an attribute name, and
+unknown keys inside a rule.
+
+Note the bound keys here are lowercase `min`/`max`. The spec's §5.4 *entity* examples use
+capitalised `Min:`/`Max:`; copying that form into a simulator config is now an error rather
+than silently leaving the attribute unbounded.
 
 An attribute whose initial value falls outside its declared bounds is clamped once at
 `t = 0`. A bound that references another attribute resolves against that attribute's
