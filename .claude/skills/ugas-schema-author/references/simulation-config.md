@@ -3,6 +3,29 @@
 The simulation script accepts a YAML configuration file that describes the initial
 state of attributes and a timeline of effect applications.
 
+`operation` is **required** on every modifier and is matched case-sensitively against
+`Add`, `AddPost`, `Multiply`, `Override`; `duration_policy` likewise against `Instant`,
+`HasDuration`, `Infinite`. Anything else is rejected at parse time with an error naming
+the effect and attribute. The script exits `2` without producing output rather than
+silently no-opping the modifier — a dropped modifier would otherwise yield a
+plausible-looking but wrong curve.
+
+Also rejected: a missing effect `name`; a modifier that is not a mapping, or is
+missing `attribute` or `value`, or whose `value` is not a number or whose `channel` is
+not a string; a modifier targeting an attribute not listed under
+`attributes`; a `period` that is zero, negative, or too small to advance the tick
+schedule; a `period` on an `Instant` effect; a negative `duration` on `HasDuration` (use
+`Infinite` for no expiry); and a non-numeric `period`, `duration`, or `apply_at` — note
+that YAML parses `1.0e16` as a *string*, since its float pattern requires a signed
+exponent, so write `1.0e+16`.
+
+An attribute whose initial value falls outside its declared bounds is clamped once at
+`t = 0`. Bounds that reference another attribute currently resolve against that
+attribute's unclamped Current Value; see issue #104.
+
+Timing (`apply_at`, `duration`, `period`) is evaluated on absolute simulation time, so
+results do not depend on `--timestep`; a finer timestep only adds resolution.
+
 ## Config Schema
 
 ```yaml

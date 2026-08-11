@@ -19,13 +19,44 @@ from __future__ import annotations
 
 import argparse
 import csv
-import io
+import math
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
 import yaml
+
+# Schedule timestamps are quantised to the same precision as the simulation clock
+# (`t = round(step * timestep, TIME_DP)`). Without this, accumulating a period of
+# 0.1 reaches 0.30000000000000004, which compares greater than an `expire_at` of
+# 0.3 and silently drops the execution landing exactly on the expiry boundary.
+#
+# Quantising is not a proof of exactness, only a normalisation: `round(x, TIME_DP)`
+# stops changing anything once one ulp exceeds the grid step (from |t| = 2**19),
+# and an `apply_at` carrying full float precision can leave a residue larger than
+# the grid at magnitudes as low as a few hundred. So the boundary comparison uses
+# `at_or_before` rather than a bare `<=`, which is what actually makes an execution
+# landing on the expiry instant reliable.
+TIME_DP = 10
+
+# Half a grid step. Two schedule timestamps closer than this are the same instant
+# as far as the clock can express.
+TIME_EPS = 0.5 * 10 ** -TIME_DP
+
+
+def qtime(value: float) -> float:
+    """Quantise a schedule timestamp onto the simulation clock's grid."""
+    return round(value, TIME_DP)
+
+
+def at_or_before(a: float, b: float) -> bool:
+    """Is schedule time `a` at or before `b`, treating near-equal as equal?
+
+    Uses a relative tolerance so it holds at large `t`, where one ulp is itself
+    wider than the quantisation grid, plus an absolute floor for times near zero.
+    """
+    return a <= b or math.isclose(a, b, rel_tol=1e-12, abs_tol=TIME_EPS)
 
 
 @dataclass
@@ -39,6 +70,9 @@ class Modifier:
 
 @dataclass
 class ActiveEffect:
+    # Unique per config entry. Modifier ownership is keyed on this rather than on
+    # `name`, so two effects sharing a name stay independent.
+    instance_id: int
     name: str
     duration_policy: str  # Instant, HasDuration, Infinite
     duration: float  # seconds, -1 for Infinite
@@ -46,26 +80,28 @@ class ActiveEffect:
     execute_on_application: bool
     modifiers: List[Modifier]
     apply_at: float  # when to apply
-    # Runtime state
+    # Runtime state. Schedules are absolute simulation times derived from
+    # `apply_at`, never running per-step accumulators — so an effect's lifetime
+    # and tick cadence do not depend on `--timestep`.
     applied: bool = False
-    time_remaining: float = 0.0
-    time_since_last_tick: float = 0.0
-    first_tick_done: bool = False
+    expire_at: Optional[float] = None  # None for Infinite (never expires)
+    next_tick_at: Optional[float] = None  # None for non-periodic
 
 
 @dataclass
 class AttributeState:
     base_value: float
-    # Active modifiers from duration/infinite effects. Every entry carries the name of
-    # the effect that owns it, so expiry removes exactly that effect's contributions
-    # regardless of what else was applied or removed in between.
-    # (effect_name, magnitude)
+    # Active modifiers from duration/infinite effects. Every entry carries the
+    # `instance_id` of the effect that owns it, so expiry removes exactly that
+    # effect's contributions regardless of what else was applied or removed in
+    # between — and two effects sharing a `name` remain independent.
+    # (owner_id, magnitude)
     add_modifiers: List[tuple] = field(default_factory=list)
-    # (effect_name, channel, signed magnitude); channel None = own singleton channel
+    # (owner_id, channel, signed magnitude); channel None = own singleton channel
     multiply_modifiers: List[tuple] = field(default_factory=list)
-    # (effect_name, magnitude)
+    # (owner_id, magnitude)
     add_post_modifiers: List[tuple] = field(default_factory=list)
-    # (effect_name, value); the most recently applied entry wins (§5.3 LIFO tie-break)
+    # (owner_id, value); the most recently applied entry wins (§5.3 LIFO tie-break)
     override_entries: List[tuple] = field(default_factory=list)
 
     @property
@@ -84,28 +120,127 @@ def load_config(path: Path) -> Dict[str, Any]:
         return yaml.safe_load(f)
 
 
+VALID_OPERATIONS = ("Add", "AddPost", "Multiply", "Override")
+VALID_DURATION_POLICIES = ("Instant", "HasDuration", "Infinite")
+
+
+class ConfigError(ValueError):
+    """Raised when a simulation config is malformed."""
+
+
+def require_number(value: Any, label: str, effect_name: str) -> float:
+    """Coerce a config field to float, rejecting non-numbers loudly.
+
+    YAML readily yields strings and bools where a number was meant — notably
+    `1.0e16`, which PyYAML's float pattern rejects (it requires a signed
+    exponent) and hands back as a string. Comparing that against a number later
+    raises a bare TypeError traceback, so it is caught here instead.
+    """
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ConfigError(
+            f"effect {effect_name!r}: {label} must be a number, got {value!r}"
+        )
+    return float(value)
+
+
 def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
+    """Parse effect definitions, rejecting anything that would silently no-op.
+
+    Operations are matched case-sensitively against the four spec operations and
+    are required — silently defaulting or ignoring an unrecognised operation
+    would produce a plausible-looking but wrong curve, and §5.2 requires that an
+    implementation MUST NOT silently drop any operation.
+    """
     effects = []
-    for edef in effect_defs:
+    for index, edef in enumerate(effect_defs):
+        if "name" not in edef:
+            raise ConfigError(f"effect #{index}: missing required 'name'")
+        name = edef["name"]
+
+        policy = edef.get("duration_policy", "Instant")
+        if policy not in VALID_DURATION_POLICIES:
+            raise ConfigError(
+                f"effect {name!r}: duration_policy {policy!r} is not one of "
+                f"{list(VALID_DURATION_POLICIES)}"
+            )
+
+        # A non-positive period would never advance the tick schedule, hanging the
+        # run; a negative duration would expire the effect before it applied.
+        period = edef.get("period")
+        if period is not None:
+            if policy == "Instant":
+                raise ConfigError(
+                    f"effect {name!r}: 'period' is meaningless on an Instant effect "
+                    f"(use duration_policy HasDuration or Infinite)"
+                )
+            period = require_number(period, "period", name)
+            if period <= 0:
+                raise ConfigError(
+                    f"effect {name!r}: period must be > 0, got {period!r}"
+                )
+        duration = require_number(edef.get("duration", 0.0), "duration", name)
+        apply_at = require_number(edef.get("apply_at", 0.0), "apply_at", name)
+        if policy == "HasDuration" and duration < 0:
+            raise ConfigError(
+                f"effect {name!r}: duration must be >= 0 for HasDuration, got "
+                f"{duration!r} (use duration_policy Infinite for no expiry)"
+            )
+
         modifiers = []
         for mdef in edef.get("modifiers", []):
+            if not isinstance(mdef, dict):
+                raise ConfigError(
+                    f"effect {name!r}: each modifier must be a mapping, got "
+                    f"{mdef!r}"
+                )
+            if "operation" not in mdef:
+                raise ConfigError(
+                    f"effect {name!r}: modifier on {mdef.get('attribute')!r} has no "
+                    f"'operation'; expected one of {list(VALID_OPERATIONS)}"
+                )
+            operation = mdef["operation"]
+            if operation not in VALID_OPERATIONS:
+                raise ConfigError(
+                    f"effect {name!r}: operation {operation!r} on "
+                    f"{mdef.get('attribute')!r} is not one of "
+                    f"{list(VALID_OPERATIONS)} (matching is case-sensitive; there "
+                    f"is no Divide — use Multiply with a negative magnitude)"
+                )
+            for key in ("attribute", "value"):
+                if key not in mdef:
+                    raise ConfigError(
+                        f"effect {name!r}: modifier is missing required {key!r} "
+                        f"(got keys {sorted(mdef)})"
+                    )
+            # `channel` becomes a dict key when Multiply modifiers are grouped, so
+            # an unhashable value would fail there instead of here.
+            channel = mdef.get("channel")
+            if channel is not None and not isinstance(channel, str):
+                raise ConfigError(
+                    f"effect {name!r}: channel on {mdef['attribute']!r} must be a "
+                    f"string or omitted, got {channel!r}"
+                )
             modifiers.append(
                 Modifier(
                     attribute=mdef["attribute"],
-                    operation=mdef.get("operation", "Add"),
-                    value=mdef["value"],
-                    channel=mdef.get("channel"),
+                    operation=operation,
+                    value=require_number(
+                        mdef["value"], f"modifier value on {mdef['attribute']!r}", name
+                    ),
+                    channel=channel,
                 )
             )
+
         effects.append(
             ActiveEffect(
+                instance_id=index,
                 name=edef["name"],
-                duration_policy=edef.get("duration_policy", "Instant"),
-                duration=edef.get("duration", 0.0),
-                period=edef.get("period"),
+                duration_policy=policy,
+                duration=duration,
+                period=period,
                 execute_on_application=edef.get("execute_on_application", False),
                 modifiers=modifiers,
-                apply_at=edef.get("apply_at", 0.0),
+                apply_at=apply_at,
             )
         )
     return effects
@@ -171,12 +306,22 @@ def compute_current(state: AttributeState) -> float:
 def apply_instant_modifiers(
     modifiers: List[Modifier],
     attributes: Dict[str, AttributeState],
-) -> None:
-    """Instant effects permanently change the base value."""
+) -> List[str]:
+    """Instant effects permanently change the base value.
+
+    Returns the attributes whose Base Value was written, in authored write order
+    and without duplicates, so the caller can clamp exactly those. The order is
+    deliberate: clamping is order-sensitive when one attribute's bound references
+    another, and a set would make results depend on the hash seed and so differ
+    between runs of the same config.
+    """
+    written: List[str] = []
     for mod in modifiers:
         if mod.attribute not in attributes:
             continue
         state = attributes[mod.attribute]
+        if mod.attribute not in written:
+            written.append(mod.attribute)
         if mod.operation == "Add":
             state.base_value += mod.value
         elif mod.operation == "Multiply":
@@ -189,12 +334,13 @@ def apply_instant_modifiers(
             state.base_value = mod.value
         elif mod.operation == "AddPost":
             state.base_value += mod.value
+    return written
 
 
 def apply_periodic_modifiers(
     modifiers: List[Modifier],
     attributes: Dict[str, AttributeState],
-) -> None:
+) -> List[str]:
     """Apply one periodic execution of a durational effect to the Base Value.
 
     Spec §5.2: a periodic execution applies only `Add` / `AddPost` / `Override` to
@@ -205,63 +351,71 @@ def apply_periodic_modifiers(
     skipping it here drops it from the base write only, not from the pipeline.
     """
     base_writes = [m for m in modifiers if m.operation != "Multiply"]
-    apply_instant_modifiers(base_writes, attributes)
+    return apply_instant_modifiers(base_writes, attributes)
 
 
 def add_duration_modifiers(
-    effect_name: str,
+    owner_id: int,
     modifiers: List[Modifier],
     attributes: Dict[str, AttributeState],
 ) -> None:
     """Duration/Infinite effects add temporary modifiers to CurrentValue.
 
-    Each entry is tagged with the owning effect's name; removal filters on that
-    name, so stacked effects on one attribute can expire in any order.
+    Each entry is tagged with the owning effect's `instance_id`; removal filters
+    on that id, so stacked effects on one attribute can expire in any order even
+    if they share a name.
     """
     for mod in modifiers:
         if mod.attribute not in attributes:
             continue
         state = attributes[mod.attribute]
         if mod.operation == "Add":
-            state.add_modifiers.append((effect_name, mod.value))
+            state.add_modifiers.append((owner_id, mod.value))
         elif mod.operation == "Multiply":
-            state.multiply_modifiers.append((effect_name, mod.channel, mod.value))
+            state.multiply_modifiers.append((owner_id, mod.channel, mod.value))
         elif mod.operation == "AddPost":
-            state.add_post_modifiers.append((effect_name, mod.value))
+            state.add_post_modifiers.append((owner_id, mod.value))
         elif mod.operation == "Override":
-            state.override_entries.append((effect_name, mod.value))
+            state.override_entries.append((owner_id, mod.value))
 
 
 def remove_duration_modifiers(
-    effect_name: str,
+    owner_id: int,
     attributes: Dict[str, AttributeState],
 ) -> None:
-    """Remove every modifier owned by an expiring effect.
-
-    Filtering by owner name (rather than by the index recorded at application
-    time) keeps this correct when several effects modify the same attribute and
-    expire out of order.
-    """
+    """Remove every modifier owned by an expiring effect instance."""
     for state in attributes.values():
-        state.add_modifiers = [e for e in state.add_modifiers if e[0] != effect_name]
+        state.add_modifiers = [e for e in state.add_modifiers if e[0] != owner_id]
         state.multiply_modifiers = [
-            e for e in state.multiply_modifiers if e[0] != effect_name
+            e for e in state.multiply_modifiers if e[0] != owner_id
         ]
         state.add_post_modifiers = [
-            e for e in state.add_post_modifiers if e[0] != effect_name
+            e for e in state.add_post_modifiers if e[0] != owner_id
         ]
         state.override_entries = [
-            e for e in state.override_entries if e[0] != effect_name
+            e for e in state.override_entries if e[0] != owner_id
         ]
 
 
-def apply_clamping(
+def clamp_base_values(
+    attr_names: Iterable[str],
     attributes: Dict[str, AttributeState],
     clamp_rules: Dict[str, ClampRule],
 ) -> None:
-    """Apply clamping rules to base values."""
-    for attr_name, rule in clamp_rules.items():
-        if attr_name not in attributes:
+    """Clamp the Base Value of attributes that were just written.
+
+    Only called immediately after a base write (an Instant application or a
+    periodic execution), and only for the attributes that write touched. §5.2
+    permits Base Values to change only through those paths, so clamping every
+    attribute's base on every step would let a *temporary* Current-Value debuff
+    on a referenced bound (e.g. `max: MaxHealth`) write through and permanently
+    destroy the dependent attribute's base. Clamping of the Current Value is a
+    read-time concern — §5.3's formula wraps the result in min/max, and §5.4
+    resolves an attribute-reference bound against that attribute's Current Value.
+    """
+    for attr_name in attr_names:
+        rule = clamp_rules.get(attr_name)
+        if rule is None or attr_name not in attributes:
             continue
         state = attributes[attr_name]
         min_v = resolve_clamp_value(rule.min_val, attributes)
@@ -291,6 +445,22 @@ def simulate(
     # Parse effects
     effects = parse_effects(config.get("effects", []))
 
+    # A modifier naming an attribute that does not exist would silently no-op
+    # while the run still reported the effect as applied.
+    for effect in effects:
+        for mod in effect.modifiers:
+            if mod.attribute not in attributes:
+                raise ConfigError(
+                    f"effect {effect.name!r}: modifier targets unknown attribute "
+                    f"{mod.attribute!r}; declared attributes are "
+                    f"{sorted(attributes)}"
+                )
+
+    # Normalise any initial state that starts outside its declared bounds. Done
+    # once, before any effect is active, so no temporary Current-Value modifier
+    # can leak into a Base Value here (the bug §5.2 forbids).
+    clamp_base_values(sorted(attributes), attributes, clamp_rules)
+
     active_effects: List[ActiveEffect] = []
 
     attr_names = sorted(attributes.keys())
@@ -308,64 +478,80 @@ def simulate(
                 events.append(f"apply:{effect.name}")
 
                 if effect.duration_policy == "Instant":
-                    apply_instant_modifiers(effect.modifiers, attributes)
-                    apply_clamping(attributes, clamp_rules)
+                    written = apply_instant_modifiers(effect.modifiers, attributes)
+                    clamp_base_values(written, attributes, clamp_rules)
                 else:
-                    effect.time_remaining = effect.duration
-                    effect.time_since_last_tick = 0.0
-                    effect.first_tick_done = False
+                    # Schedules are absolute and derived from the authored `apply_at`,
+                    # not from the step the effect happened to be noticed on, so they
+                    # are independent of `--timestep`. Infinite effects never expire.
+                    if effect.duration_policy == "HasDuration":
+                        effect.expire_at = qtime(effect.apply_at + effect.duration)
                     active_effects.append(effect)
 
                     if effect.period is None:
                         # Non-periodic durational: every modifier is a Current-Value
                         # modifier for the effect's lifetime.
                         add_duration_modifiers(
-                            effect.name, effect.modifiers, attributes
+                            effect.instance_id, effect.modifiers, attributes
                         )
                     else:
                         # Periodic durational (§5.2): the effect's `Multiply` modifiers
                         # remain Current-Value modifiers for its whole lifetime, while
                         # Add/AddPost/Override are written to the Base Value on each
                         # execution. Registering the Multiply subset here is what keeps
-                        # it from being dropped entirely — expiry removes it by name.
+                        # it from being dropped entirely — expiry removes it by id.
                         add_duration_modifiers(
-                            effect.name,
+                            effect.instance_id,
                             [m for m in effect.modifiers if m.operation == "Multiply"],
                             attributes,
                         )
 
+                        # The first execution lands at `apply_at` when the effect
+                        # executes on application, otherwise one full period later.
+                        effect.next_tick_at = qtime(effect.apply_at + effect.period)
                         if effect.execute_on_application:
-                            apply_periodic_modifiers(effect.modifiers, attributes)
-                            apply_clamping(attributes, clamp_rules)
-                            effect.first_tick_done = True
+                            written = apply_periodic_modifiers(
+                                effect.modifiers, attributes
+                            )
+                            clamp_base_values(written, attributes, clamp_rules)
                             events.append(f"tick:{effect.name}")
 
-        # Process periodic ticks for active effects
+        # Process periodic executions, then expiries — so an execution falling
+        # exactly on the expiry boundary still runs while the effect is active.
         expired = []
         for effect in active_effects:
-            if effect.period is not None:
-                effect.time_since_last_tick += timestep
-                while effect.time_since_last_tick >= effect.period:
-                    effect.time_since_last_tick -= effect.period
+            if effect.period is not None and effect.next_tick_at is not None:
+                while t >= effect.next_tick_at and (
+                    effect.expire_at is None
+                    or at_or_before(effect.next_tick_at, effect.expire_at)
+                ):
                     # Each periodic execution writes the Base Value (§5.2: Add/AddPost/
                     # Override only — Multiply is skipped so it cannot compound per tick)
-                    apply_periodic_modifiers(effect.modifiers, attributes)
-                    apply_clamping(attributes, clamp_rules)
+                    written = apply_periodic_modifiers(effect.modifiers, attributes)
+                    clamp_base_values(written, attributes, clamp_rules)
                     events.append(f"tick:{effect.name}")
+                    # A positive period is not sufficient for progress: quantising
+                    # onto the TIME_DP grid can round the advance away entirely if
+                    # the period is tiny, and at very large `t` the float addition
+                    # itself is a no-op. Either way the loop would spin forever, so
+                    # fail loudly instead of hanging.
+                    advanced = qtime(effect.next_tick_at + effect.period)
+                    if advanced <= effect.next_tick_at:
+                        raise ConfigError(
+                            f"effect {effect.name!r}: period {effect.period!r} does "
+                            f"not advance the tick schedule at t="
+                            f"{effect.next_tick_at!r} (schedules are quantised to "
+                            f"{TIME_DP} decimal places); use a larger period"
+                        )
+                    effect.next_tick_at = advanced
 
-            # Reduce remaining time
-            if effect.duration_policy == "HasDuration":
-                effect.time_remaining -= timestep
-                if effect.time_remaining <= 0:
-                    events.append(f"expire:{effect.name}")
-                    remove_duration_modifiers(effect.name, attributes)
-                    expired.append(effect)
+            if effect.expire_at is not None and t >= effect.expire_at:
+                events.append(f"expire:{effect.name}")
+                remove_duration_modifiers(effect.instance_id, attributes)
+                expired.append(effect)
 
         for e in expired:
             active_effects.remove(e)
-
-        # Apply clamping
-        apply_clamping(attributes, clamp_rules)
 
         # Record state
         row: Dict[str, Any] = {"time": round(t, 4)}
@@ -434,7 +620,11 @@ def main() -> int:
     duration = args.duration or sim_config.get("duration", 20.0)
     timestep = args.timestep or sim_config.get("timestep", 0.1)
 
-    results = simulate(config, duration, timestep)
+    try:
+        results = simulate(config, duration, timestep)
+    except ConfigError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
 
     attr_names = sorted(config.get("attributes", {}).keys())
 
