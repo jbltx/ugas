@@ -198,9 +198,11 @@ def apply_periodic_modifiers(
     """Apply one periodic execution of a durational effect to the Base Value.
 
     Spec §5.2: a periodic execution applies only `Add` / `AddPost` / `Override` to
-    the Base Value. `Multiply` is deliberately skipped — a periodic Multiply-to-base
-    would compound every tick and double-count against the effect's own Current-Value
-    contribution.
+    the Base Value. `Multiply` is deliberately skipped here — a periodic
+    Multiply-to-base would compound every tick and double-count against the effect's
+    own Current-Value contribution. That Current-Value contribution is registered
+    separately at application time (see the periodic branch in `run_simulation`), so
+    skipping it here drops it from the base write only, not from the pipeline.
     """
     base_writes = [m for m in modifiers if m.operation != "Multiply"]
     apply_instant_modifiers(base_writes, attributes)
@@ -314,18 +316,29 @@ def simulate(
                     effect.first_tick_done = False
                     active_effects.append(effect)
 
-                    # Non-periodic duration/infinite: add modifiers immediately
                     if effect.period is None:
+                        # Non-periodic durational: every modifier is a Current-Value
+                        # modifier for the effect's lifetime.
                         add_duration_modifiers(
                             effect.name, effect.modifiers, attributes
                         )
+                    else:
+                        # Periodic durational (§5.2): the effect's `Multiply` modifiers
+                        # remain Current-Value modifiers for its whole lifetime, while
+                        # Add/AddPost/Override are written to the Base Value on each
+                        # execution. Registering the Multiply subset here is what keeps
+                        # it from being dropped entirely — expiry removes it by name.
+                        add_duration_modifiers(
+                            effect.name,
+                            [m for m in effect.modifiers if m.operation == "Multiply"],
+                            attributes,
+                        )
 
-                    # Periodic with execute_on_application
-                    if effect.period is not None and effect.execute_on_application:
-                        apply_periodic_modifiers(effect.modifiers, attributes)
-                        apply_clamping(attributes, clamp_rules)
-                        effect.first_tick_done = True
-                        events.append(f"tick:{effect.name}")
+                        if effect.execute_on_application:
+                            apply_periodic_modifiers(effect.modifiers, attributes)
+                            apply_clamping(attributes, clamp_rules)
+                            effect.first_tick_done = True
+                            events.append(f"tick:{effect.name}")
 
         # Process periodic ticks for active effects
         expired = []
