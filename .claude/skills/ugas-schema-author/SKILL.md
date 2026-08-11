@@ -51,18 +51,26 @@ yourself.
 The UGAS modifier pipeline computes CurrentValue as:
 
 ```
-CurrentValue = (BaseValue + Σ Additions) × (1 + Σ Additive%) × Π Multiplicative
+CurrentValue = clamp( (BaseValue + Σ Add) × Π_channels (1 + Σ magnitudes) + Σ AddPost )
 ```
 
-Full 8-step pipeline:
-1. Base Value
-2. `Add` modifiers (flat, pre-multiply)
-3. Sum additive percentages
-4. Apply additive percentage multiplier
-5. Collect multiplicative factors
-6. Apply multiplicative factors (`Multiply` modifiers)
-7. `AddPost` modifiers (flat, post-multiply — rare)
-8. `Override` — replaces the result entirely (highest Priority wins)
+There is no separate "additive percentage" operation — the only operations are `Add`,
+`Multiply`, `AddPost`, and `Override`. `Multiply` takes a **signed bonus**, not a raw
+factor: `+0.25` means +25% and `-0.25` means −25%. There is no `Divide`; a 50% reduction
+is `Multiply` with magnitude `-0.5`.
+
+Full 7-step pipeline (spec §5.3 Order of Operations):
+1. Sum all flat `Add` magnitudes: `flat = ΣAdd`
+2. Apply to Base Value: `value = Base + flat`
+3. Group `Multiply` modifiers by `Channel`; per channel `factor = 1 + Σ magnitudes`
+4. Multiply all channel factors together: `value *= Π factor`
+5. `AddPost` modifiers (flat, post-multiply — rare): `value += ΣAddPost`
+6. `Override` — replaces the result entirely (highest Priority wins)
+7. Clamp to the attribute's declared bounds
+
+Modifiers sharing a `Channel` **add** their magnitudes into one factor; different channels
+multiply. A `Multiply` with no `Channel` is its own implicit singleton (contributing
+`1 + magnitude`), *not* a member of a shared global channel.
 
 There are three duration policies:
 - **Instant** — Permanently changes the Base Value. Not "active" after application.
@@ -151,9 +159,11 @@ immediately, then move to the next category:
 
 1. **Modifier operations alignment** — Compare operations listed in PURPOSE.md, the
    SPEC, and the schema `enum` values. Known pitfall: PURPOSE.md mentions "Divide"
-   as a modifier operation, but schemas replaced it with `Multiply` using reciprocal
-   values (e.g., `0.5` instead of `÷ 2`). The SPEC itself says "There is no Divide
-   operation." Flag any contradictions.
+   as a modifier operation, but the only operations are `Add`, `Multiply`, `AddPost`,
+   and `Override`. A reduction is `Multiply` with a *negative signed* magnitude
+   (`-0.5` for −50%) — NOT a reciprocal factor like `0.5`, which under the
+   `1 + magnitude` convention is a +50% bonus. The SPEC itself says "There is no
+   Divide operation." Flag any contradictions.
 
 2. **JSON Schema keyword consistency** — Check whether schemas use `$defs` or
    `definitions` for internal references. Both are valid JSON Schema keywords but

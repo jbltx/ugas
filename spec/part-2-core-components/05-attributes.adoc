@@ -89,8 +89,8 @@ The result is then clamped to the Attribute's declared bounds. These per-operati
 implementation MUST NOT silently drop any operation (a `Multiply` on an Instant effect is a Base-Value
 scale, not a no-op). An Instant `Multiply` with magnitude `0` is the identity (`stem:[times 1]`).
 
-This applies only to *Instant* effects. A durational (Infinite / HasDuration) effect's `Multiply` and
-`Divide` modifiers are Current-Value modifiers (§5.3) and are never written to the Base Value — including
+This applies only to *Instant* effects. A durational (Infinite / HasDuration) effect's `Multiply`
+modifiers are Current-Value modifiers (§5.3) and are never written to the Base Value — including
 on the periodic ticks of a periodic durational effect, whose executions apply only `Add` / `AddPost` /
 `Override` to the Base Value (a periodic `Multiply`-to-base would double-count against the effect's own
 Current-Value contribution and compound every tick). A percentage change that must be *permanent* is
@@ -162,22 +162,33 @@ When multiple active Override modifiers target the same Attribute simultaneously
 
 Given:
 - Base Value: 100
-- Add Modifier 1: +20
-- Add Modifier 2: +10
-- Additive Percentage 1: +10% (0.1)
-- Additive Percentage 2: +15% (0.15)
-- Multiplicative 1: 1.5×
-- Multiplicative 2: 2.0×
-- No Bonus Flat
+- `Add` Modifier 1: +20
+- `Add` Modifier 2: +10
+- `Multiply` Modifier 1: +0.10, `Channel: "Gear"`
+- `Multiply` Modifier 2: +0.15, `Channel: "Gear"`
+- `Multiply` Modifier 3: +0.50, `Channel: "Legendary"`
+- `Multiply` Modifier 4: +1.00, no `Channel` (implicit singleton)
+- No `AddPost`, no `Override`
 
 Calculation:
 ----
-Step 1-2: 100 + 20 + 10 = 130
-Step 3-4: 130 × (1 + 0.1 + 0.15) = 130 × 1.25 = 162.5
-Step 5-6: 162.5 × 1.5 × 2.0 = 487.5
+Step 1:   flat = 20 + 10 = 30
+Step 2:   value = 100 + 30 = 130
+Step 3:   channels → "Gear" = 1 + 0.10 + 0.15 = 1.25
+                     "Legendary" = 1 + 0.50 = 1.50
+                     <singleton> = 1 + 1.00 = 2.00
+Step 4:   value = 130 × 1.25 × 1.50 × 2.00 = 487.5
+Step 5:   value += 0  (no AddPost)
+Step 6:   no Override
+Step 7:   clamp to the attribute's bounds
 ----
 
 Current Value = 487.5
+
+Note that the two `Gear` modifiers *add* their magnitudes into a single ×1.25 factor rather than
+compounding as `1.10 × 1.15`, while the separate channels multiply — this is the power-creep control
+described above. A modifier with no `Channel` is its own singleton, not a member of a shared global
+channel.
 
 ==== 5.4 Clamping and Bounds
 

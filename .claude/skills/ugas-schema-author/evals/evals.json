@@ -10,7 +10,7 @@
     {
       "id": 1,
       "prompt": "Review the existing UGAS schema examples in schemas/examples/ and the schema definitions in schemas/. I want a thorough audit: find any inconsistencies between the spec and schemas, issues in the examples, missing fields, and give me concrete suggestions. Also check if the schemas themselves have internal inconsistencies (like using different JSON Schema keywords for the same thing).",
-      "expected_output": "Should identify real issues: Divide operation mentioned in spec but not in schemas (replaced by Multiply with reciprocal), $defs vs definitions inconsistency in JSON schemas, tag pattern not enforced in ability/effect schemas, BlockedByTags vs ActivationBlockedTags ambiguity, stacking fields missing from effect schema, missing Metadata on effects, and suggestions for fixes.",
+      "expected_output": "Should identify real issues: Divide operation mentioned in spec but not in schemas (a reduction is Multiply with a negative signed magnitude such as -0.5, not a reciprocal factor), $defs vs definitions inconsistency in JSON schemas, tag pattern not enforced in ability/effect schemas, BlockedByTags vs ActivationBlockedTags ambiguity, stacking fields missing from effect schema, missing Metadata on effects, and suggestions for fixes.",
       "files": []
     },
     {
