@@ -392,11 +392,11 @@
       <i class="corner c1"></i><i class="corner c2"></i><i class="corner c3"></i><i class="corner c4"></i>
       <div class="formula">
         <div><span class="out">CurrentValue</span> <span class="eq">=</span></div>
-        <div class="blk"><span class="term">BaseValue</span> <span class="op">+</span> <span class="term">Σ Additions</span><span class="lbl">flat</span></div>
+        <div class="blk"><span class="term">BaseValue</span> <span class="op">+</span> <span class="term">Σ Add</span><span class="lbl">flat</span></div>
         <div class="pipe-row"><span class="pipe-tick">×</span><span class="pipe-line"></span></div>
-        <div class="blk">( <span class="op">1 +</span> <span class="term">Σ Additive%</span> )<span class="lbl">additive %</span></div>
-        <div class="pipe-row"><span class="pipe-tick">×</span><span class="pipe-line"></span></div>
-        <div class="blk"><span class="op">Π</span> <span class="term">Multiplicative</span><span class="lbl">true mult</span></div>
+        <div class="blk"><span class="op">Π</span><sub>channels</sub> ( <span class="op">1 +</span> <span class="term">Σ Multiply</span> )<span class="lbl">signed bonuses, pooled per channel</span></div>
+        <div class="pipe-row"><span class="pipe-tick">+</span><span class="pipe-line"></span></div>
+        <div class="blk"><span class="term">Σ AddPost</span><span class="lbl">post-multiply flat</span></div>
       </div>
       <div class="mono" style="margin-top:14px;font-size:10.5px;color:var(--ink-faint);letter-spacing:.04em;line-height:1.7;">
         // deterministic order of operations<br>

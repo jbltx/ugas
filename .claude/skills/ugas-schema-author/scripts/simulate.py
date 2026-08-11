@@ -56,12 +56,21 @@ class ActiveEffect:
 @dataclass
 class AttributeState:
     base_value: float
-    # Active modifiers from duration/infinite effects
-    add_modifiers: List[float] = field(default_factory=list)
-    # (channel, signed magnitude) pairs; channel None = own singleton channel
+    # Active modifiers from duration/infinite effects. Every entry carries the name of
+    # the effect that owns it, so expiry removes exactly that effect's contributions
+    # regardless of what else was applied or removed in between.
+    # (effect_name, magnitude)
+    add_modifiers: List[tuple] = field(default_factory=list)
+    # (effect_name, channel, signed magnitude); channel None = own singleton channel
     multiply_modifiers: List[tuple] = field(default_factory=list)
-    add_post_modifiers: List[float] = field(default_factory=list)
-    override_value: Optional[float] = None
+    # (effect_name, magnitude)
+    add_post_modifiers: List[tuple] = field(default_factory=list)
+    # (effect_name, value); the most recently applied entry wins (§5.2 LIFO tie-break)
+    override_entries: List[tuple] = field(default_factory=list)
+
+    @property
+    def override_value(self) -> Optional[float]:
+        return self.override_entries[-1][1] if self.override_entries else None
 
 
 @dataclass
@@ -133,14 +142,14 @@ def compute_current(state: AttributeState) -> float:
     result = state.base_value
 
     # Step 2: Add modifiers (pre-multiply)
-    result += sum(state.add_modifiers)
+    result += sum(magnitude for _owner, magnitude in state.add_modifiers)
 
     # Step 3: group Multiply modifiers by Channel. Each channel's effective factor is
     # (1 + Σ magnitudes) — magnitudes are SIGNED BONUSES (+0.25 = +25%, -0.25 = -25%),
     # not raw factors. A modifier with no Channel is its own implicit singleton channel,
     # contributing (1 + magnitude) independently of every other modifier.
     channel_sums: Dict[Any, float] = {}
-    for i, (channel, magnitude) in enumerate(state.multiply_modifiers):
+    for i, (_owner, channel, magnitude) in enumerate(state.multiply_modifiers):
         key = channel if channel is not None else ("<singleton>", i)
         channel_sums[key] = channel_sums.get(key, 0.0) + magnitude
 
@@ -149,7 +158,7 @@ def compute_current(state: AttributeState) -> float:
         result *= 1.0 + channel_total
 
     # Step 5: AddPost
-    result += sum(state.add_post_modifiers)
+    result += sum(magnitude for _owner, magnitude in state.add_post_modifiers)
 
     # Step 6: Override
     if state.override_value is not None:
@@ -182,92 +191,66 @@ def apply_instant_modifiers(
             state.base_value += mod.value
 
 
+def apply_periodic_modifiers(
+    modifiers: List[Modifier],
+    attributes: Dict[str, AttributeState],
+) -> None:
+    """Apply one periodic execution of a durational effect to the Base Value.
+
+    Spec §5.2: a periodic execution applies only `Add` / `AddPost` / `Override` to
+    the Base Value. `Multiply` is deliberately skipped — a periodic Multiply-to-base
+    would compound every tick and double-count against the effect's own Current-Value
+    contribution.
+    """
+    base_writes = [m for m in modifiers if m.operation != "Multiply"]
+    apply_instant_modifiers(base_writes, attributes)
+
+
 def add_duration_modifiers(
     effect_name: str,
     modifiers: List[Modifier],
     attributes: Dict[str, AttributeState],
-    active_mod_map: Dict[str, List[tuple]],
 ) -> None:
-    """Duration/Infinite effects add temporary modifiers to CurrentValue."""
+    """Duration/Infinite effects add temporary modifiers to CurrentValue.
+
+    Each entry is tagged with the owning effect's name; removal filters on that
+    name, so stacked effects on one attribute can expire in any order.
+    """
     for mod in modifiers:
         if mod.attribute not in attributes:
             continue
         state = attributes[mod.attribute]
-        entry = (effect_name, mod.value)
         if mod.operation == "Add":
-            state.add_modifiers.append(mod.value)
-            active_mod_map.setdefault(effect_name, []).append(
-                (mod.attribute, "add", len(state.add_modifiers) - 1)
-            )
+            state.add_modifiers.append((effect_name, mod.value))
         elif mod.operation == "Multiply":
-            state.multiply_modifiers.append((mod.channel, mod.value))
-            active_mod_map.setdefault(effect_name, []).append(
-                (mod.attribute, "multiply", len(state.multiply_modifiers) - 1)
-            )
+            state.multiply_modifiers.append((effect_name, mod.channel, mod.value))
         elif mod.operation == "AddPost":
-            state.add_post_modifiers.append(mod.value)
-            active_mod_map.setdefault(effect_name, []).append(
-                (mod.attribute, "add_post", len(state.add_post_modifiers) - 1)
-            )
+            state.add_post_modifiers.append((effect_name, mod.value))
         elif mod.operation == "Override":
-            state.override_value = mod.value
-            active_mod_map.setdefault(effect_name, []).append(
-                (mod.attribute, "override", 0)
-            )
+            state.override_entries.append((effect_name, mod.value))
 
 
 def remove_duration_modifiers(
     effect_name: str,
     attributes: Dict[str, AttributeState],
-    active_mod_map: Dict[str, List[tuple]],
 ) -> None:
-    """Remove modifiers when a duration effect expires."""
-    entries = active_mod_map.pop(effect_name, [])
-    # We need to rebuild modifier lists to avoid index issues
-    # Collect which modifiers to remove per attribute
-    removals: Dict[str, Dict[str, List[int]]] = {}
-    for attr_name, mod_type, idx in entries:
-        removals.setdefault(attr_name, {}).setdefault(mod_type, []).append(idx)
+    """Remove every modifier owned by an expiring effect.
 
-    for attr_name, type_indices in removals.items():
-        if attr_name not in attributes:
-            continue
-        state = attributes[attr_name]
-        for mod_type, indices in type_indices.items():
-            indices_set = set(indices)
-            if mod_type == "add":
-                state.add_modifiers = [
-                    v for i, v in enumerate(state.add_modifiers) if i not in indices_set
-                ]
-            elif mod_type == "multiply":
-                state.multiply_modifiers = [
-                    v
-                    for i, v in enumerate(state.multiply_modifiers)
-                    if i not in indices_set
-                ]
-            elif mod_type == "add_post":
-                state.add_post_modifiers = [
-                    v
-                    for i, v in enumerate(state.add_post_modifiers)
-                    if i not in indices_set
-                ]
-            elif mod_type == "override":
-                state.override_value = None
-
-    # Rebuild index references in active_mod_map for remaining effects
-    # This is needed because list indices shifted after removal
-    # For simplicity, we rebuild from scratch
-    rebuild_mod_map(attributes, active_mod_map)
-
-
-def rebuild_mod_map(
-    attributes: Dict[str, AttributeState],
-    active_mod_map: Dict[str, List[tuple]],
-) -> None:
-    """Rebuild the mod map after removals - simplified approach."""
-    # This is a simplification; in a full implementation you'd track
-    # modifier ownership more robustly
-    pass
+    Filtering by owner name (rather than by the index recorded at application
+    time) keeps this correct when several effects modify the same attribute and
+    expire out of order.
+    """
+    for state in attributes.values():
+        state.add_modifiers = [e for e in state.add_modifiers if e[0] != effect_name]
+        state.multiply_modifiers = [
+            e for e in state.multiply_modifiers if e[0] != effect_name
+        ]
+        state.add_post_modifiers = [
+            e for e in state.add_post_modifiers if e[0] != effect_name
+        ]
+        state.override_entries = [
+            e for e in state.override_entries if e[0] != effect_name
+        ]
 
 
 def apply_clamping(
@@ -306,8 +289,6 @@ def simulate(
     # Parse effects
     effects = parse_effects(config.get("effects", []))
 
-    # Track which modifier list entries belong to which effect
-    active_mod_map: Dict[str, List[tuple]] = {}
     active_effects: List[ActiveEffect] = []
 
     attr_names = sorted(attributes.keys())
@@ -336,12 +317,12 @@ def simulate(
                     # Non-periodic duration/infinite: add modifiers immediately
                     if effect.period is None:
                         add_duration_modifiers(
-                            effect.name, effect.modifiers, attributes, active_mod_map
+                            effect.name, effect.modifiers, attributes
                         )
 
                     # Periodic with execute_on_application
                     if effect.period is not None and effect.execute_on_application:
-                        apply_instant_modifiers(effect.modifiers, attributes)
+                        apply_periodic_modifiers(effect.modifiers, attributes)
                         apply_clamping(attributes, clamp_rules)
                         effect.first_tick_done = True
                         events.append(f"tick:{effect.name}")
@@ -353,8 +334,9 @@ def simulate(
                 effect.time_since_last_tick += timestep
                 while effect.time_since_last_tick >= effect.period:
                     effect.time_since_last_tick -= effect.period
-                    # Periodic effects apply as instant modifications each tick
-                    apply_instant_modifiers(effect.modifiers, attributes)
+                    # Each periodic execution writes the Base Value (§5.2: Add/AddPost/
+                    # Override only — Multiply is skipped so it cannot compound per tick)
+                    apply_periodic_modifiers(effect.modifiers, attributes)
                     apply_clamping(attributes, clamp_rules)
                     events.append(f"tick:{effect.name}")
 
@@ -363,7 +345,7 @@ def simulate(
                 effect.time_remaining -= timestep
                 if effect.time_remaining <= 0:
                     events.append(f"expire:{effect.name}")
-                    remove_duration_modifiers(effect.name, attributes, active_mod_map)
+                    remove_duration_modifiers(effect.name, attributes)
                     expired.append(effect)
 
         for e in expired:

@@ -53,7 +53,8 @@ effects:
     modifiers:
       - attribute: Armor
         operation: Multiply
-        value: 1.5          # 50% more armor
+        value: 0.5          # signed bonus: +50% more armor
+        channel: Buffs      # optional; omit for an isolated singleton channel
 
   - name: BigHit
     apply_at: 5.0
