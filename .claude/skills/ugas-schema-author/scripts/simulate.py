@@ -32,10 +32,14 @@ import yaml
 # 0.3 and silently drops the execution landing exactly on the expiry boundary.
 #
 # The grid is absolute, so it only discriminates while one ulp stays below 1e-10 —
-# i.e. for |t| up to roughly 2**24. Beyond that `round(x, TIME_DP)` is an identity
-# and the drift returns. Reaching such a `t` requires ~1e8 steps, so it is out of
-# reach of a real run, but the tick loop guards against a schedule that fails to
-# advance for this or any other reason rather than spinning.
+# i.e. for |t| below 2**20 (ulp(2**20) is already 2.3e-10). At or beyond that,
+# `round(x, TIME_DP)` is an identity and the boundary-tick drift returns: an
+# effect at `apply_at: 2**20` with period 0.1 and duration 0.3 fires 2 executions
+# where the same effect near t=0 fires 3. That is ~12 simulated days, so it is far
+# outside any plausible balance simulation, but it is reachable in ~1e6 steps
+# rather than being numerically impossible — so it is a documented limit, not a
+# guarantee. The tick loop separately refuses to spin when a schedule fails to
+# advance at all, which is the failure mode that actually hangs a run.
 TIME_DP = 10
 
 
@@ -186,11 +190,19 @@ def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
                     f"{list(VALID_OPERATIONS)} (matching is case-sensitive; there "
                     f"is no Divide — use Multiply with a negative magnitude)"
                 )
+            for key in ("attribute", "value"):
+                if key not in mdef:
+                    raise ConfigError(
+                        f"effect {name!r}: modifier is missing required {key!r} "
+                        f"(got keys {sorted(mdef)})"
+                    )
             modifiers.append(
                 Modifier(
                     attribute=mdef["attribute"],
                     operation=operation,
-                    value=mdef["value"],
+                    value=require_number(
+                        mdef["value"], f"modifier value on {mdef['attribute']!r}", name
+                    ),
                     channel=mdef.get("channel"),
                 )
             )

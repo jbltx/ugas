@@ -12,13 +12,13 @@
 
 **Unrecognised operations were silently dropped.** The operation dispatch had no `else` branch and `parse_effects` defaulted a *missing* `operation` to `Add`, so `Divide`, lowercase `add`, and uppercase `MULTIPLY` all no-opped while the run still logged the effect as applied — and a modifier with no `operation` silently became a flat `Add` nobody authored. §5.2 requires that an implementation MUST NOT silently drop any operation. `operation` is now required and validated case-sensitively, `duration_policy` likewise, and the CLI reports the offending effect and attribute and exits `2` instead of emitting a plausible-looking wrong curve.
 
-The config is validated more broadly in the same spirit, since every one of these previously produced either a wrong curve or a hang rather than a message:
+The config is validated more broadly in the same spirit — the first three below previously produced a wrong curve or a hang, the rest a bare traceback:
 
 - A modifier naming an attribute that was never declared is rejected rather than silently ignored.
 - `period` must be positive. A `period` of `0` used to spin the tick loop forever, as did a negative one; the loop now also fails loudly if a period is too small to advance the schedule at all, which a positive-value check alone does not catch.
 - `period` on an `Instant` effect is rejected as meaningless, and a negative `HasDuration` duration is rejected in favour of `Infinite`.
 - `period`, `duration`, and `apply_at` must be numbers. YAML hands back a string more readily than it looks — `1.0e16` fails PyYAML's float pattern, which requires a signed exponent — and comparing one later raised a bare `TypeError`.
-- A missing effect `name` raises a config error instead of a `KeyError` traceback.
+- A missing effect `name`, or a modifier missing `attribute` or `value`, raises a config error instead of a `KeyError` traceback; a non-numeric modifier `value` is rejected rather than failing later in the arithmetic.
 
 Attributes whose initial value starts outside their declared bounds are normalised once at t=0, before any effect is active — restoring behaviour the old per-step clamp sweep provided incidentally, without reintroducing the write-through it caused.
 
