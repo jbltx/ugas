@@ -65,7 +65,7 @@ class AttributeState:
     multiply_modifiers: List[tuple] = field(default_factory=list)
     # (effect_name, magnitude)
     add_post_modifiers: List[tuple] = field(default_factory=list)
-    # (effect_name, value); the most recently applied entry wins (§5.2 LIFO tie-break)
+    # (effect_name, value); the most recently applied entry wins (§5.3 LIFO tie-break)
     override_entries: List[tuple] = field(default_factory=list)
 
     @property

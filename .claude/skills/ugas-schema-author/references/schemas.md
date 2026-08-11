@@ -227,6 +227,9 @@ properties:
         There is no Divide operation: express a 50% reduction as magnitude -0.5.
       AddPost: post-multiply flat additive (pipeline step 5, very rare).
       Override: replaces computed result at step 6.
+      Step numbers refer to the Current-Value pipeline (§5.3). On an Instant
+        effect each modifier writes the Base Value directly, where Multiply
+        scales by (1 + magnitude) with no channel grouping (§5.2).
   Magnitude:
     # MagnitudeDefinition — see below
   Channel:
