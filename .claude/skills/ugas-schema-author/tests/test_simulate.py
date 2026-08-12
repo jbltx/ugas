@@ -24,9 +24,22 @@ wrong reason during review:
    every ordering agrees and the case proves nothing. Give it a live modifier, or
    start it above its bound.
 
-The suite is checked by mutation rather than by counting checks: apply one
-behaviour-changing edit to `scripts/simulate.py` and confirm a case fails. Several
-natural-looking assertions here survive that test.
+3. **A needle that also appears elsewhere in the same message.** `expect_error`
+   passes if every needle is a substring, so asserting `"'value'"` against an
+   unknown-key error proves nothing — the message already lists `'value'` among the
+   expected keys. A needle has to be text only the behaviour under test produces.
+
+The suite is checked by mutation rather than by counting checks: a passing case
+proves nothing on its own. `mutate.py` next to this file applies one
+behaviour-changing edit to `scripts/simulate.py` at a time and reports whether any
+case noticed — run it after changing either file:
+
+    python .claude/skills/ugas-schema-author/tests/mutate.py
+
+It also records three mutations that survive *because they are behaviour-preserving*,
+with the reason for each, so that a change making one observable shows up as a
+surprise rather than a mystery. Several natural-looking assertions here were found by
+that harness to survive a real defect.
 """
 import contextlib
 import signal

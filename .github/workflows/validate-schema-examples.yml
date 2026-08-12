@@ -36,6 +36,15 @@ jobs:
         run: |
           python scripts/run_conformance.py
 
+      - name: Run simulator regression suite
+        # The bundled `ugas-schema-author` simulator's own suite. It ran nowhere in
+        # CI until now, which is how an Instant `Multiply` that zeroed a Base Value
+        # reached a released artifact — every case in it was written after a bug had
+        # already shipped. Standalone by design: no pytest, and PyYAML is already
+        # installed above.
+        run: |
+          python .claude/skills/ugas-schema-author/tests/test_simulate.py
+
       - name: Guard generated artifacts
         run: |
           # llms.txt is generated from the manifest at publish time; a hand-maintained
