@@ -25,9 +25,28 @@ all rejected, the last with the full cycle path. So are malformed shapes — a n
 `clamping` block or rule, a bound that is neither a number nor an attribute name, and
 unknown keys inside a rule.
 
-Note the bound keys here are lowercase `min`/`max`. The spec's §5.4 *entity* examples use
-capitalised `Min:`/`Max:`; copying that form into a simulator config is now an error rather
-than silently leaving the attribute unbounded.
+**Unknown keys are rejected at every level** — top-level, inside an effect, inside a
+modifier, and inside `simulation`. An unknown key previously meant "take the default", so
+`execute_on_aplication:` silently became `false` and the effect stopped executing on
+application while the run still reported it applied; `efects:` produced an empty run that
+reads as "your design does nothing"; `timestap:` quietly changed the whole x-axis. This is
+**breaking** for configs that carried extra keys — annotations must move into YAML comments.
+
+Malformed shapes now produce a message and exit `2` instead of a traceback and exit `1`: an
+`effects` block that is not a list, an effect or modifier that is not a mapping, a
+non-mapping `attributes` block, a non-string attribute name, a non-numeric initial value
+(including a YAML bool, since `yes` would otherwise become `1.0`), and an empty config file
+(which loads as `None`).
+
+Note the key conventions here, because two of them differ from the spec:
+
+- Bound keys are lowercase `min`/`max`. The spec's §5.4 *entity* examples use capitalised
+  `Min:`/`Max:`; copying that form is an error rather than silently leaving the attribute
+  unbounded.
+- Every key is lowercase snake_case and the modifier magnitude key is `value`. The full
+  `GameplayEffect` schema and the genre packs use PascalCase (`DurationPolicy`, `Attribute`,
+  `Magnitude`) plus fields this simplified format does not model (`Priority`, `GrantedTags`,
+  `Executions`, …). Copying one in is an error with a hint naming the difference.
 
 An attribute whose initial value falls outside its declared bounds is clamped once at
 `t = 0`. A bound that references another attribute resolves against that attribute's
@@ -39,6 +58,11 @@ references — if `MaxHealth` is capped at 200 and buffed to 700, `Health` bound
   they are. An `Instant` effect writing a Base Value while the bound is temporarily reduced
   is clamped to the reduced bound, and that write is permanent.
 - Where a resolved `min` exceeds a resolved `max`, `min` wins, per §5.3's formula.
+
+Bound references may chain to any depth — `A max: B`, `B max: C`, and so on — and several
+attributes may reference a shared set. Only cycles are rejected. Deep chains and wide
+reference lattices resolve in near-linear time; they previously raised a `RecursionError`
+past a few hundred links, or took exponential time.
 
 Timing (`apply_at`, `duration`, `period`) is evaluated on absolute simulation time, so
 results do not depend on `--timestep`; a finer timestep only adds resolution.
@@ -118,6 +142,15 @@ The simulation applies modifiers following the UGAS pipeline:
 - **Multiply**: Signed bonus, aggregated per `Channel` as `(1 + Σ magnitudes)` — use `0.5`
   for +50% and `-0.5` for −50%. Modifiers sharing a channel add their magnitudes; distinct
   channels multiply. A modifier with no channel is its own singleton.
+
+  On an **`Instant`** effect, `Multiply` scales the *Base Value* by `(1 + value)` — the same
+  signed-bonus convention, so `0` is the identity and `-0.5` halves the base. Channel
+  grouping does **not** apply to a Base-Value write: each Instant `Multiply` scales
+  independently, in authored order, so two `+0.5` modifiers in one Instant effect give ×2.25,
+  not the ×2.0 the same two produce as duration modifiers sharing a channel.
+
+  On a **periodic** effect, `Multiply` is never written to the base — it would compound every
+  tick. It acts as a Current-Value modifier for the effect's lifetime instead (§5.2).
 - **AddPost**: Flat additive applied after the multiply steps (rare)
 - **Override**: Replaces the computed value entirely
 
