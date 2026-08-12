@@ -1,0 +1,308 @@
+= Universal Gameplay Ability System Specification
+Mickael Bonfill <jbltx>
+:revnumber: 1.0.0-draft.6
+:revdate: August 2026
+:ugas-version: v1.0.0-draft.6
+:doctype: book
+:toc: left
+:toc-title: Table of Contents
+:toclevels: 4
+:stem: latexmath
+:source-highlighter: highlight.js
+:icons: font
+:sectanchors:
+:sectlinks:
+:docinfo: shared
+
+[[preamble]]
+== Preamble
+
+Copyright 2026 Mickael Bonfill
+
+This Specification is released under the
+https://opensource.org/licenses/MIT[MIT License].
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this Specification and associated documentation files, to deal in the
+Specification without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Specification, and to permit persons to whom the Specification is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Specification.
+
+The author makes no, and expressly disclaims any, representations or
+warranties, express or implied, regarding this Specification, including,
+without limitation: merchantability, fitness for a particular purpose,
+non-infringement of any intellectual property, correctness, accuracy,
+completeness, timeliness, and reliability. Under no circumstances will the
+author or contributors be liable for any damages, whether direct, indirect,
+special or consequential damages for lost revenues, lost profits, or
+otherwise, arising from or in connection with this Specification or the use
+or other dealings in this Specification.
+
+// "Normative Wording" section
+
+Some parts of this Specification are purely informative and so are EXCLUDED
+from the normative scope of this Specification. The
+<<introduction-conventions>> section of the <<introduction>> defines how
+these parts of the Specification are identified.
+
+Where this Specification uses technical terminology, defined in the
+<<glossary, Glossary>> or otherwise, that refers to enabling technologies
+not expressly set forth in this Specification, those enabling technologies
+are EXCLUDED from the normative scope of this Specification.
+
+// "Normative References" section
+
+Where this Specification identifies specific sections of external references,
+only those specifically identified sections define normative functionality.
+
+The full text of the MIT License can be found in the
+https://github.com/jbltx/ugas/blob/main/LICENSE[LICENSE] file at the root of
+the repository.
+
+include::spec/part-1-foundations.adoc[]
+
+include::spec/part-2-core-components.adoc[]
+
+include::spec/part-3-asynchronous-execution.adoc[]
+
+include::spec/part-4-feedback-and-networking.adoc[]
+
+include::spec/part-5-reference-implementation.adoc[]
+
+include::spec/part-6-world-and-space.adoc[]
+
+include::spec/part-7-scene-composition.adoc[]
+
+[appendix]
+=== Mathematical Notation
+
+==== Variable Naming Conventions
+
+[cols="2,2",options="header"]
+|===
+| Symbol
+| Meaning
+
+| stem:[V]
+| Value (generic)
+| stem:[V_{base}]
+| Base Value of an Attribute
+| stem:[V_{current}]
+| Current Value of an Attribute
+| stem:[V_{min}], stem:[V_{max}]
+| Minimum/Maximum bounds
+| stem:[a]
+| Pre-multiply additive modifier magnitude (`Add`)
+| stem:[b]
+| Post-multiply additive modifier magnitude (`AddPost`)
+| stem:[m]
+| Signed bonus magnitude of a `Multiply` modifier (`+0.25` = +25%)
+| stem:[t]
+| Time variable
+| stem:[\Delta_t]
+| Time delta
+| stem:[n]
+| Count/index variable
+|===
+
+==== Summation and Product Notation
+
+_Summation_ (stem:[\sum]): Sum of values over an index range
+
+[stem]
+++++
+\sum_{i=1}^{n} a_i = a_1 + a_2 + \cdots + a_n
+++++
+
+_Product_ (stem:[\prod]): Product of values over an index range
+
+[stem]
+++++
+\prod_{k=1}^{n} m_k = m_1 \times m_2 \times \cdots \times m_n
+++++
+
+==== Set Theory Notation for Tags
+
+[cols="2,2",options="header"]
+|===
+| Notation
+| Meaning
+
+| T
+| A single Tag
+| C
+| A TagContainer (set of Tags)
+| T ∈ C
+| Tag T is a member of Container C
+| C₁ ⊆ C₂
+| Container C₁ is a subset of C₂
+| C₁ ∩ C₂
+| Intersection of two containers
+| C₁ ∪ C₂
+| Union of two containers
+| C₁ ∩ C₂ ≠ ∅
+| Containers have at least one common element
+|===
+
+'''
+
+[appendix]
+=== Complete Schema Reference
+
+==== Schema URL Versioning Policy
+
+All `$schema` URLs in UGAS data files use the pattern:
+
+----
+https://ugas.jbltx.com/{version}/schemas/{schema-name}.json
+----
+
+Where `{version}` is the published UGAS release the data file was authored against (e.g. `{ugas-version}`). This is the canonical, resolvable URL: it is served by the docs site, and each schema's own `$id` is set to the same URL, so an authored file's `$schema` both identifies and (when a network is available) resolves to the exact schema it was validated against. Each released version MUST maintain stable schema URLs — schemas at a given version MUST NOT be modified after release.
+
+Data files SHOULD pin to the exact UGAS version they were authored against. Tooling that processes UGAS data files SHOULD validate against the schema declared in `$schema`; because the `$schema` value is a stable *identifier*, validators MAY resolve it offline (e.g. against the version's bundled schema set) rather than over the network, and SHOULD fail clearly when the schema cannot be resolved rather than silently skipping validation.
+
+==== GameplayController Schema Definition
+
+
+[source,yaml]
+----
+include::schemas/gameplay_controller.yaml[]
+----
+
+
+==== Attribute Schema Definition
+
+
+[source,yaml]
+----
+include::schemas/attribute.yaml[]
+----
+
+
+==== AttributeSet Schema Definition
+
+
+[source,yaml]
+----
+include::schemas/attribute_set.yaml[]
+----
+
+
+==== Ability Schema Definition
+
+
+[source,yaml]
+----
+include::schemas/gameplay_ability.yaml[]
+----
+
+
+==== Effect Schema Definition
+
+
+[source,yaml]
+----
+include::schemas/gameplay_effect.yaml[]
+----
+
+
+==== Tag Schema Definition
+
+
+[source,yaml]
+----
+include::schemas/gameplay_tag.yaml[]
+----
+
+
+'''
+
+[appendix]
+=== References and Citations
+
+==== BibTeX Entries
+
+[source,bibtex]
+----
+@online{epicgames_gas,
+  author = {{Epic Games}},
+  title = {Understanding the Unreal Engine Gameplay Ability System},
+  year = {2024},
+  url = {https://dev.epicgames.com/documentation/en-us/unreal-engine/understanding-the-unreal-engine-gameplay-ability-system},
+  urldate = {2026-02-03}
+}
+
+@online{tranek_gasdoc,
+  author = {Dan Tranek},
+  title = {GASDocumentation: Understanding Unreal Engine's GameplayAbilitySystem},
+  year = {2024},
+  url = {https://github.com/tranek/GASDocumentation},
+  urldate = {2026-02-03}
+}
+
+@online{unity_gas,
+  author = {{Unity Technologies}},
+  title = {Unity Gameplay Ability System},
+  year = {2024},
+  url = {https://github.com/sjai013/unity-gameplay-ability-system},
+  urldate = {2026-02-03}
+}
+
+@online{godot_attributes,
+  author = {{OctoD}},
+  title = {Godot Gameplay Attributes},
+  year = {2024},
+  url = {https://github.com/OctoD/godot_gameplay_attributes},
+  urldate = {2026-02-03}
+}
+
+
+@book{gregory_engine,
+  author = {Jason Gregory},
+  title = {Game Engine Architecture},
+  edition = {3rd},
+  publisher = {A K Peters/CRC Press},
+  year = {2018},
+  isbn = {978-1138035454}
+}
+
+@online{gambetta_prediction,
+  author = {Gabriel Gambetta},
+  title = {Client-Side Prediction and Server Reconciliation},
+  year = {2021},
+  url = {https://www.gabrielgambetta.com/client-side-prediction-server-reconciliation.html},
+  urldate = {2026-02-03}
+}
+
+@online{gaffer_sync,
+  author = {Glenn Fiedler},
+  title = {State Synchronization},
+  year = {2019},
+  url = {https://gafferongames.com/post/state_synchronization/},
+  urldate = {2026-02-03}
+}
+----
+
+'''
+
+=== Document History
+
+[cols="2,1,2,2",options="header"]
+|===
+| Version
+| Date
+| Author
+| Changes
+
+| 1.0
+| February 2026
+| Mickael Bonfill
+| Initial specification
+|===
+
+'''
+
+_End of Specification_

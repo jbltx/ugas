@@ -1,0 +1,14 @@
+# Template entity: Input Action
+# Replace with a genre-specific action definition.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action.json
+Name: ExampleAction
+ValueType: Digital
+TriggerBehavior: OnPressed
+Tags:
+  ActionTags:
+    - Input.Type.Example
+Metadata:
+  DisplayName: Example Action
+  Description: Replace with a genre-specific input action
+  Category: General

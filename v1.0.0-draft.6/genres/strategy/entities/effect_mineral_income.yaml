@@ -1,0 +1,18 @@
+# Mineral income: the showcase periodic effect. Infinite duration with a 1-second Period, so the
+# economy ticks +5 Minerals every second for as long as the harvester/base is active - the strategy
+# pack's "resource over time" engine. Applied to the commander GC (which owns the economy
+# resources), one active instance per working harvester. ExecuteOnApplication is false so the first
+# payout lands one full second after the harvester starts, not instantly.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_effect.json
+Name: GE_MineralIncome
+DurationPolicy: Infinite
+Period:
+  Period: 1.0
+  ExecuteOnApplication: false
+Modifiers:
+  - Attribute: Minerals
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 5.0

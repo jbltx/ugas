@@ -1,0 +1,16 @@
+# Time bonus: instant top-up of the TimeRemaining resource, awarded in timed modes (e.g. clearing
+# a special tile or hitting a score milestone). The +TimeRemaining add is clamped by MaxTime in the
+# attribute set, so a bonus can never push the clock above its ceiling. Move-limited levels simply
+# never apply this effect. Kept declarative - a flat resource add needs no Execution.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_effect.json
+Name: GE_TimeBonus
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: TimeRemaining
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 5.0
+GameplayCues:
+  - GameplayCue.Puzzle.TimeBonus

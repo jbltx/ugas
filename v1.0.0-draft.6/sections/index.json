@@ -1,0 +1,234 @@
+{
+  "sections": [
+    {
+      "id": "preamble",
+      "title": "Preamble",
+      "level": 1,
+      "pillar": null,
+      "parentId": null,
+      "anchor": "#preamble",
+      "path": "sections/00-preamble.md",
+      "bytes": 2191
+    },
+    {
+      "id": "introduction",
+      "title": "1. Introduction",
+      "level": 2,
+      "pillar": null,
+      "parentId": "part-i-foundations",
+      "anchor": "#1-introduction",
+      "path": "sections/01-introduction.md",
+      "bytes": 3905
+    },
+    {
+      "id": "terminology",
+      "title": "2. Terminology",
+      "level": 2,
+      "pillar": null,
+      "parentId": "part-i-foundations",
+      "anchor": "#2-terminology",
+      "path": "sections/02-terminology.md",
+      "bytes": 2717
+    },
+    {
+      "id": "architectural-overview",
+      "title": "3. Architectural Overview",
+      "level": 2,
+      "pillar": null,
+      "parentId": "part-i-foundations",
+      "anchor": "#3-architectural-overview",
+      "path": "sections/03-architectural-overview.md",
+      "bytes": 7876
+    },
+    {
+      "id": "gameplay-controllergc",
+      "title": "4. Gameplay Controller(GC)",
+      "level": 2,
+      "pillar": null,
+      "parentId": "part-ii-core-components",
+      "anchor": "#4-gameplay-controllergc",
+      "path": "sections/04-gameplay-controllergc.md",
+      "bytes": 6586
+    },
+    {
+      "id": "attributes",
+      "title": "5. Attributes",
+      "level": 2,
+      "pillar": "attributes",
+      "parentId": "part-ii-core-components",
+      "anchor": "#5-attributes",
+      "path": "sections/05-attributes.md",
+      "bytes": 12847
+    },
+    {
+      "id": "attribute-sets",
+      "title": "6. Attribute Sets",
+      "level": 2,
+      "pillar": "attributes",
+      "parentId": "part-ii-core-components",
+      "anchor": "#6-attribute-sets",
+      "path": "sections/06-attribute-sets.md",
+      "bytes": 3902
+    },
+    {
+      "id": "gameplay-tags",
+      "title": "7. Gameplay Tags",
+      "level": 2,
+      "pillar": "tags",
+      "parentId": "part-ii-core-components",
+      "anchor": "#7-gameplay-tags",
+      "path": "sections/07-gameplay-tags.md",
+      "bytes": 9086
+    },
+    {
+      "id": "gameplay-abilities",
+      "title": "8. Gameplay Abilities",
+      "level": 2,
+      "pillar": "abilities",
+      "parentId": "part-ii-core-components",
+      "anchor": "#8-gameplay-abilities",
+      "path": "sections/08-gameplay-abilities.md",
+      "bytes": 26435
+    },
+    {
+      "id": "gameplay-effects",
+      "title": "9. Gameplay Effects",
+      "level": 2,
+      "pillar": "effects",
+      "parentId": "part-ii-core-components",
+      "anchor": "#9-gameplay-effects",
+      "path": "sections/09-gameplay-effects.md",
+      "bytes": 24851
+    },
+    {
+      "id": "ability-tasks",
+      "title": "10. Ability Tasks",
+      "level": 2,
+      "pillar": null,
+      "parentId": "part-iii-asynchronous-execution",
+      "anchor": "#10-ability-tasks",
+      "path": "sections/10-ability-tasks.md",
+      "bytes": 11643
+    },
+    {
+      "id": "input-integration",
+      "title": "11. Input Integration",
+      "level": 2,
+      "pillar": null,
+      "parentId": "part-iii-asynchronous-execution",
+      "anchor": "#11-input-integration",
+      "path": "sections/11-input-integration.md",
+      "bytes": 16043
+    },
+    {
+      "id": "gameplay-cues",
+      "title": "12. Gameplay Cues",
+      "level": 2,
+      "pillar": null,
+      "parentId": "part-iv-feedback-networking-and-persistence",
+      "anchor": "#12-gameplay-cues",
+      "path": "sections/12-gameplay-cues.md",
+      "bytes": 3481
+    },
+    {
+      "id": "network-replication",
+      "title": "13. Network Replication",
+      "level": 2,
+      "pillar": null,
+      "parentId": "part-iv-feedback-networking-and-persistence",
+      "anchor": "#13-network-replication",
+      "path": "sections/13-network-replication.md",
+      "bytes": 26740
+    },
+    {
+      "id": "state-persistence",
+      "title": "14. State Persistence",
+      "level": 2,
+      "pillar": null,
+      "parentId": "part-iv-feedback-networking-and-persistence",
+      "anchor": "#14-state-persistence",
+      "path": "sections/14-state-persistence.md",
+      "bytes": 11411
+    },
+    {
+      "id": "implementation-examples",
+      "title": "15. Implementation Examples",
+      "level": 2,
+      "pillar": null,
+      "parentId": "part-v-reference-implementation",
+      "anchor": "#15-implementation-examples",
+      "path": "sections/15-implementation-examples.md",
+      "bytes": 6555
+    },
+    {
+      "id": "case-studies",
+      "title": "16. Case Studies",
+      "level": 2,
+      "pillar": null,
+      "parentId": "part-v-reference-implementation",
+      "anchor": "#16-case-studies",
+      "path": "sections/16-case-studies.md",
+      "bytes": 17388
+    },
+    {
+      "id": "world-spatial-model",
+      "title": "17. World & Spatial Model",
+      "level": 2,
+      "pillar": null,
+      "parentId": "part-vi-world-spatial-model",
+      "anchor": "#17-world-spatial-model",
+      "path": "sections/17-world-spatial-model.md",
+      "bytes": 18277
+    },
+    {
+      "id": "scene-composition",
+      "title": "18. Scene Composition",
+      "level": 2,
+      "pillar": null,
+      "parentId": "part-vii-scene-composition",
+      "anchor": "#18-scene-composition",
+      "path": "sections/18-scene-composition.md",
+      "bytes": 7823
+    },
+    {
+      "id": "mathematical-notation",
+      "title": "Mathematical Notation",
+      "level": 1,
+      "pillar": null,
+      "parentId": null,
+      "anchor": "#mathematical-notation",
+      "path": "sections/19-mathematical-notation.md",
+      "bytes": 2057
+    },
+    {
+      "id": "complete-schema-reference",
+      "title": "Complete Schema Reference",
+      "level": 1,
+      "pillar": null,
+      "parentId": null,
+      "anchor": "#complete-schema-reference",
+      "path": "sections/20-complete-schema-reference.md",
+      "bytes": 20621
+    },
+    {
+      "id": "references-and-citations",
+      "title": "References and Citations",
+      "level": 1,
+      "pillar": null,
+      "parentId": null,
+      "anchor": "#references-and-citations",
+      "path": "sections/21-references-and-citations.md",
+      "bytes": 1632
+    },
+    {
+      "id": "document-history",
+      "title": "Document History",
+      "level": 1,
+      "pillar": null,
+      "parentId": null,
+      "anchor": "#document-history",
+      "path": "sections/22-document-history.md",
+      "bytes": 254
+    }
+  ]
+}

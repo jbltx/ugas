@@ -1,0 +1,26 @@
+# Pass: distribute the ball to a team-mate under the reticle. Costs a little stamina (GE_PassCost:
+# Stamina -2) and goes on a short cooldown (GE_PassCooldown) so passing is not free-spammed. The pass
+# itself selects a friendly receiver (WaitTargetData) - PassAccuracy (momentum-boosted in the Momentum
+# channel) governs how cleanly it arrives. GE_PassCost and GE_PassCooldown are trivial (a flat
+# resource cost and a cooldown tag) and are referenced by name rather than shipped as files, the same
+# convention the racing and shooter packs use for their cost/cooldown effects.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_ability.json
+Name: GA_Pass
+Tags:
+  AbilityTags:
+    - Ability.Type.Pass
+  ActivationRequiredTags:
+    - State.Alive
+Cost: GE_PassCost
+Cooldown: GE_PassCooldown
+Tasks:
+  - Type: WaitTargetData
+    Params:
+      TargetingMethod: ReceiverSelect
+      RequiredTags:
+        - Team.Friendly
+Metadata:
+  DisplayName: Pass
+  Description: Play the ball to a team-mate; accuracy scales with PassAccuracy
+  Icon: ui/icons/pass.png

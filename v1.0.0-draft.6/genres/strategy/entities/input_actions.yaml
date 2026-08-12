@@ -1,0 +1,94 @@
+# Strategy genre input actions. Each document defines a single action that an ability or the
+# selection/camera system listens for. Actions are grouped into an Action Set (see
+# input_action_set_command.yaml) and bound to hardware in Input Mappings. The control scheme is the
+# classic RTS point-and-click: left-click selects, right-click issues the contextual move/attack
+# order, and the build/train/cast commands map to hotkeys. Digital actions emit trigger events;
+# CameraPan is a continuous 2D vector for edge/keyboard scrolling.
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action.json
+Name: Select
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags: []
+Metadata:
+  DisplayName: Select
+  Description: Left-click to select a unit, structure, or drag a selection box
+  Icon: ui/icons/select.png
+  Category: Command
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action.json
+Name: AttackMove
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Attack
+Metadata:
+  DisplayName: Move / Attack-Move
+  Description: Right-click to issue a contextual order - move to empty ground, or attack a hostile target
+  Icon: ui/icons/attack_move.png
+  Category: Command
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action.json
+Name: Build
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Build
+Metadata:
+  DisplayName: Build
+  Description: Open the build menu / place the selected structure
+  Icon: ui/icons/build.png
+  Category: Production
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action.json
+Name: Train
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Train
+Metadata:
+  DisplayName: Train
+  Description: Queue a unit at the selected production structure
+  Icon: ui/icons/train.png
+  Category: Production
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action.json
+Name: CastAbility
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Cast
+Metadata:
+  DisplayName: Cast Ability
+  Description: Activate the selected unit's caster ability (e.g. Area Strike), then pick a target
+  Icon: ui/icons/cast.png
+  Category: Command
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action.json
+Name: CameraPan
+ValueType: Axis2D
+TriggerBehavior: WhileHeld
+ConsumeInput: false
+Tags:
+  ActionTags: []
+Metadata:
+  DisplayName: Camera Pan
+  Description: Scroll the strategic camera across the map (edge-pan or WASD)
+  Icon: ui/icons/camera_pan.png
+  Category: Camera

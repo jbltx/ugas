@@ -1,0 +1,26 @@
+# Build: spend materials to place a structure (wall, shelter, campfire). Like GA_Craft, the Cost
+# (GE_BuildCost: Materials -10) gates the ability on having enough materials. A short placement wait,
+# then the structure is spawned by the engine - the actual spawn is engine logic keyed off the
+# ability completing, since placing a world actor is outside the attribute/effect model. Sheltering
+# structures are what let a survivor earn Survival.State.Sheltered and escape cold exposure.
+# GE_BuildCost is a trivial flat resource cost referenced by name, not shipped as a file.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_ability.json
+Name: GA_Build
+Tags:
+  AbilityTags:
+    - Ability.Type.Build
+  ActivationRequiredTags:
+    - State.Alive
+  ActivationBlockedTags:
+    - Survival.State.Gathering
+    - Survival.State.Crafting
+Cost: GE_BuildCost
+Tasks:
+  - Type: WaitDelay
+    Params:
+      Duration: 2.0
+Metadata:
+  DisplayName: Build
+  Description: Place a structure from carried materials
+  Icon: ui/icons/build.png

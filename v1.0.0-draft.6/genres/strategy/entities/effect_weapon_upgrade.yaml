@@ -1,0 +1,19 @@
+# Weapon tech upgrade: a permanent, faction-wide research bonus. Infinite duration; a Multiply of
+# +0.15 in the "Upgrades" channel of the modifier pipeline. Researching the same tech multiple
+# times stacks DECLARATIVELY - two active instances add their bonuses WITHIN the channel
+# (+0.15 + 0.15 = +0.30 -> effective factor 1.30), so no custom code is needed for upgrade tiers.
+# The Upgrades channel multiplies against any other channel (e.g. Debuffs), exactly the
+# damage-bucket mechanism from the core spec, reused for tech. Requires a built unit.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_effect.json
+Name: GE_WeaponUpgrade
+DurationPolicy: Infinite
+ApplicationRequiredTags:
+  - State.Alive
+Modifiers:
+  - Attribute: AttackDamage
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: 0.15
+    Channel: Upgrades

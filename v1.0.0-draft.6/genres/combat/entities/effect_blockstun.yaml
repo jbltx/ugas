@@ -1,0 +1,16 @@
+# Blockstun: the recovery state forced on a fighter who blocks a hit. HasDuration so it self-expires
+# after the block window; grants Combat.State.Blockstun, which blocks every action ability. Applied
+# to the target alongside GE_MeleeDamage on a blocked hit. Blockstun is shorter than the attacker's
+# own recovery on a well-spaced attack, which is what makes some blocked strings safe and others
+# punishable. The duration is the move's blockstun frame count expressed in seconds.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_effect.json
+Name: GE_Blockstun
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 0.25
+GrantedTags:
+  - Combat.State.Blockstun
+GameplayCues:
+  - GameplayCue.Combat.Blockstun

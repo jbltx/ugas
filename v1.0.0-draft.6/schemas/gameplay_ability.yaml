@@ -1,0 +1,102 @@
+# Ability Definition Schema
+# Based on UGAS Specification v1.0.0-draft.6 - Appendix B
+
+type: object
+required:
+  - Name
+properties:
+  Name:
+    type: string
+    description: Unique identifier for this ability
+  Tags:
+    type: object
+    properties:
+      AbilityTags:
+        type: array
+        items:
+          type: string
+        description: Tags that describe this ability
+      BlockedByTags:
+        type: array
+        items:
+          type: string
+        description: Tags that prevent this ability from running
+      BlockAbilitiesWithTags:
+        type: array
+        items:
+          type: string
+        description: While this ability is active, block abilities with these tags
+      CancelAbilitiesWithTags:
+        type: array
+        items:
+          type: string
+        description: Cancel abilities with these tags when this ability activates
+      ActivationRequiredTags:
+        type: array
+        items:
+          type: string
+        description: Tags required on the GC to activate this ability
+      ActivationBlockedTags:
+        type: array
+        items:
+          type: string
+        description: Tags that block activation of this ability
+      ActivationOwnedTags:
+        type: array
+        items:
+          type: string
+        description: Tags granted to the GC while this ability is active
+  Cost:
+    type: string
+    description: Reference to cost GameplayEffect
+  Cooldown:
+    type: string
+    description: Reference to cooldown GameplayEffect
+  MaxRange:
+    type: number
+    minimum: 0
+    description: "Maximum targeting range in engine units (§17.3). Absent or 0 means self-targeted / no range gate; a target-requiring activation MUST be within range (§17.2 Distance), validated server-side per §13.7."
+  AsyncValidation:
+    type: object
+    description: Optional asynchronous server-side validation for activation (§8.8). When present and Required is true, an activation that passes the synchronous checks enters PendingConfirmation before Commit instead of committing synchronously.
+    properties:
+      Required:
+        type: boolean
+        description: If true, route activation through the PendingConfirmation state and await server validation before Commit. Absent or false keeps the synchronous Validating -> Commit behaviour.
+      Kind:
+        type: string
+        description: Category of asynchronous validation, e.g. AntiCheat | RemoteInventory | Entitlement | Custom.
+      TimeoutMs:
+        type: number
+        description: Maximum time to wait for the validation result before treating it as an asynchronous failure (transition Fail -> Granted, nothing consumed).
+      Predicted:
+        type: boolean
+        description: If true, the owning client MAY speculatively commit and enter Active while the server holds PendingConfirmation, reconciling via the prediction model (§13.8).
+  Tasks:
+    type: array
+    items:
+      type: object
+      required:
+        - Type
+      properties:
+        Type:
+          type: string
+          description: Task type identifier
+        Params:
+          type: object
+          description: Task-specific parameters
+        TickInterval:
+          type: number
+          description: Seconds between task ticks; 0 means every frame. Only meaningful for ticking tasks.
+        Priority:
+          type: integer
+          description: Tick scheduling priority when the per-frame tick budget is exhausted; higher ticks first.
+  Metadata:
+    type: object
+    properties:
+      DisplayName:
+        type: string
+      Description:
+        type: string
+      Icon:
+        type: string

@@ -1,0 +1,17 @@
+# Survival tick: the OPTIONAL aggregated-penalty seam. Instead of stacking three independent periodic
+# Health drains (GE_Starvation + GE_Dehydration + GE_Hypothermia), a game can run ONE periodic effect
+# whose Execution couples the combined deficits - how far each need is below its threshold and how far
+# BodyTemperature is outside the comfort window, offset by WarmthRating - into a single Health delta,
+# writing VitalsDrainRate (Meta) for the UI. This is the survival analogue of the racing pack's
+# ExecCalc_VehicleTraction and the shooter pack's ExecCalc_HitResolution: the seam where a genre's
+# signature math plugs into UGAS. INFINITE + PERIOD; ExecuteOnApplication so the first tick lands at spawn.
+# Use EITHER this single calc OR the individual GE_Starvation/GE_Dehydration/GE_Hypothermia drains.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_effect.json
+Name: GE_SurvivalTick
+DurationPolicy: Infinite
+Period:
+  Period: 1.0
+  ExecuteOnApplication: true
+Executions:
+  - CalculatorClass: ExecCalc_SurvivalTick

@@ -1,0 +1,237 @@
+= UGAS Genre Pack: Combat
+Mickael Bonfill <jbltx>
+:revnumber: 1.0.0-draft.6
+:ugas-version: v1.0.0-draft.6
+:doctype: book
+:toc: left
+:toc-title: Table of Contents
+:toclevels: 4
+:stem: latexmath
+:source-highlighter: highlight.js
+:icons: font
+:sectanchors:
+:sectlinks:
+:docinfo: shared
+
+[[overview]]
+== Overview
+
+This genre pack targets *skill-based melee combat* — fighters, brawlers, and hack-and-slash in the
+Street Fighter / Tekken / God of War mould: a character defined by *frame-data states* (hitstun and
+blockstun), a *poise → stagger* system that opens punish windows, a *guard / block damage channel*
+that trades chip damage and mobility for safety, a *super meter* spent on specials, and *combo
+cancels* expressed through ability block/cancel tags. Its core loop is the melee exchange — strike,
+block, cancel, stagger, punish — rather than the projectile-and-ammo loop of a shooter.
+
+The core specification ships no dedicated fighting case study, so this pack is designed from first
+principles. It still leans entirely on core constructs: the modifier `Channel` mechanism
+(link:../../SPEC.adoc[core spec] §5.3) for the guard damage reduction, a custom `Execution`
+(§9.5) for the multi-attribute hit resolution, `ActivationOwnedTags` / `CancelAbilitiesWithTags` /
+`BlockAbilitiesWithTags` (§8.1) for the cancel and super-freeze rules, and effect-granted tags
+(§7.5, §9.7) for the entire frame-data and stagger state machine.
+
+The 1v1 duelist is the concrete seed, but the same pieces generalize across the wider
+link:../taxonomy.html[*Combat* family] — beat 'em up, brawler, hack-and-slash — which layer
+crowd targeting, juggles, and arenas on top of this strike-block-stagger core. Where the
+link:../shooter/index.html[Shooter pack] resolves hits at range with ammo, falloff, and hitzone
+multipliers, this pack resolves them in melee with frame phases, a guard meter, and a stagger meter
+— no projectiles, no reloads.
+
+[[relationship-to-core-spec]]
+== Relationship to the core specification
+
+This document is *additive*. It defines genre-specific Attributes, Tags, Abilities, and
+Effects on top of the core Universal Gameplay Ability System specification.
+
+* It MUST NOT redefine, override, or contradict any concept in the core spec.
+* All entities in `entities/` validate against the same `schemas/*.json` as the core.
+* It *reuses* the core lifecycle tags (`State.Alive`, `State.Combat`, `State.Dead`) by reference,
+  and adds combat-specific states (`Combat.State.Hitstun`, `Combat.State.Staggered`, …).
+* Combat state is mutated *only through Effects* (core spec §7.5) — abilities gate on tags and apply
+  Effects, never writing tags directly — and the guard damage reduction is the core modifier
+  `Channel` mechanism (§5.3), not a new construct.
+
+[[genre-attributes]]
+== Genre Attributes
+
+Defined in `entities/attribute_set.yaml` as the `FighterCombatSet` set. The base values describe a
+default all-rounder fighter, so the set is playable as shipped.
+
+[cols="1,1,3",options="header"]
+|===
+| Attribute | Category | Role
+
+| `MaxHealth` / `Health` | Statistic / Resource | `Health` is clamped to `[0, MaxHealth]`; reaching 0 is a KO. `ExecCalc_MeleeResolution` writes the per-hit loss.
+| `MaxPoise` / `Poise` | Statistic / Resource | The stagger meter, clamped to `[0, MaxPoise]`; drained by poise damage. At 0, an engine threshold applies `GE_Stagger`.
+| `MaxSuper` / `Super` | Statistic / Resource | The super gauge, clamped to `[0, MaxSuper]`; built by dealing and taking hits, spent by `GE_SuperCost`.
+| `AttackPower` | Statistic | Base offense; scaled by each move's multiplier before mitigation.
+| `Defense` | Statistic | Flat pre-mitigation damage reduction subtracted by the hit-resolution calc.
+| `MaxGuardHealth` / `GuardHealth` | Statistic / Resource | Block stamina, clamped to `[0, MaxGuardHealth]`; chipped by guard damage while blocking. At 0 the guard breaks.
+| `MoveSpeed` | Statistic | Ground movement speed; slowed while blocking (the `Block` channel).
+| `IncomingDamage` | Meta | Transient per-hit magnitude handed to the calc before mitigation; the target of the `Block` channel reduction.
+| `EffectiveDamage` | Meta | Output of the hit-resolution calc after `Defense` and the `Block` channel; for telemetry/UI.
+|===
+
+[[genre-melee-exchange]]
+== The melee exchange (the core combat mechanic)
+
+A fighting game lives or dies on the *exchange*: who can strike, who must block, and who gets
+punished. In UGAS that exchange is a small set of tag-gated abilities, a guard damage channel, and
+two depletable meters.
+
+=== Frame-data states gate every action
+
+Real fighting games are governed by _frame data_: after a move connects, the loser spends a fixed
+number of frames unable to act. UGAS models those windows as *effect-granted states*:
+
+* A clean hit applies `GE_Hitstun` (`entities/effect_hitstun.yaml`), which grants
+  `Combat.State.Hitstun` for the stun window.
+* A blocked hit applies `GE_Blockstun` (`entities/effect_blockstun.yaml`), which grants
+  `Combat.State.Blockstun`.
+
+Both states appear in every action ability's `ActivationBlockedTags`, so a stunned fighter simply
+cannot act until the timed effect expires — no explicit timer lives in the ability. Whether the
+defender's blockstun expires before the attacker's own recovery is what makes a blocked string
+_safe_ or _punishable_.
+
+=== Cancel windows via the frame-phase tags
+
+`Combat.Move.Startup` → `Combat.Move.Active` → `Combat.Move.Recovery` is the illustrative phase
+vocabulary the engine sets on a fighter as a move plays out; individual abilities own only the
+phase windows they actually need through `ActivationOwnedTags`. The combo system is then pure tag
+logic:
+
+* `GA_LightAttack` owns `Combat.Move.Recovery` during its tail.
+* `GA_HeavyAttack` lists `Ability.Type.Light` in its `CancelAbilitiesWithTags`, so a heavy buffered
+  during the light's recovery *cancels* it — the canonical light → heavy combo cancel, expressed
+  with tags alone.
+* `GA_Special` lists the normals in its `BlockAbilitiesWithTags`, locking the super-user out of
+  *their own* Light/Heavy/Block while the special is active — `BlockAbilitiesWithTags` is
+  owner-scoped, so this commits the player to the super animation rather than touching the opponent.
+
+=== The guard damage channel
+
+`GA_Block` (`entities/ability_block.yaml`) holds `GE_Blocking` (`entities/effect_blocking.yaml`)
+while the block input is down — the same hold-then-`WaitInputRelease` shape as the shooter's
+aim-down-sights. `GE_Blocking` is the genre's signature effect. Modifiers stack through *named
+channels* — additive *within* a channel, multiplicative *across* channels (§5.3) — so `GE_Blocking`
+puts a single `Multiply` in a `Block` channel:
+
+* On `IncomingDamage`: a `Multiply` of latexmath:[-0.6] → factor latexmath:[1 - 0.6 = 0.40]. The
+  hit-resolution calc reads the reduced magnitude on a blocked hit.
+* On `MoveSpeed`: a `Multiply` of latexmath:[-0.5] → factor latexmath:[1 - 0.5 = 0.50]. Committing
+  to guard costs mobility.
+
+Because the reduction lives in its own named channel, additional defensive layers (a parry, a guard
+upgrade) authored in a *different* channel multiply across it cleanly — exactly how the shooter's
+`Aim` and `Attachments` channels compose on `Spread`.
+
+=== Poise drains to a stagger
+
+`Poise` is a depletable stat: every hit (blocked or not) deals poise damage. When `Poise` reaches
+`0`, the engine's `OnAttributeChanged` threshold (§5.6) applies `GE_Stagger`
+(`entities/effect_stagger.yaml`), which grants `Combat.State.Staggered` for a long window — a
+guaranteed punish. The threshold keeps the rule that *states are granted by Effects, never written
+directly*.
+
+=== Worked example (`entities/gameplay_controller.yaml`)
+
+A fighter mid-block eats one heavy hit. The attacker's `AttackPower` (latexmath:[20]) scaled by the
+heavy move multiplier (latexmath:[2.5]) is the raw hit, handed to the calc as `IncomingDamage`. The
+defender owns `Combat.State.Blocking`, so the `Block` channel and `Defense` both apply:
+
+[stem]
+++++
+\text{IncomingDamage}_{\text{post-block}} = 50 \times \underbrace{(1 - 0.6)}_{\text{Block channel}} = 20.0
+++++
+
+[stem]
+++++
+\text{EffectiveDamage} = \max\!\left(0,\; 20 - \underbrace{10}_{\text{Defense}}\right) = 10.0
+++++
+
+The same blocked hit drains the two meters and feeds the gauge, and holding guard slows the fighter
+through the `Block` channel:
+
+* `Health`: latexmath:[200 - 10 = 190] (the `EffectiveDamage`)
+* `GuardHealth`: latexmath:[80 - 30 = 50] (heavy guard damage, chipped while blocking)
+* `Poise`: latexmath:[100 - 10 = 90] (the heavy's block-poise chip)
+* `Super`: latexmath:[0 + 8 = 8] (meter gained for taking the hit)
+* `MoveSpeed`: latexmath:[500 \times (1 - 0.5) = 250] (the `Block` channel)
+
+These are exactly the `CurrentValue` entries recorded for the example fighter. Had the hit landed
+*unblocked*, the `Block` channel would be absent (factor latexmath:[1.0]), the calc would apply
+`GE_Hitstun` instead of `GE_Blockstun`, and poise damage would be far higher — the difference
+between a chipped guard and a broken one.
+
+=== Hit resolution via ExecutionCalculation
+
+Melee damage is not a single subtraction: it couples the source's `AttackPower` (× the move
+multiplier), the target's flat `Defense`, the `Block` channel reduction, poise damage, guard damage,
+and the super gain for *both* fighters. That is inherently multi-attribute and cross-actor, so
+`GE_MeleeDamage` (`entities/effect_melee_damage.yaml`) delegates to a custom `Execution` (§9.5),
+`ExecCalc_MeleeResolution`, which honors `Team.Friendly` targets (skips friendly fire) and writes
+`EffectiveDamage` (a `Meta` attribute) for telemetry and UI. This is the combat analogue of the
+shooter's hit-resolution calc and the racing traction calc — the seam where the genre's signature
+math plugs into UGAS. An adopter who prefers a declarative poise-damage rule can express it as an
+`AttributeBased` magnitude (§9.4.2) keyed on the source's `AttackPower`
+(latexmath:[(\text{AttackPower} + \text{PreAdd}) \times \text{Coefficient} + \text{PostAdd}]); the
+worked numbers above keep poise damage inside the calc for a single source of truth.
+
+[[genre-tags]]
+== Genre Tags
+
+Defined in `entities/tag_registry.yaml` (additive only):
+
+* *Combat states* — `Combat.State.Hitstun`, `Combat.State.Blockstun`, `Combat.State.Blocking`,
+  `Combat.State.Staggered` (all granted by Effects).
+* *Move frame phases* — `Combat.Move.Startup`, `Combat.Move.Active`, `Combat.Move.Recovery`.
+* *Ability types* — `Ability.Type.Light|Heavy|Block|Special` (the keys for cancel/block queries).
+* *Hitzones* — `Hitzone.High|Mid|Low` (high/mid/low guard rules).
+* *Teams* — `Team.Friendly|Hostile` (friendly-fire skip in the calc).
+
+[[genre-abilities]]
+== Genre Abilities
+
+* `entities/ability_light_attack.yaml` — `GA_LightAttack`: fast startup, short recovery; owns
+  `Combat.Move.Recovery` so a heavy can cancel it.
+* `entities/ability_heavy_attack.yaml` — `GA_HeavyAttack`: slow, high-damage; its
+  `CancelAbilitiesWithTags` cancels the light's recovery.
+* `entities/ability_block.yaml` — `GA_Block`: holds `GE_Blocking` for the `Block`-channel reduction
+  at the cost of movement; ends on input release.
+* `entities/ability_special.yaml` — `GA_Special`: costs a full bar (`Cost: GE_SuperCost`) and uses
+  `BlockAbilitiesWithTags` to lock the user out of *their own* normals during super-freeze (an
+  owner-scoped self-lock that commits the player to the super); on `GE_SpecialCooldown`.
+
+[[genre-effects]]
+== Genre Effects
+
+* `entities/effect_melee_damage.yaml` — `GE_MeleeDamage`: instant; runs `ExecCalc_MeleeResolution`
+  to resolve a hit (damage, poise, guard, super) and write `EffectiveDamage`.
+* `entities/effect_hitstun.yaml` — `GE_Hitstun`: `HasDuration`; grants `Combat.State.Hitstun`,
+  blocking all actions.
+* `entities/effect_blockstun.yaml` — `GE_Blockstun`: `HasDuration`; grants `Combat.State.Blockstun`,
+  blocking all actions (shorter than hitstun).
+* `entities/effect_blocking.yaml` — `GE_Blocking`: infinite-while-held; `Block`-channel `Multiply`
+  on `IncomingDamage` and `MoveSpeed`; grants `Combat.State.Blocking`.
+* `entities/effect_stagger.yaml` — `GE_Stagger`: `HasDuration`; grants `Combat.State.Staggered`,
+  applied by the engine's `Poise == 0` threshold.
+
+The trivial cost and cooldown effects the abilities reference — `GE_SuperCost` (subtracts `Super`),
+`GE_LightAttackCooldown`, `GE_HeavyAttackCooldown`, `GE_SpecialCooldown` — are flat resource costs
+and cooldown tags, referenced by name rather than shipped as files, the same convention the Racing
+and Shooter packs use for their nitro/fire cost and cooldown effects.
+
+[[using-this-pack]]
+== Using this pack
+
+. Copy `genres/combat/` into your project (or load `entities/` directly via the
+  `ugas-schema-author` skill).
+. Tune the fighter base values in `FighterCombatSet` first — `MaxHealth`, the `Poise`/`GuardHealth`
+  meters, and `AttackPower`/`Defense` carry the match pacing — then add moves as new Abilities +
+  `GE_MeleeDamage` payloads and new defensive layers as effects in their own `Channel`.
+. Implement the one `ExecCalc_MeleeResolution` hook in your engine (the only seam: damage, poise,
+  guard, and super math); everything else is data.
+. Author new states as `Combat.State.*` tags granted by Effects (never mutate tags directly), and
+  drive stagger from the engine `Poise == 0` threshold applying `GE_Stagger`.
+. Validate with `python scripts/validate_schema_examples.py` before committing.

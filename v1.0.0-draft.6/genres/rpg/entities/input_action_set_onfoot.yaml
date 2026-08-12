@@ -1,0 +1,16 @@
+# RPG on-foot action set. Active while the character is alive.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action_set.json
+Name: OnFoot
+Actions:
+  - BasicAttack
+  - Ability1
+  - Move
+  - Look
+Priority: 0
+ActivationTags:
+  RequiredTags:
+    - State.Alive
+Metadata:
+  DisplayName: On Foot
+  Description: Standard RPG controls for exploration and combat

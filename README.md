@@ -6,6 +6,7 @@
 
 | Version | Date | Status | Specification | Schemas |
 |---------|------|--------|---------------|---------|
+| [v1.0.0-draft.6](v1.0.0-draft.6/) | 2026-08-12 | Pre-release | [Spec](v1.0.0-draft.6/index.html) | [Schemas](v1.0.0-draft.6/schemas/) |
 | [v1.0.0-draft.5](v1.0.0-draft.5/) | 2026-07-22 | Pre-release | [Spec](v1.0.0-draft.5/index.html) | [Schemas](v1.0.0-draft.5/schemas/) |
 | [v1.0.0-draft.4](v1.0.0-draft.4/) | 2026-06-29 | Pre-release | [Spec](v1.0.0-draft.4/index.html) | [Schemas](v1.0.0-draft.4/schemas/) |
 | [v1.0.0-draft.3](v1.0.0-draft.3/) | 2026-06-09 | Pre-release | [Spec](v1.0.0-draft.3/index.html) | [Schemas](v1.0.0-draft.3/schemas/) |

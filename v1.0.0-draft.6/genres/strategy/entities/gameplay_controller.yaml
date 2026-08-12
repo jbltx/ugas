@@ -1,0 +1,80 @@
+# Worked example: a Siege Tank (Unit.Type.Vehicle, Armor.Class.Heavy) with two ranks of the weapon
+# upgrade and one rank of the armor upgrade researched. CurrentValue columns show the result of the
+# three active infinite effects below. The AttackDamage aggregation is the genre's tech-channel
+# signature: two GE_WeaponUpgrade instances stack ADDITIVELY WITHIN the Upgrades channel.
+#   AttackDamage: base 30 x Upgrades(1 + 0.15 + 0.15 = 1.30)        = 39.0
+#   Armor:        base 1  + ArmorUpgrade(+2)                        = 3.0
+# Everything else is at base (no other effect touches it). The economy attributes (Minerals, Gas,
+# Supply, ...) belong to the player's commander GC, not a combat unit, so they stay at base here.
+#
+# The damage matrix worked example in spec.adoc fires THIS tank's Siege attack (AttackDamage 39) at a
+# Light infantry target (Siege vs Light = 1.25, target Armor 2): 39 x 1.25 - 2 = 46.75 final damage.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_controller.json
+OwnerActor:
+  ActorID: Unit_SiegeTank_01
+  ActorType: PlayerUnit
+AttributeSets:
+  - Name: UnitStatsSet
+    Attributes:
+      - Name: MaxHealth
+        BaseValue: 150.0
+        CurrentValue: 150.0
+      - Name: Health
+        BaseValue: 150.0
+        CurrentValue: 150.0
+      - Name: Armor
+        BaseValue: 1.0
+        CurrentValue: 3.0
+      - Name: AttackDamage
+        BaseValue: 30.0
+        CurrentValue: 39.0
+      - Name: AttackSpeed
+        BaseValue: 0.8
+        CurrentValue: 0.8
+      - Name: AttackRange
+        BaseValue: 7.0
+        CurrentValue: 7.0
+      - Name: MoveSpeed
+        BaseValue: 320.0
+        CurrentValue: 320.0
+      - Name: SupplyCost
+        BaseValue: 3.0
+        CurrentValue: 3.0
+      - Name: BuildProgress
+        BaseValue: 100.0
+        CurrentValue: 100.0
+      - Name: Energy
+        BaseValue: 50.0
+        CurrentValue: 50.0
+      - Name: MaxEnergy
+        BaseValue: 200.0
+        CurrentValue: 200.0
+GrantedAbilities:
+  - AbilityClass: GA_AutoAttack
+    Level: 1
+    InputID: AttackMove
+  - AbilityClass: GA_AreaStrike
+    Level: 1
+    InputID: CastAbility
+ActiveEffects:
+  - Handle: eff-weapon-upgrade-1
+    EffectClass: GE_WeaponUpgrade
+    Duration: -1
+  - Handle: eff-weapon-upgrade-2
+    EffectClass: GE_WeaponUpgrade
+    Duration: -1
+  - Handle: eff-armor-upgrade-1
+    EffectClass: GE_ArmorUpgrade
+    Duration: -1
+OwnedTags:
+  - State.Alive
+  - Unit.Type.Vehicle
+  - Armor.Class.Heavy
+  - Faction.Friendly
+ReplicationMode: Mixed
+bIsActive: true
+Metadata:
+  DisplayName: Siege Tank (2x weapon upgrade, 1x armor upgrade)
+  Description: Worked-example unit showing tech-upgrade channel aggregation on AttackDamage and the damage matrix attacker
+  DebugCategory: strategy-pack-example

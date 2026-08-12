@@ -1,0 +1,50 @@
+# Puzzle genre input actions. Each document defines a single action that an ability listens for.
+# Actions are grouped into an Action Set (see input_action_set_board.yaml) and bound to hardware in
+# Input Mappings (Touch and PC). SelectTile and ActivatePowerup are the InputIDs the worked
+# controller binds to GA_SwapTiles and GA_ActivatePowerup. The swap is confirmed by tapping the
+# second tile (SelectTile's adjacent-tile confirmation), so there is no separate drag/swipe action.
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action.json
+Name: SelectTile
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Swap
+Metadata:
+  DisplayName: Select Tile
+  Description: Tap/click a tile to pick it; tap an adjacent tile to confirm a swap
+  Icon: ui/icons/select_tile.png
+  Category: Board
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action.json
+Name: ActivatePowerup
+ValueType: Digital
+TriggerBehavior: OnDoubleTap
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Powerup
+Metadata:
+  DisplayName: Activate Powerup
+  Description: Double-tap a special tile to detonate its payload
+  Icon: ui/icons/powerup.png
+  Category: Board
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action.json
+Name: UseHint
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Hint
+Metadata:
+  DisplayName: Use Hint
+  Description: Request a highlighted legal move
+  Icon: ui/icons/hint.png
+  Category: Assist

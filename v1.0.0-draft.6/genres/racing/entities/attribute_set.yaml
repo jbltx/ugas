@@ -1,0 +1,91 @@
+# Vehicle performance attribute set: drivetrain, aero, tires, and the boost resource.
+# Extends the core spec's attribute model (no core attribute is redefined here).
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/attribute_set.json
+Name: VehiclePerformanceSet
+Attributes:
+  # --- Drivetrain (the power the engine puts to the wheels) ---
+  - Name: EngineTorque
+    DefaultBaseValue: 400.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Engine Torque
+      Description: Base drive torque in Nm; raised by tuning upgrades
+      UICategory: Drivetrain
+  - Name: MaxSpeed
+    DefaultBaseValue: 250.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Top Speed
+      Description: Top speed in km/h; lowered by heavy/low-grip surfaces, raised by boost
+      UICategory: Drivetrain
+
+  # --- Aerodynamics & tires (feed the traction pipeline) ---
+  - Name: AeroDownforce
+    DefaultBaseValue: 100.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Aero Downforce
+      Description: Downforce coefficient; scales effective traction with speed (see spec section 4)
+      UICategory: Chassis
+  - Name: TireGripMultiplier
+    DefaultBaseValue: 1.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Tire Grip
+      Description: Aggregated grip; target of the Surface and Upgrades channels (see spec section 4)
+      UICategory: Tires
+  - Name: TireTemperature
+    DefaultBaseValue: 80.0
+    Category: Statistic
+    Clamping:
+      Min: 20.0
+      Max: 150.0
+    Metadata:
+      DisplayName: Tire Temperature
+      Description: Tire core temperature in degrees C; grip peaks in the 80-100 window
+      UICategory: Tires
+
+  # --- Boost resource (spent by the nitro ability, refilled by drifting) ---
+  - Name: MaxBoost
+    DefaultBaseValue: 100.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Maximum Boost
+      UICategory: Boost
+  - Name: Boost
+    DefaultBaseValue: 100.0
+    Category: Resource
+    Clamping:
+      Min: 0
+      Max: MaxBoost
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Boost
+      Description: Nitro charge spent to activate GA_NitroBoost
+      UICategory: Boost
+
+  # --- Runtime physics state (driven each frame by the simulation / traction calc) ---
+  - Name: EngineRPM
+    DefaultBaseValue: 0.0
+    Category: Meta
+    Metadata:
+      DisplayName: Engine RPM
+      UICategory: Telemetry
+  - Name: CurrentSpeed
+    DefaultBaseValue: 0.0
+    Category: Meta
+    Metadata:
+      DisplayName: Current Speed
+      Description: Live ground speed in km/h read by the traction calculation
+      UICategory: Telemetry
+  - Name: AvailableTraction
+    DefaultBaseValue: 1.0
+    Category: Meta
+    Metadata:
+      DisplayName: Available Traction
+      Description: Output of ExecCalc_VehicleTraction; couples grip, downforce, and tire temperature
+      UICategory: Telemetry
+Metadata:
+  DisplayName: Vehicle Performance Set
+  Description: Drivetrain, aerodynamics, tires, boost resource, and runtime telemetry for a racing vehicle

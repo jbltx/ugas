@@ -1,0 +1,129 @@
+= UGAS Genre Pack: Role-Playing (RPG)
+Mickael Bonfill <jbltx>
+:revnumber: 1.0.0-draft.6
+:ugas-version: v1.0.0-draft.6
+:doctype: book
+:toc: left
+:toc-title: Table of Contents
+:toclevels: 4
+:stem: latexmath
+:source-highlighter: highlight.js
+:icons: font
+:sectanchors:
+:sectlinks:
+:docinfo: shared
+
+[[overview]]
+== Overview
+
+This genre pack targets *action role-playing games* (ARPGs) in the Diablo / Path of Exile
+mould: a character defined by primary attributes, equippable items that roll stat modifiers,
+signature abilities, and — above all — a *multiplicative damage pipeline* that has to stay
+sane as item counts grow.
+
+It is the practical, copy-and-extend companion to the *ARPG (Diablo-style)* case study in
+link:../../SPEC.adoc[the core specification] (Section 16.3). Where the case study explains the
+_Damage Bucket_ architecture, this pack ships the matching schema-conformant Attributes, Tags,
+Abilities, and Effects in `entities/`, plus a worked hero in `entities/gameplay_controller.yaml`.
+
+[[relationship-to-core-spec]]
+== Relationship to the core specification
+
+This document is *additive*. It defines genre-specific Attributes, Tags, Abilities, and
+Effects on top of the core Universal Gameplay Ability System specification.
+
+* It MUST NOT redefine, override, or contradict any concept in the core spec.
+* All entities in `entities/` validate against the same `schemas/*.json` as the core.
+* It *reuses* core state tags (`State.Alive`, `State.Combat`, `State.Dead`,
+  `State.Debuff.Stunned`, `State.Buff.Regenerating`) by reference — it never re-declares them.
+* The damage-bucket stacking it relies on is the core modifier `Channel` mechanism
+  (link:../../SPEC.adoc[core spec] §5.3 and §16.3), not a new construct.
+
+[[genre-attributes]]
+== Genre Attributes
+
+Defined in `entities/attribute_set.yaml` as the `RPGCoreAttributes` set.
+
+[cols="1,1,3",options="header"]
+|===
+| Attribute | Category | Role
+
+| `Strength`, `Dexterity`, `Intelligence`, `Vitality` | Statistic | Primary, player-allocated stats that feed everything else.
+| `MaxHealth` / `Health` | Statistic / Resource | `Health` is clamped to `[0, MaxHealth]`; reaching 0 kills the character.
+| `MaxMana` / `Mana` | Statistic / Resource | `Mana` is clamped to `[0, MaxMana]` and spent by ability costs.
+| `WeaponDamage` | Statistic | The aggregated outgoing-damage stat targeted by the damage buckets.
+| `Armor`, `CritChance`, `CritDamage` | Statistic | Derived combat stats. `CritChance` is clamped to `[0, 1]`.
+| `Level`, `Experience` | Meta / Resource | Progression. `Experience` accumulates toward the next `Level`.
+|===
+
+[[genre-damage-buckets]]
+== Damage buckets (the core RPG mechanic)
+
+ARPG power scaling is multiplicative across *named channels* and additive *within* a channel.
+This pack uses three canonical channels, all aggregating onto `WeaponDamage`:
+
+[cols="1,3,2",options="header"]
+|===
+| Channel | What goes in it | Stacking
+
+| `MainStat` | Primary-stat scaling (e.g. Strength → +damage) | Additive within
+| `DamageBonuses` | Conditional / item damage bonuses (fire, vs. elites, while healthy …) | Additive within
+| `LegendaryPowers` | Item-set / legendary multipliers | Additive within, multiplied across the others
+|===
+
+Because channels are part of the core modifier pipeline, the stacking is expressed
+*declaratively* in Effect YAML — no custom calculation code is needed for it.
+
+.Worked example (`entities/gameplay_controller.yaml`)
+With `Strength = 50` and the Fire Sword equipped:
+
+* `MainStat` factor: latexmath:[1 + (0.01 \times 50) = 1.50]
+* `DamageBonuses` factor: latexmath:[1 + 0.20 = 1.20]
+* Final `WeaponDamage`: latexmath:[10 \times 1.50 \times 1.20 = 18.0]
+
+This is exactly the `CurrentValue` recorded for `WeaponDamage` on the example hero.
+
+[[genre-tags]]
+== Genre Tags
+
+Defined in `entities/tag_registry.yaml` (additive only):
+
+* *Damage types* — `DamageType.Physical|Fire|Cold|Lightning|Poison`.
+* *Ability types* — `Ability.Type.Melee|Ranged|Spell`.
+* *Combat status* — `Status.Vulnerable`, `Status.FightingElite`; immunities
+  `Immunity.Physical`, `Immunity.Fire`.
+* *Items* — `Item.Equipped.*`, `Item.Type.*`, `Item.Rarity.Legendary`.
+* *Classes* — `Class.Barbarian|Sorcerer|Rogue`.
+
+[[genre-abilities]]
+== Genre Abilities
+
+* `entities/ability_basic_attack.yaml` — `GA_BasicAttack`: free single-target weapon strike;
+  plays a montage and applies `GE_BasicAttackDamage` on the hit window.
+* `entities/ability_whirlwind.yaml` — `GA_Whirlwind`: signature melee AoE. Tagged
+  `Ability.Type.Melee` + `DamageType.Physical`, blocked while `State.Dead` /
+  `State.Debuff.Stunned`, applies the damage effect to every target in radius while skipping
+  `Immunity.Physical` targets. Models the `GA_Whirlwind` tag-query example from §16.3.
+
+[[genre-effects]]
+== Genre Effects
+
+* `entities/effect_mainstat_strength.yaml` — `GE_MainStat_Strength`: infinite; `+1%`
+  `WeaponDamage` per point of `Strength` in the `MainStat` channel (`AttributeBased`).
+* `entities/effect_weapon_firesword.yaml` — `GE_Weapon_FireSword`: infinite equip effect;
+  `+20%` `WeaponDamage` in the `DamageBonuses` channel and grants item/element tags.
+* `entities/effect_basic_attack_damage.yaml` — `GE_BasicAttackDamage`: instant; subtracts the
+  source's fully-aggregated `WeaponDamage` from the target's `Health`.
+* `entities/effect_regeneration.yaml` — `GE_Regeneration`: `HasDuration` + `Period`; restores
+  `5` `Health` per second for `5` seconds.
+
+[[using-this-pack]]
+== Using this pack
+
+. Copy `genres/rpg/` into your project (or load `entities/` directly via the
+  `ugas-schema-author` skill).
+. Keep, rename, or extend the `RPGCoreAttributes` set; add classes/skills as new
+  Abilities and Effects.
+. Author new damage modifiers by choosing the right `Channel` — additive bonuses go in
+  `DamageBonuses`, set/legendary multipliers in `LegendaryPowers`.
+. Validate with `python scripts/validate_schema_examples.py` before committing.

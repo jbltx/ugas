@@ -1,0 +1,4 @@
+# label: invalid — attribute missing required DefaultBaseValue
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/attribute.json
+Name: Health
+Category: Resource

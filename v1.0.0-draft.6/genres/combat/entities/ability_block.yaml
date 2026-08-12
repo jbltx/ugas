@@ -1,0 +1,33 @@
+# Block: hold to guard. Applies GE_Blocking (Block-channel damage reduction, slower movement,
+# Combat.State.Blocking), waits for the block input to release, then removes it - the same
+# hold-then-WaitInputRelease shape as the shooter's aim-down-sights and the platformer jump.
+# While Combat.State.Blocking is owned, incoming hits resolve through the calc's blocked-hit branch
+# (reduced damage + guard damage + blockstun) instead of a clean hit. Cannot raise guard while in
+# hitstun, blockstun, or staggered. Holding guard chips GuardHealth on each blocked hit; when it
+# empties, the engine breaks the guard (a separate guard-break flow), so blocking is not free.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_ability.json
+Name: GA_Block
+Tags:
+  AbilityTags:
+    - Ability.Type.Block
+  ActivationRequiredTags:
+    - State.Combat
+  ActivationBlockedTags:
+    - Combat.State.Hitstun
+    - Combat.State.Blockstun
+    - Combat.State.Staggered
+Tasks:
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_Blocking
+  - Type: WaitInputRelease
+    Params:
+      InputID: Block
+  - Type: RemoveEffectFromOwner
+    Params:
+      EffectClass: GE_Blocking
+Metadata:
+  DisplayName: Block
+  Description: Hold to guard, reducing damage and gaining blockstun instead of hitstun on contact
+  Icon: ui/icons/block.png

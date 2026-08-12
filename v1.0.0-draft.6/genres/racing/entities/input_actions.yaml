@@ -1,0 +1,75 @@
+# Input actions for the racing genre pack.
+# Steer, Throttle, Brake are analog axes; Boost and Drift are digital triggers;
+# Look provides a free-look camera axis while driving.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action.json
+Name: Steer
+ValueType: Axis1D
+TriggerBehavior: WhileHeld
+Tags:
+  ActionTags:
+    - Driving
+Metadata:
+  DisplayName: Steer
+  Description: Horizontal steering axis (-1 full left, +1 full right)
+  Category: Driving
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action.json
+Name: Throttle
+ValueType: Axis1D
+TriggerBehavior: WhileHeld
+Tags:
+  ActionTags:
+    - Driving
+Metadata:
+  DisplayName: Throttle
+  Description: Analog throttle input (0 idle, 1 full power)
+  Category: Driving
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action.json
+Name: Brake
+ValueType: Axis1D
+TriggerBehavior: WhileHeld
+Tags:
+  ActionTags:
+    - Driving
+Metadata:
+  DisplayName: Brake
+  Description: Analog brake input (0 no braking, 1 full braking)
+  Category: Driving
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action.json
+Name: Boost
+ValueType: Digital
+TriggerBehavior: OnPressed
+Tags:
+  ActionTags:
+    - Driving
+Metadata:
+  DisplayName: Boost
+  Description: Activate nitro boost
+  Category: Driving
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action.json
+Name: Drift
+ValueType: Digital
+TriggerBehavior: WhileHeld
+Tags:
+  ActionTags:
+    - Driving
+Metadata:
+  DisplayName: Drift
+  Description: Hold to initiate and sustain a drift through corners
+  Category: Driving
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action.json
+Name: Look
+ValueType: Axis2D
+TriggerBehavior: WhileHeld
+Tags:
+  ActionTags:
+    - Driving
+Metadata:
+  DisplayName: Look
+  Description: Free-look camera axis for glancing around while driving
+  Category: Driving

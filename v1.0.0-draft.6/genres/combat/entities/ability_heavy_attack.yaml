@@ -1,0 +1,42 @@
+# Heavy attack: the slow, high-damage normal and the combo's cancel target. Longer startup and
+# recovery than the light, but it deals far more damage, poise damage, and guard damage (all carried
+# by GE_MeleeDamage and resolved by ExecCalc_MeleeResolution). A WaitDelay startup gates the hitbox,
+# then ApplyEffectToTarget applies GE_MeleeDamage to the nearest Team.Hostile within MaxRange (the
+# modeled melee-hit path; hitzone/guard-height is an engine targeting seam, §17.2), then a WaitDelay
+# recovery. Its CancelAbilitiesWithTags lists Ability.Type.Light, so activating the heavy during a light
+# attack's recovery CANCELS that light - the light->heavy combo cancel expressed purely with tags.
+# Cannot start while in hitstun, blockstun, staggered, or blocking.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_ability.json
+Name: GA_HeavyAttack
+Tags:
+  AbilityTags:
+    - Ability.Type.Heavy
+  CancelAbilitiesWithTags:
+    - Ability.Type.Light
+  ActivationRequiredTags:
+    - State.Combat
+  ActivationBlockedTags:
+    - Combat.State.Hitstun
+    - Combat.State.Blockstun
+    - Combat.State.Staggered
+    - Combat.State.Blocking
+  ActivationOwnedTags:
+    - Combat.Move.Recovery
+Cooldown: GE_HeavyAttackCooldown
+Tasks:
+  - Type: WaitDelay
+    Params:
+      Duration: 0.2
+  - Type: ApplyEffectToTarget
+    Params:
+      EffectClass: GE_MeleeDamage
+      MaxRange: 1.8
+      RequireTag: Team.Hostile
+  - Type: WaitDelay
+    Params:
+      Duration: 0.35
+Metadata:
+  DisplayName: Heavy Attack
+  Description: A slow, heavy blow that cancels light-attack recovery and deals heavy poise/guard damage
+  Icon: ui/icons/heavy_attack.png
