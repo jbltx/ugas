@@ -1,8 +1,8 @@
 = Universal Gameplay Ability System Specification
 Mickael Bonfill <jbltx>
-:revnumber: 1.0.0-draft.5
-:revdate: July 2026
-:ugas-version: v1.0.0-draft.5
+:revnumber: 1.0.0-draft.6
+:revdate: August 2026
+:ugas-version: v1.0.0-draft.6
 :doctype: book
 :toc: left
 :toc-title: Table of Contents
@@ -95,11 +95,11 @@ include::spec/part-7-scene-composition.adoc[]
 | stem:[V_{min}], stem:[V_{max}]
 | Minimum/Maximum bounds
 | stem:[a]
-| Additive modifier magnitude
-| stem:[p]
-| Percentage modifier magnitude
+| Pre-multiply additive modifier magnitude (`Add`)
+| stem:[b]
+| Post-multiply additive modifier magnitude (`AddPost`)
 | stem:[m]
-| Multiplicative factor
+| Signed bonus magnitude of a `Multiply` modifier (`+0.25` = +25%)
 | stem:[t]
 | Time variable
 | stem:[\Delta_t]

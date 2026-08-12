@@ -203,15 +203,25 @@ $defs:
           - Override
         description: >-
           Mathematical operation to apply.
-          Add: pre-multiply flat additive (pipeline step 2, before percentage and multiply steps).
-          AddPost: post-multiply flat additive (pipeline step 7, after all multiply steps; very rare).
-          Multiply: multiplicative factor at step 6 — use a reciprocal magnitude (e.g. 0.5) instead of a Divide operation.
-          Override: replaces the computed result at step 8.
+          Add: pre-multiply flat additive (pipeline step 2, before the multiply steps).
+          Multiply: signed bonus aggregated per Channel at step 4 — the channel factor is
+          (1 + sum of magnitudes), so +0.25 means +25% and -0.25 means -25%. There is no Divide
+          operation: express a 50% reduction as Multiply with magnitude -0.5.
+          AddPost: post-multiply flat additive (pipeline step 5, after all multiply steps; very rare).
+          Override: replaces the computed result at step 6.
+          Step numbers refer to the Current-Value pipeline (§5.3). On an Instant effect each
+          modifier instead writes the Base Value directly in authored order, where Multiply scales
+          the base by (1 + magnitude) with no channel grouping — so magnitude 0 is the identity
+          (§5.2).
       Magnitude:
         $ref: "#/$defs/MagnitudeDefinition"
       Channel:
         type: string
         description: >-
-          Optional named aggregation channel. Modifiers in the same channel sum together;
-          modifiers in different channels multiply against each other. Used for damage-bucket
-          systems (see §16.3). Defaults to the global channel if omitted.
+          Optional named aggregation channel for Multiply modifiers. Modifiers sharing a channel
+          sum their magnitudes into a single factor of (1 + sum); distinct channels produce factors
+          that multiply against each other. Used for damage-bucket systems (see §5.3 Channel
+          Aggregation). Omit to place the modifier in its own implicit singleton channel,
+          contributing (1 + magnitude) independently of every other modifier — omission does NOT
+          pool modifiers into a shared global channel. Ignored on Add, AddPost, and Override
+          modifiers.

@@ -5,6 +5,7 @@
     "ugas": "1.0.0-draft.1"
   },
   "changesets": [
+    "clamp-bounds-clamped-current",
     "combat-pack-modeled-tasks",
     "durations-are-tick-time",
     "fix-genre-pack-section-refs",
@@ -27,10 +28,13 @@
     "link-templates-docs",
     "llm-discoverability",
     "machine-readable-manifest-sections",
+    "modifier-operation-pipeline-drift",
     "portable-skills-consuming-guide",
     "rag-artifacts",
     "rpg-pack-basic-attack-modeled",
     "schema-bundle-conformance",
+    "simulator-reference-scaling-and-key-validation",
+    "simulator-scheduling-ownership-clamping",
     "spec-async-validation-lifecycle",
     "spec-deterministic-predicted-rng",
     "spec-networking-prediction-model",
