@@ -289,17 +289,22 @@ def parse_clamping(
         # own §5.4 examples write `Min:`/`Max:` capitalised, while this config
         # format is lowercase, so copying one in would remove the bound with no
         # signal — the same silent-typo class the reference-name check closes.
-        unknown = sorted(set(rule) - {"min", "max"})
+        # Sort by repr, and report reprs: YAML keys are not necessarily strings
+        # (`1:` is an int, and YAML 1.1 reads a bare `no:` as False), so neither
+        # `sorted` on mixed types nor `.lower()` is safe on the raw keys.
+        unknown = sorted((k for k in rule if k not in ("min", "max")), key=repr)
         if unknown:
             hint = (
                 " (bounds are lowercase 'min'/'max' here, unlike the capitalised"
                 " form in the spec's entity examples)"
-                if any(k.lower() in ("min", "max") for k in unknown)
+                if any(isinstance(k, str) and k.lower() in ("min", "max")
+                       for k in unknown)
                 else ""
             )
             raise ConfigError(
-                f"clamping for {attr_name!r}: unknown bound key(s) {unknown}; "
-                f"expected 'min' and/or 'max'{hint}"
+                f"clamping for {attr_name!r}: unknown bound key(s) "
+                f"{[repr(k) for k in unknown]}; expected 'min' and/or "
+                f"'max'{hint}"
             )
         min_val = rule.get("min")
         max_val = rule.get("max")

@@ -9,6 +9,24 @@ Standalone by design — no pytest dependency, matching the plain-script style o
 Exits 0 when every case passes, 1 otherwise. Cases are drawn from the bugs found
 in issues #99, #100, #101 and #104; each asserts a specific number so a
 regression names itself rather than just failing.
+
+TWO TRAPS when adding cases here, both of which produced tests that passed for the
+wrong reason during review:
+
+1. **Read-time clamping hides the Base Value.** A displayed value is clamped on
+   read, so asserting it tells you nothing about what was written to the base. To
+   test a base write, either assert `base_value` directly, or let the bound recover
+   afterwards and assert a value that could only follow from a correct base.
+
+2. **Ordering only matters when the referenced attribute's clamped value can
+   change.** If a referenced attribute already sits below its own bound, its
+   clamped Current Value is identical before and after its base is clamped, so
+   every ordering agrees and the case proves nothing. Give it a live modifier, or
+   start it above its bound.
+
+The suite is checked by mutation rather than by counting checks: apply one
+behaviour-changing edit to `scripts/simulate.py` and confirm a case fails. Several
+natural-looking assertions here survive that test.
 """
 import sys
 from pathlib import Path
@@ -143,21 +161,38 @@ for label, clamping in (
         check(label, True)
 
 print("== 5b. Malformed clamp shapes rejected, not tracebacked ==")
-for label, clamping in (
-    ("rule value not a mapping", {"Health": "nonsense"}),
-    ("rule value is a list", {"Health": [1, 2]}),
-    ("rule value is null", {"Health": None}),
-    ("clamping itself not a mapping", [1, 2]),
-    ("bound is a bool", {"Health": {"max": True}}),
-    ("bound is a list", {"Health": {"min": [1, 2]}}),
+# Needles matter here: without them any ConfigError satisfies the case, so a
+# wrong-reason rejection would pass and the case-mismatch hint would be untested.
+for label, clamping, needles in (
+    ("rule value not a mapping", {"Health": "nonsense"}, ("mapping",)),
+    ("rule value is a list", {"Health": [1, 2]}, ("mapping",)),
+    ("rule value is null", {"Health": None}, ("mapping",)),
+    ("clamping itself not a mapping", [1, 2], ("clamping must be a mapping",)),
+    ("bound is a bool", {"Health": {"max": True}}, ("max", "number")),
+    ("bound is a list", {"Health": {"min": [1, 2]}}, ("min", "number")),
     # The spec's §5.4 entity examples write Min:/Max: capitalised; this config
     # format is lowercase, so a copied example must error rather than silently
-    # dropping the bound.
-    ("capitalised Min/Max", {"Health": {"Min": 0, "Max": 100}}),
-    ("misspelled bound key", {"Health": {"mim": 0, "max": 100}}),
+    # dropping the bound — and must say so.
+    ("capitalised Min/Max", {"Health": {"Min": 0, "Max": 100}},
+     ("unknown bound key", "'Max'", "lowercase")),
+    ("misspelled bound key", {"Health": {"mim": 0, "max": 100}},
+     ("unknown bound key", "'mim'")),
+    # YAML keys are not always strings: `1:` is an int and a bare `no:` is False.
+    ("non-string rule key", {"Health": {1: 5}}, ("unknown bound key", "1")),
+    ("YAML bare no as a key", {"Health": {False: 5, "max": 100}},
+     ("unknown bound key", "False")),
+    ("mixed-type unknown keys", {"Health": {"mim": 0, 1: 2}},
+     ("unknown bound key",)),
 ):
     expect_error(label, {"attributes": {"Health": 5.0}, "clamping": clamping,
-                        "effects": []})
+                        "effects": []}, *needles)
+# The hint must appear ONLY for a case mismatch, not for an unrelated typo.
+try:
+    S.parse_clamping({"Health": {"mim": 0}}, {"Health": None})
+    check("no case-mismatch hint for an unrelated typo", False, "accepted")
+except S.ConfigError as e:
+    check("no case-mismatch hint for an unrelated typo", "lowercase" not in str(e),
+          f"got {e}")
 
 print("== 6. min > max: formula's answer (min wins) ==")
 # min 50, max 30, value 100 -> max(50, min(30, 100)) = 50 (old code gave 30)
@@ -271,6 +306,43 @@ cfg7c = {
 rows = run(cfg7c, duration=6)
 check("periodic path: base floored at 0, so the heal shows 50 (not -10)",
       col(rows, 5.0, "Health") == 50.0, f"got {col(rows, 5.0, 'Health')}")
+
+# There is a THIRD clamp call site: the first execution of a periodic effect with
+# `execute_on_application: true`, which runs on the application branch rather than
+# the tick loop. Cover it too — the two cases above leave it untested.
+cfg7e = {
+    "attributes": {"Health": 30.0},
+    "clamping": {"Health": {"min": 0, "max": 1000}},
+    "effects": [
+        {"name": "Nuke", "apply_at": 0.0, "duration_policy": "HasDuration",
+         "duration": 1.0, "period": 5.0, "execute_on_application": True,
+         "modifiers": [{"attribute": "Health", "operation": "Add", "value": -250.0}]},
+        {"name": "Heal", "apply_at": 1.0, "duration_policy": "Instant",
+         "modifiers": [{"attribute": "Health", "operation": "Add", "value": 50.0}]},
+    ],
+}
+rows = run(cfg7e, duration=2)
+check("execute_on_application path: base floored at 0, heal shows 50 (not 0)",
+      col(rows, 1.0, "Health") == 50.0, f"got {col(rows, 1.0, 'Health')}")
+
+print("== 7f. A legal diamond of bound references is ACCEPTED ==")
+# Two reference bounds on one rule, converging on a shared attribute. The cycle
+# DFS must not mistake a re-visited node for a cycle — dropping its path.pop()
+# would reject this as `D -> C -> D`. No other case has a rule with two
+# attribute-reference bounds.
+cfg7f = {
+    "attributes": {"A": 500.0, "B": 500.0, "C": 500.0, "D": 500.0},
+    "clamping": {"A": {"min": "B", "max": "C"}, "B": {"max": "D"},
+                 "C": {"max": "D"}, "D": {"max": 100}},
+    "effects": [],
+}
+try:
+    rows = run(cfg7f, duration=1)
+    check("legal diamond accepted, all resolve to 100",
+          all(col(rows, 0.0, n) == 100.0 for n in "ABCD"),
+          f"got {[col(rows, 0.0, n) for n in 'ABCD']}")
+except S.ConfigError as e:
+    check("legal diamond accepted, all resolve to 100", False, f"rejected: {e}")
 
 print("== 7d. Ordering uses TRANSITIVE references (skip-intermediate) ==")
 # A max: C, C max: B, B max: 200. A batch writes A and B but NOT C, so A depends
