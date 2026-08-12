@@ -65,8 +65,8 @@ def expect_error(label, cfg, *needles):
         check(label, False, "no ConfigError raised")
 
 print("== 1. Issue repro: display bound uses clamped current ==")
-# MaxHealth base 100, static max 200; +500 buff -> unclamped 700, displayed 200.
-# Instant +600 Health at t=2 -> Health must display 200, not 700.
+# MaxHealth base 100, static max 200; +500 buff -> unclamped 600, displayed 200.
+# Instant +600 Health at t=2 -> Health must display 200, not 600.
 cfg = {
     "attributes": {"Health": 100.0, "MaxHealth": 100.0},
     "clamping": {"Health": {"min": 0, "max": "MaxHealth"},
@@ -80,12 +80,12 @@ cfg = {
     ],
 }
 rows = run(cfg)
-check("Health displayed 200 at t=2 (was 700)", col(rows, 2.0, "Health") == 200.0,
+check("Health displayed 200 at t=2 (develop: 600)", col(rows, 2.0, "Health") == 200.0,
       f"got {col(rows, 2.0, 'Health')}")
 check("MaxHealth displayed 200 while buffed", col(rows, 2.0, "MaxHealth") == 200.0)
 
 print("== 2. Base corruption: the stored Base Value itself, not the display ==")
-# The display CANNOT distinguish base 200 from base 700 here: MaxHealth is capped at
+# The display CANNOT distinguish base 200 from base 600 here: MaxHealth is capped at
 # 200, so min(base, <=200) is <=200 either way. Assert the Base Value directly.
 #
 # MaxHealth: base 100, static max 200, carrying a +500 modifier -> unclamped current
@@ -101,7 +101,7 @@ check("MaxHealth clamped current is 200",
       S.clamped_current("MaxHealth", attrs2, rules2) == 200.0)
 written = S.apply_instant_modifiers([S.Modifier("Health", "Add", 600.0)], attrs2)
 S.clamp_base_values(written, attrs2, rules2)
-check("Health BASE written as 200, not 700",
+check("Health BASE written as 200, not 600",
       attrs2["Health"].base_value == 200.0, f"got {attrs2['Health'].base_value}")
 # ...and it stays 200 once the bound modifier goes away — no hidden excess to reveal.
 S.remove_duration_modifiers(0, attrs2)
@@ -186,13 +186,20 @@ for label, clamping, needles in (
 ):
     expect_error(label, {"attributes": {"Health": 5.0}, "clamping": clamping,
                         "effects": []}, *needles)
-# The hint must appear ONLY for a case mismatch, not for an unrelated typo.
-try:
-    S.parse_clamping({"Health": {"mim": 0}}, {"Health": None})
-    check("no case-mismatch hint for an unrelated typo", False, "accepted")
-except S.ConfigError as e:
-    check("no case-mismatch hint for an unrelated typo", "lowercase" not in str(e),
-          f"got {e}")
+# The hint must appear ONLY for a case mismatch, not for an unrelated typo, and
+# must fire for EITHER bound alone — testing it only via a rule containing both
+# `Min` and `Max` would miss a condition that checks just one of them.
+for label, rule, want_hint in (
+    ("unrelated typo gets no hint", {"mim": 0}, False),
+    ("lone capitalised Max gets the hint", {"Max": 100}, True),
+    ("lone capitalised Min gets the hint", {"Min": 0}, True),
+    ("odd casing mIn gets the hint", {"mIn": 0}, True),
+):
+    try:
+        S.parse_clamping({"Health": rule}, {"Health": None})
+        check(label, False, "accepted")
+    except S.ConfigError as e:
+        check(label, ("lowercase" in str(e)) == want_hint, f"got {e}")
 
 print("== 6. min > max: formula's answer (min wins) ==")
 # min 50, max 30, value 100 -> max(50, min(30, 100)) = 50 (old code gave 30)
@@ -324,6 +331,41 @@ cfg7e = {
 rows = run(cfg7e, duration=2)
 check("execute_on_application path: base floored at 0, heal shows 50 (not 0)",
       col(rows, 1.0, "Health") == 50.0, f"got {col(rows, 1.0, 'Health')}")
+
+print("== 7g. Base clamping touches ONLY the attributes just written ==")
+# The clamp must be scoped to the write. Widening it to every attribute would
+# reintroduce the #101 write-through: an unrelated write, while a referenced bound
+# is temporarily reduced, would permanently clamp the dependent attribute's base.
+# Health is never written here — only Mana is — so Health's base must survive.
+cfg7g = {
+    "attributes": {"Health": 100.0, "MaxHealth": 100.0, "Mana": 50.0},
+    "clamping": {"Health": {"max": "MaxHealth"}},
+    "effects": [
+        {"name": "Debuff", "apply_at": 0.0, "duration_policy": "HasDuration",
+         "duration": 3.0,
+         "modifiers": [{"attribute": "MaxHealth", "operation": "Multiply",
+                        "value": -0.5}]},
+        {"name": "Sip", "apply_at": 1.0, "duration_policy": "Instant",
+         "modifiers": [{"attribute": "Mana", "operation": "Add", "value": -5.0}]},
+    ],
+}
+rows = run(cfg7g, duration=5)
+check("unrelated write during a debuff leaves Health read-clamped at 50",
+      col(rows, 1.0, "Health") == 50.0, f"got {col(rows, 1.0, 'Health')}")
+check("Health base survives it — back to 100 after the debuff expires",
+      col(rows, 4.0, "Health") == 100.0, f"got {col(rows, 4.0, 'Health')}")
+
+print("== 7h. A base write stores the BASE, not the clamped current ==")
+# clamp_base_values must clamp `state.base_value`, not the pipeline result. With a
+# live -50% Multiply on Health, writing the clamped *current* into the base would
+# bake the modifier in permanently: base 110 -> 55.
+attrs7h = {"Health": S.AttributeState(100.0)}
+rules7h = S.parse_clamping({"Health": {"min": 0, "max": 1000}}, attrs7h)
+S.add_duration_modifiers(0, [S.Modifier("Health", "Multiply", -0.5)], attrs7h)
+w7h = S.apply_instant_modifiers([S.Modifier("Health", "Add", 10.0)], attrs7h)
+S.clamp_base_values(w7h, attrs7h, rules7h)
+check("base is 110 (the base + 10), not 55 (the clamped current)",
+      attrs7h["Health"].base_value == 110.0, f"got {attrs7h['Health'].base_value}")
 
 print("== 7f. A legal diamond of bound references is ACCEPTED ==")
 # Two reference bounds on one rule, converging on a shared attribute. The cycle

@@ -301,10 +301,13 @@ def parse_clamping(
                        for k in unknown)
                 else ""
             )
+            # Join the reprs directly: formatting a list of repr-strings would
+            # repr each one a second time, so an int key `1` would print as `'1'`
+            # — the notation for the string "1", i.e. exactly backwards.
+            shown = ", ".join(repr(k) for k in unknown)
             raise ConfigError(
-                f"clamping for {attr_name!r}: unknown bound key(s) "
-                f"{[repr(k) for k in unknown]}; expected 'min' and/or "
-                f"'max'{hint}"
+                f"clamping for {attr_name!r}: unknown bound key(s) {shown}; "
+                f"expected 'min' and/or 'max'{hint}"
             )
         min_val = rule.get("min")
         max_val = rule.get("max")
