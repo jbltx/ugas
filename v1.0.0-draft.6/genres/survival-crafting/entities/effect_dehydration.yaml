@@ -1,0 +1,22 @@
+# Dehydration: the cascading threshold penalty for thirst, mirroring GE_Starvation. The engine
+# applies it (granting Survival.State.Dehydrated) when Thirst reaches 0 and removes it once the
+# survivor drinks. INFINITE + PERIOD, draining Health each tick - faster than starvation, since
+# dehydration kills sooner. When both are active the two drains stack additively on Health (the
+# combined per-tick loss is the sum), which the optional ExecCalc_SurvivalTick can fold into one delta.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_effect.json
+Name: GE_Dehydration
+DurationPolicy: Infinite
+Period:
+  Period: 1.0
+  ExecuteOnApplication: true
+Modifiers:
+  - Attribute: Health
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -3.0
+GrantedTags:
+  - Survival.State.Dehydrated
+GameplayCues:
+  - GameplayCue.Survival.Dehydrated

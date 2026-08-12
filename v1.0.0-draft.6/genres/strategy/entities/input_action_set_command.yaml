@@ -1,0 +1,28 @@
+# Command action set: the default input context for an RTS player issuing orders. Groups the
+# selection, order, production, cast, and camera actions into one set that is active whenever the
+# player is alive and not in a cutscene. Input buffering is enabled with a short window so that
+# rapid build/train hotkey sequences register without swallowing repeats.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action_set.json
+Name: Command
+Actions:
+  - Select
+  - AttackMove
+  - Build
+  - Train
+  - CastAbility
+  - CameraPan
+Priority: 0
+ActivationTags:
+  RequiredTags:
+    - State.Alive
+  BlockedTags:
+    - State.Cutscene
+Exclusive: false
+InputBuffer:
+  Enabled: true
+  BufferWindow: 0.15
+  MaxBufferSize: 3
+Metadata:
+  DisplayName: Command
+  Description: Default RTS command context covering selection, orders, production, casting, and camera

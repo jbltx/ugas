@@ -1,0 +1,25 @@
+# Touch mapping for the BoardControls action set (Mobile platform) - the primary control scheme for
+# a match-3 puzzle. Tapping selects a tile, and tapping an adjacent tile confirms the swap; a
+# double-tap detonates a special tile; a dedicated on-screen Hint button requests a move.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_mapping.json
+ActionSet: BoardControls
+Platform: Mobile
+Bindings:
+  - Action: SelectTile
+    Inputs:
+      - Device: Touch
+        Input: Touch.Tap
+
+  - Action: ActivatePowerup
+    Inputs:
+      - Device: Touch
+        Input: Touch.DoubleTap
+
+  - Action: UseHint
+    Inputs:
+      - Device: Touch
+        Input: Touch.Button.Hint
+Metadata:
+  DisplayName: Board - Touch
+  Description: Touchscreen bindings for the puzzle board (tap to select, tap adjacent to swap, double-tap for powerup)

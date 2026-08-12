@@ -1,0 +1,98 @@
+# Worked example: a striker deep into the match - stamina down to 40/100 with GE_Fatigue applied,
+# and the team riding a GE_MomentumBoost surge. It showcases BOTH halves of the signature mechanic at
+# once: the stamina->performance coupling pulling physical/skill stats DOWN, and the team-momentum
+# channel pushing offensive stats UP. The Fatigue and Momentum channels are distinct, so a stat
+# touched by both would multiply them; here each affected stat sits in exactly one channel, keeping
+# the arithmetic easy to verify.
+#
+# CurrentValue columns are the result of the two active effects below, at Stamina = 40:
+#   Speed:        base 100 x Fatigue(1 + (40-100)*0.005 = 0.70)            = 70.0
+#   ShotAccuracy: base  75 x Fatigue(1 + (40-100)*0.004 = 0.76)            = 57.0
+#   ShotPower:    base  80 x Momentum(1 + 0.20 = 1.20)                     = 96.0
+#   PassAccuracy: base  70 x Momentum(1 + 0.20 = 1.20)                     = 84.0
+# Acceleration, Strength, Tackling, and Composure carry no active modifier, so Current == Base.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_controller.json
+OwnerActor:
+  ActorID: Athlete_Striker_09
+  ActorType: PlayerCharacter
+AttributeSets:
+  - Name: AthletePerformanceSet
+    Attributes:
+      - Name: MaxStamina
+        BaseValue: 100.0
+        CurrentValue: 100.0
+      - Name: Stamina
+        BaseValue: 100.0
+        CurrentValue: 40.0
+      - Name: Speed
+        BaseValue: 100.0
+        CurrentValue: 70.0
+      - Name: Acceleration
+        BaseValue: 80.0
+        CurrentValue: 80.0
+      - Name: Strength
+        BaseValue: 70.0
+        CurrentValue: 70.0
+      - Name: PassAccuracy
+        BaseValue: 70.0
+        CurrentValue: 84.0
+      - Name: ShotPower
+        BaseValue: 80.0
+        CurrentValue: 96.0
+      - Name: ShotAccuracy
+        BaseValue: 75.0
+        CurrentValue: 57.0
+      - Name: Tackling
+        BaseValue: 65.0
+        CurrentValue: 65.0
+      - Name: Composure
+        BaseValue: 70.0
+        CurrentValue: 70.0
+      - Name: MaxMomentum
+        BaseValue: 100.0
+        CurrentValue: 100.0
+      - Name: Momentum
+        BaseValue: 0.0
+        CurrentValue: 100.0
+      - Name: EffectiveShotPower
+        BaseValue: 0.0
+        CurrentValue: 0.0
+      - Name: GoalProbability
+        BaseValue: 0.0
+        CurrentValue: 0.0
+GrantedAbilities:
+  - AbilityClass: GA_Sprint
+    Level: 1
+    InputID: Sprint
+  - AbilityClass: GA_Pass
+    Level: 1
+    InputID: Pass
+  - AbilityClass: GA_Shoot
+    Level: 1
+    InputID: Shoot
+  - AbilityClass: GA_Tackle
+    Level: 1
+    InputID: Tackle
+  - AbilityClass: GA_SkillMove
+    Level: 1
+    InputID: SkillMove
+ActiveEffects:
+  - Handle: eff-fatigue
+    EffectClass: GE_Fatigue
+    Duration: -1
+  - Handle: eff-momentum-boost
+    EffectClass: GE_MomentumBoost
+    Duration: 9.0
+OwnedTags:
+  - State.Alive
+  - Team.Friendly
+  - Role.Striker
+  - Athlete.State.Fatigued
+  - Team.State.HighMomentum
+ReplicationMode: Mixed
+bIsActive: true
+Metadata:
+  DisplayName: Striker (fatigued, high momentum)
+  Description: Worked-example athlete showing the stamina->performance coupling and the team-momentum channel acting together
+  DebugCategory: sports-pack-example

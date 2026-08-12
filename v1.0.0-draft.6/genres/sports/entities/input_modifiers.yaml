@@ -1,0 +1,38 @@
+# Reusable input modifiers for the sports genre. Referenced by name in Input Mappings and run in the
+# order listed on each binding. StickDeadzone is player-configurable; the others are designer tuning
+# knobs. Mirrors the shooter/racing modifier conventions.
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_modifier.json
+Name: StickDeadzone
+Type: DeadZone
+Params:
+  DeadZoneShape: Radial
+  InnerThreshold: 0.15
+  OuterThreshold: 0.95
+UserConfigurable: true
+Metadata:
+  DisplayName: Stick Dead Zone
+  Description: Radial dead zone for analog sticks - ignores drift below 15% and saturates above 95%
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_modifier.json
+Name: RadialScaling
+Type: RadialScaling
+Params:
+  MaxRadius: 1.0
+UserConfigurable: false
+Metadata:
+  DisplayName: Radial Scaling
+  Description: Normalizes stick input to a maximum radius of 1.0 so diagonal runs match cardinal speed
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_modifier.json
+Name: TriggerThreshold
+Type: TriggerThreshold
+Params:
+  PressThreshold: 0.5
+UserConfigurable: false
+Metadata:
+  DisplayName: Trigger Threshold
+  Description: Analog trigger press threshold - sprint engages only past a half-pull so light touches don't drain stamina

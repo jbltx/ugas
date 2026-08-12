@@ -1,0 +1,31 @@
+# Gamepad bindings for the OnFoot action set (Console platform).
+# Move uses the left stick with a radial dead-zone modifier for clean directional input.
+# Jump is mapped to FaceBottom (A / Cross) and GroundPound to LeftTrigger; the trigger
+# binding is gated behind State.InAir so it only fires while airborne.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_mapping.json
+ActionSet: OnFoot
+Platform: Console
+Bindings:
+  - Action: Move
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.LeftStick.X
+      - Device: Gamepad
+        Input: Gamepad.LeftStick.Y
+    Modifiers:
+      - StickDeadzone
+  - Action: Jump
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.FaceBottom
+  - Action: GroundPound
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.LeftTrigger
+    Tags:
+      RequiredTags:
+        - State.InAir
+Metadata:
+  DisplayName: On Foot (Gamepad)
+  Description: Standard console gamepad layout for platformer on-foot controls

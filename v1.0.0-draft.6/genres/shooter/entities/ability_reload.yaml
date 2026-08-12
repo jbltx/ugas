@@ -1,0 +1,28 @@
+# Reload: enter the reloading state, wait the reload window, then transfer rounds from the reserve
+# into the magazine. Blocked while already reloading. The "only reload if not full and the reserve
+# is non-empty" check (Ammo < MagazineSize AND ReserveAmmo > 0) is evaluated in activation logic,
+# since attribute comparisons cannot be expressed as activation tags.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_ability.json
+Name: GA_Reload
+Tags:
+  AbilityTags:
+    - Ability.Type.Reload
+  ActivationRequiredTags:
+    - Weapon.Equipped
+  ActivationBlockedTags:
+    - State.Reloading
+Tasks:
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_Reloading
+  - Type: WaitDelay
+    Params:
+      Duration: 2.0
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_Reload
+Metadata:
+  DisplayName: Reload
+  Description: Reload the equipped weapon, drawing rounds from the reserve
+  Icon: ui/icons/reload.png

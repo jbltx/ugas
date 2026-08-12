@@ -1,0 +1,96 @@
+# Idle / incremental economy attribute set: the soft currency, the aggregated income rate that
+# the Generators x Prestige x Booster channels target, an energy gate, and run progression.
+# Extends the core spec's attribute model (no core attribute is redefined here).
+# Base values make a fresh idle game playable as shipped: 0 income, full energy, run 1.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/attribute_set.json
+Name: IdleEconomySet
+Attributes:
+  # --- Soft currency (the resource the whole loop accumulates; grows without bound) ---
+  - Name: Currency
+    DefaultBaseValue: 0.0
+    Category: Resource
+    Clamping:
+      Min: 0
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Currency
+      Description: Soft currency earned per tick and by tapping; spent to buy generators. Clamped at 0, no upper bound (idle big numbers)
+      UICategory: Economy
+
+  # --- Income rate (the showcase target of the Generators / Prestige / Booster channels) ---
+  - Name: CurrencyPerSecond
+    DefaultBaseValue: 0.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Currency / Second
+      Description: Aggregated passive income rate. Generators Add flat income; Prestige and Booster Multiply across separate channels (see spec section 4)
+      UICategory: Economy
+  - Name: PrestigeMultiplier
+    DefaultBaseValue: 1.0
+    Category: Statistic
+    Clamping:
+      Min: 1.0
+    Metadata:
+      DisplayName: Prestige Multiplier
+      Description: Display of the Prestige channel factor; starts at x1 and is multiplied up by each GE_PrestigeBoost
+      UICategory: Economy
+
+  # --- Energy gate (regenerates over time; gates GA_Play, mirroring the shooter ammo gate) ---
+  - Name: MaxEnergy
+    DefaultBaseValue: 100.0
+    Category: Statistic
+    Metadata:
+      DisplayName: Maximum Energy
+      Description: Upper clamp on Energy
+      UICategory: Energy
+  - Name: Energy
+    DefaultBaseValue: 100.0
+    Category: Resource
+    Clamping:
+      Min: 0
+      Max: MaxEnergy
+    ReplicationMode: All
+    Metadata:
+      DisplayName: Energy
+      Description: Spent by GA_Play and refilled by GE_EnergyRegen; when 0 the play ability cannot pay its cost and is gated
+      UICategory: Energy
+
+  # --- Run progression (advanced by engine logic on milestones; reset on prestige) ---
+  - Name: Stage
+    DefaultBaseValue: 1.0
+    Category: Statistic
+    Clamping:
+      Min: 1.0
+    Metadata:
+      DisplayName: Stage
+      Description: Current progression stage / world; advanced by milestones and reset to 1 on prestige
+      UICategory: Progression
+  - Name: Level
+    DefaultBaseValue: 1.0
+    Category: Statistic
+    Clamping:
+      Min: 1.0
+    Metadata:
+      DisplayName: Level
+      Description: Active-area generator tier reached this run
+      UICategory: Progression
+
+  # --- Meta inputs (telemetry written by engine logic; feed prestige + offline seams) ---
+  - Name: LifetimeCurrency
+    DefaultBaseValue: 0.0
+    Category: Meta
+    Metadata:
+      DisplayName: Lifetime Currency
+      Description: Total currency earned this run; the engine compares it against the prestige threshold to grant Meta.State.PrestigeReady
+      UICategory: Telemetry
+  - Name: OfflineSeconds
+    DefaultBaseValue: 0.0
+    Category: Meta
+    Metadata:
+      DisplayName: Offline Seconds
+      Description: Elapsed real time since the session was last seen; read by ExecCalc_OfflineProgress to grant accrued currency on return
+      UICategory: Telemetry
+Metadata:
+  DisplayName: Idle Economy Set
+  Description: Soft currency, aggregated income rate, prestige multiplier, energy gate, run progression, and idle telemetry for an idle/incremental game

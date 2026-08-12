@@ -1,0 +1,33 @@
+# On-Foot action set: the default input context for a shooter character on the ground.
+# Groups all nine actions (combat, movement, general) into a single set that is active
+# whenever the player is alive and not inside a vehicle or cutscene. Input buffering is
+# enabled with a tight 0.12 s window (max 2 queued events) so that rapid fire/reload
+# sequences feel responsive without swallowing unintended repeats.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_action_set.json
+Name: OnFoot
+Actions:
+  - Fire
+  - Aim
+  - Reload
+  - Move
+  - Look
+  - Jump
+  - Sprint
+  - Interact
+  - CycleWeapon
+Priority: 0
+ActivationTags:
+  RequiredTags:
+    - State.Alive
+  BlockedTags:
+    - State.InVehicle
+    - State.Cutscene
+Exclusive: false
+InputBuffer:
+  Enabled: true
+  BufferWindow: 0.12
+  MaxBufferSize: 2
+Metadata:
+  DisplayName: On Foot
+  Description: Default on-foot input context covering combat, movement, and general interactions

@@ -1,0 +1,22 @@
+# Overencumbered: the encumbrance threshold penalty. The engine's weight detector applies this
+# (and it grants Survival.State.Overencumbered) when CarryWeight exceeds MaxCarryWeight, and removes
+# it once the survivor drops or crafts enough to get back under the limit. INFINITE while over the
+# limit. It cuts MoveSpeed by 40% in the Encumbrance channel - a different channel from cold's Cold
+# channel, so an overencumbered AND cold survivor multiplies the two factors (see the worked example
+# in gameplay_controller.yaml). The "CarryWeight > MaxCarryWeight" comparison is engine logic; the
+# MoveSpeed cut is pure data.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_effect.json
+Name: GE_Overencumbered
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: MoveSpeed
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: -0.40
+    Channel: Encumbrance
+GrantedTags:
+  - Survival.State.Overencumbered
+GameplayCues:
+  - GameplayCue.Survival.Overencumbered

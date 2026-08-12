@@ -1,0 +1,13 @@
+# Template entity: Input Mapping
+# Replace with genre-specific bindings.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_mapping.json
+ActionSet: ExampleSet
+Bindings:
+  - Action: ExampleAction
+    Inputs:
+      - Device: Keyboard
+        Input: Key.Space
+Metadata:
+  DisplayName: Example Mapping
+  Description: Replace with genre-specific input bindings

@@ -1,0 +1,18 @@
+# Crafted tool: an INFINITE buff representing an equipped tool (e.g. a backpack/satchel crafted at
+# the bench). Raises MaxCarryWeight so the survivor can haul more before becoming overencumbered, and
+# grants Item.Type.Tool. Applied by GA_Craft when the recipe is a tool; removed when the tool is
+# unequipped or breaks. Swapping tools means swapping which GE_CraftedTool-style effect is active.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_effect.json
+Name: GE_CraftedTool
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: MaxCarryWeight
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 25.0
+GrantedTags:
+  - Item.Type.Tool
+GameplayCues:
+  - GameplayCue.Survival.Equip

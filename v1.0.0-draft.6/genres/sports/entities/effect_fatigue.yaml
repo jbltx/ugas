@@ -1,0 +1,47 @@
+# Fatigue coupling: the SIGNATURE mechanic of this pack and the showcase for the AttributeBased
+# magnitude type (spec section 9.4.2). Instead of a static penalty, each modifier's magnitude is
+# DERIVED from the live Stamina attribute, so performance scales smoothly as the athlete tires -
+# no calculation code, just data.
+#
+# AttributeBased magnitude formula (spec section 9.4.2):
+#   m = (BackingAttribute + PreMultiplyAdditive) * Coefficient + PostMultiplyAdditive
+# With BackingAttribute = Stamina, PreMultiplyAdditive = -100 (so the term is Stamina - MaxStamina):
+#   Speed        : m = (Stamina - 100) * 0.005   -> 0 at Stamina 100, -0.30 at Stamina 40
+#   ShotAccuracy : m = (Stamina - 100) * 0.004   -> 0 at Stamina 100, -0.24 at Stamina 40
+# Each modifier is a Multiply in the Fatigue channel, so the pipeline factor is (1 + m):
+#   at full Stamina the factor is 1.0 (no penalty); as Stamina drops the factor shrinks.
+#   e.g. Speed base 100 at Stamina 40 -> 100 * (1 - 0.30) = 70.0  (see gameplay_controller.yaml)
+#
+# Infinite + engine-driven: the engine applies this effect once Stamina crosses the low fatigue
+# threshold and removes it once Stamina recovers above it (an attribute comparison can't be an
+# activation tag, so the threshold check is engine logic - the same pattern the shooter pack uses
+# for "reload only when not full"). While applied, because the magnitude reads Stamina on each
+# evaluation, the penalty deepens as the athlete tires further. It also grants Athlete.State.Fatigued,
+# the tag that gates GA_Sprint / GA_SkillMove.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_effect.json
+Name: GE_Fatigue
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: Speed
+    Operation: Multiply
+    Magnitude:
+      Type: AttributeBased
+      BackingAttribute: Stamina
+      Source: Target
+      Coefficient: 0.005
+      PreMultiplyAdditive: -100.0
+    Channel: Fatigue
+  - Attribute: ShotAccuracy
+    Operation: Multiply
+    Magnitude:
+      Type: AttributeBased
+      BackingAttribute: Stamina
+      Source: Target
+      Coefficient: 0.004
+      PreMultiplyAdditive: -100.0
+    Channel: Fatigue
+GrantedTags:
+  - Athlete.State.Fatigued
+GameplayCues:
+  - GameplayCue.Athlete.Fatigued

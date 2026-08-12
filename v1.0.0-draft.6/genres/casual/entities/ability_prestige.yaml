@@ -1,0 +1,25 @@
+# Prestige: the signature meta-progression reset. Gated by Meta.State.PrestigeReady - a threshold tag
+# the engine grants once LifetimeCurrency crosses the prestige requirement (attribute comparisons
+# cannot be activation tags, so threshold DETECTION is engine logic; the GATE is this tag). On
+# activation it applies GE_PrestigeBoost, which permanently multiplies income in the Prestige channel
+# and grants Meta.State.Prestiged.
+#
+# NOTE: the RESET itself - zeroing Currency, removing the generator effects, resetting Stage/Level,
+# and re-granting GE_PassiveIncome - is engine logic this ability triggers. UGAS data captures the
+# permanent reward (GE_PrestigeBoost) and the gate; the bookkeeping of the wipe is an engine seam.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_ability.json
+Name: GA_Prestige
+Tags:
+  AbilityTags:
+    - Ability.Type.Prestige
+  ActivationRequiredTags:
+    - Meta.State.PrestigeReady
+Tasks:
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_PrestigeBoost
+Metadata:
+  DisplayName: Prestige
+  Description: Reset this run in exchange for a permanent income multiplier
+  Icon: ui/icons/prestige.png

@@ -1,0 +1,13 @@
+# Template entity: Input Modifier
+# Replace with genre-specific modifier configuration.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_modifier.json
+Name: ExampleDeadzone
+Type: DeadZone
+Params:
+  InnerThreshold: 0.15
+  OuterThreshold: 0.95
+  DeadZoneShape: Radial
+Metadata:
+  DisplayName: Example Dead Zone
+  Description: Replace with a genre-specific modifier

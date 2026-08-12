@@ -1,0 +1,24 @@
+# Powerup bomb: the payload GA_ActivatePowerup applies when a Bomb special tile is triggered.
+# Unlike a normal match, a bomb's reward does not flow through the combo/chain product - it is a
+# flat board-clear bonus, expressed declaratively as a single Score add. The magnitude is
+# AttributeBased on the source's BaseMatchValue (x20) rather than a hard-coded number, so the bonus
+# scales automatically if a level tunes its base match value: 100 x 20 = 2000 by default. The bomb
+# also grants the Cascading state, because the hole it punches in the board usually triggers gravity
+# cascades that then score through the normal pipeline. Powerup classification is carried by tags
+# (Powerup.Type.Bomb) granted on the special tile, not by this effect.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_effect.json
+Name: GE_PowerupBomb
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Score
+    Operation: Add
+    Magnitude:
+      Type: AttributeBased
+      BackingAttribute: BaseMatchValue
+      Source: Source
+      Coefficient: 20.0
+GrantedTags:
+  - Puzzle.State.Cascading
+GameplayCues:
+  - GameplayCue.Puzzle.BombBlast

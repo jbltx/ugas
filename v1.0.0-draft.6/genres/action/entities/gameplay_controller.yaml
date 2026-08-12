@@ -1,0 +1,60 @@
+# Worked example: a "Super" platformer hero standing on the ground after grabbing a mushroom.
+# CurrentValue columns show the result of the active GE_SuperMushroom:
+#   Scale:  base 1.0 x SizeBonuses(1 + 1.0 = 2.0) = 2.0
+#   Health: base 1   + 1 (mushroom)               = 2.0
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_controller.json
+OwnerActor:
+  ActorID: Hero_Platformer_01
+  ActorType: PlayerCharacter
+AttributeSets:
+  - Name: PlatformerMovementSet
+    Attributes:
+      - Name: GravityScale
+        BaseValue: 1.0
+        CurrentValue: 1.0
+      - Name: JumpVelocity
+        BaseValue: 1200.0
+        CurrentValue: 1200.0
+      - Name: AirControl
+        BaseValue: 0.65
+        CurrentValue: 0.65
+      - Name: HorizontalSpeed
+        BaseValue: 600.0
+        CurrentValue: 600.0
+      - Name: Scale
+        BaseValue: 1.0
+        CurrentValue: 2.0
+      - Name: MaxHealth
+        BaseValue: 3.0
+        CurrentValue: 3.0
+      - Name: Health
+        BaseValue: 1.0
+        CurrentValue: 2.0
+      - Name: Lives
+        BaseValue: 3.0
+        CurrentValue: 3.0
+GrantedAbilities:
+  - AbilityClass: GA_Jump
+    Level: 1
+    InputID: Jump
+  - AbilityClass: GA_GroundPound
+    Level: 1
+    InputID: GroundPound
+ActiveEffects:
+  - Handle: eff-grounded
+    EffectClass: GE_Grounded
+    Duration: -1
+  - Handle: eff-super-mushroom
+    EffectClass: GE_SuperMushroom
+    Duration: -1
+OwnedTags:
+  - State.Alive
+  - State.Grounded
+  - State.PowerUp.Super
+ReplicationMode: Mixed
+bIsActive: true
+Metadata:
+  DisplayName: Super Hero (grounded)
+  Description: Worked-example platformer hero showing power-up attribute aggregation on Scale and Health
+  DebugCategory: action-pack-example

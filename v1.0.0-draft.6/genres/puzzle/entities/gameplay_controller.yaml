@@ -1,0 +1,88 @@
+# Worked example: a match-3 board mid-level, caught mid-cascade with an active x3 combo.
+# This snapshot showcases the signature match-scoring pipeline - Score is the running product of
+# base x combo x chain summed over the matches played so far - and the move economy.
+#
+# Play history that produced this state (BaseMatchValue = 100 throughout):
+#   Move 1  swap -> Match A: no combo, no chain        100 x 1 x 1 = 100
+#   Move 2  swap -> Match B: combo x2,  no chain        100 x 2 x 1 = 200
+#   Move 3  swap -> (no match formed; move still spent)            =   0
+#   Move 4  swap -> (no match formed; move still spent)            =   0
+#   Move 5  swap -> Match C: combo x3, CASCADE chain x2  100 x 3 x 2 = 600   <- the snapshot
+#   ------------------------------------------------------------------------
+#   Score (Resource, instant adds -> BaseValue == CurrentValue) = 100 + 200 + 600 = 900.0
+#   MovesRemaining: MaxMoves 25 - 5 swaps                                       = 20.0
+#
+# Live multipliers at the snapshot instant (Match C, mid first cascade):
+#   ComboMultiplier (Statistic): base 1.0 + two active GE_ComboBuild (+1 each)  = 3.0   (CurrentValue)
+#   ChainLength     (Meta):      instant GE_CascadeChain wrote +1 this cascade  = 1.0   -> chain factor 1 + 1 = 2
+#   LastMatchScore  (Meta):      ExecCalc_MatchScore: 100 x 3 x (1 + 1)         = 600.0
+#   TilesCleared    (Meta):      Match C cleared a line of three                = 3.0
+#
+# Score 900 < TargetScore 1000, MovesRemaining 20 > 0: the level is still in Puzzle.Phase.Playing.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_controller.json
+OwnerActor:
+  ActorID: PuzzleBoard_Level07_01
+  ActorType: PuzzleBoard
+AttributeSets:
+  - Name: PuzzleBoardSet
+    Attributes:
+      - Name: Score
+        BaseValue: 900.0
+        CurrentValue: 900.0
+      - Name: TargetScore
+        BaseValue: 1000.0
+        CurrentValue: 1000.0
+      - Name: BaseMatchValue
+        BaseValue: 100.0
+        CurrentValue: 100.0
+      - Name: MaxMoves
+        BaseValue: 25.0
+        CurrentValue: 25.0
+      - Name: MovesRemaining
+        BaseValue: 20.0
+        CurrentValue: 20.0
+      - Name: MaxTime
+        BaseValue: 90.0
+        CurrentValue: 90.0
+      - Name: TimeRemaining
+        BaseValue: 90.0
+        CurrentValue: 90.0
+      - Name: ComboMultiplier
+        BaseValue: 1.0
+        CurrentValue: 3.0
+      - Name: ChainLength
+        BaseValue: 1.0
+        CurrentValue: 1.0
+      - Name: TilesCleared
+        BaseValue: 3.0
+        CurrentValue: 3.0
+      - Name: LastMatchScore
+        BaseValue: 600.0
+        CurrentValue: 600.0
+GrantedAbilities:
+  - AbilityClass: GA_SwapTiles
+    Level: 1
+    InputID: SelectTile
+  - AbilityClass: GA_ActivatePowerup
+    Level: 1
+    InputID: ActivatePowerup
+  - AbilityClass: GA_UseHint
+    Level: 1
+    InputID: UseHint
+ActiveEffects:
+  - Handle: eff-combo-build-1
+    EffectClass: GE_ComboBuild
+    Duration: 1.8
+  - Handle: eff-combo-build-2
+    EffectClass: GE_ComboBuild
+    Duration: 2.3
+OwnedTags:
+  - Puzzle.Phase.Playing
+  - Puzzle.State.Cascading
+ReplicationMode: Full
+bIsActive: true
+Metadata:
+  DisplayName: Puzzle Board (mid-cascade, x3 combo)
+  Description: Worked-example match-3 board showing the base x combo x chain scoring pipeline and the move economy
+  DebugCategory: puzzle-pack-example

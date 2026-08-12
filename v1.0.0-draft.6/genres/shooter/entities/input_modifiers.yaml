@@ -1,0 +1,64 @@
+# Reusable input modifiers for the shooter genre. Referenced by name in Input Mappings.
+# StickDeadzone and MouseSensitivity are player-configurable; the others are tuning knobs
+# owned by the designer. All modifiers sit in the per-binding modifier pipeline and run
+# in the order they are listed on each binding.
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_modifier.json
+Name: StickDeadzone
+Type: DeadZone
+Params:
+  DeadZoneShape: Radial
+  InnerThreshold: 0.15
+  OuterThreshold: 0.95
+UserConfigurable: true
+Metadata:
+  DisplayName: Stick Dead Zone
+  Description: Radial dead zone for analog sticks - ignores drift below 15% and saturates above 95%
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_modifier.json
+Name: MouseSensitivity
+Type: Sensitivity
+Params:
+  Multiplier: 1.0
+  MultiplierX: 1.0
+  MultiplierY: 1.0
+UserConfigurable: true
+Metadata:
+  DisplayName: Mouse Sensitivity
+  Description: Per-axis mouse sensitivity multiplier exposed in the player settings screen
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_modifier.json
+Name: TriggerThreshold
+Type: TriggerThreshold
+Params:
+  PressThreshold: 0.5
+UserConfigurable: false
+Metadata:
+  DisplayName: Trigger Threshold
+  Description: Analog trigger press threshold - values below 0.5 are treated as released
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_modifier.json
+Name: AimAssistCurve
+Type: ResponseCurve
+Params:
+  CurveType: Exponential
+  Exponent: 2.5
+UserConfigurable: false
+Metadata:
+  DisplayName: Aim Assist Curve
+  Description: Exponential response curve for gamepad aiming - slower near center, faster at extremes
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_modifier.json
+Name: RadialScaling
+Type: RadialScaling
+Params:
+  MaxRadius: 1.0
+UserConfigurable: false
+Metadata:
+  DisplayName: Radial Scaling
+  Description: Normalizes stick input to a maximum radius of 1.0 for consistent diagonal movement

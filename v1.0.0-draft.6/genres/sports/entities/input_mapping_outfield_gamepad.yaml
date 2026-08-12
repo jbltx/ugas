@@ -1,0 +1,58 @@
+# Console gamepad mapping for the Outfield action set - the standard sports-game pad layout.
+# Both sticks pass through a radial dead zone; the left stick is additionally radius-normalized so
+# diagonal runs match cardinal speed. Sprint is bound to the right trigger with a press threshold so
+# partial pulls don't drain stamina. Pass / Shoot / Skill Move sit on the face buttons; Tackle on a
+# shoulder so a defender can challenge without taking a thumb off the move stick.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_mapping.json
+ActionSet: Outfield
+Platform: Console
+Bindings:
+  - Action: Move
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.LeftStick.X
+      - Device: Gamepad
+        Input: Gamepad.LeftStick.Y
+    Modifiers:
+      - StickDeadzone
+      - RadialScaling
+
+  - Action: Look
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.RightStick.X
+      - Device: Gamepad
+        Input: Gamepad.RightStick.Y
+    Modifiers:
+      - StickDeadzone
+
+  - Action: Sprint
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.RightTrigger
+    Modifiers:
+      - TriggerThreshold
+
+  - Action: Pass
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.FaceLeft
+
+  - Action: Shoot
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.FaceBottom
+
+  - Action: SkillMove
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.FaceRight
+
+  - Action: Tackle
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.RightShoulder
+Metadata:
+  DisplayName: Outfield - Gamepad
+  Description: Console gamepad bindings for the outfield action set with dead zones and a sprint trigger threshold

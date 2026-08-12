@@ -1,0 +1,25 @@
+# Reusable input modifiers for the casual/idle genre. Referenced by name in Input Mappings, where
+# they run in listed order in the per-binding modifier pipeline (spec section 11.6). Idle controls
+# are simple, so the set is small and tap-centric.
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_modifier.json
+Name: TapDebounce
+Type: Custom
+Params:
+  CalculatorClass: InputMod_TapDebounce
+UserConfigurable: false
+Metadata:
+  DisplayName: Tap Debounce
+  Description: Swallows a second tap fired within a few frames of the first, so rapid tapping does not double-count a single press
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_modifier.json
+Name: TouchPressThreshold
+Type: TriggerThreshold
+Params:
+  PressThreshold: 0.5
+UserConfigurable: false
+Metadata:
+  DisplayName: Touch Press Threshold
+  Description: Pressure threshold above which a touch counts as a press, for pressure-sensitive screens

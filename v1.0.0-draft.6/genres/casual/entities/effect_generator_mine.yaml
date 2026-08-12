@@ -1,0 +1,19 @@
+# Mine generator: the entry-tier income source installed by GA_BuyGenerator. Infinite (a permanent
+# purchase) and stacking - each Mine bought applies its own instance. It adds a flat +5 to
+# CurrencyPerSecond. Flat Add modifiers sum together (pipeline steps 1-2, spec section 5.3): N mines
+# contribute +5N before the Prestige and Booster channels multiply across the total. Grants
+# Generator.Type.Mine (AllowMultiple) so the engine can count installed mines.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_effect.json
+Name: GE_Generator_Mine
+DurationPolicy: Infinite
+Modifiers:
+  - Attribute: CurrencyPerSecond
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: 5.0
+GrantedTags:
+  - Generator.Type.Mine
+GameplayCues:
+  - GameplayCue.Idle.Build

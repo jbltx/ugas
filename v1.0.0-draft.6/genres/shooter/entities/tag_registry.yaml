@@ -1,0 +1,89 @@
+# Shooter genre tag taxonomy. ADDITIVE: introduces genre-specific tags only.
+# It does not redefine the core lifecycle tags (State.Alive / State.Combat / State.Dead) -
+# those are referenced by the pack's entities, not declared here.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_tag.json
+Tags:
+  # --- Weapon-handling states (granted by Effects; tag ownership follows responsibility) ---
+  - Tag: State.Aiming
+    Description: Aiming down sights; granted by GE_ADS, removed when the aim input is released
+    AllowMultiple: false
+  - Tag: State.Reloading
+    Description: A reload is in progress; granted by GE_Reloading, blocks firing and aiming
+    AllowMultiple: false
+  - Tag: State.Sprinting
+    Description: Tactical sprint state (owned by the movement system); documented for a sprint extension
+    AllowMultiple: false
+
+  # --- Weapon classification & loadout (granted by equip / attachment Effects) ---
+  - Tag: Weapon.Equipped
+    Description: A weapon is equipped and ready; gate for the fire/reload/aim abilities
+    AllowMultiple: false
+  - Tag: Weapon.Type.Rifle
+    Description: Automatic rifle
+    AllowMultiple: false
+  - Tag: Weapon.Type.Pistol
+    Description: Sidearm
+    AllowMultiple: false
+  - Tag: Weapon.Type.Shotgun
+    Description: Close-range spread weapon
+    AllowMultiple: false
+  - Tag: Weapon.Type.Sniper
+    Description: Long-range precision rifle
+    AllowMultiple: false
+  - Tag: Weapon.FireMode.Auto
+    Description: Fully automatic fire while the trigger is held
+    AllowMultiple: false
+  - Tag: Weapon.FireMode.SemiAuto
+    Description: One shot per trigger pull
+    AllowMultiple: false
+  - Tag: Weapon.FireMode.Burst
+    Description: A fixed burst of rounds per trigger pull
+    AllowMultiple: false
+  - Tag: Weapon.Attachment.Barrel
+    Description: A muzzle/barrel attachment is fitted; granted by GE_AttachmentBarrel
+    AllowMultiple: false
+
+  # --- Ability classification ---
+  - Tag: Ability.Type.Fire
+    Description: Primary fire ability
+    AllowMultiple: false
+  - Tag: Ability.Type.Reload
+    Description: Reload ability
+    AllowMultiple: false
+  - Tag: Ability.Type.Aim
+    Description: Aim-down-sights ability
+    AllowMultiple: false
+  - Tag: Ability.Type.Movement
+    Description: Locomotion ability (sprint, slide, vault)
+    AllowMultiple: false
+
+  # --- Damage types ---
+  - Tag: DamageType.Ballistic
+    Description: Kinetic projectile / hitscan damage
+    AllowMultiple: false
+  - Tag: DamageType.Explosive
+    Description: Area damage from grenades and rockets
+    AllowMultiple: false
+
+  # --- Hitzones (drive the headshot damage multiplier) ---
+  - Tag: Hitzone.Head
+    Description: Hit landed on the head; the hit-resolution calc applies HeadshotMultiplier
+    AllowMultiple: false
+  - Tag: Hitzone.Body
+    Description: Hit landed on the torso; baseline damage
+    AllowMultiple: false
+  - Tag: Hitzone.Limb
+    Description: Hit landed on a limb; typically reduced damage
+    AllowMultiple: false
+
+  # --- Teams & immunity ---
+  - Tag: Team.Friendly
+    Description: Same team as the source; used to skip friendly fire
+    AllowMultiple: false
+  - Tag: Team.Hostile
+    Description: Opposing team; a valid damage target
+    AllowMultiple: false
+  - Tag: Immunity.Ballistic
+    Description: Ignores incoming ballistic damage (e.g. spawn protection); honored by the hit-resolution calc
+    AllowMultiple: false

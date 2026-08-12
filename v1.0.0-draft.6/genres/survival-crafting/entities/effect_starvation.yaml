@@ -1,0 +1,22 @@
+# Starvation: the cascading threshold penalty for hunger. The engine's threshold detector applies
+# this effect (and it grants Survival.State.Starving) when Hunger reaches 0; it removes it when
+# Hunger climbs back above 0 after the survivor eats. INFINITE + PERIOD so it keeps draining Health
+# every tick for as long as the survivor starves. This is the "need bottoms out -> drains Health"
+# cascade described in the signature section; the detection is engine logic, the drain is pure data.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_effect.json
+Name: GE_Starvation
+DurationPolicy: Infinite
+Period:
+  Period: 1.0
+  ExecuteOnApplication: true
+Modifiers:
+  - Attribute: Health
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -2.0
+GrantedTags:
+  - Survival.State.Starving
+GameplayCues:
+  - GameplayCue.Survival.Starving

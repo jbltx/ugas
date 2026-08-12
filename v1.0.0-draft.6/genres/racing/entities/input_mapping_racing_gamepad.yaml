@@ -1,0 +1,43 @@
+# Gamepad bindings for the RacingOnTrack action set (Console platform).
+# Maps standard gamepad controls to driving actions with appropriate modifiers.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/input_mapping.json
+ActionSet: RacingOnTrack
+Platform: Console
+Bindings:
+  - Action: Throttle
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.RightTrigger
+    Modifiers:
+      - TriggerDeadzone
+  - Action: Brake
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.LeftTrigger
+    Modifiers:
+      - TriggerDeadzone
+  - Action: Steer
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.LeftStick.X
+    Modifiers:
+      - StickDeadzone
+      - SteeringSensitivity
+  - Action: Boost
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.FaceBottom
+  - Action: Drift
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.LeftShoulder
+  - Action: Look
+    Inputs:
+      - Device: Gamepad
+        Input: Gamepad.RightStick
+    Modifiers:
+      - StickDeadzone
+Metadata:
+  DisplayName: Racing Gamepad
+  Description: Default gamepad mapping for on-track racing controls

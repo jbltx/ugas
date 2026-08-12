@@ -1,0 +1,19 @@
+# Reset chain: applied once the board settles (no further automatic re-matches) to close out a
+# cascade sequence. It Overrides ChainLength back to 0 so the next player-initiated match starts a
+# fresh chain at factor 1, and grants Puzzle.Phase.Playing to mark the board interactive again.
+# Override (not Add) is used because the post-cascade ChainLength is unknown - the depth varies per
+# resolution - so the effect must clamp it to a known baseline regardless of how deep the chain went.
+# The transient Puzzle.State.Cascading / Puzzle.State.Matching tags fall away with their instant
+# effects; this effect just re-asserts the interactive phase.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_effect.json
+Name: GE_ResetChain
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: ChainLength
+    Operation: Override
+    Magnitude:
+      Type: ScalableFloat
+      Value: 0.0
+GrantedTags:
+  - Puzzle.Phase.Playing

@@ -1,0 +1,17 @@
+# Tap: the active click that grants a flat lump of currency. The lowest-barrier casual interaction -
+# always available, no cost, no cooldown - applying GE_TapReward (+Currency) to the owner. Early on
+# tapping drives progress; as generators come online passive income takes over.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_ability.json
+Name: GA_Tap
+Tags:
+  AbilityTags:
+    - Ability.Type.Tap
+Tasks:
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_TapReward
+Metadata:
+  DisplayName: Tap
+  Description: Tap to earn a small lump of currency
+  Icon: ui/icons/tap.png

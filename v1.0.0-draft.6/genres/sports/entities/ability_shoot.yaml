@@ -1,0 +1,29 @@
+# Shoot: attempt on goal. Costs stamina (GE_ShootCost: Stamina -8 - a hard effort) and goes on a
+# cooldown (GE_ShootCooldown) covering the shot animation/recovery. It traces toward goal
+# (WaitTargetData), then applies GE_ShotAttempt to the goal target, which runs ExecCalc_ShotResolution
+# to couple ShotPower / ShotAccuracy / Stamina / defender pressure into EffectiveShotPower and a goal
+# outcome. GE_ShootCost and GE_ShootCooldown are trivial and referenced by name, like the racing/shooter
+# cost/cooldown effects. A tired athlete shoots with reduced ShotAccuracy (the GE_Fatigue coupling),
+# so stamina management feeds directly into finishing.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.6/schemas/gameplay_ability.json
+Name: GA_Shoot
+Tags:
+  AbilityTags:
+    - Ability.Type.Shoot
+  ActivationRequiredTags:
+    - State.Alive
+Cost: GE_ShootCost
+Cooldown: GE_ShootCooldown
+Tasks:
+  - Type: WaitTargetData
+    Params:
+      TargetingMethod: GoalTrace
+      MaxRange: 35.0
+  - Type: ApplyEffectToTarget
+    Params:
+      EffectClass: GE_ShotAttempt
+Metadata:
+  DisplayName: Shoot
+  Description: Strike the ball at goal; outcome resolved by ExecCalc_ShotResolution from power, accuracy, stamina, and pressure
+  Icon: ui/icons/shoot.png
