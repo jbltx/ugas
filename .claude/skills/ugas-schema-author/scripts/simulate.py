@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import heapq
 import math
 import sys
 from dataclasses import dataclass, field
@@ -123,9 +124,78 @@ def load_config(path: Path) -> Dict[str, Any]:
 VALID_OPERATIONS = ("Add", "AddPost", "Multiply", "Override")
 VALID_DURATION_POLICIES = ("Instant", "HasDuration", "Infinite")
 
+# Closed key sets. Every mapping this script reads keys out of gets one, and this
+# script validates nothing it does not read — an unknown key would otherwise mean
+# "take the default", which is how a single typo turns into a plausible but wrong
+# curve (`execute_on_aplication:` silently becomes False and the effect stops
+# executing on application while the run still reports it applied).
+TOP_LEVEL_KEYS = ("attributes", "clamping", "effects", "simulation")
+SIMULATION_KEYS = ("duration", "timestep")
+EFFECT_KEYS = ("name", "duration_policy", "duration", "period",
+               "execute_on_application", "apply_at", "modifiers")
+MODIFIER_KEYS = ("attribute", "operation", "value", "channel")
+
+# Fields of the full GameplayEffect schema that this simplified format does not
+# model, in canonical form. A config adapted from a genre-pack entity file carries
+# them wholesale, so the error should say they are unsupported rather than typos.
+SPEC_ONLY_EFFECT_KEYS = frozenset({
+    "executionpolicy", "priority", "executions", "grantedtags",
+    "applicationrequiredtags", "grantedabilities", "gameplaycues", "area",
+    "$schema",
+})
+
 
 class ConfigError(ValueError):
     """Raised when a simulation config is malformed."""
+
+
+def canon(key: Any) -> Optional[str]:
+    """Case- and underscore-insensitive form of a key, for hint matching only.
+
+    `schemas/gameplay_effect.json` and the genre packs write keys in PascalCase
+    (`DurationPolicy`, `Attribute`, `Magnitude`), so a config copied from either
+    arrives with every key unknown; canonicalising both sides lets the error say
+    why. Stripping underscores is what makes it work — `"DurationPolicy".lower()`
+    is not `"duration_policy"`. Non-string keys canonicalise to None, because
+    `.lower()` on a raw YAML key crashes on `1:` or a bare `no:`.
+    """
+    return key.lower().replace("_", "") if isinstance(key, str) else None
+
+
+def unknown_keys(mapping: Dict[Any, Any], allowed: Iterable[str]) -> tuple:
+    """Unknown keys of `mapping`, as (list, display string).
+
+    Sorts by `repr` and joins the reprs directly. Both matter: YAML keys are not
+    necessarily strings — `1:` is an int and YAML 1.1 reads a bare `no:` as False —
+    so `sorted` on the raw keys raises TypeError on mixed types; and formatting a
+    list of repr-strings would repr each one a second time, printing an int key 1 as
+    '1', which is the notation for the string "1", i.e. exactly backwards.
+    """
+    known = tuple(allowed)
+    unknown = sorted((k for k in mapping if k not in known), key=repr)
+    return unknown, ", ".join(repr(k) for k in unknown)
+
+
+def casing_hint(unknown: List[Any], allowed: Iterable[str]) -> Optional[str]:
+    """A hint for keys that are only a casing/underscore variant of a real one.
+
+    Deliberately does not name the GameplayEffect schema: this fires for the
+    top-level and `simulation` keys too, and those have no counterpart there.
+    """
+    allowed = tuple(allowed)
+    wanted = {canon(a): a for a in allowed}
+    hits = [k for k in unknown if canon(k) in wanted]
+    if not hits:
+        return None
+    example = f" — e.g. {hits[0]!r} is {wanted[canon(hits[0])]!r}"
+    return (f"keys here are lowercase snake_case, unlike the PascalCase the spec's "
+            f"schemas use{example}")
+
+
+def join_hints(*hints: Optional[str]) -> str:
+    """Render hints as a single trailing parenthetical, or nothing."""
+    present = [h for h in hints if h]
+    return f" ({'; '.join(present)})" if present else ""
 
 
 def require_number(value: Any, label: str, effect_name: str) -> float:
@@ -151,8 +221,38 @@ def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
     would produce a plausible-looking but wrong curve, and §5.2 requires that an
     implementation MUST NOT silently drop any operation.
     """
+    if not isinstance(effect_defs, list):
+        raise ConfigError(
+            f"effects must be a list of effect definitions, got {effect_defs!r}"
+        )
     effects = []
     for index, edef in enumerate(effect_defs):
+        if not isinstance(edef, dict):
+            raise ConfigError(
+                f"effect #{index}: each effect must be a mapping, got {edef!r}"
+            )
+        # Unknown keys first, before the missing-`name` check and before any `.get`:
+        # a typo must be reported rather than replaced by a default, and an effect
+        # copied from the spec schema has `Name:` rather than `name:` — reporting
+        # "missing required 'name'" would send the reader looking for an absent field
+        # instead of a mis-cased one, bypassing the hint that explains it. Falls back
+        # to the index for the label, since `name` may be exactly what is missing.
+        # Pre-rendered, so a name is quoted (`effect 'Poison':`) while the index
+        # fallback is not (`effect #0:`), matching the other messages here.
+        label = repr(edef["name"]) if "name" in edef else f"#{index}"
+        unknown, shown = unknown_keys(edef, EFFECT_KEYS)
+        if unknown:
+            spec_only = (
+                "these belong to the full GameplayEffect schema; the simulator "
+                "config is a simplified format and does not model them"
+                if any(canon(k) in SPEC_ONLY_EFFECT_KEYS for k in unknown)
+                else None
+            )
+            raise ConfigError(
+                f"effect {label}: unknown key(s) {shown}; expected keys are "
+                f"{sorted(EFFECT_KEYS)}"
+                f"{join_hints(casing_hint(unknown, EFFECT_KEYS), spec_only)}"
+            )
         if "name" not in edef:
             raise ConfigError(f"effect #{index}: missing required 'name'")
         name = edef["name"]
@@ -187,11 +287,34 @@ def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
             )
 
         modifiers = []
-        for mdef in edef.get("modifiers", []):
+        mod_defs = edef.get("modifiers", [])
+        if not isinstance(mod_defs, list):
+            raise ConfigError(
+                f"effect {name!r}: modifiers must be a list of modifier mappings, "
+                f"got {mod_defs!r}"
+            )
+        for mdef in mod_defs:
             if not isinstance(mdef, dict):
                 raise ConfigError(
                     f"effect {name!r}: each modifier must be a mapping, got "
                     f"{mdef!r}"
+                )
+            # Before the required-key checks below: a modifier copied from the spec
+            # schema has every key wrong, and "missing required 'value'" would send
+            # the reader looking for a missing field instead of a renamed one. This
+            # also keeps their `sorted(mdef)` away from mixed-type keys, which it
+            # cannot sort.
+            unknown, shown = unknown_keys(mdef, MODIFIER_KEYS)
+            if unknown:
+                renamed = (
+                    "the magnitude key here is 'value', not the spec's 'Magnitude'"
+                    if any(canon(k) == "magnitude" for k in unknown)
+                    else None
+                )
+                raise ConfigError(
+                    f"effect {name!r}: unknown modifier key(s) {shown}; expected "
+                    f"keys are {sorted(MODIFIER_KEYS)}"
+                    f"{join_hints(casing_hint(unknown, MODIFIER_KEYS), renamed)}"
                 )
             if "operation" not in mdef:
                 raise ConfigError(
@@ -263,9 +386,8 @@ def parse_clamping(
 
     A rule keyed on an undeclared attribute, or a bound referencing one, would
     silently mean "no bound" — the same silent-typo class #103 closed for
-    modifier attribute names. Circular bound references are illegal per §5.4
-    and would make clamped resolution recurse forever, so they are rejected
-    here with the full cycle path.
+    modifier attribute names. Circular bound references are illegal per §5.4 and
+    have no defined resolution, so they are rejected here with the full cycle path.
     """
     if not isinstance(clamp_defs, dict):
         raise ConfigError(
@@ -289,22 +411,18 @@ def parse_clamping(
         # own §5.4 examples write `Min:`/`Max:` capitalised, while this config
         # format is lowercase, so copying one in would remove the bound with no
         # signal — the same silent-typo class the reference-name check closes.
-        # Sort by repr, and report reprs: YAML keys are not necessarily strings
-        # (`1:` is an int, and YAML 1.1 reads a bare `no:` as False), so neither
-        # `sorted` on mixed types nor `.lower()` is safe on the raw keys.
-        unknown = sorted((k for k in rule if k not in ("min", "max")), key=repr)
+        # `unknown_keys` carries the repr handling this needs: YAML keys are not
+        # necessarily strings, so neither `sorted` on mixed types nor `.lower()` is
+        # safe on the raw keys, and reprs must be joined rather than formatted as a
+        # list. It lives in one place so all five key checks share one implementation.
+        unknown, shown = unknown_keys(rule, ("min", "max"))
         if unknown:
             hint = (
                 " (bounds are lowercase 'min'/'max' here, unlike the capitalised"
                 " form in the spec's entity examples)"
-                if any(isinstance(k, str) and k.lower() in ("min", "max")
-                       for k in unknown)
+                if any(canon(k) in ("min", "max") for k in unknown)
                 else ""
             )
-            # Join the reprs directly: formatting a list of repr-strings would
-            # repr each one a second time, so an int key `1` would print as `'1'`
-            # — the notation for the string "1", i.e. exactly backwards.
-            shown = ", ".join(repr(k) for k in unknown)
             raise ConfigError(
                 f"clamping for {attr_name!r}: unknown bound key(s) {shown}; "
                 f"expected 'min' and/or 'max'{hint}"
@@ -329,26 +447,51 @@ def parse_clamping(
                 )
         rules[attr_name] = parsed
 
-    # Cycle detection (§5.4: circular dependencies MUST NOT be created). DFS over
-    # the reference graph; `path` is the current chain so the error can print it.
-    def walk(name: str, path: List[str]) -> None:
-        if name in path:
-            cycle = path[path.index(name):] + [name]
-            raise ConfigError(
-                "clamping: circular bound reference: "
-                + " -> ".join(cycle)
-                + " (bounds must not form a cycle; see spec 5.4)"
-            )
-        rule = rules.get(name)
-        if rule is None:
-            return
-        path.append(name)
-        for ref in bound_references(rule):
-            walk(ref, path)
-        path.pop()
-
-    for attr_name in rules:
-        walk(attr_name, [])
+    # Cycle detection (§5.4: circular dependencies MUST NOT be created). Iterative
+    # white/grey/black DFS on an explicit ENTER/EXIT stack. Recursing here was half
+    # of #107: a legal 1000-long reference chain overflowed the interpreter stack
+    # while merely VALIDATING, and because the recursive version re-walked every
+    # path from every rule it also enumerated paths rather than nodes, which made a
+    # 20-level diamond lattice take ~13s to accept and a 30-level one never finish.
+    #
+    # `colour` is shared across roots — that sharing is what collapses the lattice.
+    #   absent = white (unvisited)
+    #   False  = grey  (on the chain currently being explored)
+    #   True   = black (already proven acyclic)
+    # A black node must be SKIPPED, not reported: two rules legitimately referencing
+    # one attribute (a diamond) would otherwise be rejected as a cycle. `path`
+    # mirrors the grey chain so a back edge can still name the full cycle.
+    colour: Dict[str, bool] = {}
+    for root in rules:
+        if root in colour:
+            continue
+        stack: List[tuple] = [(root, False)]  # (name, leaving)
+        path: List[str] = []
+        while stack:
+            name, leaving = stack.pop()
+            if leaving:
+                colour[name] = True
+                path.pop()
+                continue
+            state = colour.get(name)
+            if state is True:
+                continue
+            if state is False:
+                cycle = path[path.index(name):] + [name]
+                raise ConfigError(
+                    "clamping: circular bound reference: "
+                    + " -> ".join(cycle)
+                    + " (bounds must not form a cycle; see spec 5.4)"
+                )
+            colour[name] = False
+            path.append(name)
+            stack.append((name, True))
+            rule = rules.get(name)
+            if rule is not None:
+                # Reversed, so `min` is explored before `max` as the recursive walk
+                # did — a reported cycle path must not depend on this rewrite.
+                for ref in reversed(bound_references(rule)):
+                    stack.append((ref, False))
     return rules
 
 
@@ -363,11 +506,23 @@ def apply_bounds(
     return value
 
 
+def bound_from_resolved(
+    val: Optional[float | str], resolved: Dict[str, float]
+) -> Optional[float]:
+    """One bound whose references are already resolved: a number stands alone, a
+    name reads the referenced attribute's clamped Current Value out of `resolved`."""
+    if val is None:
+        return None
+    if isinstance(val, (int, float)):
+        return float(val)
+    return resolved[val]
+
+
 def resolve_clamp_value(
     val: Optional[float | str],
     attributes: Dict[str, AttributeState],
     clamp_rules: Dict[str, ClampRule],
-    _resolving: tuple = (),
+    memo: Optional[Dict[str, float]] = None,
 ) -> Optional[float]:
     """Resolve one bound: a number stands alone; a name is the referenced
     attribute's clamped Current Value (§5.4 rule 1 + §5.3's definition)."""
@@ -380,36 +535,99 @@ def resolve_clamp_value(
         raise ConfigError(
             f"clamping: bound references unknown attribute {val!r}"
         )
-    return clamped_current(val, attributes, clamp_rules, _resolving)
+    return clamped_current(val, attributes, clamp_rules, memo)
 
 
 def clamped_current(
     name: str,
     attributes: Dict[str, AttributeState],
     clamp_rules: Dict[str, ClampRule],
-    _resolving: tuple = (),
+    memo: Optional[Dict[str, float]] = None,
 ) -> float:
     """The attribute's Current Value per §5.3 — pipeline result, clamped.
 
     This is the single definition of a clamped Current Value: the display path
     and attribute-reference bound resolution (§5.4) both come through here.
-    `_resolving` is the chain of attributes currently being resolved; parse-time
-    cycle rejection makes a revisit impossible, so hitting one means a bug — but
-    fail loudly rather than blow the stack.
+
+    The walk down the bound-reference graph is iterative, resolving referenced
+    attributes before their dependents. Mutual recursion with `resolve_clamp_value`
+    was #107: a legal 1000-long reference chain raised an uncaught RecursionError —
+    a multi-thousand-frame traceback and exit 1 where every other malformed config
+    gets a message and exit 2 — and re-walking a shared reference once per PATH
+    rather than once per NODE made a 20-level diamond lattice take ~13s and a
+    30-level one hang. The explicit stack fixes the depth; `memo`, which doubles as
+    this walk's resolved-value table, fixes the work.
+
+    `memo` caches clamped Current Values for the span of ONE consistent read — a
+    span in which no Base Value and no modifier list changes. `clamped_current` is
+    pure in `(attributes, clamp_rules)`, so within such a span the cached float is
+    bit-identical to a fresh computation. The display loop shares one memo per row
+    (nothing mutates between a row's reads, and sharing it is what stops each of N
+    attributes re-walking the same chain); `clamp_base_values` passes a fresh one
+    per written attribute, because its loop writes a Base Value between iterations.
+    Never store a memo on anything longer-lived than one such span.
+
+    The grey-set check guards cycles ONLY, and is unreachable: `parse_clamping`
+    rejects them, so hitting one means a validation bug — fail loudly with the chain
+    instead of looping. Depth needs no guard now that the walk is iterative.
     """
-    if name in _resolving:
-        raise ConfigError(
-            "clamping: circular bound reference during resolution: "
-            + " -> ".join(_resolving + (name,))
-        )
-    value = compute_unclamped(attributes[name])
-    rule = clamp_rules.get(name)
-    if rule is None:
-        return value
-    chain = _resolving + (name,)
-    min_v = resolve_clamp_value(rule.min_val, attributes, clamp_rules, chain)
-    max_v = resolve_clamp_value(rule.max_val, attributes, clamp_rules, chain)
-    return apply_bounds(value, min_v, max_v)
+    if memo is None:
+        memo = {}
+    if name in memo:
+        return memo[name]
+    stack: List[tuple] = [(name, False)]  # (attribute, leaving)
+    on_path: List[str] = []               # grey chain, for the error message
+    grey: set = set()                     # same members, O(1) membership
+    while stack:
+        node, leaving = stack.pop()
+        if leaving:
+            # Every reference of `node` is in `memo` by now: LIFO drains all of its
+            # ENTER frames — each either already memoised or fully resolved — before
+            # this EXIT frame is reached.
+            value = compute_unclamped(attributes[node])
+            rule = clamp_rules.get(node)
+            if rule is not None:
+                min_v = bound_from_resolved(rule.min_val, memo)
+                max_v = bound_from_resolved(rule.max_val, memo)
+                value = apply_bounds(value, min_v, max_v)
+            memo[node] = value
+            # Keeps `grey` exactly equal to the contents of `on_path`. On its own
+            # this line cannot change an outcome — a resolved node is in `memo`, and
+            # the ENTER branch below tests `memo` before `grey`, so it never reaches
+            # the grey check. It is here so the invariant holds if that order ever
+            # changes, not as live cycle protection.
+            grey.discard(node)
+            on_path.pop()
+            continue
+        if node in memo:
+            continue
+        # `parse_clamping` rejects a bound naming an undeclared attribute, so this is
+        # unreachable through a parsed config. It matters for a caller that builds
+        # `ClampRule`s directly (the test suite does): without it, a reference two or
+        # more hops from the entry point surfaces as a bare `KeyError` from the memo
+        # lookup at EXIT rather than as a ConfigError.
+        if node not in attributes:
+            raise ConfigError(
+                f"clamping: bound references unknown attribute {node!r}"
+                + (f" (via {' -> '.join(on_path)})" if on_path else "")
+            )
+        if node in grey:
+            raise ConfigError(
+                "clamping: circular bound reference during resolution: "
+                + " -> ".join(on_path + [node])
+            )
+        grey.add(node)
+        on_path.append(node)
+        stack.append((node, True))
+        rule = clamp_rules.get(node)
+        if rule is not None:
+            # Reversed so `min` resolves before `max`, matching the recursion this
+            # replaces; a duplicate or already-resolved reference is skipped at its
+            # own ENTER frame.
+            for ref in reversed(bound_references(rule)):
+                if ref not in memo:
+                    stack.append((ref, False))
+    return memo[name]
 
 
 def compute_unclamped(state: AttributeState) -> float:
@@ -543,6 +761,57 @@ def remove_duration_modifiers(
         ]
 
 
+def parse_simulation(sim_def: Any) -> Dict[str, float]:
+    """Validate the `simulation` block and return it.
+
+    Called from both `simulate()` and `main()`. `main()` needs it because the CLI
+    flags fall back to this block, and `simulate()` needs it so a direct library
+    caller — the test suite, or a consuming skill importing this module — gets the
+    same rejection rather than a silently substituted default. A typo'd `timestap`
+    would otherwise simulate at the default resolution and quietly change the whole
+    x-axis of the result.
+    """
+    # A present-but-empty `simulation:` is read as absent rather than rejected, unlike
+    # `attributes:`. The asymmetry is deliberate: every key here is optional and has
+    # both a default and a CLI override, so an empty block loses nothing, whereas an
+    # empty `attributes:` describes a world with nothing in it to simulate.
+    if sim_def is None:
+        sim_def = {}
+    if not isinstance(sim_def, dict):
+        raise ConfigError(
+            f"simulation must be a mapping with 'duration' and/or 'timestep', got "
+            f"{sim_def!r}"
+        )
+    unknown, shown = unknown_keys(sim_def, SIMULATION_KEYS)
+    if unknown:
+        raise ConfigError(
+            f"simulation: unknown key(s) {shown}; expected keys are "
+            f"{sorted(SIMULATION_KEYS)}"
+            f"{join_hints(casing_hint(unknown, SIMULATION_KEYS))}"
+        )
+    for key in SIMULATION_KEYS:
+        if key in sim_def:
+            value = sim_def[key]
+            # `bool` is an int subclass, so a YAML `duration: yes` would otherwise
+            # simulate exactly one second.
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise ConfigError(
+                    f"simulation: {key} must be a number, got {value!r}"
+                )
+    # A zero or negative timestep divides by zero when the step count is computed —
+    # the same never-advances class as `period: 0`, which is already rejected, and
+    # the last remaining traceback-and-exit-1 path reachable from a plausible typo.
+    if "timestep" in sim_def and sim_def["timestep"] <= 0:
+        raise ConfigError(
+            f"simulation: timestep must be > 0, got {sim_def['timestep']!r}"
+        )
+    if "duration" in sim_def and sim_def["duration"] < 0:
+        raise ConfigError(
+            f"simulation: duration must be >= 0, got {sim_def['duration']!r}"
+        )
+    return sim_def
+
+
 def transitive_references(name: str, clamp_rules: Dict[str, ClampRule]) -> set:
     """All attributes reachable from `name` via clamp-bound references."""
     seen: set = set()
@@ -580,26 +849,58 @@ def clamp_base_values(
     # so the order among interdependent attributes changes the result; the
     # reference graph is a DAG (parse_clamping rejects cycles), so dependency
     # order gives the unique fixed answer.
+    # Kahn's algorithm, keyed on the authored index so ties break as they did when
+    # this was a scan for the first ready attribute. That scan emitted the same
+    # sequence — `remaining` preserved authored relative order, so "first ready
+    # element" is "authored-earliest ready element", and on a DAG an attribute never
+    # reaches itself, which made the old self-excluding slice a no-op — but it
+    # rebuilt a candidate set per scan step. That is cubic in the batch size: timed
+    # in isolation on a 1000-attribute reference chain it took 6.2s, so it would
+    # have become #107's remaining bottleneck the moment resolution went linear.
     remaining = [n for n in attr_names if n in attributes]
-    ordered: List[str] = []
+    # Transitive, not direct: with `A max: C`, `C max: B` and a batch writing {A, B}
+    # but not C, A still depends on B through C.
     reach = {n: transitive_references(n, clamp_rules) for n in remaining}
-    while remaining:
-        for i, name in enumerate(remaining):
-            if not (reach[name] & set(remaining[:i] + remaining[i + 1:])):
-                ordered.append(remaining.pop(i))
-                break
-        else:  # unreachable: cycles are rejected at parse time
-            raise ConfigError(
-                f"clamping: could not order base clamp for {remaining!r}"
-            )
+    member = set(remaining)
+    blockers = {n: reach[n] & member for n in remaining}
+    dependents: Dict[str, List[str]] = {n: [] for n in remaining}
+    for n in remaining:
+        for b in blockers[n]:
+            dependents[b].append(n)
+    index_of = {n: i for i, n in enumerate(remaining)}
+    ready = [i for i, n in enumerate(remaining) if not blockers[n]]
+    heapq.heapify(ready)
+    ordered: List[str] = []
+    while ready:
+        name = remaining[heapq.heappop(ready)]
+        ordered.append(name)
+        for dep in dependents[name]:
+            blockers[dep].discard(name)
+            if not blockers[dep]:
+                heapq.heappush(ready, index_of[dep])
+    if len(ordered) != len(remaining):  # unreachable: cycles rejected at parse time
+        stuck = [n for n in remaining if blockers[n]]
+        raise ConfigError(
+            f"clamping: could not order base clamp for {stuck!r}"
+        )
 
     for attr_name in ordered:
         rule = clamp_rules.get(attr_name)
         if rule is None:
             continue
         state = attributes[attr_name]
-        min_v = resolve_clamp_value(rule.min_val, attributes, clamp_rules)
-        max_v = resolve_clamp_value(rule.max_val, attributes, clamp_rules)
+        # A fresh memo per attribute, shared only between this rule's two bounds —
+        # no write happens between them. It must NOT span the loop: the write below
+        # changes this attribute's clamped Current Value, and the dependency ordering
+        # above exists precisely so each later clamp sees the earlier ones' writes.
+        # (That ordering does in fact mean a batch-wide memo would happen to be
+        # correct today, since any reader of a batch member is ordered after it. But
+        # that rides on an invariant of the code above; scoping the memo to one
+        # iteration is correct by construction, costs nothing measurable, and will
+        # not turn a future ordering bug into silently wrong numbers.)
+        memo: Dict[str, float] = {}
+        min_v = resolve_clamp_value(rule.min_val, attributes, clamp_rules, memo)
+        max_v = resolve_clamp_value(rule.max_val, attributes, clamp_rules, memo)
         state.base_value = apply_bounds(state.base_value, min_v, max_v)
 
 
@@ -610,10 +911,50 @@ def simulate(
 ) -> List[Dict[str, Any]]:
     """Run the simulation and return time-series data."""
 
+    # An empty YAML file loads as None, which used to traceback in main() before the
+    # ConfigError handler could turn it into a message.
+    if not isinstance(config, dict):
+        raise ConfigError(
+            f"config must be a mapping with keys {sorted(TOP_LEVEL_KEYS)}, got "
+            f"{config!r}"
+        )
+    unknown, shown = unknown_keys(config, TOP_LEVEL_KEYS)
+    if unknown:
+        raise ConfigError(
+            f"config: unknown top-level key(s) {shown}; expected keys are "
+            f"{sorted(TOP_LEVEL_KEYS)}"
+            f"{join_hints(casing_hint(unknown, TOP_LEVEL_KEYS))}"
+        )
+    # Validated here as well as in main(), so importing callers get the same errors.
+    parse_simulation(config.get("simulation", {}))
+
     # Initialize attributes
+    # A present-but-empty `attributes:` is rejected, not read as {}. YAML gives None
+    # there, and treating that as "no attributes" would be both a silent acceptance
+    # of a config that can simulate nothing and inconsistent with `clamping:` and
+    # `effects:`, which reject a null block. It also kept main()'s own
+    # `config.get("attributes", {})` — which sees the raw None, not this default —
+    # crashing with an AttributeError after simulate() had already succeeded.
     attr_defs = config.get("attributes", {})
+    if not isinstance(attr_defs, dict):
+        raise ConfigError(
+            f"attributes must be a mapping of attribute name to initial value, got "
+            f"{attr_defs!r}"
+        )
     attributes: Dict[str, AttributeState] = {}
     for name, base_val in attr_defs.items():
+        # A non-string name crashes the `sorted(attributes)` used for the CSV header
+        # and the error messages; `float(True)` would silently make a YAML
+        # `Health: yes` an attribute worth 1.0.
+        if not isinstance(name, str):
+            raise ConfigError(
+                f"attributes: attribute name must be a string, got {name!r}"
+            )
+        if isinstance(base_val, bool) or not isinstance(base_val, (int, float)):
+            raise ConfigError(
+                f"attribute {name!r}: initial value must be a number, got "
+                f"{base_val!r}"
+            )
         attributes[name] = AttributeState(base_value=float(base_val))
 
     # Parse clamping (validates rule keys, bound references, and acyclicity)
@@ -732,8 +1073,15 @@ def simulate(
 
         # Record state
         row: Dict[str, Any] = {"time": round(t, 4)}
+        # One memo per row. Nothing mutates between a row's reads — application,
+        # ticking and expiry all happened above, and the next step's mutations happen
+        # after the row is recorded — so sharing it across the row's attributes is
+        # exact. It is also the other half of #107's cost: without it, each of N
+        # attributes re-walks the same reference chain, which is what made a
+        # 400-attribute chain take 0.6s for a zero-duration run.
+        memo: Dict[str, float] = {}
         for name in attr_names:
-            row[name] = round(clamped_current(name, attributes, clamp_rules), 4)
+            row[name] = round(clamped_current(name, attributes, clamp_rules, memo), 4)
         row["events"] = "; ".join(events) if events else ""
         results.append(row)
 
@@ -784,17 +1132,41 @@ def main() -> int:
 
     config = load_config(Path(args.config))
 
-    sim_config = config.get("simulation", {})
-    duration = args.duration or sim_config.get("duration", 20.0)
-    timestep = args.timestep or sim_config.get("timestep", 0.1)
-
+    # Inside the try: reading the `simulation` block can itself fail (a non-mapping
+    # block, or an empty file that loaded as None), and that has to surface as
+    # `error: …` with exit 2 like every other malformed config, not as a traceback.
     try:
+        sim_config = (
+            parse_simulation(config.get("simulation", {}))
+            if isinstance(config, dict) else {}
+        )
+        # `is None`, not `or`: 0 is falsy, so `--duration 0` used to fall through to
+        # the config value and silently run the full simulation the user was trying
+        # to shorten.
+        duration = (
+            args.duration if args.duration is not None
+            else sim_config.get("duration", 20.0)
+        )
+        timestep = (
+            args.timestep if args.timestep is not None
+            else sim_config.get("timestep", 0.1)
+        )
+        # The flags bypass parse_simulation, so they need the same bounds. Without
+        # this, `--timestep 0` is a ZeroDivisionError traceback.
+        if timestep <= 0:
+            raise ConfigError(f"--timestep must be > 0, got {timestep!r}")
+        if duration < 0:
+            raise ConfigError(f"--duration must be >= 0, got {duration!r}")
         results = simulate(config, duration, timestep)
     except ConfigError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
 
-    attr_names = sorted(config.get("attributes", {}).keys())
+    # `or {}` rather than a `.get` default: a present-but-null `attributes:` yields
+    # None, which has no `.keys()`. simulate() rejects that case now, so this is
+    # belt-and-braces against main() ever reading the raw config where simulate()
+    # reads a validated copy.
+    attr_names = sorted((config.get("attributes") or {}).keys())
 
     if args.output:
         output_path = Path(args.output)
