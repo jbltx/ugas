@@ -22,6 +22,6 @@ The config is validated more broadly in the same spirit — the first three belo
 
 Attributes whose initial value starts outside their declared bounds are normalised once at t=0, before any effect is active — restoring behaviour the old per-step clamp sweep provided incidentally, without reintroducing the write-through it caused.
 
-Base clamping now runs at write time in authored modifier order, where it previously ran as a per-step sweep in clamp-rule declaration order. Both are deterministic; the change matters because clamping is order-sensitive when one attribute's bound references another, and tying the order to the authored modifiers makes it predictable from the config rather than from an unrelated declaration order. (Resolving such bounds against the referenced attribute's *clamped* Current Value, which would remove most of that order-sensitivity, is deliberately left to a follow-up — it needs cycle detection that nothing currently requires.)
+Base clamping now runs at write time rather than as a per-step sweep. It is order-sensitive when one attribute's bound references another, so the order is fixed deliberately rather than inherited from clamp-rule declaration order.
 
 No schema, spec, or gameplay-data changes; this is entirely the bundled simulator plus its config reference.

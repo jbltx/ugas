@@ -12,7 +12,7 @@
 
 The `Operation` enum values were correct throughout and are unchanged; no gameplay data needed edits (the genre packs already used signed magnitudes).
 
-Also fixes the bundled `ugas-schema-author` simulator, which implemented the stale model in runnable code: `compute_current` multiplied raw magnitudes (`result *= m`) with no channel grouping, and `apply_instant_modifiers` did `base_value *= magnitude`, so an Instant `Multiply` of `0` zeroed the attribute instead of acting as the identity. It now groups by `Channel`, applies `(1 + Σm)` per channel, and treats channel-less modifiers as singletons. The skill's `SKILL.md` pipeline summary, `references/schemas.md`, `references/simulation-config.md` (including an example that authored `value: 1.5` for "50% more armor"), and audit-checklist guidance are corrected to match.
+Also fixes the bundled `ugas-schema-author` simulator, which implemented the stale model in runnable code: the modifier pipeline multiplied raw magnitudes (`result *= m`) with no channel grouping, and `apply_instant_modifiers` did `base_value *= magnitude`, so an Instant `Multiply` of `0` zeroed the attribute instead of acting as the identity. It now groups by `Channel`, applies `(1 + Σm)` per channel, and treats channel-less modifiers as singletons. The skill's `SKILL.md` pipeline summary, `references/schemas.md`, `references/simulation-config.md` (including an example that authored `value: 1.5` for "50% more armor"), and audit-checklist guidance are corrected to match.
 
 Two further simulator conformance bugs, found while reviewing the above, are fixed in the same pass:
 

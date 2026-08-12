@@ -246,33 +246,179 @@ def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
     return effects
 
 
+def bound_references(rule: ClampRule) -> List[str]:
+    """The attribute names a rule's bounds reference (non-numeric min/max)."""
+    return [
+        v
+        for v in (rule.min_val, rule.max_val)
+        if v is not None and not isinstance(v, (int, float))
+    ]
+
+
 def parse_clamping(
     clamp_defs: Dict[str, Any],
+    attribute_names: Iterable[str],
 ) -> Dict[str, ClampRule]:
-    rules = {}
+    """Parse clamp rules, rejecting unknown names and circular references.
+
+    A rule keyed on an undeclared attribute, or a bound referencing one, would
+    silently mean "no bound" — the same silent-typo class #103 closed for
+    modifier attribute names. Circular bound references are illegal per §5.4
+    and would make clamped resolution recurse forever, so they are rejected
+    here with the full cycle path.
+    """
+    if not isinstance(clamp_defs, dict):
+        raise ConfigError(
+            f"clamping must be a mapping of attribute name to bounds, got "
+            f"{clamp_defs!r}"
+        )
+    known = set(attribute_names)
+    rules: Dict[str, ClampRule] = {}
     for attr_name, rule in clamp_defs.items():
+        if attr_name not in known:
+            raise ConfigError(
+                f"clamping: rule for unknown attribute {attr_name!r}; "
+                f"declared attributes are {sorted(known)}"
+            )
+        if not isinstance(rule, dict):
+            raise ConfigError(
+                f"clamping for {attr_name!r}: bounds must be a mapping with 'min' "
+                f"and/or 'max', got {rule!r}"
+            )
+        # Unknown keys would silently mean "no bound". The trap is real: the spec's
+        # own §5.4 examples write `Min:`/`Max:` capitalised, while this config
+        # format is lowercase, so copying one in would remove the bound with no
+        # signal — the same silent-typo class the reference-name check closes.
+        # Sort by repr, and report reprs: YAML keys are not necessarily strings
+        # (`1:` is an int, and YAML 1.1 reads a bare `no:` as False), so neither
+        # `sorted` on mixed types nor `.lower()` is safe on the raw keys.
+        unknown = sorted((k for k in rule if k not in ("min", "max")), key=repr)
+        if unknown:
+            hint = (
+                " (bounds are lowercase 'min'/'max' here, unlike the capitalised"
+                " form in the spec's entity examples)"
+                if any(isinstance(k, str) and k.lower() in ("min", "max")
+                       for k in unknown)
+                else ""
+            )
+            # Join the reprs directly: formatting a list of repr-strings would
+            # repr each one a second time, so an int key `1` would print as `'1'`
+            # — the notation for the string "1", i.e. exactly backwards.
+            shown = ", ".join(repr(k) for k in unknown)
+            raise ConfigError(
+                f"clamping for {attr_name!r}: unknown bound key(s) {shown}; "
+                f"expected 'min' and/or 'max'{hint}"
+            )
         min_val = rule.get("min")
         max_val = rule.get("max")
-        rules[attr_name] = ClampRule(min_val=min_val, max_val=max_val)
+        parsed = ClampRule(min_val=min_val, max_val=max_val)
+        for label, ref in (("min", min_val), ("max", max_val)):
+            if ref is None:
+                continue
+            # `bool` is an int subclass; a YAML `max: true` would otherwise become
+            # a silent ceiling of 1.0, which `require_number` rejects everywhere else.
+            if isinstance(ref, bool) or not isinstance(ref, (int, float, str)):
+                raise ConfigError(
+                    f"clamping for {attr_name!r}: {label} must be a number or an "
+                    f"attribute name, got {ref!r}"
+                )
+            if isinstance(ref, str) and ref not in known:
+                raise ConfigError(
+                    f"clamping for {attr_name!r}: {label} references unknown "
+                    f"attribute {ref!r}; declared attributes are {sorted(known)}"
+                )
+        rules[attr_name] = parsed
+
+    # Cycle detection (§5.4: circular dependencies MUST NOT be created). DFS over
+    # the reference graph; `path` is the current chain so the error can print it.
+    def walk(name: str, path: List[str]) -> None:
+        if name in path:
+            cycle = path[path.index(name):] + [name]
+            raise ConfigError(
+                "clamping: circular bound reference: "
+                + " -> ".join(cycle)
+                + " (bounds must not form a cycle; see spec 5.4)"
+            )
+        rule = rules.get(name)
+        if rule is None:
+            return
+        path.append(name)
+        for ref in bound_references(rule):
+            walk(ref, path)
+        path.pop()
+
+    for attr_name in rules:
+        walk(attr_name, [])
     return rules
+
+
+def apply_bounds(
+    value: float, min_v: Optional[float], max_v: Optional[float]
+) -> float:
+    """§5.3's clamp: max(V_min, min(V_max, value)) — min wins if min > max."""
+    if max_v is not None:
+        value = min(value, max_v)
+    if min_v is not None:
+        value = max(value, min_v)
+    return value
 
 
 def resolve_clamp_value(
     val: Optional[float | str],
     attributes: Dict[str, AttributeState],
+    clamp_rules: Dict[str, ClampRule],
+    _resolving: tuple = (),
 ) -> Optional[float]:
+    """Resolve one bound: a number stands alone; a name is the referenced
+    attribute's clamped Current Value (§5.4 rule 1 + §5.3's definition)."""
     if val is None:
         return None
     if isinstance(val, (int, float)):
         return float(val)
-    # Attribute reference
-    if val in attributes:
-        return compute_current(attributes[val])
-    return None
+    # Attribute reference; unknown names were rejected in parse_clamping.
+    if val not in attributes:
+        raise ConfigError(
+            f"clamping: bound references unknown attribute {val!r}"
+        )
+    return clamped_current(val, attributes, clamp_rules, _resolving)
 
 
-def compute_current(state: AttributeState) -> float:
-    """Apply the UGAS modifier pipeline."""
+def clamped_current(
+    name: str,
+    attributes: Dict[str, AttributeState],
+    clamp_rules: Dict[str, ClampRule],
+    _resolving: tuple = (),
+) -> float:
+    """The attribute's Current Value per §5.3 — pipeline result, clamped.
+
+    This is the single definition of a clamped Current Value: the display path
+    and attribute-reference bound resolution (§5.4) both come through here.
+    `_resolving` is the chain of attributes currently being resolved; parse-time
+    cycle rejection makes a revisit impossible, so hitting one means a bug — but
+    fail loudly rather than blow the stack.
+    """
+    if name in _resolving:
+        raise ConfigError(
+            "clamping: circular bound reference during resolution: "
+            + " -> ".join(_resolving + (name,))
+        )
+    value = compute_unclamped(attributes[name])
+    rule = clamp_rules.get(name)
+    if rule is None:
+        return value
+    chain = _resolving + (name,)
+    min_v = resolve_clamp_value(rule.min_val, attributes, clamp_rules, chain)
+    max_v = resolve_clamp_value(rule.max_val, attributes, clamp_rules, chain)
+    return apply_bounds(value, min_v, max_v)
+
+
+def compute_unclamped(state: AttributeState) -> float:
+    """Run the modifier pipeline, steps 1-6 — WITHOUT clamping.
+
+    This is not a Current Value: §5.3 puts the clamp inside that definition
+    (step 7). Use `clamped_current` for anything that needs a Current Value,
+    including resolving an attribute-reference bound (§5.4).
+    """
     # Step 1: Base
     result = state.base_value
 
@@ -397,6 +543,21 @@ def remove_duration_modifiers(
         ]
 
 
+def transitive_references(name: str, clamp_rules: Dict[str, ClampRule]) -> set:
+    """All attributes reachable from `name` via clamp-bound references."""
+    seen: set = set()
+    stack = [name]
+    while stack:
+        rule = clamp_rules.get(stack.pop())
+        if rule is None:
+            continue
+        for ref in bound_references(rule):
+            if ref not in seen:
+                seen.add(ref)
+                stack.append(ref)
+    return seen
+
+
 def clamp_base_values(
     attr_names: Iterable[str],
     attributes: Dict[str, AttributeState],
@@ -413,17 +574,33 @@ def clamp_base_values(
     read-time concern — §5.3's formula wraps the result in min/max, and §5.4
     resolves an attribute-reference bound against that attribute's Current Value.
     """
-    for attr_name in attr_names:
+    # Clamp in dependency order — a referenced attribute before its dependents —
+    # with the incoming (authored) order as the tiebreak among independents.
+    # Clamping a referenced attribute's base changes its clamped Current Value,
+    # so the order among interdependent attributes changes the result; the
+    # reference graph is a DAG (parse_clamping rejects cycles), so dependency
+    # order gives the unique fixed answer.
+    remaining = [n for n in attr_names if n in attributes]
+    ordered: List[str] = []
+    reach = {n: transitive_references(n, clamp_rules) for n in remaining}
+    while remaining:
+        for i, name in enumerate(remaining):
+            if not (reach[name] & set(remaining[:i] + remaining[i + 1:])):
+                ordered.append(remaining.pop(i))
+                break
+        else:  # unreachable: cycles are rejected at parse time
+            raise ConfigError(
+                f"clamping: could not order base clamp for {remaining!r}"
+            )
+
+    for attr_name in ordered:
         rule = clamp_rules.get(attr_name)
-        if rule is None or attr_name not in attributes:
+        if rule is None:
             continue
         state = attributes[attr_name]
-        min_v = resolve_clamp_value(rule.min_val, attributes)
-        max_v = resolve_clamp_value(rule.max_val, attributes)
-        if min_v is not None and state.base_value < min_v:
-            state.base_value = min_v
-        if max_v is not None and state.base_value > max_v:
-            state.base_value = max_v
+        min_v = resolve_clamp_value(rule.min_val, attributes, clamp_rules)
+        max_v = resolve_clamp_value(rule.max_val, attributes, clamp_rules)
+        state.base_value = apply_bounds(state.base_value, min_v, max_v)
 
 
 def simulate(
@@ -439,8 +616,8 @@ def simulate(
     for name, base_val in attr_defs.items():
         attributes[name] = AttributeState(base_value=float(base_val))
 
-    # Parse clamping
-    clamp_rules = parse_clamping(config.get("clamping", {}))
+    # Parse clamping (validates rule keys, bound references, and acyclicity)
+    clamp_rules = parse_clamping(config.get("clamping", {}), attributes)
 
     # Parse effects
     effects = parse_effects(config.get("effects", []))
@@ -556,16 +733,7 @@ def simulate(
         # Record state
         row: Dict[str, Any] = {"time": round(t, 4)}
         for name in attr_names:
-            current = compute_current(attributes[name])
-            # Apply clamping to current value display
-            if name in clamp_rules:
-                min_v = resolve_clamp_value(clamp_rules[name].min_val, attributes)
-                max_v = resolve_clamp_value(clamp_rules[name].max_val, attributes)
-                if min_v is not None:
-                    current = max(current, min_v)
-                if max_v is not None:
-                    current = min(current, max_v)
-            row[name] = round(current, 4)
+            row[name] = round(clamped_current(name, attributes, clamp_rules), 4)
         row["events"] = "; ".join(events) if events else ""
         results.append(row)
 

@@ -19,9 +19,26 @@ schedule; a `period` on an `Instant` effect; a negative `duration` on `HasDurati
 that YAML parses `1.0e16` as a *string*, since its float pattern requires a signed
 exponent, so write `1.0e+16`.
 
+Clamp rules are validated too: a rule keyed on an undeclared attribute, a bound referencing
+one, and a circular set of bound references (`A max: B`, `B max: A`, or a self-reference) are
+all rejected, the last with the full cycle path. So are malformed shapes — a non-mapping
+`clamping` block or rule, a bound that is neither a number nor an attribute name, and
+unknown keys inside a rule.
+
+Note the bound keys here are lowercase `min`/`max`. The spec's §5.4 *entity* examples use
+capitalised `Min:`/`Max:`; copying that form into a simulator config is now an error rather
+than silently leaving the attribute unbounded.
+
 An attribute whose initial value falls outside its declared bounds is clamped once at
-`t = 0`. Bounds that reference another attribute currently resolve against that
-attribute's unclamped Current Value; see issue #104.
+`t = 0`. A bound that references another attribute resolves against that attribute's
+**clamped** Current Value (§5.4), so a dependent attribute can never exceed the bound it
+references — if `MaxHealth` is capped at 200 and buffed to 700, `Health` bounded by
+`max: MaxHealth` is limited to 200. Two consequences worth knowing:
+
+- Because a Current Value includes active modifiers, a referenced bound is temporary when
+  they are. An `Instant` effect writing a Base Value while the bound is temporarily reduced
+  is clamped to the reduced bound, and that write is permanent.
+- Where a resolved `min` exceeds a resolved `max`, `min` wins, per §5.3's formula.
 
 Timing (`apply_at`, `duration`, `period`) is evaluated on absolute simulation time, so
 results do not depend on `--timestep`; a finer timestep only adds resolution.

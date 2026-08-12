@@ -219,6 +219,23 @@ When a constraint references another Attribute:
 2. Changes to the referenced Attribute trigger recalculation of dependent Attributes
 3. Circular dependencies MUST NOT be created
 
+Rule 1 means the *clamped* Current Value — §5.3 places clamping inside the definition of
+the Current Value (step 7 of the pipeline), so a bound resolves to the value a reader of the
+referenced Attribute would observe, not to its unclamped pipeline result. Resolving against
+the unclamped result would let a dependent Attribute exceed the very bound it references: if
+`MaxHealth` is itself capped at `200` and carries a `+500` buff, `Health` bounded by
+`Max: "MaxHealth"` MUST be limited to `200`, not to `700`.
+
+Because a Current Value includes the referenced Attribute's active modifiers, a bound is
+*temporary* when they are. An Instant Effect that writes the Base Value while a referenced
+bound is temporarily reduced is clamped to the reduced bound (§5.2), and that write is
+permanent — the Base Value does not recover when the modifier expires. Implementations
+SHOULD surface this in tooling, as it is a common source of surprise.
+
+> _Note:_ When a resolved `Min` exceeds a resolved `Max`, `Min` wins. This follows from
+the §5.3 formula stem:[max(V_{min}, min(V_{max}, x))], in which the `Min` clamp is applied
+last. Dynamic bounds make the case reachable, so implementations MUST NOT reverse the order.
+
 ==== 5.5 Attribute Metadata
 
 Attribute Metadata defines static configuration:
