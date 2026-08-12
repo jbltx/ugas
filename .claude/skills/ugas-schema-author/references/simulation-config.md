@@ -32,11 +32,19 @@ application while the run still reported it applied; `efects:` produced an empty
 reads as "your design does nothing"; `timestap:` quietly changed the whole x-axis. This is
 **breaking** for configs that carried extra keys — annotations must move into YAML comments.
 
-Malformed shapes now produce a message and exit `2` instead of a traceback and exit `1`: an
-`effects` block that is not a list, an effect or modifier that is not a mapping, a
-non-mapping `attributes` block, a non-string attribute name, a non-numeric initial value
-(including a YAML bool, since `yes` would otherwise become `1.0`), and an empty config file
-(which loads as `None`).
+Malformed shapes now produce a message and exit `2` instead of a traceback and exit `1`:
+
+- an `effects` block that is not a list; an effect that is not a mapping; a `modifiers`
+  block that is not a list; a modifier that is not a mapping;
+- an `attributes` block that is not a mapping, **including a present-but-empty
+  `attributes:`** (YAML reads that as null); a non-string attribute name; a non-numeric
+  initial value, including a YAML bool, since `yes` would otherwise become `1.0`;
+- a `simulation` block that is not a mapping, and a non-numeric `duration` or `timestep`;
+- a `timestep` of `0` or less, which would divide by zero when the step count is computed —
+  the same never-advances class as `period: 0`. `--timestep` and `--duration` are bounded
+  the same way, and both flags now honour an explicit `0` instead of falling through to the
+  config value;
+- an empty config file, which loads as `None`.
 
 Note the key conventions here, because two of them differ from the spec:
 
@@ -60,9 +68,9 @@ references — if `MaxHealth` is capped at 200 and buffed to 700, `Health` bound
 - Where a resolved `min` exceeds a resolved `max`, `min` wins, per §5.3's formula.
 
 Bound references may chain to any depth — `A max: B`, `B max: C`, and so on — and several
-attributes may reference a shared set. Only cycles are rejected. Deep chains and wide
-reference lattices resolve in near-linear time; they previously raised a `RecursionError`
-past a few hundred links, or took exponential time.
+attributes may reference a shared set. Only cycles are rejected. Resolution visits each
+attribute once per read rather than once per reference path, so deep chains and wide
+reference lattices both resolve in near-linear time and there is no depth limit.
 
 Timing (`apply_at`, `duration`, `period`) is evaluated on absolute simulation time, so
 results do not depend on `--timestep`; a finer timestep only adds resolution.

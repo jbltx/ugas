@@ -647,6 +647,35 @@ rows = run(cfg11f, duration=1)
 check("t=0 normalisation clamped the 1000-link chain's bases, so the chip leaves 90",
       col(rows, 1.0, "A0") == 90.0, f"got {col(rows, 1.0, 'A0')}")
 
+# Found by review: every value in this section is 100.0, and t=0 normalisation has
+# already clamped every base to 100 by the time anything reads it — so the cases above
+# pin TERMINATION at depth but not correctness at depth. A mutation resolving
+# references against the unclamped Current Value passes all of them (it fails only
+# sections 1 and 10, at depth <= 3). This is the file's own trap #2 at scale: the
+# referenced attribute has to be able to CHANGE. A live modifier on the chain's tail
+# gives it something to propagate, so the value at the head can only be right if all
+# 200 hops resolved against clamped values.
+DEPTH = 200
+cfg11g = {
+    "attributes": {f"A{i}": 500.0 for i in range(DEPTH)},
+    "clamping": {f"A{i}": {"max": f"A{i+1}"} for i in range(DEPTH - 1)},
+    "effects": [{"name": "Squeeze", "apply_at": 1.0, "duration_policy": "HasDuration",
+                 "duration": 2.0,
+                 "modifiers": [{"attribute": f"A{DEPTH-1}", "operation": "Multiply",
+                                "value": -0.5}]}],
+}
+cfg11g["clamping"][f"A{DEPTH-1}"] = {"max": 100}
+LABEL = f"{DEPTH}-deep chain propagates a live debuff on its tail to its head"
+rows = expect_within(LABEL, 10.0, lambda: run(cfg11g, duration=4))
+if rows is not None:
+    # Tail: base clamped to 100 at t=0, then x(1 - 0.5) = 50 while the debuff is live.
+    # Every attribute above it is bounded by the one below, so all read 50 — and 100
+    # again after expiry, with no base permanently damaged.
+    during = [col(rows, 2.0, n) for n in ("A0", "A100", f"A{DEPTH-1}")]
+    after = [col(rows, 4.0, n) for n in ("A0", "A100", f"A{DEPTH-1}")]
+    check(LABEL, during == [50.0, 50.0, 50.0] and after == [100.0, 100.0, 100.0],
+          f"during {during}, after {after}")
+
 print("== 12. #98 regression: Instant Multiply is (1 + magnitude) on the base ==")
 # The released code did `base *= mod.value`, so an Instant Multiply of 0 ZEROED the
 # attribute and -0.5 (authored as -50%) flipped the sign. Nothing covered this path:
@@ -744,6 +773,68 @@ rows = run(cfg12c, duration=3)
 check("base was clamped to 120 after the Instant Multiply, so the chip leaves 110",
       col(rows, 2.0, "X") == 110.0, f"got {col(rows, 2.0, 'X')}")
 
+print("== 12b. The other operations, and periodic Multiply ==")
+# Found by review: the argument for section 12 — "a revert would pass the suite
+# clean" — applied verbatim to three more paths, none of which any case reached.
+# `AddPost` and `Override` appeared nowhere in the file at all, and no periodic
+# effect anywhere carried a `Multiply`.
+
+# §5.2: a periodic execution applies only Add/AddPost/Override to the Base Value.
+# `Multiply` is deliberately excluded there and registered as a Current-Value
+# modifier for the effect's lifetime instead. Routing it through the base would
+# compound every tick — 100 -> 110 -> 121 -> 133.1 — and survive expiry; dropping it
+# altogether would make the effect do nothing at all. Both were live regressions
+# during the #98 work, so this pins the middle course: a flat +10% while active,
+# no accumulation, gone on expiry, base untouched throughout.
+cfg12p = {
+    "attributes": {"X": 100.0},
+    "effects": [{"name": "Regen", "apply_at": 1.0, "duration_policy": "HasDuration",
+                 "duration": 3.0, "period": 1.0, "execute_on_application": True,
+                 "modifiers": [{"attribute": "X", "operation": "Multiply",
+                                "value": 0.10}]}],
+}
+rows = run(cfg12p, duration=6)
+got = [col(rows, t, "X") for t in (1.0, 2.0, 3.0, 4.0, 5.0)]
+check("periodic Multiply is flat +10% while active, then gone "
+      "(compounding: 110/121/133.1; dropped: all 100)",
+      got == [110.0, 110.0, 110.0, 100.0, 100.0], f"got {got}")
+
+# AddPost is step 5 — after the multiply steps, not folded into the Add sum. The
+# discriminating config gives Add and AddPost different answers: (100+50)*1.5 = 225
+# then +50 = 275, whereas treating AddPost as Add would give (100+100)*1.5 = 300.
+attrs12b = {"X": S.AttributeState(base_value=100.0)}
+S.add_duration_modifiers(0, [S.Modifier("X", "Add", 50.0),
+                             S.Modifier("X", "Multiply", 0.5),
+                             S.Modifier("X", "AddPost", 50.0)], attrs12b)
+got = S.compute_unclamped(attrs12b["X"])
+check("AddPost applies after the multiply steps: 275, not 300 (as Add) or 225 (dropped)",
+      got == 275.0, f"got {got}")
+
+# Override replaces the computed value entirely (step 6), and §5.3 breaks ties LIFO,
+# so the most recently applied override wins and expiry falls back to the older one.
+attrs12o = {"X": S.AttributeState(base_value=100.0)}
+S.add_duration_modifiers(1, [S.Modifier("X", "Override", 7.0)], attrs12o)
+check("Override replaces the pipeline result", S.compute_unclamped(attrs12o["X"]) == 7.0,
+      f"got {S.compute_unclamped(attrs12o['X'])}")
+S.add_duration_modifiers(2, [S.Modifier("X", "Override", 9.0)], attrs12o)
+check("the later Override wins (§5.3 LIFO)", S.compute_unclamped(attrs12o["X"]) == 9.0,
+      f"got {S.compute_unclamped(attrs12o['X'])}")
+S.remove_duration_modifiers(2, attrs12o)
+check("expiring it falls back to the still-active earlier Override, not to the base",
+      S.compute_unclamped(attrs12o["X"]) == 7.0,
+      f"got {S.compute_unclamped(attrs12o['X'])}")
+
+# Instant AddPost and Override write the Base Value. Asserted directly: an Instant
+# effect never expires, so nothing read-time can distinguish a base write from a
+# permanent modifier (trap #1).
+attrs12i = {"X": S.AttributeState(base_value=100.0)}
+S.apply_instant_modifiers([S.Modifier("X", "AddPost", 25.0)], attrs12i)
+check("Instant AddPost adds to the base: 125", attrs12i["X"].base_value == 125.0,
+      f"got {attrs12i['X'].base_value}")
+S.apply_instant_modifiers([S.Modifier("X", "Override", 42.0)], attrs12i)
+check("Instant Override replaces the base: 42", attrs12i["X"].base_value == 42.0,
+      f"got {attrs12i['X'].base_value}")
+
 print("== 13. Unknown keys and malformed shapes are rejected, not defaulted ==")
 # The trap: an unknown key means "take the default". `execute_on_aplication: true`
 # left the effect not executing on application while the run still reported it
@@ -821,6 +912,22 @@ for label, cfg, needles in (
      ("modifiers", "list")),
     ("attributes is a list", {"attributes": [1, 2], "effects": []},
      ("attributes", "mapping")),
+    # Found by review: this was accepted as {} while main() went on to read the RAW
+    # config, where `attributes:` is None, and crashed on `None.keys()` — an
+    # AttributeError and exit 1 *after* simulate() had already succeeded.
+    ("attributes is present but null", {"attributes": None, "effects": []},
+     ("attributes", "mapping")),
+    # The last traceback path reachable from a plausible typo: 0 divides by zero when
+    # the step count is computed. Same never-advances class as `period: 0`.
+    ("timestep is zero",
+     {"attributes": {"Health": 1.0}, "effects": [], "simulation": {"timestep": 0}},
+     ("timestep", "> 0")),
+    ("timestep is negative",
+     {"attributes": {"Health": 1.0}, "effects": [], "simulation": {"timestep": -0.1}},
+     ("timestep", "> 0")),
+    ("duration is negative",
+     {"attributes": {"Health": 1.0}, "effects": [], "simulation": {"duration": -5.0}},
+     ("duration", ">= 0")),
     ("attribute value is not a number",
      {"attributes": {"Health": "abc"}, "effects": []}, ("Health", "number")),
     # `float(True)` is 1.0, so a YAML `Health: yes` would silently become an
@@ -878,6 +985,52 @@ check("parse_simulation accepts a valid block",
       S.parse_simulation({"duration": 20.0, "timestep": 0.1}) is not None)
 check("parse_simulation treats a missing block as empty",
       S.parse_simulation(None) == {})
+
+# Found by review: an effect copied from the spec schema carries `Name:`, so the
+# missing-`name` check fired first and reported "missing required 'name'" with no
+# hint — sending the reader after an absent field rather than a mis-cased one. The
+# unknown-key check now runs first and labels the effect by index when `name` is
+# exactly what is missing.
+try:
+    run({"attributes": {"Health": 1.0},
+         "effects": [{"Name": "Poison", "DurationPolicy": "Instant"}]})
+    check("a PascalCase-copied effect gets the casing hint, not 'missing name'",
+          False, "accepted")
+except S.ConfigError as e:
+    check("a PascalCase-copied effect gets the casing hint, not 'missing name'",
+          "snake_case" in str(e) and "missing required" not in str(e), f"got {e}")
+# A genuinely nameless effect must still say so.
+expect_error("an effect with no name at all still reports it",
+             {"attributes": {"Health": 1.0},
+              "effects": [{"duration_policy": "Instant", "modifiers": []}]},
+             "missing required 'name'")
+
+# Found by review: a bound naming an undeclared attribute two or more hops from the
+# entry point surfaced as a bare KeyError from the memo lookup rather than a
+# ConfigError. Unreachable through a parsed config, but reachable — as here — by a
+# caller building ClampRules directly, which this suite does throughout.
+attrs13 = {"A": S.AttributeState(5.0), "B": S.AttributeState(5.0)}
+rules13 = {"A": S.ClampRule(max_val="B"), "B": S.ClampRule(max_val="C")}
+try:
+    S.clamped_current("A", attrs13, rules13)
+    check("a deep unvalidated reference is a ConfigError, not a KeyError", False,
+          "no error")
+except S.ConfigError as e:
+    check("a deep unvalidated reference is a ConfigError, not a KeyError",
+          "'C'" in str(e), f"got {e}")
+except Exception as e:
+    check("a deep unvalidated reference is a ConfigError, not a KeyError", False,
+          f"got {type(e).__name__}: {e}")
+
+# The clamp-rule path shares `unknown_keys`, so its repr handling is the same one
+# section 13 pins. Asserted negatively here because a needle cannot express it: an
+# int key must print as 1, not '1'.
+try:
+    S.parse_clamping({"Health": {1: 5}}, {"Health": None})
+    check("clamp-rule int key reported without double-repr", False, "accepted")
+except S.ConfigError as e:
+    check("clamp-rule int key reported without double-repr",
+          "1" in str(e) and "'1'" not in str(e), f"got {e}")
 
 # Acceptance guard: the documented example config uses every legal key at every
 # level, so an over-tight key set fails loudly here rather than in a user's config.

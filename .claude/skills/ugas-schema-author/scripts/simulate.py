@@ -231,11 +231,15 @@ def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
             raise ConfigError(
                 f"effect #{index}: each effect must be a mapping, got {edef!r}"
             )
-        if "name" not in edef:
-            raise ConfigError(f"effect #{index}: missing required 'name'")
-        name = edef["name"]
-
-        # Before any `.get`, so a typo is reported rather than replaced by a default.
+        # Unknown keys first, before the missing-`name` check and before any `.get`:
+        # a typo must be reported rather than replaced by a default, and an effect
+        # copied from the spec schema has `Name:` rather than `name:` — reporting
+        # "missing required 'name'" would send the reader looking for an absent field
+        # instead of a mis-cased one, bypassing the hint that explains it. Falls back
+        # to the index for the label, since `name` may be exactly what is missing.
+        # Pre-rendered, so a name is quoted (`effect 'Poison':`) while the index
+        # fallback is not (`effect #0:`), matching the other messages here.
+        label = repr(edef["name"]) if "name" in edef else f"#{index}"
         unknown, shown = unknown_keys(edef, EFFECT_KEYS)
         if unknown:
             spec_only = (
@@ -245,10 +249,13 @@ def parse_effects(effect_defs: List[Dict[str, Any]]) -> List[ActiveEffect]:
                 else None
             )
             raise ConfigError(
-                f"effect {name!r}: unknown key(s) {shown}; expected keys are "
+                f"effect {label}: unknown key(s) {shown}; expected keys are "
                 f"{sorted(EFFECT_KEYS)}"
                 f"{join_hints(casing_hint(unknown, EFFECT_KEYS), spec_only)}"
             )
+        if "name" not in edef:
+            raise ConfigError(f"effect #{index}: missing required 'name'")
+        name = edef["name"]
 
         policy = edef.get("duration_policy", "Instant")
         if policy not in VALID_DURATION_POLICIES:
@@ -404,22 +411,18 @@ def parse_clamping(
         # own §5.4 examples write `Min:`/`Max:` capitalised, while this config
         # format is lowercase, so copying one in would remove the bound with no
         # signal — the same silent-typo class the reference-name check closes.
-        # Sort by repr, and report reprs: YAML keys are not necessarily strings
-        # (`1:` is an int, and YAML 1.1 reads a bare `no:` as False), so neither
-        # `sorted` on mixed types nor `.lower()` is safe on the raw keys.
-        unknown = sorted((k for k in rule if k not in ("min", "max")), key=repr)
+        # `unknown_keys` carries the repr handling this needs: YAML keys are not
+        # necessarily strings, so neither `sorted` on mixed types nor `.lower()` is
+        # safe on the raw keys, and reprs must be joined rather than formatted as a
+        # list. It lives in one place so all five key checks share one implementation.
+        unknown, shown = unknown_keys(rule, ("min", "max"))
         if unknown:
             hint = (
                 " (bounds are lowercase 'min'/'max' here, unlike the capitalised"
                 " form in the spec's entity examples)"
-                if any(isinstance(k, str) and k.lower() in ("min", "max")
-                       for k in unknown)
+                if any(canon(k) in ("min", "max") for k in unknown)
                 else ""
             )
-            # Join the reprs directly: formatting a list of repr-strings would
-            # repr each one a second time, so an int key `1` would print as `'1'`
-            # — the notation for the string "1", i.e. exactly backwards.
-            shown = ", ".join(repr(k) for k in unknown)
             raise ConfigError(
                 f"clamping for {attr_name!r}: unknown bound key(s) {shown}; "
                 f"expected 'min' and/or 'max'{hint}"
@@ -598,6 +601,16 @@ def clamped_current(
             continue
         if node in memo:
             continue
+        # `parse_clamping` rejects a bound naming an undeclared attribute, so this is
+        # unreachable through a parsed config. It matters for a caller that builds
+        # `ClampRule`s directly (the test suite does): without it, a reference two or
+        # more hops from the entry point surfaces as a bare `KeyError` from the memo
+        # lookup at EXIT rather than as a ConfigError.
+        if node not in attributes:
+            raise ConfigError(
+                f"clamping: bound references unknown attribute {node!r}"
+                + (f" (via {' -> '.join(on_path)})" if on_path else "")
+            )
         if node in grey:
             raise ConfigError(
                 "clamping: circular bound reference during resolution: "
@@ -758,6 +771,10 @@ def parse_simulation(sim_def: Any) -> Dict[str, float]:
     would otherwise simulate at the default resolution and quietly change the whole
     x-axis of the result.
     """
+    # A present-but-empty `simulation:` is read as absent rather than rejected, unlike
+    # `attributes:`. The asymmetry is deliberate: every key here is optional and has
+    # both a default and a CLI override, so an empty block loses nothing, whereas an
+    # empty `attributes:` describes a world with nothing in it to simulate.
     if sim_def is None:
         sim_def = {}
     if not isinstance(sim_def, dict):
@@ -781,6 +798,17 @@ def parse_simulation(sim_def: Any) -> Dict[str, float]:
                 raise ConfigError(
                     f"simulation: {key} must be a number, got {value!r}"
                 )
+    # A zero or negative timestep divides by zero when the step count is computed —
+    # the same never-advances class as `period: 0`, which is already rejected, and
+    # the last remaining traceback-and-exit-1 path reachable from a plausible typo.
+    if "timestep" in sim_def and sim_def["timestep"] <= 0:
+        raise ConfigError(
+            f"simulation: timestep must be > 0, got {sim_def['timestep']!r}"
+        )
+    if "duration" in sim_def and sim_def["duration"] < 0:
+        raise ConfigError(
+            f"simulation: duration must be >= 0, got {sim_def['duration']!r}"
+        )
     return sim_def
 
 
@@ -901,9 +929,13 @@ def simulate(
     parse_simulation(config.get("simulation", {}))
 
     # Initialize attributes
+    # A present-but-empty `attributes:` is rejected, not read as {}. YAML gives None
+    # there, and treating that as "no attributes" would be both a silent acceptance
+    # of a config that can simulate nothing and inconsistent with `clamping:` and
+    # `effects:`, which reject a null block. It also kept main()'s own
+    # `config.get("attributes", {})` — which sees the raw None, not this default —
+    # crashing with an AttributeError after simulate() had already succeeded.
     attr_defs = config.get("attributes", {})
-    if attr_defs is None:
-        attr_defs = {}
     if not isinstance(attr_defs, dict):
         raise ConfigError(
             f"attributes must be a mapping of attribute name to initial value, got "
@@ -1108,14 +1140,33 @@ def main() -> int:
             parse_simulation(config.get("simulation", {}))
             if isinstance(config, dict) else {}
         )
-        duration = args.duration or sim_config.get("duration", 20.0)
-        timestep = args.timestep or sim_config.get("timestep", 0.1)
+        # `is None`, not `or`: 0 is falsy, so `--duration 0` used to fall through to
+        # the config value and silently run the full simulation the user was trying
+        # to shorten.
+        duration = (
+            args.duration if args.duration is not None
+            else sim_config.get("duration", 20.0)
+        )
+        timestep = (
+            args.timestep if args.timestep is not None
+            else sim_config.get("timestep", 0.1)
+        )
+        # The flags bypass parse_simulation, so they need the same bounds. Without
+        # this, `--timestep 0` is a ZeroDivisionError traceback.
+        if timestep <= 0:
+            raise ConfigError(f"--timestep must be > 0, got {timestep!r}")
+        if duration < 0:
+            raise ConfigError(f"--duration must be >= 0, got {duration!r}")
         results = simulate(config, duration, timestep)
     except ConfigError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
 
-    attr_names = sorted(config.get("attributes", {}).keys())
+    # `or {}` rather than a `.get` default: a present-but-null `attributes:` yields
+    # None, which has no `.keys()`. simulate() rejects that case now, so this is
+    # belt-and-braces against main() ever reading the raw config where simulate()
+    # reads a validated copy.
+    attr_names = sorted((config.get("attributes") or {}).keys())
 
     if args.output:
         output_path = Path(args.output)
