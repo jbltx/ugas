@@ -355,6 +355,28 @@ check("unrelated write during a debuff leaves Health read-clamped at 50",
 check("Health base survives it — back to 100 after the debuff expires",
       col(rows, 4.0, "Health") == 100.0, f"got {col(rows, 4.0, 'Health')}")
 
+# The above uses an Instant effect, so it only exercises ONE of the three call
+# sites that clamp a written base. Repeat it for the other two — a periodic tick
+# and an execute-on-application first execution — since widening the clamp at
+# either of those survived every check when only the Instant variant existed.
+for label, sip in (
+    ("periodic tick", {"name": "Drip", "apply_at": 1.0,
+                       "duration_policy": "HasDuration", "duration": 1.0,
+                       "period": 1.0,
+                       "modifiers": [{"attribute": "Mana", "operation": "Add",
+                                      "value": -5.0}]}),
+    ("execute_on_application", {"name": "Gulp", "apply_at": 1.0,
+                                "duration_policy": "HasDuration", "duration": 1.0,
+                                "period": 5.0, "execute_on_application": True,
+                                "modifiers": [{"attribute": "Mana",
+                                               "operation": "Add",
+                                               "value": -5.0}]}),
+):
+    cfg = dict(cfg7g, effects=[cfg7g["effects"][0], sip])
+    rows = run(cfg, duration=5)
+    check(f"{label}: unrelated write leaves Health base intact (100 after expiry)",
+          col(rows, 4.0, "Health") == 100.0, f"got {col(rows, 4.0, 'Health')}")
+
 print("== 7h. A base write stores the BASE, not the clamped current ==")
 # clamp_base_values must clamp `state.base_value`, not the pipeline result. With a
 # live -50% Multiply on Health, writing the clamped *current* into the base would
