@@ -41,6 +41,7 @@ Run from the repo root: check_example_references.py [DIR ...]
 """
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -69,9 +70,15 @@ def load(directory: Path):
     """Return {type: [(source, doc), ...]} for every document under directory."""
     entities: dict[str, list[tuple[str, dict]]] = {}
     for path in sorted(directory.rglob("*")):
-        if path.suffix.lower() not in {".yaml", ".yml"}:
+        if path.suffix.lower() not in {".yaml", ".yml", ".json"}:
             continue
-        for doc in yaml.safe_load_all(path.read_text(encoding="utf-8")):
+        # Same skips as validate_schema_examples.py: pack metadata and the
+        # generated manifest are not schema-bearing entities.
+        if path.name in {"pack.yaml", "index.json"}:
+            continue
+        text = path.read_text(encoding="utf-8")
+        docs = [json.loads(text)] if path.suffix.lower() == ".json" else yaml.safe_load_all(text)
+        for doc in docs:
             if isinstance(doc, dict):
                 rel = path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
                 entities.setdefault(schema_type(doc), []).append((str(rel), doc))

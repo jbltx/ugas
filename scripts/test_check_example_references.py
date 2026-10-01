@@ -5,6 +5,7 @@ Run from the repo root: python scripts/test_check_example_references.py
 """
 from __future__ import annotations
 
+import json
 import sys
 import tempfile
 import textwrap
@@ -30,7 +31,7 @@ Tags:
 def run(**files: str) -> list[str]:
     with tempfile.TemporaryDirectory() as tmp:
         for name, body in files.items():
-            Path(tmp, f"{name}.yaml").write_text(textwrap.dedent(body), encoding="utf-8")
+            Path(tmp, name if "." in name else f"{name}.yaml").write_text(textwrap.dedent(body), encoding="utf-8")
         return check(Path(tmp))
 
 
@@ -147,6 +148,15 @@ def main() -> int:
                     Inputs: [{{Device: Keyboard, Input: A}}]
             """),
             "'Steer' is not in action set 'OnFoot'",
+        ),
+        expect(
+            "json examples are checked",
+            run(**{"ability.json": json.dumps({
+                "$schema": f"{BASE}gameplay_ability.json",
+                "Name": "GA_Json",
+                "Cost": "MissingEffect",
+            })}),
+            "Cost 'MissingEffect'",
         ),
         expect(
             "the shipped examples resolve",
