@@ -37,7 +37,11 @@ UGAS defines a unified architecture for implementing gameplay abilities, attribu
 | Example Path                                   | Description                              |
 |-----------------------------------------------|------------------------------------------|
 | [schemas/examples/health_attribute.yaml](schemas/examples/health_attribute.yaml) | Example Attribute Definition |
+| [schemas/examples/max_health_attribute.yaml](schemas/examples/max_health_attribute.yaml) | Example Attribute used as a clamping bound |
+| [schemas/examples/mana_attribute.yaml](schemas/examples/mana_attribute.yaml) | Example Attribute with static bounds |
 | [schemas/examples/damage_effect.yaml](schemas/examples/damage_effect.yaml) | Example Gameplay Effect Definition |
+| [schemas/examples/mana_cost_effect.yaml](schemas/examples/mana_cost_effect.yaml) | Example ability Cost Effect |
+| [schemas/examples/fireball_cooldown_effect.yaml](schemas/examples/fireball_cooldown_effect.yaml) | Example ability Cooldown Effect |
 | [schemas/examples/fireball_ability.yaml](schemas/examples/fireball_ability.yaml) | Example Gameplay Ability Definition |
 | [schemas/examples/tag_registry.yaml](schemas/examples/tag_registry.yaml) | Example Gameplay Tag Registry Definition |
 

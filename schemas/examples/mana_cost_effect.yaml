@@ -1,0 +1,12 @@
+# Example: Mana Cost Effect
+# Demonstrates an ability cost as an instant effect (§8.5): the Fireball's Cost
+
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: ManaCostEffect_25
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Mana
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -25.0  # Negative to subtract

@@ -38,3 +38,48 @@ Tags:
   - Tag: Ability.Offensive
     Description: Ability that deals damage
     AllowMultiple: true
+
+  # Ability activation tags (fireball_ability.yaml)
+  - Tag: State.CanCast
+    Description: Entity is able to cast spells
+    AllowMultiple: false
+
+  - Tag: State.Silenced
+    Description: Entity is silenced and cannot activate magic abilities
+    AllowMultiple: false
+
+  - Tag: State.Stunned
+    Description: Entity is stunned and cannot activate abilities
+    AllowMultiple: false
+
+  - Tag: State.Disarmed.Magic
+    Description: Entity cannot use magic abilities
+    AllowMultiple: false
+
+  - Tag: State.Casting
+    Description: Entity is casting a spell
+    AllowMultiple: false
+
+  - Tag: State.Busy
+    Description: Entity is performing an action
+    AllowMultiple: false
+
+  # Effect tags (damage_effect.yaml)
+  - Tag: State.Damaged
+    Description: Entity has just taken damage
+    AllowMultiple: false
+
+  # Cooldown tags (fireball_cooldown_effect.yaml)
+  - Tag: Cooldown.Ability.Fireball
+    Description: Fireball is on cooldown
+    AllowMultiple: false
+
+  # Event tags
+  - Tag: Event.Montage.CastPoint
+    Description: Cast animation reached the point where the spell is released
+    AllowMultiple: false
+
+  # Gameplay cue tags
+  - Tag: GameplayCue.Character.Damage
+    Description: Plays hit feedback when a character takes damage
+    AllowMultiple: false
