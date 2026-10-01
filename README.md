@@ -44,6 +44,8 @@ UGAS defines a unified architecture for implementing gameplay abilities, attribu
 | [schemas/examples/fireball_cooldown_effect.yaml](schemas/examples/fireball_cooldown_effect.yaml) | Example ability Cooldown Effect |
 | [schemas/examples/fireball_ability.yaml](schemas/examples/fireball_ability.yaml) | Example Gameplay Ability Definition |
 | [schemas/examples/tag_registry.yaml](schemas/examples/tag_registry.yaml) | Example Gameplay Tag Registry Definition |
+| [schemas/examples/onfoot_actions.yaml](schemas/examples/onfoot_actions.yaml) | Example Input Actions for the OnFoot set |
+| [schemas/examples/mouse_sensitivity_modifier.yaml](schemas/examples/mouse_sensitivity_modifier.yaml) | Example Input Modifier |
 
 ## Core Concepts
 

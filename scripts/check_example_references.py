@@ -2,12 +2,34 @@
 """Check that the gameplay examples resolve as a set.
 
 Loads every gameplay entity under a directory (default: schemas/examples) and
-asserts each cross-entity reference names an entity in that same directory:
+asserts each schema-supported cross-entity reference names an entity in that
+same directory:
 
-- effect Modifiers[].Attribute and attribute Clamping Min/Max names -> attribute (§5.4, §9)
-- ability Cost / Cooldown and task Params.EffectClass -> effect (§8.5)
-- effect GrantedAbilities[].AbilityClass -> ability
-- every tag an ability or effect uses -> the tag registry (§7)
+- attribute: Clamping Min/Max names -> attribute (§5.4)
+- attribute set: Dependencies -> attribute set (§6)
+- effect: Modifiers[].Attribute, and BackingAttribute in any magnitude
+  (modifier, Duration, Area.Radius) -> attribute (§9); GrantedAbilities[]
+  AbilityClass -> ability, InputID -> input action
+- ability: Cost / Cooldown and task Params.EffectClass -> effect (§8.5)
+- controller: AttributeSets[] Name -> attribute set, Attributes[].Name and
+  CapturedAttributes keys -> attribute, GrantedAbilities[].AbilityClass and
+  ActiveEffects[].SourceAbility -> ability, ActiveEffects[].EffectClass -> effect,
+  InputID -> input action, ActiveActionSets -> input action set (§4, §14)
+- scene: Extends -> scene, StartupEffects -> effect, AttributeOverrides keys
+  -> attribute (§18)
+- input: action set Actions and mapping Bindings[].Action -> input action,
+  mapping ActionSet -> input action set, Bindings[].Modifiers -> input modifier (§11)
+- every tag any of them uses -> the tag registry (§7): ability Tags.*, task
+  Params *Tag / *Tags, effect GrantedTags, ApplicationRequiredTags,
+  GameplayCues, Area.RequireTags / ExcludeTags and SetByCaller DataTag,
+  controller OwnedTags and SetByCallerMagnitudes keys, scene StartupTags,
+  Regions[].GrantedTags and SpawnPoints[].Tags, input ActionTags,
+  ActivationTags and binding RequiredTags
+
+Not checked, because UGAS defines no named entity for them: scene
+Placements[].Controller (a GameplayControllerConfig, §18.2 -- the controller
+schema is a runtime snapshot with no Name), CalculatorClass, Curve, and
+instance ids such as Handle and InstigatorGC.
 
 Schema validation cannot catch these: each file is valid on its own. Consumers
 vendor the examples as one set, so a dangling name is a broken example.
@@ -53,63 +75,156 @@ def load(directory: Path):
     return entities
 
 
+def items(value) -> list:
+    return value if isinstance(value, list) else []
+
+
+def mapping(value) -> dict:
+    return value if isinstance(value, dict) else {}
+
+
 def check(directory: Path) -> list[str]:
     entities = load(directory)
     attributes = [(src, a) for src, a in entities.get("attribute", [])]
     for src, aset in entities.get("attribute_set", []):
-        attributes += [(src, a) for a in aset.get("Attributes") or []]
+        attributes += [(src, a) for a in items(aset.get("Attributes"))]
 
-    attribute_names = {a.get("Name") for _, a in attributes}
-    effect_names = {e.get("Name") for _, e in entities.get("gameplay_effect", [])}
-    ability_names = {a.get("Name") for _, a in entities.get("gameplay_ability", [])}
+    def names(kind: str) -> set:
+        return {e.get("Name") for _, e in entities.get(kind, [])}
+
+    known = {
+        "attribute": {a.get("Name") for _, a in attributes},
+        "attribute set": names("attribute_set"),
+        "effect": names("gameplay_effect"),
+        "ability": names("gameplay_ability"),
+        "scene": names("scene"),
+        "input action": names("input_action"),
+        "input action set": names("input_action_set"),
+        "input modifier": names("input_modifier"),
+    }
     registered = {
         t.get("Tag")
         for _, reg in entities.get("gameplay_tag", [])
-        for t in reg.get("Tags") or []
+        for t in items(reg.get("Tags"))
     }
 
     errors: list[str] = []
+    tag_uses: list[tuple[str, str, str]] = []
 
-    def expect(src: str, field: str, name, known: set, kind: str) -> None:
-        if name not in known:
+    def expect(src: str, field: str, name, kind: str) -> None:
+        if name not in known[kind]:
             errors.append(f"{src}: {field} '{name}' names no {kind} in {directory.name}/")
 
-    def expect_tag(src: str, field: str, tag: str) -> None:
-        # A parent of a registered tag is implicitly registered (§7 hierarchy).
-        if tag not in registered and not any(r.startswith(tag + ".") for r in registered):
-            errors.append(f"{src}: {field} tag '{tag}' is not in the tag registry")
+    def expect_all(src: str, field: str, values, kind: str) -> None:
+        for name in items(values):
+            expect(src, field, name, kind)
+
+    def tags(src: str, field: str, values) -> None:
+        for tag in items(values):
+            tag_uses.append((src, field, tag))
+
+    def magnitude(src: str, field: str, mag) -> None:
+        mag = mapping(mag)
+        if mag.get("BackingAttribute") is not None:
+            expect(src, f"{field}.BackingAttribute", mag["BackingAttribute"], "attribute")
+        if mag.get("DataTag") is not None:
+            tags(src, f"{field}.DataTag", [mag["DataTag"]])
+
+    def grants(src: str, field: str, values) -> None:
+        for grant in items(values):
+            expect(src, f"{field}.AbilityClass", grant.get("AbilityClass"), "ability")
+            if grant.get("InputID") is not None:
+                expect(src, f"{field}.InputID", grant["InputID"], "input action")
 
     for src, attr in attributes:
         for bound in ("Min", "Max"):
-            value = (attr.get("Clamping") or {}).get(bound)
+            value = mapping(attr.get("Clamping")).get(bound)
             if isinstance(value, str):
-                expect(src, f"{attr.get('Name')}.Clamping.{bound}", value, attribute_names, "attribute")
+                expect(src, f"{attr.get('Name')}.Clamping.{bound}", value, "attribute")
+
+    for src, aset in entities.get("attribute_set", []):
+        expect_all(src, "Dependencies", aset.get("Dependencies"), "attribute set")
 
     for src, effect in entities.get("gameplay_effect", []):
-        for mod in effect.get("Modifiers") or []:
-            expect(src, "Modifiers.Attribute", mod.get("Attribute"), attribute_names, "attribute")
-        for grant in effect.get("GrantedAbilities") or []:
-            expect(src, "GrantedAbilities.AbilityClass", grant.get("AbilityClass"), ability_names, "ability")
+        magnitude(src, "Duration", effect.get("Duration"))
+        for mod in items(effect.get("Modifiers")):
+            expect(src, "Modifiers.Attribute", mod.get("Attribute"), "attribute")
+            magnitude(src, "Modifiers.Magnitude", mod.get("Magnitude"))
+        grants(src, "GrantedAbilities", effect.get("GrantedAbilities"))
         for field in EFFECT_TAG_FIELDS:
-            for tag in effect.get(field) or []:
-                expect_tag(src, field, tag)
+            tags(src, field, effect.get(field))
+        area = mapping(effect.get("Area"))
+        magnitude(src, "Area.Radius", area.get("Radius"))
+        tags(src, "Area.RequireTags", area.get("RequireTags"))
+        tags(src, "Area.ExcludeTags", area.get("ExcludeTags"))
 
     for src, ability in entities.get("gameplay_ability", []):
         for field in ("Cost", "Cooldown"):
             if ability.get(field) is not None:
-                expect(src, field, ability[field], effect_names, "effect")
+                expect(src, field, ability[field], "effect")
         for field in ABILITY_TAG_FIELDS:
-            for tag in (ability.get("Tags") or {}).get(field) or []:
-                expect_tag(src, f"Tags.{field}", tag)
-        for task in ability.get("Tasks") or []:
-            params = task.get("Params") or {}
-            if "EffectClass" in params:
-                expect(src, "Tasks.Params.EffectClass", params["EffectClass"], effect_names, "effect")
-            if "EventTag" in params:
-                expect_tag(src, "Tasks.Params.EventTag", params["EventTag"])
+            tags(src, f"Tags.{field}", mapping(ability.get("Tags")).get(field))
+        for task in items(ability.get("Tasks")):
+            for key, value in mapping(task.get("Params")).items():
+                if key == "EffectClass":
+                    expect(src, "Tasks.Params.EffectClass", value, "effect")
+                elif key.endswith("Tag") and isinstance(value, str):
+                    tags(src, f"Tasks.Params.{key}", [value])
+                elif key.endswith("Tags"):
+                    tags(src, f"Tasks.Params.{key}", value)
 
-    if (entities.get("gameplay_ability") or entities.get("gameplay_effect")) and not registered:
-        errors.append(f"{directory.name}/: abilities or effects use tags but no tag registry was found")
+    for src, gc in entities.get("gameplay_controller", []):
+        for aset in items(gc.get("AttributeSets")):
+            expect(src, "AttributeSets.Name", aset.get("Name"), "attribute set")
+            for attr in items(aset.get("Attributes")):
+                expect(src, "AttributeSets.Attributes.Name", attr.get("Name"), "attribute")
+        grants(src, "GrantedAbilities", gc.get("GrantedAbilities"))
+        for active in items(gc.get("ActiveEffects")):
+            expect(src, "ActiveEffects.EffectClass", active.get("EffectClass"), "effect")
+            if active.get("SourceAbility") is not None:
+                expect(src, "ActiveEffects.SourceAbility", active["SourceAbility"], "ability")
+            expect_all(src, "ActiveEffects.CapturedAttributes",
+                       list(mapping(active.get("CapturedAttributes"))), "attribute")
+            tags(src, "ActiveEffects.SetByCallerMagnitudes",
+                 list(mapping(active.get("SetByCallerMagnitudes"))))
+        expect_all(src, "ActiveActionSets", gc.get("ActiveActionSets"), "input action set")
+        tags(src, "OwnedTags", gc.get("OwnedTags"))
+
+    for src, scene in entities.get("scene", []):
+        expect_all(src, "Extends", scene.get("Extends"), "scene")
+        for placement in items(scene.get("Placements")):
+            tags(src, "Placements.StartupTags", placement.get("StartupTags"))
+            expect_all(src, "Placements.StartupEffects", placement.get("StartupEffects"), "effect")
+            expect_all(src, "Placements.AttributeOverrides",
+                       list(mapping(placement.get("AttributeOverrides"))), "attribute")
+        for region in items(scene.get("Regions")):
+            tags(src, "Regions.GrantedTags", region.get("GrantedTags"))
+        for spawn in items(scene.get("SpawnPoints")):
+            tags(src, "SpawnPoints.Tags", spawn.get("Tags"))
+
+    for src, action in entities.get("input_action", []):
+        tags(src, "Tags.ActionTags", mapping(action.get("Tags")).get("ActionTags"))
+
+    for src, aset in entities.get("input_action_set", []):
+        expect_all(src, "Actions", aset.get("Actions"), "input action")
+        activation = mapping(aset.get("ActivationTags"))
+        tags(src, "ActivationTags.RequiredTags", activation.get("RequiredTags"))
+        tags(src, "ActivationTags.BlockedTags", activation.get("BlockedTags"))
+
+    for src, imap in entities.get("input_mapping", []):
+        expect(src, "ActionSet", imap.get("ActionSet"), "input action set")
+        for binding in items(imap.get("Bindings")):
+            expect(src, "Bindings.Action", binding.get("Action"), "input action")
+            expect_all(src, "Bindings.Modifiers", binding.get("Modifiers"), "input modifier")
+            tags(src, "Bindings.Tags.RequiredTags", mapping(binding.get("Tags")).get("RequiredTags"))
+
+    if tag_uses and not registered:
+        errors.append(f"{directory.name}/: examples use tags but no tag registry was found")
+    elif registered:
+        for src, field, tag in tag_uses:
+            # A parent of a registered tag is implicitly registered (§7 hierarchy).
+            if tag not in registered and not any(r.startswith(f"{tag}.") for r in registered):
+                errors.append(f"{src}: {field} tag '{tag}' is not in the tag registry")
     return errors
 
 

@@ -35,6 +35,7 @@ jobs:
       - name: Check example references resolve as a set
         run: |
           python scripts/check_example_references.py
+          python scripts/test_check_example_references.py
 
       - name: Run conformance corpus
         run: |

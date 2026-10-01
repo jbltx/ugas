@@ -83,3 +83,38 @@ Tags:
   - Tag: GameplayCue.Character.Damage
     Description: Plays hit feedback when a character takes damage
     AllowMultiple: false
+
+  # Input action set tags (onfoot_action_set.yaml)
+  - Tag: State.InVehicle
+    Description: Entity is driving or riding a vehicle
+    AllowMultiple: false
+
+  - Tag: State.Cutscene
+    Description: A cutscene has taken control of the entity
+    AllowMultiple: false
+
+  # Input action tags (fire_action.yaml, onfoot_actions.yaml)
+  - Tag: Input.Type.Combat
+    Description: Combat input, disabled in bulk when combat is not allowed
+    AllowMultiple: false
+
+  - Tag: Input.Type.Movement
+    Description: Movement input
+    AllowMultiple: false
+
+  # Scene tags (arena_scene.yaml)
+  - Tag: Faction.Player
+    Description: Entity is on the player's side
+    AllowMultiple: false
+
+  - Tag: Faction.Enemy
+    Description: Entity is hostile to the player
+    AllowMultiple: false
+
+  - Tag: Zone.Hazard.Fire
+    Description: Occupant is standing in a fire hazard
+    AllowMultiple: false
+
+  - Tag: Spawn.Player
+    Description: Spawn point usable by the player
+    AllowMultiple: false
