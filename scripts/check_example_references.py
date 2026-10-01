@@ -10,7 +10,8 @@ same directory:
 - effect: Modifiers[].Attribute, and BackingAttribute in any magnitude
   (modifier, Duration, Area.Radius) -> attribute (§9); GrantedAbilities[]
   AbilityClass -> ability, InputID -> input action
-- ability: Cost / Cooldown and task Params.EffectClass -> effect (§8.5)
+- ability: Cost / Cooldown and task Params.EffectClass -> effect (§8.5), task
+  Params.InputID (WaitInputRelease, WaitInputPressed) -> input action (§10.3)
 - controller: AttributeSets[] Name -> attribute set, Attributes[].Name and
   CapturedAttributes keys -> attribute, GrantedAbilities[].AbilityClass and
   ActiveEffects[].SourceAbility -> ability, ActiveEffects[].EffectClass -> effect,
@@ -18,7 +19,8 @@ same directory:
 - scene: Extends -> scene, StartupEffects -> effect, AttributeOverrides keys
   -> attribute (§18)
 - input: action set Actions and mapping Bindings[].Action -> input action,
-  mapping ActionSet -> input action set, Bindings[].Modifiers -> input modifier (§11)
+  mapping ActionSet -> input action set, each mapping Bindings[].Action -> a member
+  of that set's Actions, Bindings[].Modifiers -> input modifier (§11)
 - every tag any of them uses -> the tag registry (§7): ability Tags.*, task
   Params *Tag / *Tags, effect GrantedTags, ApplicationRequiredTags,
   GameplayCues, Area.RequireTags / ExcludeTags and SetByCaller DataTag,
@@ -29,7 +31,8 @@ same directory:
 Not checked, because UGAS defines no named entity for them: scene
 Placements[].Controller (a GameplayControllerConfig, §18.2 -- the controller
 schema is a runtime snapshot with no Name), CalculatorClass, Curve, and
-instance ids such as Handle and InstigatorGC.
+instance ids such as Handle and InstigatorGC, nor task Params that name
+engine assets (MontageToPlay, ProjectileClass).
 
 Schema validation cannot catch these: each file is valid on its own. Consumers
 vendor the examples as one set, so a dangling name is a broken example.
@@ -168,6 +171,8 @@ def check(directory: Path) -> list[str]:
             for key, value in mapping(task.get("Params")).items():
                 if key == "EffectClass":
                     expect(src, "Tasks.Params.EffectClass", value, "effect")
+                elif key == "InputID":
+                    expect(src, "Tasks.Params.InputID", value, "input action")
                 elif key.endswith("Tag") and isinstance(value, str):
                     tags(src, f"Tasks.Params.{key}", [value])
                 elif key.endswith("Tags"):
@@ -211,10 +216,19 @@ def check(directory: Path) -> list[str]:
         tags(src, "ActivationTags.RequiredTags", activation.get("RequiredTags"))
         tags(src, "ActivationTags.BlockedTags", activation.get("BlockedTags"))
 
+    set_actions = {
+        aset.get("Name"): set(items(aset.get("Actions")))
+        for _, aset in entities.get("input_action_set", [])
+    }
     for src, imap in entities.get("input_mapping", []):
-        expect(src, "ActionSet", imap.get("ActionSet"), "input action set")
+        set_name = imap.get("ActionSet")
+        expect(src, "ActionSet", set_name, "input action set")
         for binding in items(imap.get("Bindings")):
-            expect(src, "Bindings.Action", binding.get("Action"), "input action")
+            action = binding.get("Action")
+            expect(src, "Bindings.Action", action, "input action")
+            # A mapping binds within its Action Set (§11.5), so the action must be a member.
+            if set_name in set_actions and action not in set_actions[set_name]:
+                errors.append(f"{src}: Bindings.Action '{action}' is not in action set '{set_name}'")
             expect_all(src, "Bindings.Modifiers", binding.get("Modifiers"), "input modifier")
             tags(src, "Bindings.Tags.RequiredTags", mapping(binding.get("Tags")).get("RequiredTags"))
 

@@ -105,6 +105,50 @@ def main() -> int:
             "no tag registry",
         ),
         expect(
+            "task Params.InputID is checked",
+            run(reg=REGISTRY, jump=f"""
+                $schema: {BASE}input_action.json
+                Name: Jump
+                ValueType: Digital
+            """, ability=f"""
+                $schema: {BASE}gameplay_ability.json
+                Name: GA_Charge
+                Tasks:
+                  - Type: WaitInputRelease
+                    Params: {{InputID: Charge}}
+            """),
+            "Tasks.Params.InputID 'Charge'",
+        ),
+        expect(
+            "mapping bindings must be in the mapping's action set",
+            run(jump=f"""
+                $schema: {BASE}input_action.json
+                Name: Jump
+                ValueType: Digital
+            """, steer=f"""
+                $schema: {BASE}input_action.json
+                Name: Steer
+                ValueType: Axis1D
+            """, sets=f"""
+                $schema: {BASE}input_action_set.json
+                Name: OnFoot
+                Actions: [Jump]
+                ---
+                $schema: {BASE}input_action_set.json
+                Name: InVehicle
+                Actions: [Steer]
+            """, mapping=f"""
+                $schema: {BASE}input_mapping.json
+                ActionSet: OnFoot
+                Bindings:
+                  - Action: Jump
+                    Inputs: [{{Device: Keyboard, Input: Space}}]
+                  - Action: Steer
+                    Inputs: [{{Device: Keyboard, Input: A}}]
+            """),
+            "'Steer' is not in action set 'OnFoot'",
+        ),
+        expect(
             "the shipped examples resolve",
             check(Path(__file__).resolve().parent.parent / "schemas" / "examples"),
         ),
