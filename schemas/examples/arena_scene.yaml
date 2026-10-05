@@ -1,5 +1,7 @@
 # Example: Arena Scene
 # A small combat arena — a player, two enemies, a hazard zone, and a respawn point.
+# PlayerCharacter and Goblin name GameplayControllerConfigs (§18.2) the title defines; UGAS has no
+# schema for a named config, so they are not part of this example set.
 
 $schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/scene.json
 Name: Arena

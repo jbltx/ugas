@@ -1,0 +1,16 @@
+# Example: Mana Attribute
+# Demonstrates a Resource type attribute with static bounds, spent by ability costs
+
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/attribute.json
+Name: Mana
+DefaultBaseValue: 100.0
+Category: Resource
+Clamping:
+  Min: 0
+  Max: 100
+ReplicationMode: All
+Metadata:
+  DisplayName: Mana Points
+  Description: Resource spent to cast spells
+  UICategory: Vital Stats
+  Icon: ui/icons/mana.png
