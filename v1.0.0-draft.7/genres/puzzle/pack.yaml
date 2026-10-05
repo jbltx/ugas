@@ -1,0 +1,4 @@
+# Genre pack metadata — structured source for genres/index.json.
+id: puzzle
+scope: 'Match / board puzzle — Bejeweled, Candy Crush, Puzzle & Dragons.'
+signatureMechanic: 'Match-scoring pipeline: a base match score multiplied by a combo factor (consecutive matches) and a chain factor (cascade depth), against a spent move economy.'
