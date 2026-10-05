@@ -1,0 +1,4 @@
+# label: invalid — DefaultBaseValue is a placeholder token, not a number
+$schema: https://ugas.jbltx.com/v1.0.0-draft.7/schemas/attribute.json
+Name: Health
+DefaultBaseValue: float
