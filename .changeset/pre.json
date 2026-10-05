@@ -8,6 +8,7 @@
     "clamp-bounds-clamped-current",
     "combat-pack-modeled-tasks",
     "durations-are-tick-time",
+    "examples-resolve-as-a-set",
     "fix-genre-pack-section-refs",
     "gameplay-creator-assistant-skill",
     "genre-manifest-versioning-canonical-urls",
