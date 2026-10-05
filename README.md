@@ -25,8 +25,8 @@ UGAS defines a unified architecture for implementing gameplay abilities, attribu
 
 ## Using the npm package
 
-Each spec release is published to npm as [`@ugas/spec`](https://www.npmjs.com/package/@ugas/spec), at
-the same version (`@ugas/spec@1.0.0-draft.7` is UGAS `v1.0.0-draft.7`). Drafts go out under the
+Each spec release is published to npm as [`@ugas/spec`](https://www.npmjs.com/package/@ugas/spec)
+once the owner approves it, at the same version (`@ugas/spec@1.0.0-draft.7` is UGAS `v1.0.0-draft.7`). Drafts go out under the
 `next` dist-tag.
 
 ```sh
