@@ -37,9 +37,15 @@ UGAS defines a unified architecture for implementing gameplay abilities, attribu
 | Example Path                                   | Description                              |
 |-----------------------------------------------|------------------------------------------|
 | [schemas/examples/health_attribute.yaml](schemas/examples/health_attribute.yaml) | Example Attribute Definition |
+| [schemas/examples/max_health_attribute.yaml](schemas/examples/max_health_attribute.yaml) | Example Attribute used as a clamping bound |
+| [schemas/examples/mana_attribute.yaml](schemas/examples/mana_attribute.yaml) | Example Attribute with static bounds |
 | [schemas/examples/damage_effect.yaml](schemas/examples/damage_effect.yaml) | Example Gameplay Effect Definition |
+| [schemas/examples/mana_cost_effect.yaml](schemas/examples/mana_cost_effect.yaml) | Example ability Cost Effect |
+| [schemas/examples/fireball_cooldown_effect.yaml](schemas/examples/fireball_cooldown_effect.yaml) | Example ability Cooldown Effect |
 | [schemas/examples/fireball_ability.yaml](schemas/examples/fireball_ability.yaml) | Example Gameplay Ability Definition |
 | [schemas/examples/tag_registry.yaml](schemas/examples/tag_registry.yaml) | Example Gameplay Tag Registry Definition |
+| [schemas/examples/onfoot_actions.yaml](schemas/examples/onfoot_actions.yaml) | Example Input Actions for the OnFoot set |
+| [schemas/examples/mouse_sensitivity_modifier.yaml](schemas/examples/mouse_sensitivity_modifier.yaml) | Example Input Modifier |
 
 ## Core Concepts
 
@@ -101,7 +107,7 @@ The specification includes detailed case studies for:
 @techreport{bonfill_ugas_2026,
   author = {Mickael Bonfill},
   title = {Universal Gameplay Ability System Specification},
-  version = {1.0.0-draft.6},
+  version = {1.0.0-draft.7},
   year = {2026},
   month = {February},
   url = {https://github.com/jbltx/ugas}
