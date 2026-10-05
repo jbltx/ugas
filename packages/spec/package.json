@@ -1,5 +1,5 @@
 {
-  "name": "ugas",
+  "name": "@ugas/spec",
   "version": "0.0.0-dev",
   "description": "Universal Gameplay Ability System specification: schemas, spec sections, genre packs, conformance corpus, TypeScript types and a cross-entity reference checker.",
   "keywords": [
@@ -15,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jbltx/ugas.git",
-    "directory": "packages/ugas"
+    "directory": "packages/spec"
   },
   "license": "MIT",
   "author": "Mickael Bonfill (https://github.com/jbltx)",
@@ -67,7 +67,7 @@
     "build": "node scripts/build.mjs",
     "test": "node --test test/*.test.mjs && tsc -p test/types/tsconfig.json",
     "pack:dry": "cd build && npm pack --dry-run",
-    "prepublishOnly": "node -e \"console.error('Publish from packages/ugas/build (npm run build first), not from the source directory.'); process.exit(1)\""
+    "prepublishOnly": "node -e \"console.error('Publish from packages/spec/build (npm run build first), not from the source directory.'); process.exit(1)\""
   },
   "devDependencies": {
     "ajv": "^8.20.0",

@@ -9,7 +9,7 @@ Used by parity.test.mjs to hold the JS checkReferences to the Python checker. Co
 
 Each case is {name, scope, files: [{path, text}], errors: [str]}, files in the order the
 Python loader read them and with the path it reported. Run from anywhere:
-    python3 packages/ugas/test/capture_python.py
+    python3 packages/spec/test/capture_python.py
 """
 from __future__ import annotations
 

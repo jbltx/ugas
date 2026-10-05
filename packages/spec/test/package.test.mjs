@@ -1,4 +1,4 @@
-// The built package (packages/ugas/build): exports, version, schema ids and the file listing.
+// The built package (packages/spec/build): exports, version, schema ids and the file listing.
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';

@@ -1,6 +1,6 @@
 name: Publish npm package on release
 
-# Publishes packages/ugas to npm when a GitHub release is published, at the release's
+# Publishes packages/spec to npm when a GitHub release is published, at the release's
 # version. Authenticates with npm trusted publishing (OIDC): no token secret. The trusted
 # publisher on npmjs.com must name this file (publish-npm.yml); see RELEASING.md.
 
@@ -23,7 +23,7 @@ jobs:
       id-token: write
     defaults:
       run:
-        working-directory: packages/ugas
+        working-directory: packages/spec
     steps:
       - name: Checkout release tag
         uses: actions/checkout@v6
@@ -34,7 +34,7 @@ jobs:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
           cache: npm
-          cache-dependency-path: packages/ugas/package-lock.json
+          cache-dependency-path: packages/spec/package-lock.json
 
       - name: Use an npm that supports trusted publishing (>= 11.5.1)
         run: npm install -g npm@^11.5.1
@@ -89,5 +89,5 @@ jobs:
 
       - name: Publish
         if: steps.version.outputs.published == 'false'
-        working-directory: packages/ugas/build
+        working-directory: packages/spec/build
         run: npm publish --provenance --access public --tag "${{ steps.version.outputs.dist-tag }}"

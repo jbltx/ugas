@@ -69,13 +69,13 @@ jobs:
           PY
 
   npm-package:
-    # Builds and tests packages/ugas the way publish-npm.yml does on release, without
+    # Builds and tests packages/spec the way publish-npm.yml does on release, without
     # publishing: catches a broken build, a parity drift between the Python and JS
     # reference checkers, or a tarball change before a release does.
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: packages/ugas
+        working-directory: packages/spec
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -85,7 +85,7 @@ jobs:
         with:
           node-version: "24"
           cache: npm
-          cache-dependency-path: packages/ugas/package-lock.json
+          cache-dependency-path: packages/spec/package-lock.json
 
       - name: Set up Python
         uses: actions/setup-python@v6

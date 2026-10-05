@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Assemble the npm package into packages/ugas/build/ — the directory that gets published.
+// Assemble the npm package into packages/spec/build/ — the directory that gets published.
 //
 // The content is the same version tree publish-docs.yml ships to ugas.jbltx.com/v<version>/
 // (placeholders resolved, SPEC.md -> sections/, genre index, schema bundle, rag/, and the

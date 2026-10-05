@@ -4,11 +4,11 @@ The [Universal Gameplay Ability System](https://github.com/jbltx/ugas) specifica
 npm package: JSON schemas, the pre-chunked spec, genre packs, the conformance corpus,
 TypeScript types for every entity, and the cross-entity reference checker.
 
-The package version is the spec release: `ugas@1.0.0-draft.7` is UGAS `v1.0.0-draft.7`.
+The package version is the spec release: `@ugas/spec@1.0.0-draft.7` is UGAS `v1.0.0-draft.7`.
 Drafts are published under the `next` dist-tag.
 
 ```sh
-npm install ugas@next
+npm install @ugas/spec@next
 ```
 
 ## What it exports
@@ -24,15 +24,15 @@ import {
   files,          // files({ kind: 'spec-section' }) -> [{ path: 'sections/05-attributes.md', ... }]
   fileUrl,        // fileUrl('schemas/bundle.json') -> file: URL, for Node
   checkReferences,
-} from 'ugas';
-import type { GameplayEffect, Attribute, EntityByType, UgasEntity } from 'ugas';
+} from '@ugas/spec';
+import type { GameplayEffect, Attribute, EntityByType, UgasEntity } from '@ugas/spec';
 ```
 
 Validate an entity against the bundle with any Draft-07 validator, for example Ajv:
 
 ```ts
 import Ajv from 'ajv';
-import { bundle } from 'ugas';
+import { bundle } from '@ugas/spec';
 
 const validate = new Ajv({ strict: false }).compile(bundle); // dispatches on the entity's $schema
 validate(entity);
@@ -45,7 +45,7 @@ the set resolves. It is a port of the repo's `scripts/check_example_references.p
 parity test keeps the two in agreement.
 
 ```ts
-import { checkReferences } from 'ugas';
+import { checkReferences } from '@ugas/spec';
 
 const issues = checkReferences([
   { path: 'health.yaml', entity: health },
@@ -57,7 +57,7 @@ const issues = checkReferences([
 
 Paths match the published site, `https://ugas.jbltx.com/v<version>/<path>`, and are listed
 with their sha256 in `index.json`. Import them through the subpath exports, e.g.
-`ugas/schemas/bundle.json`, `ugas/sections/05-attributes.md`, `ugas/genres/index.json`.
+`@ugas/spec/schemas/bundle.json`, `@ugas/spec/sections/05-attributes.md`, `@ugas/spec/genres/index.json`.
 
 | Path | What it is |
 |------|------------|
