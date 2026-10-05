@@ -1,0 +1,93 @@
+name: Publish npm package on release
+
+# Publishes packages/ugas to npm when a GitHub release is published, at the release's
+# version. Authenticates with npm trusted publishing (OIDC): no token secret. The trusted
+# publisher on npmjs.com must name this file (publish-npm.yml); see RELEASING.md.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-npm-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish-npm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: packages/ugas
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+          cache: npm
+          cache-dependency-path: packages/ugas/package-lock.json
+
+      - name: Use an npm that supports trusted publishing (>= 11.5.1)
+        run: npm install -g npm@^11.5.1
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install build tools
+        # Same toolchain as publish-docs.yml, so the packaged spec sections match the site's.
+        run: |
+          python -m pip install --quiet PyYAML
+          sudo gem install asciidoctor
+          sudo apt-get update -qq && sudo apt-get install -y -qq pandoc
+
+      - name: Resolve version and dist-tag
+        id: version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          REPO_VERSION="$(node -p "require('../../package.json').version")"
+          if [ "${VERSION}" != "${REPO_VERSION}" ]; then
+            echo "::error::Release tag ${GITHUB_REF_NAME} does not match package.json version ${REPO_VERSION}." >&2
+            exit 1
+          fi
+          case "${VERSION}" in
+            *-*) DIST_TAG=next ;;
+            *)   DIST_TAG=latest ;;
+          esac
+          NAME="$(node -p "require('./package.json').name")"
+          if npm view "${NAME}@${VERSION}" version >/dev/null 2>&1; then
+            echo "${NAME}@${VERSION} is already on npm; nothing to publish."
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "dist-tag=${DIST_TAG}" >> "$GITHUB_OUTPUT"
+          echo "Publishing ${NAME}@${VERSION} under dist-tag ${DIST_TAG}"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      - name: List tarball
+        run: npm run pack:dry
+
+      - name: Publish
+        if: steps.version.outputs.published == 'false'
+        working-directory: packages/ugas/build
+        run: npm publish --provenance --access public --tag "${{ steps.version.outputs.dist-tag }}"

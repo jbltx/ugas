@@ -67,3 +67,45 @@ jobs:
               Draft7Validator.check_schema(json.loads(p.read_text()))
               print("meta-schema OK:", p.name)
           PY
+
+  npm-package:
+    # Builds and tests packages/ugas the way publish-npm.yml does on release, without
+    # publishing: catches a broken build, a parity drift between the Python and JS
+    # reference checkers, or a tarball change before a release does.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/ugas
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: packages/ugas/package-lock.json
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install build tools
+        run: |
+          python -m pip install --quiet PyYAML
+          sudo gem install asciidoctor
+          sudo apt-get update -qq && sudo apt-get install -y -qq pandoc
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      - name: List tarball
+        run: npm run pack:dry
