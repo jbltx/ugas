@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": false,
+    "types": [],
+    "paths": {
+      "ugas": ["../../build/dist/index.d.ts"],
+      "ugas/references": ["../../build/dist/references.d.ts"],
+      "ugas/types": ["../../build/dist/generated/types/index.d.ts"]
+    }
+  },
+  "files": ["consumer.ts"]
+}
