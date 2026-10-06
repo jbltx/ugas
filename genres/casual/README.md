@@ -25,6 +25,8 @@ is designed from first principles and grounded in the genre's standard mechanics
 | `entities/effect_double_income.yaml` | `GE_DoubleIncome`: timed `×2` income in the Booster channel; grants `Booster.State.DoubleIncome` |
 | `entities/effect_offline_progress.yaml` | `GE_OfflineProgress`: instant offline "welcome back" payout via a custom Execution |
 | `entities/effect_tap_reward.yaml` | `GE_TapReward`: instant `+Currency`, the payload of `GA_Tap` |
+| `entities/effect_buy_generator_cost.yaml` | `GE_BuyGeneratorCost`: instant `-Currency` cost of `GA_BuyGenerator` (base price) |
+| `entities/effect_play_cost.yaml` | `GE_PlayCost`: instant `-20 Energy` cost of `GA_Play`; the energy gate |
 | `entities/ability_tap.yaml` | `GA_Tap`: the active click; applies `GE_TapReward` |
 | `entities/ability_buy_generator.yaml` | `GA_BuyGenerator`: spend currency to install a generator |
 | `entities/ability_prestige.yaml` | `GA_Prestige`: reset for a permanent multiplier; gated by `Meta.State.PrestigeReady` |

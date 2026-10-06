@@ -34,6 +34,8 @@ the pack is designed from first principles and grounded in the genre's standard 
 | `entities/effect_sprinting.yaml` | `GE_Sprinting`: timed + periodic `Stamina` drain; grants `Survival.State.Sprinting` |
 | `entities/effect_crafted_tool.yaml` | `GE_CraftedTool`: infinite `+MaxCarryWeight` buff |
 | `entities/effect_survival_tick.yaml` | `GE_SurvivalTick`: optional periodic `ExecCalc_SurvivalTick` coupling deficits into one `Health` delta |
+| `entities/effect_craft_cost.yaml` | `GE_CraftCost`: instant `-20 Materials`, the cost of `GA_Craft` |
+| `entities/effect_build_cost.yaml` | `GE_BuildCost`: instant `-10 Materials`, the cost of `GA_Build` |
 | `entities/ability_gather.yaml` | `GA_Gather`: harvest a node into the inventory |
 | `entities/ability_craft.yaml` | `GA_Craft`: spend materials to craft a tool |
 | `entities/ability_build.yaml` | `GA_Build`: spend materials to place a structure |

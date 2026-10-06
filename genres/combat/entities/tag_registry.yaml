@@ -1,6 +1,6 @@
 # Combat genre tag taxonomy. ADDITIVE: introduces genre-specific tags only.
-# It does not redefine the core lifecycle tags (State.Alive / State.Combat / State.Dead) -
-# those are referenced by the pack's entities, not declared here. Frame-data states and the
+# The core lifecycle tags it uses (State.Alive / State.Combat / State.Cutscene) are declared at the
+# end so the pack resolves as a standalone entity set. Frame-data states and the
 # stagger/block states are all GRANTED BY EFFECTS; abilities only gate on them.
 
 $schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_tag.json
@@ -61,4 +61,43 @@ Tags:
     AllowMultiple: false
   - Tag: Team.Hostile
     Description: Opposing side; a valid melee target
+    AllowMultiple: false
+
+  # --- Core lifecycle tags (declared here so the pack resolves as a standalone entity set) ---
+  - Tag: State.Alive
+    Description: Entity is alive and active
+    AllowMultiple: false
+  - Tag: State.Combat
+    Description: Entity is in combat
+    AllowMultiple: false
+  - Tag: State.Cutscene
+    Description: A cutscene has taken control of the entity
+    AllowMultiple: false
+
+  # --- Cooldowns (granted by the abilities' cooldown Effects) ---
+  - Tag: Cooldown.Ability.LightAttack
+    Description: Light attack is recovering; paces the jab rate
+    AllowMultiple: false
+  - Tag: Cooldown.Ability.HeavyAttack
+    Description: Heavy attack is recovering
+    AllowMultiple: false
+  - Tag: Cooldown.Ability.Special
+    Description: Super move is on cooldown and cannot be chained
+    AllowMultiple: false
+
+  # --- Gameplay cues (cosmetic feedback triggered by Effects) ---
+  - Tag: GameplayCue.Combat.Impact
+    Description: Plays the hit spark, hitstop and impact sound
+    AllowMultiple: false
+  - Tag: GameplayCue.Combat.Hitstun
+    Description: Plays the hit-reaction animation and flash
+    AllowMultiple: false
+  - Tag: GameplayCue.Combat.Blockstun
+    Description: Plays the guard-impact spark and pushback
+    AllowMultiple: false
+  - Tag: GameplayCue.Combat.Guard
+    Description: Shows the raised-guard visual
+    AllowMultiple: false
+  - Tag: GameplayCue.Combat.Stagger
+    Description: Plays the poise-break stagger effect
     AllowMultiple: false

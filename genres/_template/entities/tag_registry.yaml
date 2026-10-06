@@ -22,3 +22,11 @@ Tags:
   - Tag: Ability.Example
     Description: Example ability classification tag
     AllowMultiple: true
+
+  - Tag: State.Alive
+    Description: Entity is alive; gates the input action set
+    AllowMultiple: false
+
+  - Tag: Input.Type.Example
+    Description: Example input action classification tag
+    AllowMultiple: false

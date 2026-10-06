@@ -1,0 +1,11 @@
+# Cooldown for GA_Fire: 1 / FireRate seconds per shot (0.1 s at the base 10 rounds/s), pacing
+# automatic fire.
+
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_FireCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 0.1
+GrantedTags:
+  - Cooldown.Ability.Fire

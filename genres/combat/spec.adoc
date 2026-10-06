@@ -219,8 +219,7 @@ Defined in `entities/tag_registry.yaml` (additive only):
 
 The trivial cost and cooldown effects the abilities reference — `GE_SuperCost` (subtracts `Super`),
 `GE_LightAttackCooldown`, `GE_HeavyAttackCooldown`, `GE_SpecialCooldown` — are flat resource costs
-and cooldown tags, referenced by name rather than shipped as files, the same convention the Racing
-and Shooter packs use for their nitro/fire cost and cooldown effects.
+and cooldown tags, shipped in `entities/` so the pack resolves as a set.
 
 [[using-this-pack]]
 == Using this pack

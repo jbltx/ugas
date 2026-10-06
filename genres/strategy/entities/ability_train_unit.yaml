@@ -3,8 +3,7 @@
 # queued until the current one finishes. The "enough supply" requirement (Supply + SupplyCost <=
 # MaxSupply) is an attribute comparison evaluated in activation logic, not an activation tag.
 # Blocked while the structure itself is still under construction. GE_TrainCost and GE_TrainCooldown
-# are trivial (a flat resource cost and a cooldown tag) and are referenced by name rather than
-# shipped as files, the convention the racing/shooter packs use.
+# are a flat Minerals cost and a cooldown tag (effect_train_cost.yaml, effect_train_cooldown.yaml).
 
 $schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_TrainUnit

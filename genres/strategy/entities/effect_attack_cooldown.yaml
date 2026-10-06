@@ -1,0 +1,10 @@
+# Cooldown for GA_AutoAttack: 1 / AttackSpeed seconds between attacks (1.25 s at the base 0.8).
+
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_AttackCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 1.25
+GrantedTags:
+  - Cooldown.Ability.Attack

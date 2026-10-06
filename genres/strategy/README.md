@@ -25,6 +25,12 @@ stacking declaratively through a modifier `Channel`.
 | `entities/effect_constructing.yaml` | `GE_Constructing`: timed state granting `Unit.State.Constructing` (blocks the unit's abilities) |
 | `entities/effect_slow.yaml` | `GE_Slow`: timed `Multiply -0.4` MoveSpeed in the `Debuffs` channel (tower-defense flavour) |
 | `entities/effect_areastrike_damage.yaml` | `GE_AreaStrikeDamage`: instant Magic AoE via `ExecCalc_ArmorMitigation` |
+| `entities/effect_build_cost.yaml` | `GE_BuildCost`: instant `-150 Minerals`, the cost of `GA_ConstructBuilding` |
+| `entities/effect_train_cost.yaml` | `GE_TrainCost`: instant `-50 Minerals`, the cost of `GA_TrainUnit` |
+| `entities/effect_train_cooldown.yaml` | `GE_TrainCooldown`: 12 s production timer on `GA_TrainUnit` |
+| `entities/effect_attack_cooldown.yaml` | `GE_AttackCooldown`: 1 / AttackSpeed between auto-attacks |
+| `entities/effect_area_strike_cost.yaml` | `GE_AreaStrikeCost`: instant `-75 Energy`, the cost of `GA_AreaStrike` |
+| `entities/effect_area_strike_cooldown.yaml` | `GE_AreaStrikeCooldown`: 10 s cooldown on `GA_AreaStrike` |
 | `entities/ability_auto_attack.yaml` | `GA_AutoAttack`: range-gated, AttackSpeed-paced; applies `GE_UnitDamage` |
 | `entities/ability_construct_building.yaml` | `GA_ConstructBuilding`: spend Minerals, place a site, build over time |
 | `entities/ability_train_unit.yaml` | `GA_TrainUnit`: spend Minerals + supply; produce a unit on a cooldown |

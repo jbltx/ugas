@@ -8,7 +8,7 @@ ValueType: Axis1D
 TriggerBehavior: WhileHeld
 Tags:
   ActionTags:
-    - Driving
+    - Input.Type.Driving
 Metadata:
   DisplayName: Steer
   Description: Horizontal steering axis (-1 full left, +1 full right)
@@ -20,7 +20,7 @@ ValueType: Axis1D
 TriggerBehavior: WhileHeld
 Tags:
   ActionTags:
-    - Driving
+    - Input.Type.Driving
 Metadata:
   DisplayName: Throttle
   Description: Analog throttle input (0 idle, 1 full power)
@@ -32,7 +32,7 @@ ValueType: Axis1D
 TriggerBehavior: WhileHeld
 Tags:
   ActionTags:
-    - Driving
+    - Input.Type.Driving
 Metadata:
   DisplayName: Brake
   Description: Analog brake input (0 no braking, 1 full braking)
@@ -44,7 +44,7 @@ ValueType: Digital
 TriggerBehavior: OnPressed
 Tags:
   ActionTags:
-    - Driving
+    - Ability.Type.Boost
 Metadata:
   DisplayName: Boost
   Description: Activate nitro boost
@@ -56,7 +56,7 @@ ValueType: Digital
 TriggerBehavior: WhileHeld
 Tags:
   ActionTags:
-    - Driving
+    - Ability.Type.Handling
 Metadata:
   DisplayName: Drift
   Description: Hold to initiate and sustain a drift through corners
@@ -68,7 +68,7 @@ ValueType: Axis2D
 TriggerBehavior: WhileHeld
 Tags:
   ActionTags:
-    - Driving
+    - Input.Type.Driving
 Metadata:
   DisplayName: Look
   Description: Free-look camera axis for glancing around while driving

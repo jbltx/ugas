@@ -1,5 +1,5 @@
 # Puzzle genre tag taxonomy. ADDITIVE: this registry introduces genre-specific tags only.
-# It does not redefine core State.* / Ability.* tags - those are referenced, not declared here.
+# Every tag the pack's entities use is declared here, so the pack resolves as a standalone entity set.
 # Board states (Matching, Cascading, Stuck) are GRANTED BY EFFECTS, never written directly.
 
 $schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_tag.json
@@ -63,4 +63,26 @@ Tags:
     AllowMultiple: false
   - Tag: Ability.Type.Hint
     Description: A no-cost assist that highlights a legal move; on cooldown
+    AllowMultiple: false
+
+  # --- Cooldowns (granted by the abilities' cooldown Effects) ---
+  - Tag: Cooldown.Ability.Hint
+    Description: Hint was used recently and cannot be requested again yet
+    AllowMultiple: false
+
+  # --- Gameplay cues (cosmetic feedback triggered by Effects) ---
+  - Tag: GameplayCue.Puzzle.MatchClear
+    Description: Plays the tile-clear burst and score popup
+    AllowMultiple: false
+  - Tag: GameplayCue.Puzzle.Cascade
+    Description: Plays the falling-tile cascade feedback
+    AllowMultiple: false
+  - Tag: GameplayCue.Puzzle.ComboTick
+    Description: Plays the combo-counter step-up
+    AllowMultiple: false
+  - Tag: GameplayCue.Puzzle.BombBlast
+    Description: Plays the bomb powerup explosion
+    AllowMultiple: false
+  - Tag: GameplayCue.Puzzle.TimeBonus
+    Description: Plays the bonus-time pickup feedback
     AllowMultiple: false

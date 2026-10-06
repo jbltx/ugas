@@ -1,5 +1,5 @@
 # Special: the meter-spending super move. Costs a full bar of Super (Cost: GE_SuperCost, a trivial
-# resource cost referenced by name like the racing pack's nitro cost) and so cannot activate on an
+# resource cost in effect_super_cost.yaml, like the racing pack's nitro cost) and so cannot activate on an
 # empty gauge - the cost gate is what enforces "need meter", no explicit check tag required. During
 # its cinematic super-freeze startup it owns Combat.Move.Startup and uses BlockAbilitiesWithTags to
 # lock out the user's OWN normals (Light/Heavy/Block) for the freeze - committing the player to the
