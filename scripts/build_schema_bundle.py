@@ -5,7 +5,8 @@ Consumers (browser builds, CI, air-gapped) get one-file, network-free
 validation: every entity type lives under ``#/$defs/<type>`` with all internal
 ``$ref``s rewritten to resolve inside the bundle. A top-level ``allOf`` of
 ``if``/``then`` clauses dispatches on the entity's own ``$schema`` — a document
-whose ``$schema`` names ``<type>`` is validated against that type's schema.
+whose ``$schema`` names ``<type>`` is validated against that type's schema, and
+a document with a missing or unknown ``$schema`` is rejected.
 
 Usage:
     build_schema_bundle.py <schemas-dir> <version> [--out schemas/bundle.json]
@@ -14,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 # Not entity types: skip the bundle itself, the meta-schemas, and examples.
@@ -60,6 +62,17 @@ def build(schemas_dir: Path, version: str) -> dict:
         }
         for t in defs
     ]
+    # Without this, a document matching no if-clause passes every then-clause
+    # vacuously: a missing or unknown $schema would validate as anything.
+    known = "|".join(re.escape(t) for t in defs)
+    dispatch.append(
+        {
+            "required": ["$schema"],
+            "properties": {
+                "$schema": {"type": "string", "pattern": rf"/schemas/({known})\.json$"}
+            },
+        }
+    )
 
     return {
         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -68,7 +81,8 @@ def build(schemas_dir: Path, version: str) -> dict:
         "description": (
             "Self-contained bundle of every UGAS entity schema. Validate an entity "
             "against #/$defs/<type> (type = the <type> in its $schema), or against the "
-            "whole bundle to dispatch on $schema automatically. Resolves offline."
+            "whole bundle to dispatch on $schema automatically; the whole bundle rejects a "
+            "missing or unknown $schema. Resolves offline."
         ),
         "$defs": defs,
         "allOf": dispatch,

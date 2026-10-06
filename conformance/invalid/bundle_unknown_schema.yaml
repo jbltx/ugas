@@ -1,0 +1,4 @@
+# label: invalid — $schema names no UGAS entity type
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_spell.json
+Name: GE_Damage
+DurationPolicy: Instant
