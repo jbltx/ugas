@@ -222,7 +222,12 @@ export function checkReferences(
       expectAll(src, 'Placements.StartupEffects', get(placement, 'StartupEffects'), 'effect');
       expectAll(src, 'Placements.AttributeOverrides', Object.keys(mapping(get(placement, 'AttributeOverrides'))), 'attribute');
     }
-    for (const region of items(get(scene, 'Regions'))) tags(src, 'Regions.GrantedTags', get(region, 'GrantedTags'));
+    for (const region of items(get(scene, 'Regions'))) {
+      tags(src, 'Regions.GrantedTags', get(region, 'GrantedTags'));
+      const regionFilter = mapping(get(region, 'Filter'));
+      tags(src, 'Regions.Filter.RequireTags', get(regionFilter, 'RequireTags'));
+      tags(src, 'Regions.Filter.ExcludeTags', get(regionFilter, 'ExcludeTags'));
+    }
     for (const spawn of items(get(scene, 'SpawnPoints'))) tags(src, 'SpawnPoints.Tags', get(spawn, 'Tags'));
   }
 

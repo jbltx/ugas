@@ -22,10 +22,13 @@ test('scene references are checked', () => {
     run(ATTRIBUTE, REGISTRY, e('scene', {
       Name: 'Arena',
       Placements: [{ Controller: 'Goblin', StartupTags: ['Faction.Player'], StartupEffects: ['Missing_GE'], AttributeOverrides: { Mana: 10 } }],
-      Regions: [{ Name: 'Pit', GrantedTags: ['Zone.Hazard.Fire'] }],
+      Regions: [{
+        Name: 'Pit', Shape: 'Sphere', Origin: [0, 0, 0], Radius: 4,
+        Filter: { ExcludeTags: ['State.Immune'] }, GrantedTags: ['Zone.Hazard.Fire'],
+      }],
       SpawnPoints: [{ Name: 'Respawn', Tags: ['Spawn.Player'] }],
     })),
-    "'Faction.Player'", "'Missing_GE'", "'Mana'", "'Zone.Hazard.Fire'", "'Spawn.Player'",
+    "'Faction.Player'", "'Missing_GE'", "'Mana'", "'Zone.Hazard.Fire'", "'State.Immune'", "'Spawn.Player'",
   );
 });
 

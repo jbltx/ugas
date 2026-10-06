@@ -25,7 +25,7 @@ same directory:
   Params *Tag / *Tags, effect GrantedTags, ApplicationRequiredTags,
   GameplayCues, Area.RequireTags / ExcludeTags and SetByCaller DataTag,
   controller OwnedTags and SetByCallerMagnitudes keys, scene StartupTags,
-  Regions[].GrantedTags and SpawnPoints[].Tags, input ActionTags,
+  Regions[].GrantedTags and Filter.RequireTags / ExcludeTags, SpawnPoints[].Tags, input ActionTags,
   ActivationTags and binding RequiredTags
 
 Not checked, because UGAS defines no named entity for them: scene
@@ -211,6 +211,9 @@ def check(directory: Path) -> list[str]:
                        list(mapping(placement.get("AttributeOverrides"))), "attribute")
         for region in items(scene.get("Regions")):
             tags(src, "Regions.GrantedTags", region.get("GrantedTags"))
+            region_filter = mapping(region.get("Filter"))
+            tags(src, "Regions.Filter.RequireTags", region_filter.get("RequireTags"))
+            tags(src, "Regions.Filter.ExcludeTags", region_filter.get("ExcludeTags"))
         for spawn in items(scene.get("SpawnPoints")):
             tags(src, "SpawnPoints.Tags", spawn.get("Tags"))
 

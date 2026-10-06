@@ -1,0 +1,11 @@
+# label: invalid — a region's anchor is Origin (§17.4); Position is not a region field
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/scene.json
+Name: Arena
+Placements: []
+Regions:
+  - Name: LavaPit
+    Shape: Sphere
+    Position: [0, 0, 10]
+    Radius: 4
+    GrantedTags:
+      - Zone.Hazard.Fire

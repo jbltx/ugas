@@ -85,8 +85,12 @@
       "items": {
         "type": "object",
         "required": [
-          "Name"
+          "Name",
+          "Shape",
+          "Origin",
+          "GrantedTags"
         ],
+        "additionalProperties": false,
         "properties": {
           "Name": {
             "type": "string",
@@ -94,23 +98,100 @@
           },
           "Shape": {
             "type": "string",
-            "description": "Volume shape",
+            "description": "Volume shape (§17.2)",
             "enum": [
               "Sphere",
               "Box",
               "Capsule"
             ]
           },
-          "Position": {
+          "Origin": {
             "type": "array",
-            "description": "Region origin as x, y, z",
+            "description": "Sphere or box centre, or capsule reference point, as x, y, z",
             "items": {
               "type": "number"
-            }
+            },
+            "minItems": 3,
+            "maxItems": 3
           },
           "Radius": {
             "type": "number",
+            "exclusiveMinimum": 0,
             "description": "Sphere or capsule radius"
+          },
+          "HalfExtents": {
+            "type": "array",
+            "description": "Box half extents as x, y, z",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "Orientation": {
+            "type": "array",
+            "description": "Box rotation as a quaternion x, y, z, w",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 4,
+            "maxItems": 4
+          },
+          "P0": {
+            "type": "array",
+            "description": "First capsule endpoint as x, y, z",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "P1": {
+            "type": "array",
+            "description": "Second capsule endpoint as x, y, z",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "Filter": {
+            "type": "object",
+            "description": "Which GCs the region acts on (§17.2 SpatialFilter); omitted = all spatial GCs",
+            "additionalProperties": false,
+            "properties": {
+              "RequireTags": {
+                "type": "array",
+                "description": "Candidate must own all these tags (§7, hierarchical)",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "ExcludeTags": {
+                "type": "array",
+                "description": "Candidate must own none of these tags",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "Affiliation": {
+                "type": "string",
+                "enum": [
+                  "Any",
+                  "Allied",
+                  "Hostile",
+                  "Neutral",
+                  "SelfOnly",
+                  "ExcludeSelf"
+                ],
+                "description": "Affiliation of candidates (§17.2)"
+              },
+              "MaxResults": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Cap on occupants (0 = unbounded)"
+              }
+            }
           },
           "GrantedTags": {
             "type": "array",
@@ -119,7 +200,53 @@
               "type": "string"
             }
           }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "Shape": {
+                  "const": "Sphere"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "Radius"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "Shape": {
+                  "const": "Box"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "HalfExtents"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "Shape": {
+                  "const": "Capsule"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "P0",
+                "P1",
+                "Radius"
+              ]
+            }
+          }
+        ]
       }
     },
     "SpawnPoints": {
