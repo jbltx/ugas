@@ -1,10 +1,14 @@
 # Cooldown for GA_AutoAttack: 1 / AttackSpeed seconds between attacks (1.25 s at the base 0.8).
+# A reciprocal is not a linear AttributeBased magnitude, so the duration is a custom calculation that
+# reads the current AttackSpeed: an attack-speed buff shortens the cooldown.
 
 $schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_AttackCooldown
 DurationPolicy: HasDuration
 Duration:
-  Type: ScalableFloat
-  Value: 1.25
+  Type: CustomCalculation
+  CalculatorClass: MMC_ReciprocalRate
+  BackingAttribute: AttackSpeed
+  Source: Source
 GrantedTags:
   - Cooldown.Ability.Attack
