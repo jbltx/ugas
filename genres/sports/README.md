@@ -24,6 +24,14 @@ is designed from first principles and grounded in the genre's standard mechanics
 | `entities/effect_momentum_boost.yaml` | `GE_MomentumBoost`: `+20%` offensive skill in the `Momentum` channel |
 | `entities/effect_injury.yaml` | `GE_Injury`: timed physical debuff with a lowered `MaxStamina` ceiling |
 | `entities/effect_shot_attempt.yaml` | `GE_ShotAttempt`: shot resolution via a custom `Execution` |
+| `entities/effect_pass_cost.yaml` | `GE_PassCost`: instant `-2 Stamina` |
+| `entities/effect_pass_cooldown.yaml` | `GE_PassCooldown`: 0.5 s |
+| `entities/effect_shoot_cost.yaml` | `GE_ShootCost`: instant `-8 Stamina` |
+| `entities/effect_shoot_cooldown.yaml` | `GE_ShootCooldown`: 1.5 s |
+| `entities/effect_skill_move_cost.yaml` | `GE_SkillMoveCost`: instant `-5 Stamina` |
+| `entities/effect_skill_move_cooldown.yaml` | `GE_SkillMoveCooldown`: 2 s |
+| `entities/effect_tackle_cost.yaml` | `GE_TackleCost`: instant `-6 Stamina` |
+| `entities/effect_tackle_cooldown.yaml` | `GE_TackleCooldown`: 1.5 s |
 | `entities/ability_sprint.yaml` | `GA_Sprint`: hold to sprint, draining stamina; blocked while fatigued |
 | `entities/ability_pass.yaml` | `GA_Pass`: play the ball to a team-mate; costs stamina |
 | `entities/ability_shoot.yaml` | `GA_Shoot`: strike at goal; costs stamina, applies `GE_ShotAttempt` |

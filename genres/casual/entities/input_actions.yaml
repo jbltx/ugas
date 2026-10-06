@@ -64,3 +64,18 @@ Metadata:
   Description: Spend energy to start an active round
   Icon: ui/icons/play.png
   Category: Core
+
+---
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_action.json
+Name: Boost
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Ability.Type.Boost
+Metadata:
+  DisplayName: Boost
+  Description: Activate a timed income booster
+  Icon: ui/icons/boost.png
+  Category: Economy

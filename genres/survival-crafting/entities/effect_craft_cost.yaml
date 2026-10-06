@@ -1,0 +1,11 @@
+# Cost for GA_Craft: spends 20 Materials per tool. Too few Materials cannot pay it, so crafting is gated.
+
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_CraftCost
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Materials
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -20.0

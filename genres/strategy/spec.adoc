@@ -114,8 +114,7 @@ is `false`, so the first payout lands one full second after a harvester starts r
 Spending is the mirror image: each production ability names a trivial *cost* effect — `GE_BuildCost`,
 `GE_TrainCost`, `GE_AreaStrikeCost` — that subtracts the resource. Because an ability cannot activate
 if it cannot pay its cost (§8.5), an under-resourced player simply cannot start the action, with no
-explicit "enough minerals" tag needed (these trivial cost effects are referenced by name rather than
-shipped as files, the convention the Racing and Shooter packs use).
+explicit "enough minerals" tag needed (these trivial cost effects ship in `entities/`).
 
 [[genre-tech-upgrades]]
 == Tech upgrades via the Upgrades channel

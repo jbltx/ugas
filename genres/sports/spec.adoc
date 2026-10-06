@@ -190,9 +190,8 @@ Defined in `entities/tag_registry.yaml` (additive only):
   `Athlete.State.Fatigued`.
 
 The trivial cost/cooldown effects (`GE_PassCost`, `GE_ShootCost`, `GE_TackleCost`,
-`GE_SkillMoveCost`, and their `*Cooldown` siblings) are a flat `Stamina` cost and a cooldown tag; the
-pack references them by name rather than shipping a file for each, the same convention the Racing and
-Shooter packs use.
+`GE_SkillMoveCost`, and their `*Cooldown` siblings) are a flat `Stamina` cost and a cooldown tag, each
+shipped in `entities/` so the pack resolves as a set.
 
 [[genre-effects]]
 == Genre Effects

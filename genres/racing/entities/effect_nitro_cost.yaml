@@ -1,0 +1,12 @@
+# Cost for GA_NitroBoost: spends 25 Boost per burst (four bursts from a full 100-point tank).
+# Drifting refills Boost.
+
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_NitroCost
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Boost
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -25.0

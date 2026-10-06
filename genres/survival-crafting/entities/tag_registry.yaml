@@ -1,6 +1,6 @@
 # Survival / Crafting genre tag taxonomy. ADDITIVE: introduces genre-specific tags only.
-# It does not redefine the core lifecycle tags (State.Alive / State.Dead) - those are referenced
-# by the pack's entities (e.g. the worked controller's OwnedTags), not declared here.
+# The core lifecycle tags it uses (State.Alive / State.Dead) are declared at the end so the pack
+# resolves as a standalone entity set.
 # Every survival state below is GRANTED BY AN EFFECT, never written directly by an ability.
 
 $schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_tag.json
@@ -97,4 +97,53 @@ Tags:
     AllowMultiple: false
   - Tag: Environment.TimeOfDay.Night
     Description: Night; colder ambient temperature and reduced visibility
+    AllowMultiple: false
+
+  # --- Core lifecycle tags (declared here so the pack resolves as a standalone entity set) ---
+  - Tag: State.Alive
+    Description: Entity is alive and active
+    AllowMultiple: false
+  - Tag: State.Dead
+    Description: Entity is dead
+    AllowMultiple: false
+
+  # --- Gameplay cues (cosmetic feedback triggered by Effects) ---
+  - Tag: GameplayCue.Survival.Eat
+    Description: Plays the eating animation and sound
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Drink
+    Description: Plays the drinking animation and sound
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Harvest
+    Description: Plays the resource-yield popup on a successful gather
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Gathering
+    Description: Loops the chopping/mining animation while gathering
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Crafting
+    Description: Loops the crafting animation and progress bar
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Equip
+    Description: Plays the tool equip animation
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Starving
+    Description: Shows the starvation screen vignette and stomach growl
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Dehydrated
+    Description: Shows the dehydration blur and dry-mouth sound
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Exhausted
+    Description: Plays the out-of-breath animation and sound
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Shivering
+    Description: Plays the shivering animation and frost vignette
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Hypothermia
+    Description: Shows the severe-cold frost overlay and slowed heartbeat
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Overheating
+    Description: Shows the heat-haze vignette and sweating
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Overencumbered
+    Description: Shows the overweight indicator and heavy-walk animation
     AllowMultiple: false

@@ -1,8 +1,8 @@
 # Tackle: challenge a hostile ball-carrier for possession. Costs stamina (GE_TackleCost: Stamina -6)
 # and goes on a cooldown (GE_TackleCooldown) so mistimed lunges leave the defender exposed. Requires a
 # Team.Hostile target; Tackling and Strength govern whether the ball is won cleanly (a mistimed tackle
-# is where GE_Injury typically gets applied to the loser). GE_TackleCost and GE_TackleCooldown are
-# trivial and referenced by name, like the racing/shooter cost/cooldown effects.
+# is where GE_Injury typically gets applied to the loser). GE_TackleCost and GE_TackleCooldown are a
+# flat Stamina cost and a cooldown tag (effect_tackle_cost.yaml, effect_tackle_cooldown.yaml).
 
 $schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_Tackle

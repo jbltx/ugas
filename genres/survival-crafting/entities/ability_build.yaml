@@ -3,7 +3,7 @@
 # then the structure is spawned by the engine - the actual spawn is engine logic keyed off the
 # ability completing, since placing a world actor is outside the attribute/effect model. Sheltering
 # structures are what let a survivor earn Survival.State.Sheltered and escape cold exposure.
-# GE_BuildCost is a trivial flat resource cost referenced by name, not shipped as a file.
+# GE_BuildCost (effect_build_cost.yaml) is a flat Materials cost.
 
 $schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_Build

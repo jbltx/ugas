@@ -1,0 +1,10 @@
+# Cooldown for GA_Special: a long lockout so the super cannot be chained even with meter to spare.
+
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_SpecialCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 8.0
+GrantedTags:
+  - Cooldown.Ability.Special

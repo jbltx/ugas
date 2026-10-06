@@ -1,5 +1,5 @@
 # Buy generator: spend currency to install an income generator. Costs Currency via GE_BuyGeneratorCost
-# (referenced by name; an instant Currency-Add of a negative amount, sized by the next generator's
+# (effect_buy_generator_cost.yaml; an instant Currency-Add of a negative amount, sized by the next generator's
 # price). Because an ability cannot activate if it cannot pay its cost, an insufficient balance gates
 # the purchase with no explicit check - the same cost-gate pattern the shooter uses for ammo and the
 # racing pack uses for boost. On success it applies a GE_Generator_* (here GE_Generator_Mine), adding

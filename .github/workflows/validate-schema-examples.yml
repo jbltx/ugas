@@ -35,6 +35,13 @@ jobs:
       - name: Check example references resolve as a set
         run: |
           python scripts/check_example_references.py
+          # Each genre pack (and the _template skeleton) ships as a standalone set, so
+          # each must resolve on its own. Check them all before failing.
+          status=0
+          for pack in genres/*/entities; do
+            python scripts/check_example_references.py "$pack" || status=1
+          done
+          [ "$status" -eq 0 ]
           python scripts/test_check_example_references.py
 
       - name: Run conformance corpus

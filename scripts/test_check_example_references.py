@@ -58,12 +58,17 @@ def main() -> int:
                     AttributeOverrides: {{Mana: 10}}
                 Regions:
                   - Name: Pit
+                    Shape: Sphere
+                    Origin: [0, 0, 0]
+                    Radius: 4
+                    Filter: {{ExcludeTags: [State.Immune]}}
                     GrantedTags: [Zone.Hazard.Fire]
                 SpawnPoints:
                   - Name: Respawn
                     Tags: [Spawn.Player]
             """),
-            "'Faction.Player'", "'Missing_GE'", "'Mana'", "'Zone.Hazard.Fire'", "'Spawn.Player'",
+            "'Faction.Player'", "'Missing_GE'", "'Mana'", "'Zone.Hazard.Fire'", "'State.Immune'",
+            "'Spawn.Player'",
         ),
         expect(
             "effect magnitudes and area tags are checked",

@@ -1,0 +1,14 @@
+# Cooldown for GA_Fire: 1 / FireRate seconds per shot (0.1 s at the base 10 rounds/s), pacing
+# automatic fire. A reciprocal is not a linear AttributeBased magnitude, so the duration is a custom
+# calculation that reads the current FireRate: a FireRate upgrade shortens the cooldown.
+
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_FireCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: CustomCalculation
+  CalculatorClass: MMC_ReciprocalRate
+  BackingAttribute: FireRate
+  Source: Source
+GrantedTags:
+  - Cooldown.Ability.Fire

@@ -149,6 +149,9 @@ type: object
 required:
   - Name
   - DurationPolicy
+allOf:
+  - if: { properties: { DurationPolicy: { const: HasDuration } } }
+    then: { required: [Duration] }   # a HasDuration effect must say how long
 properties:
   Name:
     type: string
@@ -160,10 +163,11 @@ properties:
     # MagnitudeDefinition — see below
   Period:
     type: object
+    required: [Period]
     properties:
       Period:
         type: number
-        minimum: 0
+        exclusiveMinimum: 0
         description: Time interval for periodic execution
       ExecuteOnApplication:
         type: boolean
@@ -267,6 +271,11 @@ properties:
   DataTag:
     type: string
     description: Tag for SetByCaller data lookup
+allOf:  # each Type requires the field it reads
+  - { if: { properties: { Type: { const: ScalableFloat } } }, then: { required: [Value] } }
+  - { if: { properties: { Type: { const: AttributeBased } } }, then: { required: [BackingAttribute] } }
+  - { if: { properties: { Type: { const: CustomCalculation } } }, then: { required: [CalculatorClass] } }
+  - { if: { properties: { Type: { const: SetByCaller } } }, then: { required: [DataTag] } }
 ```
 
 ### Duration Policy Guide

@@ -1,8 +1,8 @@
 # Primary fire: trace under the crosshair and apply ballistic damage to the hit target.
 # Costs one round (GE_FireCost: Ammo -1) - the cost gate is what prevents firing on an empty
 # magazine - and goes on a per-shot cooldown (GE_FireCooldown, duration = 1 / FireRate) that paces
-# the automatic fire rate. Cannot fire mid-reload. GE_FireCost and GE_FireCooldown are trivial
-# (a flat resource cost and a cooldown tag) and are referenced by name rather than shipped as files.
+# the automatic fire rate. Cannot fire mid-reload. GE_FireCost and GE_FireCooldown are a flat
+# resource cost and a cooldown tag (effect_fire_cost.yaml, effect_fire_cooldown.yaml).
 
 $schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_Fire

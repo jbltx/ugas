@@ -24,6 +24,10 @@ ammo, a guard meter and a stagger meter instead of reloads and falloff.
 | `entities/effect_blockstun.yaml` | `GE_Blockstun`: blocked-hit recovery state that blocks all actions |
 | `entities/effect_blocking.yaml` | `GE_Blocking`: Block-channel damage reduction + slower movement while guarding |
 | `entities/effect_stagger.yaml` | `GE_Stagger`: poise-break punish window, applied by the engine Poise==0 threshold |
+| `entities/effect_super_cost.yaml` | `GE_SuperCost`: instant `-100 Super` (a full bar), the cost of `GA_Special` |
+| `entities/effect_light_attack_cooldown.yaml` | `GE_LightAttackCooldown`: 0.3 s cooldown of `GA_LightAttack` |
+| `entities/effect_heavy_attack_cooldown.yaml` | `GE_HeavyAttackCooldown`: 0.6 s cooldown of `GA_HeavyAttack` |
+| `entities/effect_special_cooldown.yaml` | `GE_SpecialCooldown`: 8 s cooldown of `GA_Special` |
 | `entities/ability_light_attack.yaml` | `GA_LightAttack`: fast combo starter; cancellable into a heavy |
 | `entities/ability_heavy_attack.yaml` | `GA_HeavyAttack`: slow heavy blow that cancels light-attack recovery |
 | `entities/ability_block.yaml` | `GA_Block`: hold to guard (Block channel), blockstun instead of hitstun on contact |

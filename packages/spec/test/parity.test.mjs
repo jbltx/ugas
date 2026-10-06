@@ -27,6 +27,14 @@ test('the capture saw every Python fixture', () => {
   assert.ok(captured.fixtures >= 8, `only ${captured.fixtures} fixtures captured`);
 });
 
+// Parity alone would pass if both checkers agreed on a broken set: the shipped examples
+// and every genre pack must also resolve.
+test('the shipped examples and every genre pack resolve as a set', () => {
+  const shipped = captured.cases.filter((c) => !c.name.startsWith('python fixture'));
+  assert.ok(shipped.some((c) => c.name.startsWith('genres/')), 'no genre pack captured');
+  for (const c of shipped) assert.deepEqual(c.errors, [], c.name);
+});
+
 for (const c of captured.cases) {
   test(`parity: ${c.name}`, () => {
     const entities = c.files.flatMap((f) => parse(f).map((entity) => ({ path: f.path, entity })));

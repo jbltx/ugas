@@ -20,6 +20,8 @@ schema-conformant entities, plus a worked vehicle example.
 | `entities/effect_nitro_boost.yaml` | Timed nitro burst applied by `GA_NitroBoost` |
 | `entities/effect_drift_charge.yaml` | Timed + periodic boost refill granted while drifting |
 | `entities/effect_traction_update.yaml` | Instant `ExecutionCalculation` recomputing `AvailableTraction` |
+| `entities/effect_nitro_cost.yaml` | Instant `-25 Boost`, the cost of `GA_NitroBoost` |
+| `entities/effect_nitro_cooldown.yaml` | 3 s cooldown on `GA_NitroBoost` |
 | `entities/ability_nitro_boost.yaml` | `GA_NitroBoost`: spend boost for a burst of performance |
 | `entities/ability_drift.yaml` | `GA_Drift`: hold to slide, trading grip for boost charge |
 | `entities/gameplay_controller.yaml` | Worked example: a tuned Sport car on mud showing traction aggregation |

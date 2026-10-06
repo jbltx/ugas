@@ -1,6 +1,6 @@
 # Strategy genre tag taxonomy. ADDITIVE: introduces genre-specific tags only.
-# It does NOT redefine the core lifecycle tags (State.Alive / State.Dead) - those are referenced by
-# the pack's entities (e.g. the worked controller's OwnedTags), not declared here.
+# The core lifecycle tags it uses (State.Alive / State.Cutscene) are declared at the end so the
+# pack resolves as a standalone entity set.
 #
 # Two tag families drive the signature mechanic and never become attributes:
 #   - DamageType.* : carried by the attacker (its weapon), read by ExecCalc_ArmorMitigation.
@@ -81,4 +81,37 @@ Tags:
     AllowMultiple: false
   - Tag: Faction.Hostile
     Description: Opposing faction; a valid attack/area-strike target
+    AllowMultiple: false
+
+  # --- Core lifecycle tags (declared here so the pack resolves as a standalone entity set) ---
+  - Tag: State.Alive
+    Description: Entity is alive and active
+    AllowMultiple: false
+  - Tag: State.Cutscene
+    Description: A cutscene has taken control of the entity
+    AllowMultiple: false
+
+  # --- Cooldowns (granted by the abilities' cooldown Effects) ---
+  - Tag: Cooldown.Ability.Attack
+    Description: Weapon is reloading between auto-attacks (1 / AttackSpeed)
+    AllowMultiple: false
+  - Tag: Cooldown.Ability.Train
+    Description: Production structure is busy training the queued unit
+    AllowMultiple: false
+  - Tag: Cooldown.Ability.AreaStrike
+    Description: Area strike is on cooldown
+    AllowMultiple: false
+
+  # --- Gameplay cues (cosmetic feedback triggered by Effects) ---
+  - Tag: GameplayCue.Unit.WeaponImpact
+    Description: Plays the projectile or melee impact on the target
+    AllowMultiple: false
+  - Tag: GameplayCue.Unit.AreaStrike
+    Description: Plays the area strike blast
+    AllowMultiple: false
+  - Tag: GameplayCue.Unit.Slowed
+    Description: Shows the slow debuff visual on the unit
+    AllowMultiple: false
+  - Tag: GameplayCue.Unit.ConstructionComplete
+    Description: Plays the building-finished flourish and notification
     AllowMultiple: false

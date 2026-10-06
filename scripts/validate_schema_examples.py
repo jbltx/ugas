@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-"""Validate schema examples in schemas/examples and SPEC.md."""
+"""Validate schema examples in schemas/examples, genres/ and the spec's AsciiDoc source.
+
+Spec snippets are read from SPEC.adoc and spec/**/*.adoc, not the generated SPEC.md,
+which only exists at publish time: reading it would silently skip them in CI.
+"""
 
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
@@ -79,27 +84,49 @@ def schema_key_from_schema_id(schema_id: Any) -> Optional[str]:
     return None
 
 
-def extract_fenced_blocks(text: str) -> Iterable[Tuple[str, str, int]]:
-    in_block = False
-    lang = ""
-    start_line = 0
-    buffer: List[str] = []
+SOURCE_BLOCK = re.compile(r"^\[source,(yaml|yml|json)\b([^\]]*)\]\s*$")
+ATTRIBUTE_ENTRY = re.compile(r"^:([\w-]+):\s*(.*)$")
+ATTRIBUTE_REF = re.compile(r"\{([\w-]+)\}")
 
-    for line_number, line in enumerate(text.splitlines(), start=1):
-        if line.startswith("```"):
-            if not in_block:
-                lang = line[3:].strip().lower()
-                in_block = True
-                start_line = line_number + 1
-                buffer = []
-            else:
-                yield lang, "\n".join(buffer), start_line
-                in_block = False
-                lang = ""
-                buffer = []
+
+def read_document_attributes(path: Path) -> Dict[str, str]:
+    """The `:name: value` entries of an AsciiDoc document header."""
+    attributes: Dict[str, str] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        match = ATTRIBUTE_ENTRY.match(line)
+        if match:
+            attributes[match.group(1)] = match.group(2).strip()
+    return attributes
+
+
+def extract_adoc_blocks(
+    text: str, attributes: Dict[str, str]
+) -> Iterable[Tuple[str, str, int]]:
+    """Yield (lang, content, first line) for each [source,yaml|json] listing block.
+
+    Applies attribute substitution where the block opts in with subs="+attributes",
+    as Asciidoctor does when rendering.
+    """
+    lines = text.splitlines()
+    i = 0
+    while i < len(lines):
+        match = SOURCE_BLOCK.match(lines[i])
+        if not match or i + 1 >= len(lines) or not re.fullmatch(r"-{4,}", lines[i + 1]):
+            i += 1
             continue
-        if in_block:
-            buffer.append(line)
+        lang, options = match.group(1), match.group(2)
+        delimiter = lines[i + 1]
+        start = i + 2
+        end = start
+        while end < len(lines) and lines[end] != delimiter:
+            end += 1
+        content = "\n".join(lines[start:end])
+        if "attributes" in options:
+            content = ATTRIBUTE_REF.sub(
+                lambda m: attributes.get(m.group(1), m.group(0)), content
+            )
+        yield lang, content, start + 1
+        i = end + 1
 
 
 def validate_document(
@@ -165,7 +192,7 @@ def validate_example_file(
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     schemas_root = root / "schemas"
-    spec_path = root / "SPEC.md"
+    spec_main = root / "SPEC.adoc"
 
     schemas: Dict[str, Dict[str, Any]] = {}
     validators: Dict[str, Draft7Validator] = {}
@@ -204,19 +231,21 @@ def main() -> int:
                 path, validators, required_fields, errors
             )
 
-    # Validate SPEC.md code blocks
-    if spec_path.exists():
+    # Validate the spec's own snippets, from the AsciiDoc source.
+    spec_validated = 0
+    attributes = read_document_attributes(spec_main)
+    spec_sources = [spec_main, *sorted((root / "spec").rglob("*.adoc"))]
+    for spec_path in spec_sources:
+        rel = spec_path.relative_to(root)
         spec_text = spec_path.read_text(encoding="utf-8")
-        for lang, content, start_line in extract_fenced_blocks(spec_text):
-            if lang not in {"yaml", "yml", "json"}:
-                continue
+        for lang, content, start_line in extract_adoc_blocks(spec_text, attributes):
             try:
                 if lang == "json":
                     docs = [json.loads(content)]
                 else:
                     docs = list(yaml.safe_load_all(content))
             except Exception as exc:  # noqa: BLE001
-                errors.append(f"SPEC.md:{start_line}: failed to parse ({exc})")
+                errors.append(f"{rel}:{start_line}: failed to parse ({exc})")
                 continue
 
             for index, doc in enumerate(docs, start=1):
@@ -241,9 +270,14 @@ def main() -> int:
                     skipped_spec += 1
                     continue
 
-                source = f"SPEC.md:{start_line} (doc {index})"
+                source = f"{rel}:{start_line} (doc {index})"
                 validate_document(validators[schema_key], payload, source, errors)
                 validated_count += 1
+                spec_validated += 1
+
+    # A spec whose snippets all vanish (moved, renamed, re-fenced) must not pass quietly.
+    if spec_validated == 0:
+        errors.append("no complete schema snippet found in SPEC.adoc or spec/**/*.adoc")
 
     if errors:
         print("Schema example validation failed:\n")
@@ -251,9 +285,12 @@ def main() -> int:
             print(f"- {error}")
         return 1
 
-    print(f"Schema example validation passed. Validated {validated_count} snippets.")
+    print(
+        f"Schema example validation passed. Validated {validated_count} snippets "
+        f"({spec_validated} from the spec)."
+    )
     if skipped_spec:
-        print(f"Skipped {skipped_spec} non-schema or partial SPEC.md snippets.")
+        print(f"Skipped {skipped_spec} non-schema or partial spec snippets.")
     return 0
 
 

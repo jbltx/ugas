@@ -37,6 +37,10 @@ genres/
   `$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/<name>.json`.
   Only such entity files may live under `genres/` — `scripts/validate_schema_examples.py`
   validates the whole tree and fails on a missing/unknown `$schema`.
+- **Entities must resolve as a set.** Each pack ships standalone, so every Attribute, Effect,
+  Ability, Input and tag its entities name must be defined in that same pack's `entities/`
+  (tags in its tag registry). Check with
+  `python scripts/check_example_references.py genres/<genre>/entities`; CI runs it per pack.
 - **No placeholder scalars.** Use real values; tokens like `string` or `float` fail validation.
 - **Consistent docs.** Reuse the core AsciiDoc header attributes (see `_template/spec.adoc`).
   Each `spec.adoc` is built to its own `genres/<genre>/index.html` by the docs workflows.
@@ -45,7 +49,8 @@ genres/
 
 1. Copy `_template/` to `genres/<your-genre>/`.
 2. Rename and fill in `spec.adoc`, the `entities/`, and `README.md`.
-3. Run `python scripts/validate_schema_examples.py` — it must pass.
+3. Run `python scripts/validate_schema_examples.py` and
+   `python scripts/check_example_references.py genres/<your-genre>/entities` — both must pass.
 
 ## Consuming a pack
 
