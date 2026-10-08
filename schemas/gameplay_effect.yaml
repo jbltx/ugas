@@ -175,7 +175,7 @@ $defs:
           - SetByCaller
       Value:
         type: number
-        description: Static value for ScalableFloat
+        description: Static value for ScalableFloat. A ScalableFloat needs Value, Curve, or both (§9.4.2).
       Curve:
         type: string
         description: Curve table reference
@@ -215,8 +215,11 @@ $defs:
             Type:
               const: ScalableFloat
         then:
-          required:
-            - Value
+          anyOf:
+            - required:
+                - Value
+            - required:
+                - Curve
       - if:
           properties:
             Type:
