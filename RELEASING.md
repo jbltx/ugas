@@ -36,10 +36,12 @@ npm run pack:dry    # lists the tarball
 The workflow run's summary links the package once the version is staged. Approval needs
 your 2FA; a CI token cannot approve.
 
-1. Open https://www.npmjs.com/package/@ugas/spec, signed in.
-2. Open the **Staged Packages** tab, check the version, dist-tag and contents.
-3. Click **Approve** and confirm with 2FA. The version goes live under the dist-tag it was
-   staged with.
+1. Open https://www.npmjs.com/settings/jbltx/staged-packages?filterPackage=%40ugas%2Fspec,
+   signed in. The package page does not list staged versions, except as "Validating" in its
+   **Versions** tab.
+2. Wait for npm's automated review to finish. Until it does, the version cannot be approved.
+3. Check the version, dist-tag and contents, then click **Approve** and confirm with 2FA. The
+   version goes live under the dist-tag it was staged with.
 
 From a terminal instead (npm 11.15.0 or later): `npm stage list @ugas/spec`, optionally
 `npm stage download <stage-id>` to inspect the tarball, then `npm stage approve <stage-id>`.
@@ -70,6 +72,11 @@ once the package exists. So the first version has to be published by hand:
    - Environment: leave empty
    - Allowed actions: staged publishing only. Leave both the `npm publish` and the
      `npm dist-tag` boxes unchecked.
+
+   A new trusted publisher expires if no publish uses it within about two days, and staging
+   then fails with `E401 Unable to authenticate`. Publish a release soon after, or delete the
+   expired one and create it again before re-running the workflow.
+
 4. In the same settings, set **Publishing access** to **Require two-factor authentication
    and disallow tokens**. The workflow keeps working: npm documents that this setting only
    blocks traditional tokens, and trusted publishers authenticate with OIDC
