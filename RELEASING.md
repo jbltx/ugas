@@ -1,8 +1,11 @@
 # Releasing
 
-A release is cut the way it always has been: merge the changesets Release PR, then publish a
-GitHub release whose tag is the new version (e.g. `1.0.0-draft.8`). Publishing the release
-runs two workflows:
+All work lands on `main`; there is no `develop` branch. Each push to `main` runs
+[`version.yml`](.github/workflows/version.yml), which opens or updates the changesets Release
+PR (`chore: release`) against `main`. To cut a release, merge that PR, then publish a GitHub
+release from `main` whose tag is the new version (e.g. `1.0.0-draft.8`). The release can wait;
+publish it whenever you want the docs and the npm package out. Publishing the release runs two
+workflows:
 
 - [`publish-docs.yml`](.github/workflows/publish-docs.yml) builds the version tree for
   ugas.jbltx.com and opens the docs PR.
