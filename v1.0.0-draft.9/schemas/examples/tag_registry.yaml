@@ -1,0 +1,120 @@
+# Example: Tag Registry
+# Demonstrates hierarchical tag definitions for a game
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_tag.json
+Tags:
+  # State tags
+  - Tag: State.Alive
+    Description: Entity is alive and active
+    AllowMultiple: false
+
+  - Tag: State.Dead
+    Description: Entity is dead
+    AllowMultiple: false
+
+  - Tag: State.Combat
+    Description: Entity is in combat
+    AllowMultiple: false
+
+  # Debuff tags
+  - Tag: State.Debuff.Stunned
+    Description: Entity is stunned and cannot act
+    AllowMultiple: false
+
+  - Tag: State.Debuff.Silenced
+    Description: Entity cannot cast spells
+    AllowMultiple: false
+
+  # Buff tags
+  - Tag: State.Buff.Regenerating
+    Description: Entity is regenerating health over time
+    AllowMultiple: false
+
+  # Ability tags
+  - Tag: Ability.Magic.Fireball
+    Description: Fireball spell ability
+    AllowMultiple: false
+
+  - Tag: Ability.Offensive
+    Description: Ability that deals damage
+    AllowMultiple: true
+
+  # Ability activation tags (fireball_ability.yaml)
+  - Tag: State.CanCast
+    Description: Entity is able to cast spells
+    AllowMultiple: false
+
+  - Tag: State.Silenced
+    Description: Entity is silenced and cannot activate magic abilities
+    AllowMultiple: false
+
+  - Tag: State.Stunned
+    Description: Entity is stunned and cannot activate abilities
+    AllowMultiple: false
+
+  - Tag: State.Disarmed.Magic
+    Description: Entity cannot use magic abilities
+    AllowMultiple: false
+
+  - Tag: State.Casting
+    Description: Entity is casting a spell
+    AllowMultiple: false
+
+  - Tag: State.Busy
+    Description: Entity is performing an action
+    AllowMultiple: false
+
+  # Effect tags (damage_effect.yaml)
+  - Tag: State.Damaged
+    Description: Entity has just taken damage
+    AllowMultiple: false
+
+  # Cooldown tags (fireball_cooldown_effect.yaml)
+  - Tag: Cooldown.Ability.Fireball
+    Description: Fireball is on cooldown
+    AllowMultiple: false
+
+  # Event tags
+  - Tag: Event.Montage.CastPoint
+    Description: Cast animation reached the point where the spell is released
+    AllowMultiple: false
+
+  # Gameplay cue tags
+  - Tag: GameplayCue.Character.Damage
+    Description: Plays hit feedback when a character takes damage
+    AllowMultiple: false
+
+  # Input action set tags (onfoot_action_set.yaml)
+  - Tag: State.InVehicle
+    Description: Entity is driving or riding a vehicle
+    AllowMultiple: false
+
+  - Tag: State.Cutscene
+    Description: A cutscene has taken control of the entity
+    AllowMultiple: false
+
+  # Input action tags (fire_action.yaml, onfoot_actions.yaml)
+  - Tag: Input.Type.Combat
+    Description: Combat input, disabled in bulk when combat is not allowed
+    AllowMultiple: false
+
+  - Tag: Input.Type.Movement
+    Description: Movement input
+    AllowMultiple: false
+
+  # Scene tags (arena_scene.yaml)
+  - Tag: Faction.Player
+    Description: Entity is on the player's side
+    AllowMultiple: false
+
+  - Tag: Faction.Enemy
+    Description: Entity is hostile to the player
+    AllowMultiple: false
+
+  - Tag: Zone.Hazard.Fire
+    Description: Occupant is standing in a fire hazard
+    AllowMultiple: false
+
+  - Tag: Spawn.Player
+    Description: Spawn point usable by the player
+    AllowMultiple: false

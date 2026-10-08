@@ -1,0 +1,10 @@
+# Cooldown for GA_NitroBoost: matches the 3 s GE_NitroBoost burst so bursts cannot overlap.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
+Name: GE_NitroCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 3.0
+GrantedTags:
+  - Cooldown.Ability.Nitro

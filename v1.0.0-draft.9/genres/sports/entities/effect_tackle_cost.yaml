@@ -1,0 +1,11 @@
+# Cost for GA_Tackle: Stamina spent on a challenge for the ball.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
+Name: GE_TackleCost
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Stamina
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -6.0

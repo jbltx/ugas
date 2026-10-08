@@ -1,0 +1,12 @@
+# Cost for GA_ConstructBuilding: spends Minerals to place a structure. An under-resourced player
+# cannot pay it, so the build cannot start.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
+Name: GE_BuildCost
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Minerals
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -150.0

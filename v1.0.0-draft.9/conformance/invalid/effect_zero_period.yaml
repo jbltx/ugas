@@ -1,0 +1,6 @@
+# label: invalid — a periodic effect's Period must be greater than zero (§9.3)
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
+Name: GE_Poison
+DurationPolicy: Infinite
+Period:
+  Period: 0

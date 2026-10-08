@@ -1,0 +1,31 @@
+# label: valid — one region of each §17.4 shape, with a spatial filter
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/scene.json
+Name: Arena
+Placements: []
+Regions:
+  - Name: LavaPit
+    Shape: Sphere
+    Origin: [0, 0, 10]
+    Radius: 4
+    Filter:
+      ExcludeTags:
+        - State.Immune.Fire
+    GrantedTags:
+      - Zone.Hazard.Fire
+  - Name: Gate
+    Shape: Box
+    Origin: [0, 0, -12]
+    HalfExtents: [3, 2, 0.5]
+    Orientation: [0, 0, 0, 1]
+    GrantedTags:
+      - Zone.Gate
+  - Name: Corridor
+    Shape: Capsule
+    Origin: [0, 0, 0]
+    P0: [-10, 0, 0]
+    P1: [10, 0, 0]
+    Radius: 1.5
+    Filter:
+      Affiliation: Hostile
+    GrantedTags:
+      - Zone.Corridor

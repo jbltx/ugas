@@ -1,0 +1,7 @@
+== Part IV: Feedback, Networking, and Persistence
+
+include::part-4-feedback-and-networking/12-gameplay-cues.adoc[]
+
+include::part-4-feedback-and-networking/13-network-replication.adoc[]
+
+include::part-4-feedback-and-networking/14-state-persistence.adoc[]

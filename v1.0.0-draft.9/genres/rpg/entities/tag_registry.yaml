@@ -1,0 +1,127 @@
+# RPG genre tag taxonomy. ADDITIVE: this registry introduces genre-specific tags only.
+# The core State.* / Ability.* tags it uses are declared at the end so the pack resolves as a
+# standalone entity set.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_tag.json
+Tags:
+  # --- Damage types (used by abilities, immunities, and conditional effects) ---
+  - Tag: DamageType.Physical
+    Description: Physical (weapon) damage
+    AllowMultiple: false
+  - Tag: DamageType.Fire
+    Description: Fire elemental damage
+    AllowMultiple: false
+  - Tag: DamageType.Cold
+    Description: Cold elemental damage
+    AllowMultiple: false
+  - Tag: DamageType.Lightning
+    Description: Lightning elemental damage
+    AllowMultiple: false
+  - Tag: DamageType.Poison
+    Description: Poison damage, typically applied over time
+    AllowMultiple: false
+
+  # --- Ability classification ---
+  - Tag: Ability.Type.Melee
+    Description: Close-range physical ability
+    AllowMultiple: false
+  - Tag: Ability.Type.Ranged
+    Description: Projectile or distance physical ability
+    AllowMultiple: false
+  - Tag: Ability.Type.Spell
+    Description: Magic ability that consumes mana
+    AllowMultiple: false
+
+  # --- Combat status (drive conditional damage buckets and immunities) ---
+  - Tag: Status.Vulnerable
+    Description: Target takes increased damage while present
+    AllowMultiple: false
+  - Tag: Status.FightingElite
+    Description: Source is engaged with an elite enemy
+    AllowMultiple: false
+  - Tag: Immunity.Physical
+    Description: Target ignores incoming physical damage
+    AllowMultiple: false
+  - Tag: Immunity.Fire
+    Description: Target ignores incoming fire damage
+    AllowMultiple: false
+
+  # --- Affiliation (engine-assigned; §17.2 defers affiliation to the title) ---
+  # Which actors are hostile to the hero is the engine team model's job; abilities filter targets by
+  # these so a single-target strike acquires an enemy (not the caster or an ally).
+  - Tag: Team.Friendly
+    Description: Same side as the source (the player party); spared by hostile-only targeting
+    AllowMultiple: false
+  - Tag: Team.Hostile
+    Description: An enemy of the source; a valid target for the hero's attacks
+    AllowMultiple: false
+
+  # --- Items (granted by equip effects) ---
+  - Tag: Item.Equipped.Weapon
+    Description: A weapon is equipped in the main hand
+    AllowMultiple: false
+  - Tag: Item.Equipped.Armor
+    Description: A body armor piece is equipped
+    AllowMultiple: false
+  - Tag: Item.Type.Sword
+    Description: Item is a sword
+    AllowMultiple: false
+  - Tag: Item.Rarity.Legendary
+    Description: Item is of legendary rarity
+    AllowMultiple: false
+
+  # --- Character classes ---
+  - Tag: Class.Barbarian
+    Description: Strength-based melee class
+    AllowMultiple: false
+  - Tag: Class.Sorcerer
+    Description: Intelligence-based caster class
+    AllowMultiple: false
+  - Tag: Class.Rogue
+    Description: Dexterity-based skirmisher class
+    AllowMultiple: false
+
+  # --- Core lifecycle tags (declared here so the pack resolves as a standalone entity set) ---
+  - Tag: State.Alive
+    Description: Entity is alive and active
+    AllowMultiple: false
+  - Tag: State.Dead
+    Description: Entity is dead
+    AllowMultiple: false
+  - Tag: State.Combat
+    Description: Entity is in combat
+    AllowMultiple: false
+
+  # --- Buffs and debuffs (granted by Effects) ---
+  - Tag: State.Buff.Regenerating
+    Description: Health is regenerating over time (GE_Regeneration)
+    AllowMultiple: false
+  - Tag: State.Debuff.Stunned
+    Description: Cannot act; blocks ability activation
+    AllowMultiple: false
+
+  # --- Ability input classification (routes hotbar and movement inputs) ---
+  - Tag: Ability.Type.Attack
+    Description: Basic attack bound to the primary attack input
+    AllowMultiple: false
+  - Tag: Ability.Type.Active
+    Description: Active skill bound to a hotbar slot
+    AllowMultiple: false
+  - Tag: Ability.Type.Movement
+    Description: Locomotion and camera input
+    AllowMultiple: false
+
+  # --- Cooldowns (granted by the abilities' cooldown Effects) ---
+  - Tag: Cooldown.Ability.Whirlwind
+    Description: Whirlwind is on cooldown
+    AllowMultiple: false
+
+  # --- Gameplay events (sent by animation; awaited by ability tasks) ---
+  - Tag: Event.Montage.HitWindow
+    Description: Attack animation reached the frame where hits are applied
+    AllowMultiple: false
+
+  # --- Gameplay cues (cosmetic feedback triggered by Effects) ---
+  - Tag: GameplayCue.Character.Damage
+    Description: Plays hit feedback when a character takes damage
+    AllowMultiple: false

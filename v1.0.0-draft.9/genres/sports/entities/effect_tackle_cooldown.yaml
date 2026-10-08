@@ -1,0 +1,10 @@
+# Cooldown for GA_Tackle: a mistimed lunge leaves the defender exposed.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
+Name: GE_TackleCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 1.5
+GrantedTags:
+  - Cooldown.Ability.Tackle

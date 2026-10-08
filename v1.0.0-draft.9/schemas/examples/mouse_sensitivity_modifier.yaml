@@ -1,0 +1,14 @@
+# Example: Mouse Sensitivity Modifier
+# Demonstrates a user-configurable per-axis sensitivity multiplier for mouse look
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
+Name: MouseSensitivity
+Type: Sensitivity
+Params:
+  Multiplier: 1.0
+  MultiplierX: 1.0
+  MultiplierY: 1.0
+UserConfigurable: true
+Metadata:
+  DisplayName: Mouse Sensitivity
+  Description: Per-axis mouse sensitivity multiplier exposed in player settings

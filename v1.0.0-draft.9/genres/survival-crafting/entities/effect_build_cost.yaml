@@ -1,0 +1,11 @@
+# Cost for GA_Build: spends 10 Materials per placed structure.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
+Name: GE_BuildCost
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Materials
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -10.0

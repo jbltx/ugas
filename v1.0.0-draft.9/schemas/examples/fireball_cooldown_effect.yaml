@@ -1,0 +1,11 @@
+# Example: Fireball Cooldown Effect
+# Demonstrates an ability cooldown as a duration effect granting a cooldown tag (§8.5)
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
+Name: FireballCooldown_5s
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 5.0  # 5 second cooldown
+GrantedTags:
+  - Cooldown.Ability.Fireball

@@ -1,0 +1,12 @@
+# Cost for GA_Play: spends 20 Energy per round (five plays from a full 100-point pool). An empty
+# Energy pool cannot pay it, which is the energy gate. GE_EnergyRegen refills it over time.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
+Name: GE_PlayCost
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Energy
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -20.0

@@ -1,0 +1,11 @@
+# Cost for GA_Pass: a light Stamina spend per pass.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
+Name: GE_PassCost
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Stamina
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -2.0
