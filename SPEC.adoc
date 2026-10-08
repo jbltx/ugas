@@ -41,6 +41,12 @@ special or consequential damages for lost revenues, lost profits, or
 otherwise, arising from or in connection with this Specification or the use
 or other dealings in this Specification.
 
+All product names, game titles, engine names, and company names mentioned in this
+Specification are trademarks or registered trademarks of their respective owners. They are
+used for identification and illustration only. Their use does not imply any affiliation
+with, sponsorship by, or endorsement from their owners. This Specification is an independent
+work and is not affiliated with any of the companies named in it.
+
 // "Normative Wording" section
 
 Some parts of this Specification are purely informative and so are EXCLUDED

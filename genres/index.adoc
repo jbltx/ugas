@@ -38,6 +38,13 @@ link:../index.html[core UGAS specification]. The link:taxonomy.html[taxonomy] it
 *non-normative*.
 ====
 
+[NOTE]
+====
+Game titles named in the packs only illustrate a genre's typical mechanics. They are
+trademarks of their respective owners. The packs do not reproduce any game's data and are not
+affiliated with or endorsed by those owners.
+====
+
 [[available-packs]]
 == Available packs
 

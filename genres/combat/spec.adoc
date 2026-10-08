@@ -37,6 +37,13 @@ link:../shooter/index.html[Shooter pack] resolves hits at range with ammo, fallo
 multipliers, this pack resolves them in melee with frame phases, a guard meter, and a stagger meter
 — no projectiles, no reloads.
 
+[NOTE]
+====
+Game titles named in this pack only illustrate the genre's typical mechanics. They are
+trademarks of their respective owners. This pack does not reproduce any game's data and is not
+affiliated with or endorsed by those owners.
+====
+
 [[relationship-to-core-spec]]
 == Relationship to the core specification
 

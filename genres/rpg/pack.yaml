@@ -1,4 +1,5 @@
 # Genre pack metadata — structured source for genres/index.json.
+# Game titles in `scope` are trademarks of their respective owners, named only as genre examples.
 id: rpg
 scope: 'Action-RPG (ARPG) — Diablo, Path of Exile.'
 signatureMechanic: 'Multiplicative damage pipeline across item-driven modifier channels that stays sane as item counts grow.'

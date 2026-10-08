@@ -1,4 +1,5 @@
 # Genre pack metadata — structured source for genres/index.json.
+# Game titles in `scope` are trademarks of their respective owners, named only as genre examples.
 id: strategy
 scope: 'Strategy / RTS / 4X / tower-defense — StarCraft, Age of Empires, Command & Conquer.'
 signatureMechanic: 'Rock-paper-scissors matrix of damage types against armor classes, layered on flat armor, over a resource economy that grows over time.'

@@ -44,6 +44,13 @@ for stacking movement penalties, attribute `Clamping` with a comfort window (§5
 temperature, effect-granted tags (§9.7) for the survival state machine, and an optional
 `ExecutionCalculation` (§9.5) for the aggregated-penalty seam.
 
+[NOTE]
+====
+Game titles named in this pack only illustrate the genre's typical mechanics. They are
+trademarks of their respective owners. This pack does not reproduce any game's data and is not
+affiliated with or endorsed by those owners.
+====
+
 [[relationship-to-core-spec]]
 == Relationship to the core specification
 

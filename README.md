@@ -144,6 +144,14 @@ The specification includes detailed case studies for:
 }
 ```
 
+## Trademarks
+
+UGAS is an independent project. It is not affiliated with, sponsored by, or endorsed by any
+company or product named in this repository. Unreal Engine, Unity, Godot, Genie, and the game
+titles cited as genre examples are trademarks or registered trademarks of their respective
+owners. They are named only to describe engine targets and to point at well-known gameplay
+patterns.
+
 ## License
 
 MIT

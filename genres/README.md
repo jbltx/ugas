@@ -90,6 +90,11 @@ For fully machine consumption, the published site root also exposes `llms.txt` (
 discoverability index) and `llms-full.txt` (the complete context — the spec plus every
 schema, example, and genre-pack entity in one file).
 
+> [!NOTE]
+> Game titles named in the packs only illustrate a genre's typical mechanics. They are
+> trademarks of their respective owners. The packs do not reproduce any game's data and are
+> not affiliated with or endorsed by those owners.
+
 ## Pack index
 
 | Pack | Status | Spec |
