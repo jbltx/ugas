@@ -37,6 +37,13 @@ stamina drain and recovery, effect-granted tags for the athlete state machine, a
 `Execution` (§9.5) for shot resolution. It ships the matching schema-conformant Attributes, Tags,
 Abilities, and Effects in `entities/`, plus a worked athlete in `entities/gameplay_controller.yaml`.
 
+[NOTE]
+====
+Game titles named in this pack only illustrate the genre's typical mechanics. They are
+trademarks of their respective owners. This pack does not reproduce any game's data and is not
+affiliated with or endorsed by those owners.
+====
+
 [[relationship-to-core-spec]]
 == Relationship to the core specification
 

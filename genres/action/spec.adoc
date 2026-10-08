@@ -31,6 +31,13 @@ Platforming is the concrete seed, but the same pieces generalize to the wider *A
 Action-Adventure* family — hack-and-slash, stealth, Metroidvania — which layer combat, exploration,
 and progression on top of this movement-and-ability core.
 
+[NOTE]
+====
+Game titles named in this pack only illustrate the genre's typical mechanics. They are
+trademarks of their respective owners. This pack does not reproduce any game's data and is not
+affiliated with or endorsed by those owners.
+====
+
 [[relationship-to-core-spec]]
 == Relationship to the core specification
 

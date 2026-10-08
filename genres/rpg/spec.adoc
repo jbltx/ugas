@@ -26,6 +26,13 @@ link:../../SPEC.adoc[the core specification] (Section 16.3). Where the case stud
 _Damage Bucket_ architecture, this pack ships the matching schema-conformant Attributes, Tags,
 Abilities, and Effects in `entities/`, plus a worked hero in `entities/gameplay_controller.yaml`.
 
+[NOTE]
+====
+Game titles named in this pack only illustrate the genre's typical mechanics. They are
+trademarks of their respective owners. This pack does not reproduce any game's data and is not
+affiliated with or endorsed by those owners.
+====
+
 [[relationship-to-core-spec]]
 == Relationship to the core specification
 
