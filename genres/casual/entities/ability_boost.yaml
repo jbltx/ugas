@@ -1,0 +1,20 @@
+# Boost: claim a timed income booster (the in-game end of a rewarded ad, a chest, a daily login).
+# Applies GE_DoubleIncome to the owner, which doubles CurrencyPerSecond in the Booster channel for
+# 60 seconds. No cost - the reward is the point - but a 300-second cooldown (Cooldown: GE_BoostCooldown)
+# rations it, so the booster runs at most one minute in five and never stacks with itself. Whatever
+# grants the reward (the ad SDK, the chest UI) is engine logic; it fires the Boost action when done.
+
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
+Name: GA_Boost
+Tags:
+  AbilityTags:
+    - Ability.Type.Boost
+Cooldown: GE_BoostCooldown
+Tasks:
+  - Type: ApplyEffectToOwner
+    Params:
+      EffectClass: GE_DoubleIncome
+Metadata:
+  DisplayName: Boost
+  Description: Double passive income for 60 seconds; usable once every 5 minutes
+  Icon: ui/icons/boost.png

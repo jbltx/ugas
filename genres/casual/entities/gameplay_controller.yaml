@@ -1,6 +1,7 @@
 # Worked example: an idle save mid-game - 3 mines + 1 factory installed, one prestige performed,
 # and a double-income booster currently running. CurrentValue columns are the exact result of the
 # ActiveEffects below; CurrencyPerSecond is the signature multiplicative-channel aggregation.
+# GA_Boost fired 18 s ago: GE_DoubleIncome has 42 s of its 60 s left and GE_BoostCooldown 282 s of 300 s.
 #
 #   Generators (flat Add):  3 x Mine(+5) + 1 x Factory(+50)            = 65.0   (pipeline steps 1-2)
 #   CurrencyPerSecond:      65.0 x Prestige(1 + 2.0) x Booster(1 + 1.0)
@@ -60,6 +61,9 @@ GrantedAbilities:
   - AbilityClass: GA_Play
     Level: 1
     InputID: Play
+  - AbilityClass: GA_Boost
+    Level: 1
+    InputID: Boost
 ActiveEffects:
   - Handle: eff-passive-income
     EffectClass: GE_PassiveIncome
@@ -85,9 +89,13 @@ ActiveEffects:
   - Handle: eff-double-income
     EffectClass: GE_DoubleIncome
     Duration: 42.0
+  - Handle: eff-boost-cooldown
+    EffectClass: GE_BoostCooldown
+    Duration: 282.0
 OwnedTags:
   - Meta.State.Prestiged
   - Booster.State.DoubleIncome
+  - Cooldown.Ability.Boost
   - Generator.Type.Mine
   - Generator.Type.Factory
 ReplicationMode: Full

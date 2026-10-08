@@ -3,7 +3,7 @@
 # CurrencyPerSecond in its own "Booster" channel with a Multiply of +1.0 -> factor 1 + 1.0 = 2.0,
 # i.e. x2 (spec section 5.3). Being a separate channel, it multiplies across both the generators'
 # flat income and the Prestige channel. Grants Booster.State.DoubleIncome for the duration so the
-# UI can show the boosted state and other systems can gate on it.
+# UI can show the boosted state and other systems can gate on it. GA_Boost (ability_boost.yaml) applies it.
 
 $schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
 Name: GE_DoubleIncome

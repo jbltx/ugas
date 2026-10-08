@@ -43,6 +43,14 @@ Tags:
   - Tag: Ability.Type.Play
     Description: Energy-gated active minigame / round ability
     AllowMultiple: false
+  - Tag: Ability.Type.Boost
+    Description: Activates a timed income booster (GA_Boost applies GE_DoubleIncome, e.g. after a rewarded ad)
+    AllowMultiple: false
+
+  # --- Cooldowns (granted by the abilities' cooldown Effects) ---
+  - Tag: Cooldown.Ability.Boost
+    Description: A booster was claimed recently; granted by GE_BoostCooldown and blocks GA_Boost until it expires
+    AllowMultiple: false
 
   # --- Session state (drives UI and gates energy-cost play) ---
   - Tag: Session.State.OutOfEnergy
@@ -52,11 +60,6 @@ Tags:
   # --- Core lifecycle tags (declared here so the pack resolves as a standalone entity set) ---
   - Tag: State.Alive
     Description: Entity is alive and active
-    AllowMultiple: false
-
-  # --- Ability classification (input routing for the booster action) ---
-  - Tag: Ability.Type.Boost
-    Description: Activates a timed income booster (e.g. GE_DoubleIncome after a rewarded ad)
     AllowMultiple: false
 
   # --- Gameplay cues (cosmetic feedback triggered by Effects) ---
