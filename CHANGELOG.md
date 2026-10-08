@@ -1,5 +1,18 @@
 # ugas
 
+## 1.0.0-draft.8
+
+### Minor Changes
+
+- 9267833: [Added] UGAS is published to npm as `@ugas/spec`, at the spec version, on every GitHub release (drafts under the `next` dist-tag). The package ships the same files as `ugas.jbltx.com/v<version>/` at the same paths (schemas with `bundle.json`, spec sections, genre packs, conformance corpus, RAG artifacts, `index.json`), and exports `VERSION`, `SCHEMA_IDS`, the schemas and bundle, a `files()` listing over the manifest, TypeScript types generated from the schemas, and `checkReferences`, a JavaScript port of `scripts/check_example_references.py` that a parity test holds to the Python checker.
+
+### Patch Changes
+
+- 10ca8f1: [Fixed] `schemas/bundle.json` now rejects an entity with a missing or unknown `$schema`. Its `if`/`then` dispatch had no fallback, so such a document matched no clause and passed. Two new `conformance/invalid/bundle_*` cases cover it.
+- 10ca8f1: [Fixed] The `gameplay_effect` schema now rejects effects that cannot execute as described. A `HasDuration` effect requires `Duration`; a `Period` requires `Period`, and it must be greater than zero; each magnitude type requires the field it reads (`ScalableFloat` → `Value`, `AttributeBased` → `BackingAttribute`, `CustomCalculation` → `CalculatorClass`, `SetByCaller` → `DataTag`); and an `Area` requires `Radius`, plus `HalfAngleDeg` for a Cone. Four new `conformance/invalid/` cases cover them.
+- 10ca8f1: [Fixed] Every genre pack, and the `_template` skeleton, now resolves as a standalone entity set. The packs referenced 145 tags, cost and cooldown Effects, and Input Actions they did not ship. Each pack's tag registry now declares every tag its entities use, and the cost and cooldown Effects its abilities name now ship as files in `entities/`. CI runs `check_example_references.py` on each pack, and the npm package's parity test now also requires every pack to resolve. The pack guide gains a matching "Entities must resolve as a set" rule.
+- 10ca8f1: [Fixed] The `scene` schema's Regions now match §17.4. A region requires `Name`, `Shape`, `Origin` and `GrantedTags`, takes `Radius`, `HalfExtents`, `Orientation`, `P0`/`P1` and a `Filter` (§17.2 SpatialFilter), and requires the fields its shape needs: `Radius` for a Sphere, `HalfExtents` for a Box, `P0`, `P1` and `Radius` for a Capsule. Unknown region fields are rejected. **Breaking for authored scenes:** a region's `Position` is now `Origin`. The reference checkers also resolve `Filter.RequireTags` and `Filter.ExcludeTags`.
+
 ## 1.0.0-draft.7
 
 ### Patch Changes

@@ -1,7 +1,7 @@
 = UGAS Video Game Genre Taxonomy
 Mickael Bonfill <jbltx>
-:revnumber: 1.0.0-draft.7
-:ugas-version: v1.0.0-draft.7
+:revnumber: 1.0.0-draft.8
+:ugas-version: v1.0.0-draft.8
 :doctype: book
 :toc: left
 :toc-title: Table of Contents
