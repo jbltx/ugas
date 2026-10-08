@@ -113,6 +113,6 @@ jobs:
             echo "### ${NAME}@${VERSION} staged on npm"
             echo
             echo "It goes live under the \`${DIST_TAG}\` dist-tag once the owner approves it with 2FA:"
-            echo "open https://www.npmjs.com/package/${NAME}, then the **Staged Packages** tab, then **Approve**."
+            echo "once npm's automated review finishes, open https://www.npmjs.com/settings/jbltx/staged-packages, then **Approve**."
             echo "Or run \`npm stage list ${NAME}\` and \`npm stage approve <stage-id>\`."
           } >> "$GITHUB_STEP_SUMMARY"

@@ -68,7 +68,7 @@ with their sha256 in `index.json`. Import them through the subpath exports, e.g.
 | `conformance/` | `valid/` and `invalid/` entities for testing a loader or validator |
 | `rag/` | Retrieval chunks and an intent index |
 
-See [Consuming UGAS programmatically](https://github.com/jbltx/ugas/blob/develop/docs/CONSUMING.md)
+See [Consuming UGAS programmatically](https://github.com/jbltx/ugas/blob/main/docs/CONSUMING.md)
 for how the artifacts fit together.
 
 ## License
