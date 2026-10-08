@@ -1,0 +1,96 @@
+# Sports genre tag taxonomy. ADDITIVE: introduces genre-specific tags only.
+# The core lifecycle tags it uses (State.Alive / State.Cutscene) are declared at the end so the
+# pack resolves as a standalone entity set.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_tag.json
+Tags:
+  # --- Athlete states (granted by Effects; tag ownership follows responsibility) ---
+  - Tag: Athlete.State.Sprinting
+    Description: Athlete is sprinting; granted by GE_SprintDrain while GA_Sprint is held, draining stamina
+    AllowMultiple: false
+  - Tag: Athlete.State.Fatigued
+    Description: Stamina has fallen below the fatigue threshold; granted by GE_Fatigue, blocks GA_Sprint and GA_SkillMove
+    AllowMultiple: false
+  - Tag: Athlete.State.Injured
+    Description: Athlete is carrying a knock; granted by GE_Injury, suppresses physical performance
+    AllowMultiple: false
+
+  # --- Team states (the momentum meter swings these on) ---
+  - Tag: Team.State.HighMomentum
+    Description: The team is on top; granted by GE_MomentumBoost, multiplies offensive skill in the Momentum channel
+    AllowMultiple: false
+
+  # --- Team affiliation (target gating; reused by abilities and the shot calc) ---
+  - Tag: Team.Friendly
+    Description: Same side as the source; used to skip own-team targets
+    AllowMultiple: false
+  - Tag: Team.Hostile
+    Description: Opposing side; a valid tackle/shot-pressure target
+    AllowMultiple: false
+
+  # --- Player roles (positional classification; tune base stats and AI behaviour) ---
+  - Tag: Role.Striker
+    Description: Forward; finishing and off-ball movement
+    AllowMultiple: false
+  - Tag: Role.Midfielder
+    Description: Central player; passing range and stamina
+    AllowMultiple: false
+  - Tag: Role.Defender
+    Description: Back-line player; tackling and strength
+    AllowMultiple: false
+  - Tag: Role.Goalkeeper
+    Description: Last line; shot-stopping and distribution
+    AllowMultiple: false
+
+  # --- Ability classification ---
+  - Tag: Ability.Type.Sprint
+    Description: Burst-movement ability that drains stamina
+    AllowMultiple: false
+  - Tag: Ability.Type.Pass
+    Description: Distribute the ball to a team-mate
+    AllowMultiple: false
+  - Tag: Ability.Type.Shoot
+    Description: Attempt on goal
+    AllowMultiple: false
+  - Tag: Ability.Type.Tackle
+    Description: Challenge for the ball
+    AllowMultiple: false
+  - Tag: Ability.Type.Skill
+    Description: Technical dribbling/skill move
+    AllowMultiple: false
+
+  # --- Core lifecycle tags (declared here so the pack resolves as a standalone entity set) ---
+  - Tag: State.Alive
+    Description: Entity is alive and active
+    AllowMultiple: false
+  - Tag: State.Cutscene
+    Description: A cutscene has taken control of the entity
+    AllowMultiple: false
+
+  # --- Cooldowns (granted by the abilities' cooldown Effects) ---
+  - Tag: Cooldown.Ability.Pass
+    Description: Pass recovery window
+    AllowMultiple: false
+  - Tag: Cooldown.Ability.Shoot
+    Description: Shot animation and recovery window
+    AllowMultiple: false
+  - Tag: Cooldown.Ability.SkillMove
+    Description: Skill move recovery window
+    AllowMultiple: false
+  - Tag: Cooldown.Ability.Tackle
+    Description: Tackle recovery; a mistimed lunge leaves the defender exposed
+    AllowMultiple: false
+
+  # --- Gameplay cues (cosmetic feedback triggered by Effects) ---
+  - Tag: GameplayCue.Athlete.Fatigued
+    Description: Shows the tired animation set and heavy breathing
+    AllowMultiple: false
+  - Tag: GameplayCue.Athlete.Injury
+    Description: Plays the injury reaction and medical indicator
+    AllowMultiple: false
+  - Tag: GameplayCue.Team.MomentumSurge
+    Description: Plays the crowd roar and momentum meter flare
+    AllowMultiple: false
+  - Tag: GameplayCue.Ball.Shot
+    Description: Plays the strike sound and ball trail
+    AllowMultiple: false

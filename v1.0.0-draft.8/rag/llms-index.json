@@ -1,0 +1,64 @@
+{
+  "author an effect": [
+    "gameplay-effects-effect-structure",
+    "gameplay-effects-modifier-specification",
+    "gameplay-effects-execution-calculations-1",
+    "gameplay-effects-execution-calculations-2"
+  ],
+  "modifier pipeline": [
+    "attributes-attribute-data-structure",
+    "attributes-modifier-pipeline"
+  ],
+  "gate an ability on state": [
+    "gameplay-abilities-ability-definition",
+    "gameplay-abilities-activation-requirements",
+    "gameplay-abilities-asynchronous-validation-and-predicted-activation-1",
+    "gameplay-abilities-asynchronous-validation-and-predicted-activation-2",
+    "gameplay-abilities-asynchronous-validation-and-predicted-activation-3",
+    "gameplay-abilities-asynchronous-validation-and-predicted-activation-4"
+  ],
+  "define an attribute": [
+    "attributes-attribute-data-structure",
+    "attributes-clamping-and-bounds"
+  ],
+  "author a gameplay tag": [
+    "gameplay-tags-hierarchical-naming-convention",
+    "gameplay-tags-tag-container"
+  ],
+  "duration and periodic effects": [
+    "gameplay-effects-effect-structure",
+    "gameplay-effects-duration-policies",
+    "gameplay-effects-periodic-execution"
+  ],
+  "ability lifecycle": [
+    "gameplay-abilities-ability-definition",
+    "gameplay-abilities-lifecycle-state-machine",
+    "gameplay-abilities-commit-phase"
+  ],
+  "attribute sets": [
+    "attribute-sets-purpose-and-composition"
+  ],
+  "input integration": [
+    "input-integration-command-pattern-overview",
+    "input-integration-input-actions",
+    "input-integration-input-mappings",
+    "input-integration-input-modifiers"
+  ],
+  "gameplay cues / feedback": [
+    "gameplay-cues-design-philosophy"
+  ],
+  "networking and replication": [
+    "network-replication-replication-architecture",
+    "network-replication-client-side-prediction",
+    "network-replication-prediction-model-normative-1",
+    "network-replication-prediction-model-normative-2",
+    "network-replication-prediction-model-normative-3",
+    "network-replication-prediction-model-normative-4",
+    "network-replication-server-reconciliation"
+  ],
+  "state persistence": [
+    "state-persistence-overview",
+    "state-persistence-gc-state-snapshot",
+    "state-persistence-restoration-protocol"
+  ]
+}

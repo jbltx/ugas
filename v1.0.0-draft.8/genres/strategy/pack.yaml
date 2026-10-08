@@ -1,0 +1,4 @@
+# Genre pack metadata — structured source for genres/index.json.
+id: strategy
+scope: 'Strategy / RTS / 4X / tower-defense — StarCraft, Age of Empires, Command & Conquer.'
+signatureMechanic: 'Rock-paper-scissors matrix of damage types against armor classes, layered on flat armor, over a resource economy that grows over time.'

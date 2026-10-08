@@ -1,0 +1,10 @@
+# Cooldown for GA_UseHint: hints are free but rate-limited so they cannot be spammed.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+Name: GE_HintCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 10.0
+GrantedTags:
+  - Cooldown.Ability.Hint

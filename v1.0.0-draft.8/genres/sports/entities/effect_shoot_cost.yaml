@@ -1,0 +1,11 @@
+# Cost for GA_Shoot: a shot on goal is a hard effort.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+Name: GE_ShootCost
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Stamina
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -8.0

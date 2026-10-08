@@ -1,0 +1,149 @@
+# Survival / Crafting genre tag taxonomy. ADDITIVE: introduces genre-specific tags only.
+# The core lifecycle tags it uses (State.Alive / State.Dead) are declared at the end so the pack
+# resolves as a standalone entity set.
+# Every survival state below is GRANTED BY AN EFFECT, never written directly by an ability.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_tag.json
+Tags:
+  # --- Survival states (granted by the cascading threshold effects; gate abilities and cues) ---
+  - Tag: Survival.State.Starving
+    Description: Hunger has bottomed out; granted by GE_Starvation, which drains Health each tick
+    AllowMultiple: false
+  - Tag: Survival.State.Dehydrated
+    Description: Thirst has bottomed out; granted by GE_Dehydration, which drains Health each tick
+    AllowMultiple: false
+  - Tag: Survival.State.Exhausted
+    Description: Stamina has bottomed out; granted by GE_Exhaustion, blocks sprinting until stamina recovers
+    AllowMultiple: false
+  - Tag: Survival.State.Cold
+    Description: Body temperature fell below the comfort window; granted by GE_Exposure_Cold
+    AllowMultiple: false
+  - Tag: Survival.State.Hot
+    Description: Body temperature rose above the comfort window; granted by GE_Exposure_Heat
+    AllowMultiple: false
+  - Tag: Survival.State.Overencumbered
+    Description: CarryWeight exceeds MaxCarryWeight; granted by GE_Overencumbered, which slows movement
+    AllowMultiple: false
+  - Tag: Survival.State.Sheltered
+    Description: Inside shelter / near a heat source; suppresses cold exposure and speeds stamina regen
+    AllowMultiple: false
+
+  # --- Activity states (granted by activity effects while a gather/craft wait is in progress) ---
+  - Tag: Survival.State.Gathering
+    Description: A harvest is in progress; granted by GE_Gathering for the duration of the gather wait
+    AllowMultiple: false
+  - Tag: Survival.State.Crafting
+    Description: A craft is in progress; granted by GE_Crafting for the duration of the craft wait
+    AllowMultiple: false
+  - Tag: Survival.State.Sprinting
+    Description: Sprinting; granted by GE_Sprinting while GA_Sprint is held, draining stamina
+    AllowMultiple: false
+
+  # --- Item / resource classification (carried inventory; gate consume/craft abilities) ---
+  - Tag: Item.Type.Food
+    Description: Edible item; consumed by GA_ConsumeFood to restore Hunger
+    AllowMultiple: true
+  - Tag: Item.Type.Water
+    Description: Drinkable item; consumed by GA_Drink to restore Thirst
+    AllowMultiple: true
+  - Tag: Item.Type.Material
+    Description: Raw crafting material gathered from a resource node
+    AllowMultiple: true
+    DevComment: Extension point for typed crafting materials (e.g. Item.Type.Material.Wood, Item.Type.Material.Stone); gate craft recipes on sub-tags when the pack is extended
+  - Tag: Item.Type.Tool
+    Description: A crafted tool; equipping it grants a gathering/crafting buff (GE_CraftedTool)
+    AllowMultiple: true
+
+  # --- Ability classification ---
+  - Tag: Ability.Type.Gather
+    Description: Harvests resources from a node into the inventory
+    AllowMultiple: false
+  - Tag: Ability.Type.Craft
+    Description: Spends materials to produce a tool, structure, or consumable
+    AllowMultiple: false
+  - Tag: Ability.Type.Consume
+    Description: Consumes a carried item to restore a need
+    AllowMultiple: false
+  - Tag: Ability.Type.Build
+    Description: Places a structure, spending materials
+    AllowMultiple: false
+  - Tag: Ability.Type.Movement
+    Description: Locomotion ability (sprint, climb)
+    AllowMultiple: false
+
+  # --- Resource nodes (gather targets; gate GA_Gather and pick the yielded material) ---
+  - Tag: Resource.Node.Tree
+    Description: A harvestable tree; yields wood
+    AllowMultiple: false
+  - Tag: Resource.Node.Rock
+    Description: A harvestable rock/ore deposit; yields stone or ore
+    AllowMultiple: false
+  - Tag: Resource.Node.Bush
+    Description: A forageable bush; yields edible berries
+    AllowMultiple: false
+  - Tag: Resource.Node.Water
+    Description: A water source; a fill point for water containers
+    AllowMultiple: false
+
+  # --- Biome / environment (granted by area volumes; drive temperature exposure) ---
+  - Tag: Biome.Temperate
+    Description: Mild biome; temperature sits inside the comfort window
+    AllowMultiple: false
+  - Tag: Biome.Snow
+    Description: Frozen biome; drives GE_Exposure_Cold
+    AllowMultiple: false
+  - Tag: Biome.Desert
+    Description: Arid biome; drives GE_Exposure_Heat and faster thirst loss
+    AllowMultiple: false
+  - Tag: Environment.TimeOfDay.Night
+    Description: Night; colder ambient temperature and reduced visibility
+    AllowMultiple: false
+
+  # --- Core lifecycle tags (declared here so the pack resolves as a standalone entity set) ---
+  - Tag: State.Alive
+    Description: Entity is alive and active
+    AllowMultiple: false
+  - Tag: State.Dead
+    Description: Entity is dead
+    AllowMultiple: false
+
+  # --- Gameplay cues (cosmetic feedback triggered by Effects) ---
+  - Tag: GameplayCue.Survival.Eat
+    Description: Plays the eating animation and sound
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Drink
+    Description: Plays the drinking animation and sound
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Harvest
+    Description: Plays the resource-yield popup on a successful gather
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Gathering
+    Description: Loops the chopping/mining animation while gathering
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Crafting
+    Description: Loops the crafting animation and progress bar
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Equip
+    Description: Plays the tool equip animation
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Starving
+    Description: Shows the starvation screen vignette and stomach growl
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Dehydrated
+    Description: Shows the dehydration blur and dry-mouth sound
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Exhausted
+    Description: Plays the out-of-breath animation and sound
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Shivering
+    Description: Plays the shivering animation and frost vignette
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Hypothermia
+    Description: Shows the severe-cold frost overlay and slowed heartbeat
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Overheating
+    Description: Shows the heat-haze vignette and sweating
+    AllowMultiple: false
+  - Tag: GameplayCue.Survival.Overencumbered
+    Description: Shows the overweight indicator and heavy-walk animation
+    AllowMultiple: false

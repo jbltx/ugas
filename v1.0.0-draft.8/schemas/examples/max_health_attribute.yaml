@@ -1,0 +1,13 @@
+# Example: MaxHealth Attribute
+# Demonstrates a Statistic attribute used as another attribute's bound
+# (Health clamps to it by name, §5.4)
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute.json
+Name: MaxHealth
+DefaultBaseValue: 100.0
+Category: Statistic
+ReplicationMode: All
+Metadata:
+  DisplayName: Maximum Health
+  Description: Upper bound for the character's Health
+  UICategory: Vital Stats

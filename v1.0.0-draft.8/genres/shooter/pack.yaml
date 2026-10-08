@@ -1,0 +1,4 @@
+# Genre pack metadata — structured source for genres/index.json.
+id: shooter
+scope: 'FPS / shooter — Call of Duty, Halo, Apex, Counter-Strike.'
+signatureMechanic: 'Accuracy aggregated across modifier channels, an ammo economy (magazine plus reserve), and hit resolution coupling regenerating shields, hitzone multipliers, and range falloff.'
