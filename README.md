@@ -23,6 +23,36 @@ UGAS defines a unified architecture for implementing gameplay abilities, attribu
 | [genres/](genres/README.md) | Genre packs: per-genre additional specs + ready-to-use templates |
 | [docs/CONSUMING.md](docs/CONSUMING.md) | Consuming UGAS programmatically: manifests, pre-chunked spec, offline schema bundle, and the vendoring playbook |
 
+## Using the npm package
+
+Each spec release is published to npm as [`@ugas/spec`](https://www.npmjs.com/package/@ugas/spec)
+once the owner approves it, at the same version (`@ugas/spec@1.0.0-draft.7` is UGAS `v1.0.0-draft.7`). Drafts go out under the
+`next` dist-tag.
+
+```sh
+npm install @ugas/spec@next
+```
+
+```ts
+import { VERSION, SCHEMA_IDS, schemas, bundle, files, checkReferences } from '@ugas/spec';
+import type { GameplayEffect, EntityByType } from '@ugas/spec';
+
+VERSION;                          // '1.0.0-draft.7'
+SCHEMA_IDS.gameplay_effect;       // 'https://ugas.jbltx.com/v1.0.0-draft.7/schemas/gameplay_effect.json'
+files({ kind: 'spec-section' });  // [{ path: 'sections/05-attributes.md', sha256, ... }, ...]
+checkReferences([{ path: 'damage.yaml', entity }]); // [{ path, message }] for each dangling reference
+```
+
+- The files are the ones the site publishes, at the same relative paths: `schemas/`
+  (with `bundle.json`), `sections/`, `genres/`, `conformance/`, `rag/` and the `index.json`
+  manifest. Import them by subpath, e.g. `@ugas/spec/schemas/bundle.json`.
+- The TypeScript types are generated from the JSON schemas, one per entity type.
+- `checkReferences` is a port of [`scripts/check_example_references.py`](scripts/check_example_references.py);
+  a parity test runs both on the examples, the genre packs and the Python fixtures.
+
+The package lives in [`packages/spec/`](packages/spec/README.md); [RELEASING.md](RELEASING.md)
+covers how it is published.
+
 ## Schema Definitions
 
 | Schema Path                                   | Description                              |
@@ -107,7 +137,7 @@ The specification includes detailed case studies for:
 @techreport{bonfill_ugas_2026,
   author = {Mickael Bonfill},
   title = {Universal Gameplay Ability System Specification},
-  version = {1.0.0-draft.7},
+  version = {1.0.0-draft.8},
   year = {2026},
   month = {February},
   url = {https://github.com/jbltx/ugas}

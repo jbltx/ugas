@@ -1,5 +1,5 @@
 # Racing genre tag taxonomy. ADDITIVE: this registry introduces genre-specific tags only.
-# It does not redefine core State.* / Ability.* tags - those are referenced, not declared here.
+# Every tag the pack's entities use is declared here, so the pack resolves as a standalone entity set.
 
 $schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_tag.json
 Tags:
@@ -68,4 +68,19 @@ Tags:
     AllowMultiple: false
   - Tag: Race.Status.FinalLap
     Description: The leader has started the last lap
+    AllowMultiple: false
+
+  # --- Input classification (tags the driving input actions) ---
+  - Tag: Input.Type.Driving
+    Description: Continuous vehicle control input (steer, throttle, brake, camera)
+    AllowMultiple: false
+
+  # --- Cooldowns (granted by the abilities' cooldown Effects) ---
+  - Tag: Cooldown.Ability.Nitro
+    Description: Nitro was fired recently and cannot be re-triggered yet
+    AllowMultiple: false
+
+  # --- Gameplay cues (cosmetic feedback triggered by Effects) ---
+  - Tag: GameplayCue.Vehicle.NitroFlame
+    Description: Plays the exhaust flame and boost camera shake
     AllowMultiple: false

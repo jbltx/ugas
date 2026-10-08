@@ -1,8 +1,8 @@
 # Skill move: a technical dribble (stepover, feint, roulette) to beat a defender. Costs stamina
 # (GE_SkillMoveCost: Stamina -5) and goes on a short cooldown (GE_SkillMoveCooldown). Blocked while
 # Fatigued - a tired athlete can't pull off flair - so it shares the GE_Fatigue gate with GA_Sprint.
-# GE_SkillMoveCost and GE_SkillMoveCooldown are trivial and referenced by name, like the
-# racing/shooter cost/cooldown effects.
+# GE_SkillMoveCost and GE_SkillMoveCooldown are a flat Stamina cost and a cooldown tag
+# (effect_skill_move_cost.yaml, effect_skill_move_cooldown.yaml).
 
 $schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_SkillMove

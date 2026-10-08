@@ -1,7 +1,7 @@
 = UGAS Genre Pack: Sports
 Mickael Bonfill <jbltx>
-:revnumber: 1.0.0-draft.7
-:ugas-version: v1.0.0-draft.7
+:revnumber: 1.0.0-draft.8
+:ugas-version: v1.0.0-draft.8
 :doctype: book
 :toc: left
 :toc-title: Table of Contents
@@ -190,9 +190,8 @@ Defined in `entities/tag_registry.yaml` (additive only):
   `Athlete.State.Fatigued`.
 
 The trivial cost/cooldown effects (`GE_PassCost`, `GE_ShootCost`, `GE_TackleCost`,
-`GE_SkillMoveCost`, and their `*Cooldown` siblings) are a flat `Stamina` cost and a cooldown tag; the
-pack references them by name rather than shipping a file for each, the same convention the Racing and
-Shooter packs use.
+`GE_SkillMoveCost`, and their `*Cooldown` siblings) are a flat `Stamina` cost and a cooldown tag, each
+shipped in `entities/` so the pack resolves as a set.
 
 [[genre-effects]]
 == Genre Effects

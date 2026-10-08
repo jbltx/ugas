@@ -1,7 +1,7 @@
 = UGAS Genre Pack: Puzzle
 Mickael Bonfill <jbltx>
-:revnumber: 1.0.0-draft.7
-:ugas-version: v1.0.0-draft.7
+:revnumber: 1.0.0-draft.8
+:ugas-version: v1.0.0-draft.8
 :doctype: book
 :toc: left
 :toc-title: Table of Contents
@@ -144,8 +144,7 @@ Shooter pack, where the ammo cost on `GA_Fire` is what stops the gun firing on a
 both genres a depleted resource silently closes the loop. `GA_ActivatePowerup` draws from the same
 `MovesRemaining` budget, so powerups trade against ordinary moves; `GA_UseHint` is free but rate-
 limited by a cooldown. `GE_MoveCost` and `GE_HintCooldown` are trivial (a flat resource cost and a
-cooldown tag) and are referenced by name rather than shipped as files — the same convention the
-Racing and Shooter packs use for their cost and cooldown effects.
+cooldown tag), shipped in `entities/` so the pack resolves as a set.
 
 [[genre-tags]]
 == Genre Tags

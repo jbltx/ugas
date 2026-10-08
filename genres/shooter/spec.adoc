@@ -1,7 +1,7 @@
 = UGAS Genre Pack: Shooter
 Mickael Bonfill <jbltx>
-:revnumber: 1.0.0-draft.7
-:ugas-version: v1.0.0-draft.7
+:revnumber: 1.0.0-draft.8
+:ugas-version: v1.0.0-draft.8
 :doctype: book
 :toc: left
 :toc-title: Table of Contents
@@ -89,8 +89,8 @@ gated by tags and an ammo resource.
 * *Cooldown* — `GE_FireCooldown` runs for latexmath:[1 / \text{FireRate}] seconds, pacing automatic
   fire.
 
-Both are trivial (a flat resource cost and a cooldown tag); the pack references them by name rather
-than shipping a file for each, the same convention the Racing pack uses for its nitro cost/cooldown.
+Both are trivial (a flat resource cost and a cooldown tag) and ship in `entities/`
+(`effect_fire_cost.yaml`, `effect_fire_cooldown.yaml`).
 
 === Reload — a state plus a stateful transfer
 

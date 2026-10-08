@@ -22,6 +22,8 @@ pack is designed from first principles and grounded in the genre's standard mech
 | `entities/effect_reloading.yaml` | `GE_Reloading`: in-progress reload state that blocks fire/aim |
 | `entities/effect_reload.yaml` | `GE_Reload`: instant magazine transfer via a custom Execution |
 | `entities/effect_ballistic_damage.yaml` | `GE_BallisticDamage`: hit resolution (shields, hitzone, falloff) |
+| `entities/effect_fire_cost.yaml` | `GE_FireCost`: instant `-1 Ammo` per shot; stops fire on an empty magazine |
+| `entities/effect_fire_cooldown.yaml` | `GE_FireCooldown`: 1 / FireRate per-shot cooldown that paces automatic fire |
 | `entities/ability_fire.yaml` | `GA_Fire`: trace + apply damage; costs ammo, paced by a cooldown |
 | `entities/ability_reload.yaml` | `GA_Reload`: enter reloading, wait, transfer rounds |
 | `entities/ability_aim.yaml` | `GA_Aim`: hold to aim down sights |

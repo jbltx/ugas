@@ -10,6 +10,10 @@ Everything below lives under `https://ugas.jbltx.com/<version>/` (the canonical 
 [`versions.json`](https://ugas.jbltx.com/versions.json) (`latest` alias + per-version status
 and changelog).
 
+In JavaScript or TypeScript, the [`@ugas/spec` npm package](../packages/spec/README.md) ships the
+same files at the same paths, plus types, schema ids and the reference checker; pin it like any
+dependency instead of fetching.
+
 ## The artifacts
 
 | Artifact | What it is |

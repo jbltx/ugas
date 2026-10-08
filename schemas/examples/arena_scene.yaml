@@ -26,7 +26,7 @@ Placements:
 Regions:
   - Name: LavaPit
     Shape: Sphere
-    Position: [0, 0, 10]
+    Origin: [0, 0, 10]
     Radius: 4
     GrantedTags:
       - Zone.Hazard.Fire

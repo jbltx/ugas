@@ -1,0 +1,10 @@
+# Cooldown for GA_Whirlwind.
+
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_WhirlwindCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 6.0
+GrantedTags:
+  - Cooldown.Ability.Whirlwind

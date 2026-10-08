@@ -5,6 +5,14 @@ type: object
 required:
   - Name
   - DurationPolicy
+allOf:
+  - if:
+      properties:
+        DurationPolicy:
+          const: HasDuration
+    then:
+      required:
+        - Duration
 properties:
   Name:
     type: string
@@ -19,10 +27,12 @@ properties:
     $ref: "#/$defs/MagnitudeDefinition"
   Period:
     type: object
+    required:
+      - Period
     properties:
       Period:
         type: number
-        minimum: 0
+        exclusiveMinimum: 0
         description: Time interval for periodic execution
       ExecuteOnApplication:
         type: boolean
@@ -133,6 +143,22 @@ properties:
         type: integer
         minimum: 0
         description: "Cap on affected targets (0 = unbounded), applied after ordering."
+    allOf:
+      - if:
+          properties:
+            Shape:
+              const: Sphere
+        then:
+          required:
+            - Radius
+      - if:
+          properties:
+            Shape:
+              const: Cone
+        then:
+          required:
+            - Radius
+            - HalfAngleDeg
 
 $defs:
   MagnitudeDefinition:
@@ -183,6 +209,35 @@ $defs:
       DataTag:
         type: string
         description: Tag for SetByCaller data lookup
+    allOf:
+      - if:
+          properties:
+            Type:
+              const: ScalableFloat
+        then:
+          required:
+            - Value
+      - if:
+          properties:
+            Type:
+              const: AttributeBased
+        then:
+          required:
+            - BackingAttribute
+      - if:
+          properties:
+            Type:
+              const: CustomCalculation
+        then:
+          required:
+            - CalculatorClass
+      - if:
+          properties:
+            Type:
+              const: SetByCaller
+        then:
+          required:
+            - DataTag
 
   Modifier:
     type: object

@@ -63,7 +63,9 @@ def main() -> int:
             continue
         for doc in load_docs(path):
             n_invalid += 1
-            if schema_type(doc) not in known_types:
+            # bundle_* cases test the dispatch itself: a missing or unknown $schema
+            # must be rejected by the bundle, not skipped.
+            if not path.name.startswith("bundle_") and schema_type(doc) not in known_types:
                 errors.append(f"invalid/{path.name}: $schema does not name a known type (dispatch would not engage)")
                 continue
             if not list(validator.iter_errors(doc)):

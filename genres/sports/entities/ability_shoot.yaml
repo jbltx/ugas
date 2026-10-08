@@ -2,8 +2,8 @@
 # cooldown (GE_ShootCooldown) covering the shot animation/recovery. It traces toward goal
 # (WaitTargetData), then applies GE_ShotAttempt to the goal target, which runs ExecCalc_ShotResolution
 # to couple ShotPower / ShotAccuracy / Stamina / defender pressure into EffectiveShotPower and a goal
-# outcome. GE_ShootCost and GE_ShootCooldown are trivial and referenced by name, like the racing/shooter
-# cost/cooldown effects. A tired athlete shoots with reduced ShotAccuracy (the GE_Fatigue coupling),
+# outcome. GE_ShootCost and GE_ShootCooldown are a flat Stamina cost and a cooldown tag
+# (effect_shoot_cost.yaml, effect_shoot_cooldown.yaml). A tired athlete shoots with reduced ShotAccuracy (the GE_Fatigue coupling),
 # so stamina management feeds directly into finishing.
 
 $schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json

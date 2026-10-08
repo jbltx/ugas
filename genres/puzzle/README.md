@@ -21,6 +21,8 @@ factors, move economy, and cascade chain generalize across the wider puzzle fami
 | `entities/effect_powerup_bomb.yaml` | Instant board-clear bonus, `AttributeBased` on `BaseMatchValue` |
 | `entities/effect_time_bonus.yaml` | Instant `+TimeRemaining` top-up for timed modes |
 | `entities/effect_reset_chain.yaml` | Instant `Override` of `ChainLength` to `0` once the board settles |
+| `entities/effect_move_cost.yaml` | Instant `-1 MovesRemaining`, the cost of every swap and powerup |
+| `entities/effect_hint_cooldown.yaml` | 10 s cooldown on `GA_UseHint` |
 | `entities/ability_swap_tiles.yaml` | `GA_SwapTiles`: the core move; costs `1` move, applies `GE_MatchClear` |
 | `entities/ability_activate_powerup.yaml` | `GA_ActivatePowerup`: detonate a special tile (`GE_PowerupBomb`) |
 | `entities/ability_use_hint.yaml` | `GA_UseHint`: free assist on a cooldown |

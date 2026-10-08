@@ -18,6 +18,8 @@ schema-conformant entities, plus a worked hero example.
 | `entities/effect_weapon_firesword.yaml` | Fire Sword equip effect: `+20%` WeaponDamage (`DamageBonuses` channel) |
 | `entities/effect_basic_attack_damage.yaml` | Instant damage equal to the source's WeaponDamage |
 | `entities/effect_regeneration.yaml` | Timed + periodic health regeneration buff |
+| `entities/effect_whirlwind_cost.yaml` | Instant `-15 Mana`, the cost of `GA_Whirlwind` |
+| `entities/effect_whirlwind_cooldown.yaml` | 6 s cooldown on `GA_Whirlwind` |
 | `entities/ability_basic_attack.yaml` | `GA_BasicAttack`: single-target weapon strike |
 | `entities/ability_whirlwind.yaml` | `GA_Whirlwind`: signature melee AoE |
 | `entities/gameplay_controller.yaml` | Worked example: a level-5 Barbarian showing damage-bucket aggregation |

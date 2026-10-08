@@ -1,0 +1,11 @@
+# Cost for GA_SkillMove: Stamina spent on a technical dribble.
+
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_SkillMoveCost
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Stamina
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -5.0

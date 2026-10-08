@@ -6,8 +6,7 @@
 # The swap waits for the player's second-tile confirmation (WaitConfirm), then applies GE_MatchClear,
 # which scores the match via ExecCalc_MatchScore. Blocked while the board is still resolving
 # (Matching / Cascading) or has no legal move (Stuck); requires the level to be in the Playing phase.
-# GE_MoveCost is trivial (a flat -1 MovesRemaining resource cost) and is referenced by name rather
-# than shipped as its own file, the same convention the Racing and Shooter packs use for cost effects.
+# GE_MoveCost (effect_move_cost.yaml) is a flat -1 MovesRemaining resource cost.
 
 $schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json
 Name: GA_SwapTiles

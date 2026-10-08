@@ -1,0 +1,78 @@
+{
+  "name": "@ugas/spec",
+  "version": "0.0.0-dev",
+  "description": "Universal Gameplay Ability System specification: schemas, spec sections, genre packs, conformance corpus, TypeScript types and a cross-entity reference checker.",
+  "keywords": [
+    "ugas",
+    "gameplay",
+    "ability-system",
+    "json-schema",
+    "game-development",
+    "specification"
+  ],
+  "homepage": "https://ugas.jbltx.com",
+  "bugs": "https://github.com/jbltx/ugas/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbltx/ugas.git",
+    "directory": "packages/spec"
+  },
+  "license": "MIT",
+  "author": "Mickael Bonfill (https://github.com/jbltx)",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20.10"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./references": {
+      "types": "./dist/references.d.ts",
+      "default": "./dist/references.js"
+    },
+    "./types": {
+      "types": "./dist/generated/types/index.d.ts"
+    },
+    "./index.json": "./index.json",
+    "./SPEC.md": "./SPEC.md",
+    "./schemas/*": "./schemas/*",
+    "./sections/*": "./sections/*",
+    "./genres/*": "./genres/*",
+    "./conformance/*": "./conformance/*",
+    "./rag/*": "./rag/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist/",
+    "schemas/",
+    "sections/",
+    "genres/",
+    "conformance/",
+    "rag/",
+    "index.json",
+    "SPEC.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test test/*.test.mjs && tsc -p test/types/tsconfig.json",
+    "pack:dry": "cd build && npm pack --dry-run",
+    "prepublishOnly": "node -e \"console.error('Publish from packages/spec/build (npm run build first), not from the source directory.'); process.exit(1)\""
+  },
+  "devDependencies": {
+    "ajv": "^8.20.0",
+    "json-schema-to-typescript": "^15.0.4",
+    "typescript": "^5.9.3",
+    "yaml": "^2.8.1"
+  }
+}

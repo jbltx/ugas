@@ -1,7 +1,7 @@
 = UGAS Genre Pack: Casual
 Mickael Bonfill <jbltx>
-:revnumber: 1.0.0-draft.7
-:ugas-version: v1.0.0-draft.7
+:revnumber: 1.0.0-draft.8
+:ugas-version: v1.0.0-draft.8
 :doctype: book
 :toc: left
 :toc-title: Table of Contents
@@ -160,9 +160,8 @@ analogue of the Shooter pack's ammo gate (`GA_Fire` cannot fire on an empty maga
 The refill is `GE_EnergyRegen` (`entities/effect_energy_regen.yaml`): an `Infinite` + `Period` effect
 that adds `Energy` every few seconds, capped by the attribute's own `[0, MaxEnergy]` clamp. `GA_Play`
 is additionally blocked while `Session.State.OutOfEnergy` so the UI can present a refill prompt
-instead of a silent failure. `GE_PlayCost` is trivial (a flat resource cost) and is referenced by
-name rather than shipped as a file, the same convention the Racing and Shooter packs use for their
-cost/cooldown effects.
+instead of a silent failure. `GE_PlayCost` (`entities/effect_play_cost.yaml`) is a flat resource
+cost.
 
 [[genre-tags]]
 == Genre Tags
@@ -183,7 +182,7 @@ Defined in `entities/tag_registry.yaml` (additive only):
 * `entities/ability_tap.yaml` — `GA_Tap`: the active click; applies `GE_TapReward` (`+Currency`). No
   cost, no cooldown — the lowest-barrier interaction.
 * `entities/ability_buy_generator.yaml` — `GA_BuyGenerator`: spends `Currency` (`Cost:
-  GE_BuyGeneratorCost`, referenced by name) and applies a `GE_Generator_*`, raising
+  GE_BuyGeneratorCost`, `entities/effect_buy_generator_cost.yaml`) and applies a `GE_Generator_*`, raising
   `CurrencyPerSecond`. The cost gate prevents buying without enough currency.
 * `entities/ability_prestige.yaml` — `GA_Prestige`: requires the threshold tag
   `Meta.State.PrestigeReady`; applies `GE_PrestigeBoost`. The reset itself is documented as engine

@@ -1,0 +1,10 @@
+# Cooldown for GA_TrainUnit: the production timer; the next unit cannot be queued until it ends.
+
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_TrainCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 12.0
+GrantedTags:
+  - Cooldown.Ability.Train

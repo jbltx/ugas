@@ -1,0 +1,10 @@
+# Cooldown for GA_Pass.
+
+$schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_effect.json
+Name: GE_PassCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 0.5
+GrantedTags:
+  - Cooldown.Ability.Pass
