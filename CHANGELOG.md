@@ -1,5 +1,13 @@
 # ugas
 
+## 1.0.0-draft.9
+
+### Patch Changes
+
+- 92bf17e: [Fixed] The `gameplay_effect` schema accepts a `ScalableFloat` magnitude that reads a `Curve` instead of a `Value`, as §9.4.2 allows. Draft.8 required `Value`, so a curve-only magnitude failed validation. A `ScalableFloat` now needs `Value`, `Curve`, or both. A new `conformance/valid/effect_scalable_float_curve.yaml` case covers it, and the invalid case now has neither field.
+- 116c050: [Fixed] Strategy pack: `GE_TrainCooldown` now lasts 15 s, the same as `GA_TrainUnit`'s `WaitDelay`. At 12 s, `Cooldown.Ability.Train` dropped 3 s before the unit finished training, so anything reading the tag saw the producer as free while it was still busy.
+- 005592c: [Added] Trademark and non-affiliation notices in the README, the spec preamble, the genre pack index, and the docs site footer.
+
 ## 1.0.0-draft.8
 
 ### Minor Changes
