@@ -1,0 +1,9 @@
+# label: invalid — a ScalableFloat magnitude needs a Value (§9.4)
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+Name: GE_Damage
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Health
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat

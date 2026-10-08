@@ -1,0 +1,10 @@
+# label: invalid — a Box region needs HalfExtents (§17.4)
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/scene.json
+Name: Arena
+Placements: []
+Regions:
+  - Name: Gate
+    Shape: Box
+    Origin: [0, 0, 0]
+    GrantedTags:
+      - Zone.Gate

@@ -1,0 +1,113 @@
+# Example: OnFoot Actions (Shooter)
+# The rest of the OnFoot set's actions (Fire lives in fire_action.yaml), one per document.
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+Name: Move
+ValueType: Axis2D
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Input.Type.Movement
+Metadata:
+  DisplayName: Move
+  Description: Omnidirectional ground movement
+  Category: Movement
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+Name: Look
+ValueType: Axis2D
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Input.Type.Movement
+Metadata:
+  DisplayName: Look
+  Description: Camera and aim direction
+  Category: Movement
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+Name: Aim
+ValueType: Digital
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Input.Type.Combat
+Metadata:
+  DisplayName: Aim Down Sights
+  Description: Hold to aim down sights
+  Category: Combat
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+Name: Reload
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Input.Type.Combat
+Metadata:
+  DisplayName: Reload
+  Description: Reload the equipped weapon
+  Category: Combat
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+Name: Jump
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Input.Type.Movement
+Metadata:
+  DisplayName: Jump
+  Description: Jump or vault over obstacles
+  Category: Movement
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+Name: Sprint
+ValueType: Digital
+TriggerBehavior: WhileHeld
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Input.Type.Movement
+Metadata:
+  DisplayName: Sprint
+  Description: Hold to sprint
+  Category: Movement
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+Name: Interact
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags: []
+Metadata:
+  DisplayName: Interact
+  Description: Context-sensitive interaction (doors, pickups)
+  Category: General
+
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+Name: CycleWeapon
+ValueType: Digital
+TriggerBehavior: OnPressed
+ConsumeInput: true
+Tags:
+  ActionTags:
+    - Input.Type.Combat
+Metadata:
+  DisplayName: Cycle Weapon
+  Description: Switch to the next weapon
+  Category: Combat

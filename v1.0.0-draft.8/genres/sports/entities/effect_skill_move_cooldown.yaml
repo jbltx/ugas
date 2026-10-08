@@ -1,0 +1,10 @@
+# Cooldown for GA_SkillMove.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+Name: GE_SkillMoveCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 2.0
+GrantedTags:
+  - Cooldown.Ability.SkillMove

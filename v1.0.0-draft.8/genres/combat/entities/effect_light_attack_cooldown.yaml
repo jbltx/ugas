@@ -1,0 +1,10 @@
+# Cooldown for GA_LightAttack: a short lockout covering the jab's startup and recovery.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+Name: GE_LightAttackCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 0.3
+GrantedTags:
+  - Cooldown.Ability.LightAttack

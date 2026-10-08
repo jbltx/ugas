@@ -1,0 +1,30 @@
+# Template entity: Attribute
+# Replace with a genre-specific attribute. Every field below uses a real value
+# (the validator rejects placeholder tokens like "string"/"float").
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute.json
+Name: Health
+DefaultBaseValue: 100.0
+Category: Resource
+Clamping:
+  Min: 0
+  Max: MaxHealth
+ReplicationMode: All
+Metadata:
+  DisplayName: Health Points
+  Description: Example vital resource attribute for this genre pack
+  UICategory: Vital Stats
+
+---
+# The attribute Health's Clamping.Max names: every reference must resolve in the pack.
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute.json
+Name: MaxHealth
+DefaultBaseValue: 100.0
+Category: Statistic
+Clamping:
+  Min: 1
+ReplicationMode: All
+Metadata:
+  DisplayName: Max Health
+  Description: Example upper bound for the Health attribute
+  UICategory: Vital Stats

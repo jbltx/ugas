@@ -1,0 +1,3 @@
+== Part VI: World & Spatial Model
+
+include::part-6-world-and-space/17-world-spatial-model.adoc[]

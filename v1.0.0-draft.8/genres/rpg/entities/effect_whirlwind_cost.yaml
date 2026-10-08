@@ -1,0 +1,11 @@
+# Cost for GA_Whirlwind: spends 15 Mana per spin (three spins from the base 50-point pool).
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+Name: GE_WhirlwindCost
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Mana
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -15.0
