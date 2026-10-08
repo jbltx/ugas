@@ -1,0 +1,4 @@
+# label: invalid — a HasDuration effect needs a Duration (§9.2)
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
+Name: GE_Haste
+DurationPolicy: HasDuration

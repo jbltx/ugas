@@ -1,0 +1,10 @@
+# Cooldown for GA_HeavyAttack: covers the heavy's longer startup and recovery.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
+Name: GE_HeavyAttackCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 0.6
+GrantedTags:
+  - Cooldown.Ability.HeavyAttack

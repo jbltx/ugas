@@ -1,0 +1,12 @@
+# Cost for GA_BuyGenerator: spends Currency on the next generator. This is the base price; the
+# engine scales the price geometrically with the count owned, so the ability is gated on the balance.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
+Name: GE_BuyGeneratorCost
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Currency
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -50.0

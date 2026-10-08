@@ -1,0 +1,12 @@
+# Cost for GA_Fire: spends one round from the magazine. An empty magazine cannot pay it, which is
+# what stops the gun firing until GA_Reload refills Ammo.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
+Name: GE_FireCost
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Ammo
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -1.0

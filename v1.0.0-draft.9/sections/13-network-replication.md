@@ -1,0 +1,486 @@
+## 13. Network Replication
+
+### 13.1 Replication Architecture
+
+UGAS defines a client-server replication model where:
+
+- The server is authoritative for all gameplay state
+
+- Clients receive replicated state updates
+
+- Clients may predict state changes locally
+
+- Server reconciles predicted state with authoritative state
+
+<!-- -->
+
+    ┌──────────────────┐            ┌──────────────────┐
+    │      SERVER      │            │      CLIENT      │
+    │                  │            │                  │
+    │  ┌────────────┐  │  Replicate │  ┌────────────┐  │
+    │  │    GC      │──┼───────────▶│  │    GC      │  │
+    │  │(Authority) │  │            │  │  (Proxy)   │  │
+    │  └────────────┘  │            │  └────────────┘  │
+    │                  │            │                  │
+    │                  │  Predict   │                  │
+    │                  │◀───────────┼──(Local Input)   │
+    │                  │            │                  │
+    │                  │ Reconcile  │                  │
+    │                  │───────────▶│                  │
+    └──────────────────┘            └──────────────────┘
+
+### 13.2 Replication Modes
+
+| Mode      | Effects    | Cues | Tags | Attributes | Use Case                    |
+|-----------|------------|------|------|------------|-----------------------------|
+| `Minimal` | None       | All  | All  | None       | AI entities, distant actors |
+| `Mixed`   | Owner only | All  | All  | Owner only | Player characters           |
+| `Full`    | All        | All  | All  | All        | Single-player, debugging    |
+
+Minimal Mode  
+Only Cue triggers and Tag changes are replicated. Effects and Attributes are server-only. Suitable for AI entities where clients don’t need full state.
+
+Mixed Mode  
+Full replication to the owning client; minimal replication to others. The standard mode for player characters in multiplayer games.
+
+Full Mode  
+Complete replication to all clients. Used for single-player games or debugging. Higher bandwidth cost.
+
+### 13.3 Bandwidth Optimization
+
+#### Delta Compression
+
+Only changed values are transmitted:
+
+``` typescript
+struct ReplicatedAttributeSet {
+  /** Bitmask of changed attributes since last update */
+  DirtyMask: uint32;
+
+  /** Only changed attribute values */
+  ChangedValues: float[];
+}
+```
+
+#### Dirty Bit Tracking
+
+Attributes track their dirty state:
+
+``` typescript
+function SetBaseValue(attribute: Attribute, newValue: float): void {
+  if (attribute.BaseValue !== newValue) {
+    attribute.BaseValue = newValue;
+    attribute.bIsDirty = true;
+    this.DirtyAttributes.add(attribute);
+  }
+}
+```
+
+#### Quantization
+
+For bandwidth-critical scenarios, attribute values MAY be quantized:
+
+``` typescript
+struct QuantizedHealth {
+  /** 0-255 representing 0-100% health */
+  HealthPercent: uint8;
+}
+```
+
+### 13.4 Client-Side Prediction
+
+To eliminate network latency perception, clients predict ability outcomes locally. The structures referenced below — `PredictionKey`, `GeneratePredictionKey()`, and `CaptureState()` — are defined normatively in §13.8. Prediction MUST observe the bounded prediction window of §13.8.2; a client MUST NOT predict beyond it.
+
+``` typescript
+function TryActivateAbility_Predicted(handle: AbilitySpecHandle): void {
+  // Generate prediction key
+  const predictionKey = GeneratePredictionKey();
+
+  // Predict locally
+  const success = TryActivateAbility_Local(handle, predictionKey);
+
+  if (success) {
+    // Store predicted state
+    this.PredictedActivations.set(predictionKey, {
+      Handle: handle,
+      Timestamp: GetCurrentTime(),
+      State: CaptureState()
+    });
+
+    // Send to server
+    Server_TryActivateAbility(handle, predictionKey);
+  }
+}
+```
+
+### 13.5 Server Reconciliation
+
+When server response differs from prediction:
+
+``` typescript
+function OnServerActivationResponse(
+  predictionKey: PredictionKey,
+  serverSuccess: boolean,
+  serverState: GameplayState
+): void {
+  const prediction = this.PredictedActivations.get(predictionKey);
+
+  if (!prediction) return;
+
+  if (!serverSuccess) {
+    // Prediction was wrong - rollback
+    RollbackToState(prediction.State);
+  } else {
+    // Prediction was correct - reconcile minor differences
+    ReconcileState(serverState);
+  }
+
+  this.PredictedActivations.delete(predictionKey);
+}
+```
+
+#### Rollback and Replay
+
+For significant discrepancies:
+
+1.  Revert to last known authoritative state
+
+2.  Re-apply all inputs that occurred since that state
+
+3.  Blend visually to avoid jarring corrections
+
+The input-history record format that feeds `inputHistory`, its bounded retention duration, the maximum replay depth, and the rule that re-simulation is scoped to the single owning GC are defined normatively in §13.8.5. `RollbackToState` and `ApplyState` operate on the output of `CaptureState()` (§13.8.3) — the owning GC’s gameplay state only.
+
+``` typescript
+function RollbackAndReplay(
+  authoritativeState: GameplayState,
+  inputHistory: Input[]
+): void {
+  // 1. Revert state
+  ApplyState(authoritativeState);
+
+  // 2. Replay inputs
+  for (const input of inputHistory) {
+    if (input.Timestamp > authoritativeState.Timestamp) {
+      SimulateInput(input);
+    }
+  }
+
+  // 3. Blend if needed
+  if (VisualDiscrepancy > Threshold) {
+    StartVisualBlend(currentVisual, newSimulatedState);
+  }
+}
+```
+
+### 13.6 Replication Frequency Recommendations
+
+| Actor Type                               | Update Rate | Notes                                                                         |
+|------------------------------------------|-------------|-------------------------------------------------------------------------------|
+| Player Character (LAN / low-latency)     | 60-100 Hz   | High frequency for responsive feel                                            |
+| Player Character (mobile / high-latency) | 20-30 Hz    | Reduce to manage bandwidth; compensate with aggressive client-side prediction |
+| Important AI                             | 30-60 Hz    | Moderate frequency                                                            |
+| Distant Actors                           | 10-20 Hz    | Lower frequency acceptable                                                    |
+| Static Objects                           | On Change   | Event-based only                                                              |
+
+> *High-latency guidance:* On connections with RTT \> 150 ms (common on mobile or cross-region play), implementations SHOULD lower the player-character replication rate to 20-30 Hz and increase prediction window depth accordingly. Attribute and Tag state SHOULD be sent at a lower rate than position to prioritise movement responsiveness. Dead-reckoning or interpolation SHOULD be applied on the receiving end.
+
+### 13.7 Effect Application Authorization
+
+`ApplyGameplayEffectToTarget` is the primary mutation surface of the GC pipeline and therefore a critical security boundary in networked environments.
+
+#### Core requirement
+
+In any networked environment, a call to `ApplyGameplayEffectToTarget` that originates on a client MUST be validated by the server before the effect is executed on authoritative state. Clients MUST NOT be permitted to mutate server-authoritative GC state directly.
+
+#### Validation pipeline
+
+The server-side validation step MUST check, at minimum:
+
+1.  *Instigator authority* — the instigating GC is owned by the requesting client (or is a server-controlled entity).
+
+2.  *Ability ownership* — the effect is being applied as part of an ability that the instigator has been granted (i.e., the ability spec exists in the instigator’s granted-ability list).
+
+3.  *Target reachability* — the target GC is a legitimate target for the instigator at the time of application (range, line-of-sight, or game-rule checks as appropriate to the title).
+
+4.  *Effect class whitelist* — the effect class is one the ability is permitted to apply; implementations SHOULD reject arbitrary `EffectClass` values supplied by the client.
+
+If any check fails, the server MUST reject the application and MAY roll back any prediction the client has already applied locally (via the standard reconciliation path in §13.5).
+
+#### Predicted applications
+
+When a client applies an effect locally as part of a prediction (using a `PredictionKey`), the local application is speculative only. The authoritative application — or its rejection — is determined by the server. Implementations MUST treat predicted effect applications as unconfirmed until the server acknowledges the prediction key. When the predicted effect targets a GC the predicting client does not own, the additional cross-GC rules of §13.8.4 apply.
+
+``` typescript
+// Client: speculative application
+const predictionKey = GeneratePredictionKey();
+const specHandle = MakeOutgoingSpec(GE_Damage, level, predictionKey);
+ApplyGameplayEffectToTarget(target.GC, specHandle, predictionKey);
+// Effect is active locally, but flagged as predicted (unconfirmed).
+
+// Server: receives the RPC, validates, then applies authoritatively
+function Server_ApplyEffect(
+  instigatorGC: GameplayController,
+  targetGC: GameplayController,
+  specHandle: EffectSpecHandle,
+  predictionKey: PredictionKey
+): void {
+  // 1. Validate instigator owns the ability that produced this spec
+  if (!ValidateInstigatorAuthority(instigatorGC, specHandle)) {
+    RejectPrediction(predictionKey);
+    return;
+  }
+  // 2. Validate target is reachable / eligible
+  if (!ValidateTarget(instigatorGC, targetGC, specHandle)) {
+    RejectPrediction(predictionKey);
+    return;
+  }
+  // Authoritative application — triggers replication to all clients
+  ApplyGameplayEffectToTarget(targetGC, specHandle);
+  ConfirmPrediction(predictionKey);
+}
+```
+
+#### Authoritative-only effects
+
+Some effects MUST only ever be applied by the server (e.g., spawn effects, death effects, anti-cheat corrections). These effects SHOULD be tagged with `Gameplay.Effect.AuthoritativeOnly` and implementations MUST refuse to apply them on a client even if a prediction key is present.
+
+### 13.8 Prediction Model (Normative)
+
+§13.4 through §13.7 describe client-side prediction conceptually but leave the prediction primitives undefined. This section defines them normatively: the `PredictionKey` structure, the bounded prediction window, the scope of `CaptureState()`, multi-ability key coordination, cross-GC prediction behavior, and the input-history and replay bounds. It is additive to and MUST NOT contradict §13.4–§13.7. Where this section uses MUST/SHOULD/MAY it carries the same RFC-2119 force as the rest of this specification.
+
+#### 13.8.1 PredictionKey
+
+A `PredictionKey` is the unit of speculation. Every speculative ability activation and every speculative effect application (§13.7) carries exactly one `PredictionKey`. The key correlates a client’s local prediction with the server’s authoritative execution so the outcome can later be confirmed (`ConfirmPrediction`) or rejected (`RejectPrediction`).
+
+``` typescript
+struct PredictionKey {
+  /**
+   * Base key — a per-client monotonically increasing identifier for the
+   * prediction *group* created in a single input frame. All activations and
+   * effect applications predicted as a consequence of one input share this
+   * Base value. Unique per owning client for the lifetime of the connection.
+   */
+  Base: uint32;
+
+  /**
+   * Sub-key — monotonically increasing within a Base, starting at 0 for the
+   * activation that the input directly triggered. Chained activations (one
+   * triggered by an attribute threshold reached by another in the SAME frame)
+   * receive the next Sub value under the same Base. Sub-key 0 is the parent;
+   * Sub > 0 are dependent (child) keys. See §13.8.4.
+   */
+  Sub: uint16;
+
+  /**
+   * Parent sub-key. For the directly-triggered activation (Sub == 0) this is
+   * NONE. For a chained/dependent activation this is the Sub value of the
+   * activation that caused it, establishing the dependency edge used for
+   * atomic reconciliation (§13.8.4).
+   */
+  ParentSub: uint16 | NONE;
+
+  /**
+   * Owning client identifier. The server uses (ClientId, Base, Sub) as the
+   * globally-unique correlation tuple; clients only need (Base, Sub) locally.
+   */
+  ClientId: uint32;
+
+  /**
+   * Server-coordinated RNG seed for this prediction group. This is the seed
+   * from which a deterministic RNG stream is derived on BOTH client and
+   * server so that any randomized decision taken during prediction (e.g. a
+   * critical-hit roll) advances the SAME sequence on both ends and therefore
+   * yields the same result, avoiding a rollback caused solely by RNG drift.
+   *
+   * The AUTHORITATIVE seed originates server-side. The server allocates a
+   * per-connection seed lineage at session establishment and communicates,
+   * per prediction Base, the seed value the client MUST use (see
+   * §13.8.1 "Seed derivation"). The seed is shared by every Sub under the
+   * same Base; the RNG stream is advanced deterministically by (Sub, draw
+   * index) so that parent and child activations consume disjoint, reproducible
+   * sub-streams. Implementations MUST NOT derive gameplay-affecting randomness
+   * during prediction from any source other than this seed.
+   */
+  Seed: uint64;
+}
+
+const NONE = 0xFFFF;
+```
+
+Seed derivation  
+The server is the sole authority for `Seed`. At connection establishment the server MUST establish a seed lineage for the client (for example, a server-chosen 64-bit root seed advanced once per prediction `Base`) and MUST communicate the per-`Base` seed to the client such that the client can reproduce it before it predicts under that `Base`. Two communication strategies are permitted: (a) the server pushes the next seed(s) ahead of time (seed pre-distribution), so the client already holds the seed when local input occurs; or (b) the seed is derived by a shared, pre-agreed deterministic function of values both ends already know (e.g. `HKDF(rootSeed, Base)` where `rootSeed` was delivered once, server-side-chosen). In both cases the client MUST treat the server seed as authoritative: on `ConfirmPrediction` the server confirms the RNG stream matched; on a mismatch the server MUST `RejectPrediction` and the authoritative result replicates normally. Clients MUST NOT choose their own seed, because a client-chosen seed would let a client bias predicted random outcomes (this is the hook issue \#5 relies on for predicted critical-hit RNG).
+
+#### 13.8.2 Prediction Window (Maximum Depth)
+
+A client MUST NOT predict arbitrarily far ahead of confirmed authoritative state. Unbounded prediction lets a high-latency client diverge into a state the server will never reach, producing unrecoverable corrections.
+
+The prediction window is the maximum amount of locally-predicted, server-unconfirmed simulation a client may hold at once. It is bounded in BOTH time and frames; the effective bound is whichever limit is reached first:
+
+| Bound                 | Default   | Semantics                                                                                                                 |
+|-----------------------|-----------|---------------------------------------------------------------------------------------------------------------------------|
+| `MaxPredictionMillis` | 250 ms    | Maximum wall-clock span, measured from the oldest unconfirmed prediction’s timestamp to now, that may remain unconfirmed. |
+| `MaxPredictionFrames` | 16 frames | Maximum number of simulation frames that may remain unconfirmed, independent of frame rate.                               |
+
+- A client MUST NOT initiate a new predicted activation while doing so would exceed either bound. Once a bound is reached the client MUST fall back to awaiting server authority — i.e. it stops predicting, surrenders responsiveness for that input, and applies state only on the next authoritative update — until the oldest outstanding prediction is confirmed or rejected and the window reopens.
+
+- Implementations SHOULD make `MaxPredictionMillis` and `MaxPredictionFrames` configurable per title and per connection class. The defaults above are RECOMMENDED starting values for a 60 Hz simulation.
+
+- This bound is the concrete realization of the high-latency guidance in §13.6. When RTT exceeds the replication interval, an implementation MAY raise `MaxPredictionMillis` (and the corresponding frame count) to widen the prediction window so a high-latency client can still predict across its RTT — but the window MUST remain finite, and the fallback-to-authority behavior above MUST still trigger once the (raised) bound is exceeded. Raising the bound trades reconciliation cost and mis-prediction visibility against responsiveness; the §13.6 recommendation to "increase prediction window depth" refers to adjusting these two values.
+
+#### 13.8.3 CaptureState() Scope
+
+`CaptureState()` (called in §13.4) returns a snapshot used by `RollbackToState` to restore the client’s speculative state if a prediction is rejected. Its scope is deliberately narrow.
+
+`CaptureState()` MUST capture ONLY the owning Gameplay Controller’s gameplay state:
+
+1.  Attribute **Base** and **Current** values for the owning GC’s Attribute Sets.
+
+2.  Active effect records on the owning GC.
+
+3.  Ability activation states on the owning GC (which abilities are mid-activation, their phase, and cooldown/charge state).
+
+4.  The owning GC’s owned-tag container.
+
+`CaptureState()` MUST NOT capture world or physics state, and MUST NOT capture any other GC’s state. This keeps a per-activation capture cheap and bounds rollback cost to a single GC regardless of world size or actor count.
+
+The concrete field set is the GC State Snapshot already defined in §14.2 (and the `ActiveEffectRecord` of §14.3). `CaptureState()` MUST reuse that field set rather than defining a parallel one, with two prediction-specific differences:
+
+- Current Values and the owned-tag container, which §14.2 treats as derived/debug-only for persistence, ARE captured as restorable state here, because a speculative rollback restores the exact pre-prediction runtime state rather than recomputing from a save file.
+
+- The capture is in-memory and short-lived (retained only until its `PredictionKey` is confirmed or rejected); it is not subject to the §14 serialization/versioning requirements.
+
+``` typescript
+/**
+ * Captures ONLY the owning GC's gameplay state for speculative rollback.
+ * Field set per §14.2 GC State Snapshot + §14.3 ActiveEffectRecord, reused
+ * (not duplicated). Excludes world/physics state and all non-owned GCs.
+ */
+function CaptureState(): GameplayState {
+  return {
+    // §14.2: Attribute Base Values + (here) Current Values, owning GC only
+    AttributeSets: this.OwningGC.CaptureAttributeSets(),     // Base + Current
+    // §14.3: ActiveEffectRecord[], owning GC only
+    ActiveEffects: this.OwningGC.CaptureActiveEffectRecords(),
+    // Ability activation / cooldown / charge states, owning GC only
+    AbilityStates: this.OwningGC.CaptureAbilityActivationStates(),
+    // Owned-tag container, owning GC only
+    OwnedTags: this.OwningGC.CaptureOwnedTagContainer(),
+    Timestamp: GetCurrentTime()
+  };
+}
+```
+
+#### 13.8.4 Multi-Ability and Cross-GC Prediction
+
+##### Multi-ability prediction (atomic groups)
+
+When more than one ability is predicted to activate as a consequence of a single input frame, all of those activations MUST share one `PredictionKey.Base` and are coordinated by `Sub`:
+
+1.  The activation directly triggered by the input receives `Sub = 0`, `ParentSub = NONE`.
+
+2.  A chained activation — one triggered during the same frame by an attribute threshold, tag change, or event produced by an already-predicted activation in this group — receives the next monotonically increasing `Sub` under the same `Base`, with `ParentSub` set to the `Sub` of the activation that caused it. This makes the chain a dependency tree rooted at `Sub = 0`.
+
+3.  `GeneratePredictionKey()` returns the root key (`Sub = 0`) for a new input; dependent activations within the same frame MUST be obtained from the same group (e.g. `DeriveChildKey(parentKey)`), NOT from a fresh `GeneratePredictionKey()` call, so the shared `Base` and `Seed` are preserved.
+
+A prediction `Base` group MUST be reconciled atomically: the server confirms or rejects the group as a unit. If the parent activation (`Sub = 0`) is rejected, every dependent activation in the group MUST also be rolled back, because their precondition no longer holds. A child MAY be individually rejected while its parent is confirmed (the parent happened, but the threshold it was predicted to cross did not). This guarantees a chained activation is never left confirmed while the activation that caused it is rolled back.
+
+``` typescript
+function GeneratePredictionKey(): PredictionKey {
+  const base = this.NextPredictionBase++;     // monotonic per client
+  return {
+    Base: base,
+    Sub: 0,
+    ParentSub: NONE,
+    ClientId: this.LocalClientId,
+    Seed: this.GetServerSeedForBase(base)      // authoritative, server-derived
+  };
+}
+
+// Same-frame chained activation: keep Base + Seed, advance Sub, record parent.
+function DeriveChildKey(parent: PredictionKey): PredictionKey {
+  return {
+    Base: parent.Base,
+    Sub: this.NextSubForBase(parent.Base),     // monotonic within the Base
+    ParentSub: parent.Sub,
+    ClientId: parent.ClientId,
+    Seed: parent.Seed
+  };
+}
+```
+
+##### Cross-GC effect prediction
+
+This extends the "Predicted applications" rule of §13.7; it does not replace it. When a client predicts `ApplyGameplayEffectToTarget` (§13.7) on a GC it does NOT own:
+
+- The predicted change on the non-owned target GC MUST be treated as **speculative, local-visual only**. It MUST NOT be treated as authoritative and MUST NOT influence any decision that is itself replicated as authoritative.
+
+- The authoritative change on the non-owned GC MUST be reconciled from the server. The client MUST replace its speculative cross-GC change with the server-replicated result when the prediction key is confirmed (or discard it if rejected), exactly via the §13.5 reconciliation path.
+
+- `RollbackToState`/`CaptureState()` for the predicting client cover only the owning GC (§13.8.3); the predicting client does not roll back the non-owned target GC’s authoritative state. The non-owned GC’s correction arrives through normal replication, not through the predicting client’s local replay.
+
+- A predicted cross-GC application MUST still be `Gameplay.Effect.AuthoritativeOnly`-aware: effects so tagged (§13.7) MUST NOT be applied speculatively even as local-visual.
+
+In short: a client MAY **show** a predicted hit landing on an enemy, but the enemy’s real state only ever changes when the server says so.
+
+#### 13.8.5 Input History, Rollback Retention, and Replay Bounds
+
+`RollbackAndReplay` (§13.5) re-applies inputs after reverting to authoritative state. This section defines the record format, retention, and bounds that §13.5 leaves open, and confirms the replay is single-GC scoped.
+
+Input-history record  
+``` typescript
+struct PredictedInputRecord {
+  /** Simulation frame on which the input was sampled (monotonic). */
+  Frame: uint32;
+
+  /** Client timestamp at sample time; used for the time-based window bound. */
+  Timestamp: number;
+
+  /**
+   * The input payload that drove prediction this frame: the InputActions and
+   * their values (see Part 3), plus any ability-activation requests issued.
+   */
+  Input: InputFrame;
+
+  /**
+   * Prediction group(s) created by this input, if any. Links the input to the
+   * PredictionKey Base(s) it produced so confirm/reject can age out the
+   * matching records.
+   */
+  PredictionBases: uint32[];
+}
+```
+
+Retention  
+The input history is a bounded ring buffer. Its retention MUST be at least the prediction window of §13.8.2 (i.e. it MUST retain enough records to cover `MaxPredictionMillis` / `MaxPredictionFrames`), and it MUST NOT need to retain more, because no input older than the window can still be unconfirmed. A record MAY be dropped once its associated prediction `Base`(s) are all confirmed or rejected AND it falls outside the window. Because retention is tied to the same bound, raising the prediction window (§13.8.2) automatically widens input retention.
+
+Maximum replay depth  
+The maximum number of inputs re-simulated in a single `RollbackAndReplay` MUST NOT exceed the prediction window of §13.8.2 (`MaxPredictionFrames` frames / `MaxPredictionMillis` of inputs). Since a client cannot predict beyond the window, it can never need to replay beyond it. This bounds worst-case replay cost to the window size — e.g. at 60 Hz with the default 16-frame window, at most 16 frames are replayed, not an unbounded RTT-driven count.
+
+Replay scope  
+Replay/re-simulation MUST be scoped to the single owning GC, NOT the whole world. `RollbackAndReplay` reverts and re-simulates only the state covered by `CaptureState()` (§13.8.3) — the owning GC’s attributes, active effects, ability states, and owned tags — re-applying the owning GC’s inputs from the history buffer. World state, physics, and non-owned GCs are NOT re-simulated by the predicting client; they are corrected through normal replication (§13.1, §13.5). This is what makes replay affordable: cost scales with one GC and the window depth, not with world size or actor count.
+
+``` typescript
+function RollbackAndReplay_Bounded(
+  authoritativeState: GameplayState,   // §13.8.3 scope: owning GC only
+  inputHistory: PredictedInputRecord[] // bounded ring buffer (retention above)
+): void {
+  // 1. Revert ONLY the owning GC's gameplay state.
+  ApplyState(authoritativeState);
+
+  // 2. Replay the owning GC's inputs newer than the authoritative state,
+  //    bounded by the §13.8.2 prediction window.
+  const replayable = inputHistory.filter(
+    r => r.Timestamp > authoritativeState.Timestamp
+  );
+  // Window invariant: replayable.length <= MaxPredictionFrames.
+  for (const record of replayable) {
+    SimulateInput(record.Input);       // owning GC only; not the world
+  }
+
+  // 3. Blend visually if the corrected result diverges (§13.5).
+  if (VisualDiscrepancy > Threshold) {
+    StartVisualBlend(currentVisual, newSimulatedState);
+  }
+}
+```

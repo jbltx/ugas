@@ -8,6 +8,8 @@ The above copyright notice and this permission notice shall be included in all c
 
 The author makes no, and expressly disclaims any, representations or warranties, express or implied, regarding this Specification, including, without limitation: merchantability, fitness for a particular purpose, non-infringement of any intellectual property, correctness, accuracy, completeness, timeliness, and reliability. Under no circumstances will the author or contributors be liable for any damages, whether direct, indirect, special or consequential damages for lost revenues, lost profits, or otherwise, arising from or in connection with this Specification or the use or other dealings in this Specification.
 
+All product names, game titles, engine names, and company names mentioned in this Specification are trademarks or registered trademarks of their respective owners. They are used for identification and illustration only. Their use does not imply any affiliation with, sponsorship by, or endorsement from their owners. This Specification is an independent work and is not affiliated with any of the companies named in it.
+
 Some parts of this Specification are purely informative and so are EXCLUDED from the normative scope of this Specification. The [???](#introduction-conventions) section of the [???](#introduction) defines how these parts of the Specification are identified.
 
 Where this Specification uses technical terminology, defined in the [Glossary](#glossary) or otherwise, that refers to enabling technologies not expressly set forth in this Specification, those enabling technologies are EXCLUDED from the normative scope of this Specification.
@@ -789,7 +791,7 @@ GC.GetAttributeSet<T extends AttributeSet>(): T | null;
 #### Combat Attribute Set
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: "CombatAttributeSet"
 Attributes:
   - Name: "Health"
@@ -830,7 +832,7 @@ Attributes:
 #### Movement Attribute Set
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: "MovementAttributeSet"
 Attributes:
   - Name: "MoveSpeed"
@@ -858,7 +860,7 @@ Attributes:
 #### Vehicle Attribute Set
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: "VehicleAttributeSet"
 Attributes:
   - Name: "EngineTorque"
@@ -890,7 +892,7 @@ Attributes:
 Attributes MAY reference Attributes from other registered sets:
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: "DerivedStatsSet"
 Dependencies:
   - "CombatAttributeSet"
@@ -1123,7 +1125,7 @@ TagDefinition:
 Tag definitions MAY be collected in a tag registry:
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_tag.json
 Tags:
   - Tag: "State.Debuff.Stunned"
     Description: "Actor is unable to perform actions"
@@ -1353,7 +1355,7 @@ Costs and Cooldowns are NOT separate variables but are implemented as specialize
 #### Cost Effect Pattern
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: "GE_Fireball_Cost"
 DurationPolicy: Instant
 Modifiers:
@@ -1367,7 +1369,7 @@ Modifiers:
 #### Cooldown Effect Pattern
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: "GE_Fireball_Cooldown"
 DurationPolicy: HasDuration
 Duration:
@@ -1380,7 +1382,7 @@ GrantedTags:
 This pattern enables external modification of costs and cooldowns. For example, a "Mana Efficiency" buff could apply a multiplier to all cost effects:
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: "GE_ManaEfficiency_Buff"
 DurationPolicy: HasDuration
 Duration:
@@ -1692,7 +1694,7 @@ struct PeriodicSettings {
 Periodic effects behave like repeated Instant effects within a duration container:
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: "GE_Poison"
 DurationPolicy: HasDuration
 Duration:
@@ -1998,7 +2000,7 @@ Use case: Buff refreshing, grace periods
 Effects MAY grant Tags while active:
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: "GE_Burning"
 DurationPolicy: HasDuration
 Duration:
@@ -2026,7 +2028,7 @@ When the Effect is removed (duration expires or manual removal): 1. `RemoveTag` 
 Effects MAY grant Abilities while active:
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: "GE_FireSword_Equipped"
 DurationPolicy: Infinite
 GrantedAbilities:
@@ -2849,7 +2851,7 @@ Gameplay Cues enforce strict separation between Mechanics and Aesthetics. This s
 Cues are triggered by Tags following the `GameplayCue.*` convention:
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: "GE_FireDamage"
 DurationPolicy: Instant
 Modifiers:
@@ -3694,7 +3696,7 @@ Whether to execute missed periodic ticks (batch-fire accumulated executions) or 
 #### Effect Definition
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: "GE_BasicDamage"
 DurationPolicy: Instant
 Modifiers:
@@ -3761,7 +3763,7 @@ class HealthObserver implements IAttributeChangeObserver {
 #### Temporary Modifier
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: "GE_StrengthBuff"
 DurationPolicy: HasDuration
 Duration:
@@ -3948,7 +3950,7 @@ class ExecCalc_ArmorPenetration extends ExecutionCalculation {
 #### Movement Attributes
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: "PlatformerMovementSet"
 Attributes:
   - Name: "GravityScale"
@@ -4042,7 +4044,7 @@ class GA_Jump extends GameplayAbility {
 #### Power-Up Effects
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: "GE_SuperMushroom"
 DurationPolicy: Infinite
 GrantedTags:
@@ -4067,7 +4069,7 @@ GameplayCues:
 #### Vehicle Attribute Sets
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: "VehiclePerformanceSet"
 Attributes:
   - Name: "EngineTorque"
@@ -4100,7 +4102,7 @@ Attributes:
 #### Biome-Based Area Effects
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: "GE_Biome_Mud"
 DurationPolicy: Infinite
 ApplicationRequiredTags:
@@ -4119,7 +4121,7 @@ Modifiers:
 GrantedTags:
   - "Surface.Mud"
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: "GE_Biome_Asphalt"
 DurationPolicy: Infinite
 ApplicationRequiredTags:
@@ -4189,7 +4191,7 @@ Three canonical buckets:
 
 ``` yaml
 # GE_Weapon_FireSword.yaml — item that grants a fire damage bonus
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: "GE_Weapon_FireSword"
 DurationPolicy: Infinite
 Modifiers:
@@ -4348,7 +4350,7 @@ class ItemEquipSystem {
 #### Grid Cell Attributes
 
 ``` yaml
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: "PuzzleCellSet"
 Attributes:
   - Name: "CellValue"
@@ -4926,7 +4928,7 @@ All `$schema` URLs in UGAS data files use the pattern:
 
     https://ugas.jbltx.com/{version}/schemas/{schema-name}.json
 
-Where `{version}` is the published UGAS release the data file was authored against (e.g. `v1.0.0-draft.8`). This is the canonical, resolvable URL: it is served by the docs site, and each schema’s own `$id` is set to the same URL, so an authored file’s `$schema` both identifies and (when a network is available) resolves to the exact schema it was validated against. Each released version MUST maintain stable schema URLs — schemas at a given version MUST NOT be modified after release.
+Where `{version}` is the published UGAS release the data file was authored against (e.g. `v1.0.0-draft.9`). This is the canonical, resolvable URL: it is served by the docs site, and each schema’s own `$id` is set to the same URL, so an authored file’s `$schema` both identifies and (when a network is available) resolves to the exact schema it was validated against. Each released version MUST maintain stable schema URLs — schemas at a given version MUST NOT be modified after release.
 
 Data files SHOULD pin to the exact UGAS version they were authored against. Tooling that processes UGAS data files SHOULD validate against the schema declared in `$schema`; because the `$schema` value is a stable **identifier**, validators MAY resolve it offline (e.g. against the version’s bundled schema set) rather than over the network, and SHOULD fail clearly when the schema cannot be resolved rather than silently skipping validation.
 
@@ -4934,7 +4936,7 @@ Data files SHOULD pin to the exact UGAS version they were authored against. Tool
 
 ``` yaml
 # Gameplay Controller Interface Schema Definition
-# Based on UGAS Specification v1.0.0-draft.8 - Section 4
+# Based on UGAS Specification v1.0.0-draft.9 - Section 4
 
 type: object
 required:
@@ -5130,7 +5132,7 @@ properties:
 
 ``` yaml
 # Attribute Definition Schema
-# Based on UGAS Specification v1.0.0-draft.8 - Appendix B
+# Based on UGAS Specification v1.0.0-draft.9 - Appendix B
 
 type: object
 required:
@@ -5181,7 +5183,7 @@ properties:
 
 ``` yaml
 # AttributeSet Definition Schema
-# Based on UGAS Specification v1.0.0-draft.8 - Appendix B
+# Based on UGAS Specification v1.0.0-draft.9 - Appendix B
 
 type: object
 required:
@@ -5257,7 +5259,7 @@ $defs:
 
 ``` yaml
 # Ability Definition Schema
-# Based on UGAS Specification v1.0.0-draft.8 - Appendix B
+# Based on UGAS Specification v1.0.0-draft.9 - Appendix B
 
 type: object
 required:
@@ -5364,7 +5366,7 @@ properties:
 
 ``` yaml
 # GameplayEffect Definition Schema
-# Based on UGAS Specification v1.0.0-draft.8 - Appendix B
+# Based on UGAS Specification v1.0.0-draft.9 - Appendix B
 
 type: object
 required:
@@ -5540,7 +5542,7 @@ $defs:
           - SetByCaller
       Value:
         type: number
-        description: Static value for ScalableFloat
+        description: Static value for ScalableFloat. A ScalableFloat needs Value, Curve, or both (§9.4.2).
       Curve:
         type: string
         description: Curve table reference
@@ -5580,8 +5582,11 @@ $defs:
             Type:
               const: ScalableFloat
         then:
-          required:
-            - Value
+          anyOf:
+            - required:
+                - Value
+            - required:
+                - Curve
       - if:
           properties:
             Type:
@@ -5651,7 +5656,7 @@ $defs:
 
 ``` yaml
 # Tag Registry Schema
-# Based on UGAS Specification v1.0.0-draft.8 - Appendix B
+# Based on UGAS Specification v1.0.0-draft.9 - Appendix B
 
 type: object
 properties:
@@ -5758,7 +5763,7 @@ The following YAML schemas define the data format for each UGAS entity type.
 
 ```yaml
 # Attribute Definition Schema
-# Based on UGAS Specification v1.0.0-draft.8 - Appendix B
+# Based on UGAS Specification v1.0.0-draft.9 - Appendix B
 
 type: object
 required:
@@ -5809,7 +5814,7 @@ properties:
 
 ```yaml
 # AttributeSet Definition Schema
-# Based on UGAS Specification v1.0.0-draft.8 - Appendix B
+# Based on UGAS Specification v1.0.0-draft.9 - Appendix B
 
 type: object
 required:
@@ -5885,7 +5890,7 @@ $defs:
 
 ```yaml
 # Ability Definition Schema
-# Based on UGAS Specification v1.0.0-draft.8 - Appendix B
+# Based on UGAS Specification v1.0.0-draft.9 - Appendix B
 
 type: object
 required:
@@ -5992,7 +5997,7 @@ properties:
 
 ```yaml
 # Gameplay Controller Interface Schema Definition
-# Based on UGAS Specification v1.0.0-draft.8 - Section 4
+# Based on UGAS Specification v1.0.0-draft.9 - Section 4
 
 type: object
 required:
@@ -6188,7 +6193,7 @@ properties:
 
 ```yaml
 # GameplayEffect Definition Schema
-# Based on UGAS Specification v1.0.0-draft.8 - Appendix B
+# Based on UGAS Specification v1.0.0-draft.9 - Appendix B
 
 type: object
 required:
@@ -6364,7 +6369,7 @@ $defs:
           - SetByCaller
       Value:
         type: number
-        description: Static value for ScalableFloat
+        description: Static value for ScalableFloat. A ScalableFloat needs Value, Curve, or both (§9.4.2).
       Curve:
         type: string
         description: Curve table reference
@@ -6404,8 +6409,11 @@ $defs:
             Type:
               const: ScalableFloat
         then:
-          required:
-            - Value
+          anyOf:
+            - required:
+                - Value
+            - required:
+                - Curve
       - if:
           properties:
             Type:
@@ -6475,7 +6483,7 @@ $defs:
 
 ```yaml
 # Tag Registry Schema
-# Based on UGAS Specification v1.0.0-draft.8 - Appendix B
+# Based on UGAS Specification v1.0.0-draft.9 - Appendix B
 
 type: object
 properties:
@@ -6503,7 +6511,7 @@ properties:
 
 ```yaml
 # Input Action Definition Schema
-# Based on UGAS Specification v1.0.0-draft.8 - Section 11
+# Based on UGAS Specification v1.0.0-draft.9 - Section 11
 
 type: object
 required:
@@ -6578,7 +6586,7 @@ properties:
 
 ```yaml
 # Input Action Set Definition Schema
-# Based on UGAS Specification v1.0.0-draft.8 - Section 11
+# Based on UGAS Specification v1.0.0-draft.9 - Section 11
 
 type: object
 required:
@@ -6649,7 +6657,7 @@ properties:
 
 ```yaml
 # Input Mapping Definition Schema
-# Based on UGAS Specification v1.0.0-draft.8 - Section 11
+# Based on UGAS Specification v1.0.0-draft.9 - Section 11
 
 type: object
 required:
@@ -6781,7 +6789,7 @@ $defs:
 
 ```yaml
 # Input Modifier Definition Schema
-# Based on UGAS Specification v1.0.0-draft.8 - Section 11
+# Based on UGAS Specification v1.0.0-draft.9 - Section 11
 
 type: object
 required:
@@ -6915,7 +6923,7 @@ properties:
 
 ```yaml
 # Scene Composition Schema Definition
-# Based on UGAS Specification v1.0.0-draft.8 - Section 18
+# Based on UGAS Specification v1.0.0-draft.9 - Section 18
 
 type: object
 required:
@@ -7138,7 +7146,7 @@ The following YAML files are concrete examples of UGAS entity definitions.
 # PlayerCharacter and Goblin name GameplayControllerConfigs (§18.2) the title defines; UGAS has no
 # schema for a named config, so they are not part of this example set.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/scene.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/scene.json
 Name: Arena
 Placements:
   - Controller: PlayerCharacter
@@ -7178,7 +7186,7 @@ SpawnPoints:
 # Example: Damage Effect
 # Demonstrates an instant effect that reduces health
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: SimpleDamageEffect
 DurationPolicy: Instant
 Modifiers:
@@ -7199,7 +7207,7 @@ GameplayCues:
 # Example: Fire Action (Shooter)
 # Demonstrates a digital combat action with press-to-activate trigger behavior
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Fire
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -7219,7 +7227,7 @@ Metadata:
 # Example: Fireball Ability
 # Demonstrates an offensive magic ability with tag-based requirements
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: FireballAbility
 Tags:
   AbilityTags:
@@ -7263,7 +7271,7 @@ Metadata:
 # Example: Fireball Cooldown Effect
 # Demonstrates an ability cooldown as a duration effect granting a cooldown tag (§8.5)
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: FireballCooldown_5s
 DurationPolicy: HasDuration
 Duration:
@@ -7279,7 +7287,7 @@ GrantedTags:
 # Example: Health Attribute
 # Demonstrates a Resource type attribute with clamping
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute.json
 Name: Health
 DefaultBaseValue: 100.0
 Category: Resource
@@ -7300,7 +7308,7 @@ Metadata:
 # Example: Mana Attribute
 # Demonstrates a Resource type attribute with static bounds, spent by ability costs
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute.json
 Name: Mana
 DefaultBaseValue: 100.0
 Category: Resource
@@ -7321,7 +7329,7 @@ Metadata:
 # Example: Mana Cost Effect
 # Demonstrates an ability cost as an instant effect (§8.5): the Fireball's Cost
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: ManaCostEffect_25
 DurationPolicy: Instant
 Modifiers:
@@ -7339,7 +7347,7 @@ Modifiers:
 # Demonstrates a Statistic attribute used as another attribute's bound
 # (Health clamps to it by name, §5.4)
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute.json
 Name: MaxHealth
 DefaultBaseValue: 100.0
 Category: Statistic
@@ -7356,7 +7364,7 @@ Metadata:
 # Example: Mouse Sensitivity Modifier
 # Demonstrates a user-configurable per-axis sensitivity multiplier for mouse look
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: MouseSensitivity
 Type: Sensitivity
 Params:
@@ -7375,7 +7383,7 @@ Metadata:
 # Example: OnFoot Action Set (Shooter)
 # Demonstrates tag-driven activation with input buffering
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action_set.json
 Name: OnFoot
 Actions:
   - Move
@@ -7410,7 +7418,7 @@ Metadata:
 # The rest of the OnFoot set's actions (Fire lives in fire_action.yaml), one per document.
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Move
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -7424,7 +7432,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Look
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -7438,7 +7446,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Aim
 ValueType: Digital
 TriggerBehavior: WhileHeld
@@ -7452,7 +7460,7 @@ Metadata:
   Category: Combat
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Reload
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -7466,7 +7474,7 @@ Metadata:
   Category: Combat
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Jump
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -7480,7 +7488,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Sprint
 ValueType: Digital
 TriggerBehavior: WhileHeld
@@ -7494,7 +7502,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Interact
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -7507,7 +7515,7 @@ Metadata:
   Category: General
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: CycleWeapon
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -7527,7 +7535,7 @@ Metadata:
 # Example: OnFoot PC Mapping (Shooter)
 # Demonstrates keyboard+mouse bindings with WASD composition and modifier references
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_mapping.json
 ActionSet: OnFoot
 Platform: PC
 Bindings:
@@ -7600,7 +7608,7 @@ Metadata:
 # Example: Stick Deadzone Modifier
 # Demonstrates a user-configurable radial dead zone for gamepad analog sticks
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: StickDeadzone
 Type: DeadZone
 Params:
@@ -7619,7 +7627,7 @@ Metadata:
 # Example: Tag Registry
 # Demonstrates hierarchical tag definitions for a game
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_tag.json
 Tags:
   # State tags
   - Tag: State.Alive
@@ -7753,7 +7761,7 @@ The following YAML files are schema-conformant template entities from the genre 
 # Ground pound: slam down from the air, damaging every enemy in a small radius on impact.
 # Only usable while airborne; reuses GE_ContactDamage and skips Immunity.Contact targets.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_GroundPound
 Tags:
   AbilityTags:
@@ -7785,7 +7793,7 @@ Metadata:
 # activation logic, since tag lists are ANDed and cannot express it declaratively.
 # Task order is the happy path: GE_JumpCut is only applied if VerticalVelocity > 0 at release.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Jump
 Tags:
   AbilityTags:
@@ -7821,7 +7829,7 @@ Metadata:
 # Platformer movement attribute set: jump feel, air control, plus vitals and size for power-ups.
 # Extends the core spec's attribute model (no core attribute is redefined here).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: PlatformerMovementSet
 Attributes:
   # --- Jump & movement feel (tuned for "game feel"; read by the movement abilities) ---
@@ -7931,7 +7939,7 @@ Metadata:
 # the player, and by GA_GroundPound striking enemies. Targets holding Immunity.Contact are
 # skipped by the applying ability (see GA_GroundPound).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_ContactDamage
 DurationPolicy: Instant
 Modifiers:
@@ -7951,7 +7959,7 @@ GameplayCues:
 # Owned by the physics subsystem - it applies this on landing and removes it on takeoff.
 # Tag ownership follows responsibility (§3.1): abilities never mutate State.Grounded directly.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Grounded
 DurationPolicy: Infinite
 GrantedTags:
@@ -7964,7 +7972,7 @@ GrantedTags:
 # Airborne state: granted by GA_Jump on takeoff and removed on landing.
 # Grants State.InAir so other abilities (e.g. GA_GroundPound) can gate on being airborne.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_InAir
 DurationPolicy: Infinite
 GrantedTags:
@@ -7978,7 +7986,7 @@ GrantedTags:
 # HasDuration so it self-expires; grants Immunity.Contact (consumed by hazard/attack effects).
 # Channel SpeedBonuses: factor = 1 + 0.3 = 1.3x HorizontalSpeed while active.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_InvincibilityStar
 DurationPolicy: HasDuration
 Duration:
@@ -8006,7 +8014,7 @@ GameplayCues:
 # sooner. GA_Jump removes it on landing alongside GE_InAir.
 # Channel JumpControl uses the additive-within-channel convention: factor = 1 + 1.5 = 2.5x gravity.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_JumpCut
 DurationPolicy: Infinite
 Modifiers:
@@ -8025,7 +8033,7 @@ Modifiers:
 # From the §15.1 case study. The Scale modifier sits in the SizeBonuses channel, where the
 # additive-within-channel convention reads Value 1.0 as +100%: factor = 1 + 1.0 = 2.0x size.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_SuperMushroom
 DurationPolicy: Infinite
 GrantedTags:
@@ -8054,7 +8062,7 @@ GameplayCues:
 #   Scale:  base 1.0 x SizeBonuses(1 + 1.0 = 2.0) = 2.0
 #   Health: base 1   + 1 (mushroom)               = 2.0
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: Hero_Platformer_01
   ActorType: PlayerCharacter
@@ -8119,7 +8127,7 @@ Metadata:
 # Input buffering is enabled with a generous 0.15 s window and depth of 3, which
 # smooths out rapid jump-chains and coyote-time sequences typical of the genre.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action_set.json
 Name: OnFoot
 Actions:
   - Move
@@ -8148,7 +8156,7 @@ Metadata:
 # GroundPound is digital OnPressed; the gameplay controller gates it to State.InAir via
 # the binding's RequiredTags, not the action definition.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Move
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -8161,7 +8169,7 @@ Metadata:
   Description: Horizontal movement along the ground or in the air
   Category: Movement
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Jump
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -8175,7 +8183,7 @@ Metadata:
   Icon: ui/icons/jump.png
   Category: Movement
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: GroundPound
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -8199,7 +8207,7 @@ Metadata:
 # Jump is mapped to FaceBottom (A / Cross) and GroundPound to LeftTrigger; the trigger
 # binding is gated behind State.InAir so it only fires while airborne.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_mapping.json
 ActionSet: OnFoot
 Platform: Console
 Bindings:
@@ -8235,7 +8243,7 @@ Metadata:
 # Jump maps to Space; GroundPound maps to S but is gated behind State.InAir so
 # it only activates when airborne (prevents conflict with the downward Move axis).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_mapping.json
 ActionSet: OnFoot
 Platform: PC
 Bindings:
@@ -8277,7 +8285,7 @@ Metadata:
 # drift near the center (Inner 0.15) and snapping to full deflection near the edge
 # (Outer 0.95). Marked UserConfigurable so players can tune thresholds in settings.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: StickDeadzone
 Type: DeadZone
 Params:
@@ -8298,7 +8306,7 @@ Metadata:
 # §15.1 case study. The core lifecycle tag it uses (State.Alive) is declared at the end so the
 # pack resolves as a standalone entity set.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_tag.json
 Tags:
   # --- Movement states (granted by Effects; tag ownership follows responsibility, §3.1) ---
   - Tag: State.Grounded
@@ -8381,7 +8389,7 @@ Tags:
 # NOTE: idle generator prices scale geometrically with the count owned. That price curve is engine
 # logic (it sizes GE_BuyGeneratorCost per purchase); the effect application itself is data.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_BuyGenerator
 Tags:
   AbilityTags:
@@ -8407,7 +8415,7 @@ Metadata:
 # refills Energy over time, rationing active play across a session. Blocked while Session.State.OutOfEnergy
 # so the UI can present a refill prompt instead of a silent failure.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Play
 Tags:
   AbilityTags:
@@ -8438,7 +8446,7 @@ Metadata:
 # and re-granting GE_PassiveIncome - is engine logic this ability triggers. UGAS data captures the
 # permanent reward (GE_PrestigeBoost) and the gate; the bookkeeping of the wipe is an engine seam.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Prestige
 Tags:
   AbilityTags:
@@ -8462,7 +8470,7 @@ Metadata:
 # always available, no cost, no cooldown - applying GE_TapReward (+Currency) to the owner. Early on
 # tapping drives progress; as generators come online passive income takes over.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Tap
 Tags:
   AbilityTags:
@@ -8485,7 +8493,7 @@ Metadata:
 # Extends the core spec's attribute model (no core attribute is redefined here).
 # Base values make a fresh idle game playable as shipped: 0 income, full energy, run 1.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: IdleEconomySet
 Attributes:
   # --- Soft currency (the resource the whole loop accumulates; grows without bound) ---
@@ -8584,7 +8592,7 @@ Metadata:
 # Cost for GA_BuyGenerator: spends Currency on the next generator. This is the base price; the
 # engine scales the price geometrically with the count owned, so the ability is gated on the balance.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_BuyGeneratorCost
 DurationPolicy: Instant
 Modifiers:
@@ -8605,7 +8613,7 @@ Modifiers:
 # flat income and the Prestige channel. Grants Booster.State.DoubleIncome for the duration so the
 # UI can show the boosted state and other systems can gate on it.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_DoubleIncome
 DurationPolicy: HasDuration
 Duration:
@@ -8633,7 +8641,7 @@ GameplayCues:
 # energy gate - GA_Play spends Energy, this slowly gives it back, so active play is rationed over
 # a session in the classic casual energy/lives loop.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_EnergyRegen
 DurationPolicy: Infinite
 Period:
@@ -8655,7 +8663,7 @@ Modifiers:
 # generator income is flat Add, mines and factories sum in the same additive pass (spec section 5.3)
 # before the multiplicative Prestige / Booster channels apply. Grants Generator.Type.Factory.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Generator_Factory
 DurationPolicy: Infinite
 Modifiers:
@@ -8679,7 +8687,7 @@ GameplayCues:
 # contribute +5N before the Prestige and Booster channels multiply across the total. Grants
 # Generator.Type.Mine (AllowMultiple) so the engine can count installed mines.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Generator_Mine
 DurationPolicy: Infinite
 Modifiers:
@@ -8705,7 +8713,7 @@ GameplayCues:
 # seam where the genre's signature math plugs into UGAS. Implement ExecCalc_OfflineProgress in your
 # engine (e.g. Currency += CurrencyPerSecond * min(OfflineSeconds, OfflineCap) * OfflineEfficiency).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_OfflineProgress
 DurationPolicy: Instant
 Executions:
@@ -8724,7 +8732,7 @@ GameplayCues:
 # (spec section 9.4.2): Result = (CurrencyPerSecond + 0) x 1.0 + 0. As generators and prestige
 # push CurrencyPerSecond up, every tick automatically pays out more, with no change to this effect.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_PassiveIncome
 DurationPolicy: Infinite
 Period:
@@ -8750,7 +8758,7 @@ GameplayCues:
 # Cost for GA_Play: spends 20 Energy per round (five plays from a full 100-point pool). An empty
 # Energy pool cannot pay it, which is the energy gate. GE_EnergyRegen refills it over time.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_PlayCost
 DurationPolicy: Instant
 Modifiers:
@@ -8774,7 +8782,7 @@ Modifiers:
 # NOTE: the reset itself (zeroing Currency / generators / Stage and re-granting GE_PassiveIncome) is
 # engine logic GA_Prestige triggers; this effect only applies the resulting permanent multiplier.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_PrestigeBoost
 DurationPolicy: Infinite
 Modifiers:
@@ -8804,7 +8812,7 @@ GameplayCues:
 # quickly dwarfed by passive income - the intended idle arc from active tapping to idle automation.
 # Tuned per game; a curve-backed magnitude could scale it with Stage.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_TapReward
 DurationPolicy: Instant
 Modifiers:
@@ -8835,7 +8843,7 @@ GameplayCues:
 # so their BaseValue == CurrentValue here. Only the duration-based channel effects raise
 # CurrencyPerSecond / PrestigeMultiplier above their base.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: IdleProfile_01
   ActorType: PlayerProfile
@@ -8929,7 +8937,7 @@ Metadata:
 # with a generous window so a flurry of taps all register - the opposite tuning from a twitch shooter,
 # matching casual's forgiving feel.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action_set.json
 Name: Idle
 Actions:
   - Tap
@@ -8961,7 +8969,7 @@ Metadata:
 # the rest are OnPressed buttons.
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Tap
 ValueType: Digital
 TriggerBehavior: OnTap
@@ -8977,7 +8985,7 @@ Metadata:
   Category: Core
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: BuyGenerator
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -8992,7 +9000,7 @@ Metadata:
   Category: Economy
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Prestige
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -9007,7 +9015,7 @@ Metadata:
   Category: Meta
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Play
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -9022,7 +9030,7 @@ Metadata:
   Category: Core
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Boost
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -9044,7 +9052,7 @@ Metadata:
 # desktop and web. The left mouse button is the tap; keyboard shortcuts cover the economy/meta
 # actions for quick play. Tap shares the same TapDebounce as the touch mapping for consistent feel.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_mapping.json
 ActionSet: Idle
 Platform: PC
 Bindings:
@@ -9082,7 +9090,7 @@ Metadata:
 # targets). Tap runs through TapDebounce so an accidental double-fire within a few frames is
 # swallowed, keeping rapid tapping clean. Buttons are not rebindable (they are UI elements).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_mapping.json
 ActionSet: Idle
 Platform: Mobile
 Bindings:
@@ -9123,7 +9131,7 @@ Metadata:
 # are simple, so the set is small and tap-centric.
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: TapDebounce
 Type: Custom
 Params:
@@ -9134,7 +9142,7 @@ Metadata:
   Description: Swallows a second tap fired within a few frames of the first, so rapid tapping does not double-count a single press
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: TouchPressThreshold
 Type: TriggerThreshold
 Params:
@@ -9153,7 +9161,7 @@ Metadata:
 # standalone entity set. Dynamic states are granted by Effects
 # (spec section 7.5), never written directly by abilities.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_tag.json
 Tags:
   # --- Meta-progression states (granted by Effects; gate the prestige ability) ---
   - Tag: Meta.State.PrestigeReady
@@ -9243,7 +9251,7 @@ Tags:
 # hitstun, blockstun, or staggered. Holding guard chips GuardHealth on each blocked hit; when it
 # empties, the engine breaks the guard (a separate guard-break flow), so blocking is not free.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Block
 Tags:
   AbilityTags:
@@ -9282,7 +9290,7 @@ Metadata:
 # attack's recovery CANCELS that light - the light->heavy combo cancel expressed purely with tags.
 # Cannot start while in hitstun, blockstun, staggered, or blocking.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_HeavyAttack
 Tags:
   AbilityTags:
@@ -9329,7 +9337,7 @@ Metadata:
 # cancels - so a heavy during light recovery interrupts it, the basic combo cancel. Cannot start while in
 # hitstun, blockstun, staggered, or blocking.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_LightAttack
 Tags:
   AbilityTags:
@@ -9375,7 +9383,7 @@ Metadata:
 # is an engine targeting seam, §17.2). Blocked while in hitstun, blockstun, or staggered. Goes on a long
 # cooldown (GE_SpecialCooldown) so it cannot be chained even with meter to spare.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Special
 Tags:
   AbilityTags:
@@ -9421,7 +9429,7 @@ Metadata:
 # all-rounder fighter so the set is playable as shipped: 200 HP, a 100-point poise bar, an
 # empty 100-point super gauge, and 80 points of guard stamina.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: FighterCombatSet
 Attributes:
   # --- Survivability (depleted by GE_MeleeDamage; reaching 0 Health is a KO) ---
@@ -9558,7 +9566,7 @@ Metadata:
 # layers (e.g. a parry or a guard upgrade in a separate channel) multiply across it cleanly, exactly
 # like the shooter's Aim and Attachments channels compose on Spread.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Blocking
 DurationPolicy: Infinite
 Modifiers:
@@ -9589,7 +9597,7 @@ GameplayCues:
 # own recovery on a well-spaced attack, which is what makes some blocked strings safe and others
 # punishable. The duration is the move's blockstun frame count expressed in seconds.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Blockstun
 DurationPolicy: HasDuration
 Duration:
@@ -9606,7 +9614,7 @@ GameplayCues:
 ```yaml
 # Cooldown for GA_HeavyAttack: covers the heavy's longer startup and recovery.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_HeavyAttackCooldown
 DurationPolicy: HasDuration
 Duration:
@@ -9624,7 +9632,7 @@ GrantedTags:
 # (their ActivationBlockedTags list it). Applied to the target alongside GE_MeleeDamage on a clean
 # (unblocked) hit. The duration is the move's hitstun frame count expressed in seconds.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Hitstun
 DurationPolicy: HasDuration
 Duration:
@@ -9641,7 +9649,7 @@ GameplayCues:
 ```yaml
 # Cooldown for GA_LightAttack: a short lockout covering the jab's startup and recovery.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_LightAttackCooldown
 DurationPolicy: HasDuration
 Duration:
@@ -9664,7 +9672,7 @@ GrantedTags:
 # the shooter's hit-resolution calc and the racing traction calc - the seam where the genre's
 # signature math plugs into UGAS.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_MeleeDamage
 DurationPolicy: Instant
 Executions:
@@ -9678,7 +9686,7 @@ GameplayCues:
 ```yaml
 # Cooldown for GA_Special: a long lockout so the super cannot be chained even with meter to spare.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_SpecialCooldown
 DurationPolicy: HasDuration
 Duration:
@@ -9698,7 +9706,7 @@ GrantedTags:
 # fires (core spec section 5.6), keeping with the rule that states are granted by Effects, never
 # written directly. The stagger window is long enough to land a full combo.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Stagger
 DurationPolicy: HasDuration
 Duration:
@@ -9716,7 +9724,7 @@ GameplayCues:
 # Cost for GA_Special: spends a full bar of Super (MaxSuper 100). A partial gauge cannot pay it,
 # so the special is gated on meter with no extra check.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_SuperCost
 DurationPolicy: Instant
 Modifiers:
@@ -9743,7 +9751,7 @@ Modifiers:
 #   Block-channel movement penalty (active while guard is held):
 #     MoveSpeed:       500 x Block(1 - 0.5 = 0.50)                          = 250.0
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: Fighter_Brawler_01
   ActorType: PlayerCharacter
@@ -9828,7 +9836,7 @@ Metadata:
 # fast cancel strings - light buffered into heavy, special buffered out of a launcher - register on
 # the frame they become legal rather than being dropped, the responsiveness fighting games demand.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action_set.json
 Name: Brawl
 Actions:
   - LightAttack
@@ -9862,7 +9870,7 @@ Metadata:
 # Block is held (its ability waits on the matching release); Move is a continuous 2D vector.
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: LightAttack
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -9877,7 +9885,7 @@ Metadata:
   Category: Combat
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: HeavyAttack
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -9892,7 +9900,7 @@ Metadata:
   Category: Combat
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Block
 ValueType: Digital
 TriggerBehavior: WhileHeld
@@ -9907,7 +9915,7 @@ Metadata:
   Category: Combat
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Special
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -9922,7 +9930,7 @@ Metadata:
   Category: Combat
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Move
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -9945,7 +9953,7 @@ Metadata:
 # threshold so a half-pull does not drop guard). The left stick passes through a radial dead zone
 # and radial scaling so diagonal walk/crouch inputs read consistently.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_mapping.json
 ActionSet: Brawl
 Platform: Console
 Bindings:
@@ -9993,7 +10001,7 @@ Metadata:
 # modifiers sit in the per-binding modifier pipeline and run in the order listed on each binding.
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: StickDeadzone
 Type: DeadZone
 Params:
@@ -10006,7 +10014,7 @@ Metadata:
   Description: Radial dead zone for the walk/crouch stick - ignores drift below 20% and saturates above 90%
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: RadialScaling
 Type: RadialScaling
 Params:
@@ -10017,7 +10025,7 @@ Metadata:
   Description: Normalizes stick input to a maximum radius of 1.0 for consistent diagonal walk/crouch
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: TriggerThreshold
 Type: TriggerThreshold
 Params:
@@ -10036,7 +10044,7 @@ Metadata:
 # end so the pack resolves as a standalone entity set. Frame-data states and the
 # stagger/block states are all GRANTED BY EFFECTS; abilities only gate on them.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_tag.json
 Tags:
   # --- Combat states (granted by Effects; the frame-data + stagger/guard state machine) ---
   - Tag: Combat.State.Hitstun
@@ -10149,7 +10157,7 @@ Tags:
 # board-clear bonus and grants Cascading so the resulting cascades score through the normal pipeline.
 # GE_MoveCost is the same trivial -1 MovesRemaining cost effect referenced by GA_SwapTiles.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_ActivatePowerup
 Tags:
   AbilityTags:
@@ -10187,7 +10195,7 @@ Metadata:
 # (Matching / Cascading) or has no legal move (Stuck); requires the level to be in the Playing phase.
 # GE_MoveCost (effect_move_cost.yaml) is a flat -1 MovesRemaining resource cost.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_SwapTiles
 Tags:
   AbilityTags:
@@ -10221,7 +10229,7 @@ Metadata:
 # legal move to surface). It runs a brief highlight task and ends; it applies no scoring effect.
 # GE_HintCooldown (effect_hint_cooldown.yaml) is a short duration granting a cooldown tag.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_UseHint
 Tags:
   AbilityTags:
@@ -10250,7 +10258,7 @@ Metadata:
 # Base values describe a default match-3 level (target 1000, 25 moves) so the set is
 # playable as shipped: ~7 average matches at the right combo/chain comfortably clear it.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: PuzzleBoardSet
 Attributes:
   # --- Score (the win resource; large headroom, never negative) ---
@@ -10375,7 +10383,7 @@ Metadata:
 # the first cascade at ChainLength 1 (factor 2), the second at ChainLength 2 (factor 3), and so on -
 # rewarding deep cascades. ChainLength is reset to 0 by GE_ResetChain once the board settles.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_CascadeChain
 DurationPolicy: Instant
 Modifiers:
@@ -10401,7 +10409,7 @@ GameplayCues:
 # is removed and ComboMultiplier falls back toward its clamped floor of 1. ExecCalc_MatchScore reads
 # the aggregated ComboMultiplier, so the combo factor enters the score product declaratively.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_ComboBuild
 DurationPolicy: HasDuration
 Duration:
@@ -10422,7 +10430,7 @@ GameplayCues:
 ```yaml
 # Cooldown for GA_UseHint: hints are free but rate-limited so they cannot be spammed.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_HintCooldown
 DurationPolicy: HasDuration
 Duration:
@@ -10444,7 +10452,7 @@ GrantedTags:
 # hit-resolution calc - the seam where the genre's signature math plugs into UGAS. Granting
 # Puzzle.State.Matching (instead of mutating a tag directly) keeps state changes on the Effect layer.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_MatchClear
 DurationPolicy: Instant
 Executions:
@@ -10461,7 +10469,7 @@ GameplayCues:
 # Cost for GA_SwapTiles and GA_ActivatePowerup: spends one move. At 0 MovesRemaining no move can
 # pay it, which is what ends the level.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_MoveCost
 DurationPolicy: Instant
 Modifiers:
@@ -10484,7 +10492,7 @@ Modifiers:
 # cascades that then score through the normal pipeline. Powerup classification is carried by tags
 # (Powerup.Type.Bomb) granted on the special tile, not by this effect.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_PowerupBomb
 DurationPolicy: Instant
 Modifiers:
@@ -10512,7 +10520,7 @@ GameplayCues:
 # The transient Puzzle.State.Cascading / Puzzle.State.Matching tags fall away with their instant
 # effects; this effect just re-asserts the interactive phase.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_ResetChain
 DurationPolicy: Instant
 Modifiers:
@@ -10533,7 +10541,7 @@ GrantedTags:
 # attribute set, so a bonus can never push the clock above its ceiling. Move-limited levels simply
 # never apply this effect. Kept declarative - a flat resource add needs no Execution.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_TimeBonus
 DurationPolicy: Instant
 Modifiers:
@@ -10571,7 +10579,7 @@ GameplayCues:
 #
 # Score 900 < TargetScore 1000, MovesRemaining 20 > 0: the level is still in Puzzle.Phase.Playing.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: PuzzleBoard_Level07_01
   ActorType: PuzzleBoard
@@ -10648,7 +10656,7 @@ Metadata:
 # that a swap queued during a cascade animation fires the moment the board becomes interactive again -
 # the responsiveness players expect from a match-3 board.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action_set.json
 Name: BoardControls
 Actions:
   - SelectTile
@@ -10681,7 +10689,7 @@ Metadata:
 # second tile (SelectTile's adjacent-tile confirmation), so there is no separate drag/swipe action.
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: SelectTile
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -10696,7 +10704,7 @@ Metadata:
   Category: Board
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: ActivatePowerup
 ValueType: Digital
 TriggerBehavior: OnDoubleTap
@@ -10711,7 +10719,7 @@ Metadata:
   Category: Board
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: UseHint
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -10734,7 +10742,7 @@ Metadata:
 # the H key requests a hint. This mirrors the Touch scheme one-to-one so the same abilities drive
 # both platforms unchanged.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_mapping.json
 ActionSet: BoardControls
 Platform: PC
 Bindings:
@@ -10764,7 +10772,7 @@ Metadata:
 # a match-3 puzzle. Tapping selects a tile, and tapping an adjacent tile confirms the swap; a
 # double-tap detonates a special tile; a dedicated on-screen Hint button requests a move.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_mapping.json
 ActionSet: BoardControls
 Platform: Mobile
 Bindings:
@@ -10794,7 +10802,7 @@ Metadata:
 # Every tag the pack's entities use is declared here, so the pack resolves as a standalone entity set.
 # Board states (Matching, Cascading, Stuck) are GRANTED BY EFFECTS, never written directly.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_tag.json
 Tags:
   # --- Board resolution states (granted by scoring effects; gate the swap/cascade loop) ---
   - Tag: Puzzle.State.Matching
@@ -10888,7 +10896,7 @@ Tags:
 # Drift ability: hold to slide. Grants Vehicle.State.Drifting and refills boost via GE_DriftCharge,
 # trading cornering grip for nitro charge. Ends when the input is released.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Drift
 Tags:
   AbilityTags:
@@ -10916,7 +10924,7 @@ Metadata:
 # Nitro boost ability: spend the boost resource for a short burst of power.
 # Costs boost (GE_NitroCost) and goes on cooldown (GE_NitroCooldown); applies GE_NitroBoost to self.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_NitroBoost
 Tags:
   AbilityTags:
@@ -10944,7 +10952,7 @@ Metadata:
 # Vehicle performance attribute set: drivetrain, aero, tires, and the boost resource.
 # Extends the core spec's attribute model (no core attribute is redefined here).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: VehiclePerformanceSet
 Attributes:
   # --- Drivetrain (the power the engine puts to the wheels) ---
@@ -11040,7 +11048,7 @@ Metadata:
 # Surface area effect: dry asphalt. Overrides the Surface-channel grip to the clean 1.0 baseline,
 # clearing any prior off-track penalty. Infinite while the vehicle is on the surface.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Biome_Asphalt
 DurationPolicy: Infinite
 ApplicationRequiredTags:
@@ -11062,7 +11070,7 @@ GrantedTags:
 # Surface area effect: driving onto mud. Cuts grip in the "Surface" channel and lowers top speed.
 # Infinite while the vehicle is on the surface; applied/removed by the track's area volumes.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Biome_Mud
 DurationPolicy: Infinite
 ApplicationRequiredTags:
@@ -11089,7 +11097,7 @@ GrantedTags:
 # Drift charge: while sliding, periodically refill the boost resource.
 # HasDuration + Period demonstrates timed, repeating execution (refreshed each tick GA_Drift holds).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_DriftCharge
 DurationPolicy: HasDuration
 Duration:
@@ -11114,7 +11122,7 @@ GrantedTags:
 # Nitro boost: a short burst of extra power applied by GA_NitroBoost.
 # HasDuration so it self-expires; grants Vehicle.State.Boosting for cues and ability gating.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_NitroBoost
 DurationPolicy: HasDuration
 Duration:
@@ -11142,7 +11150,7 @@ GameplayCues:
 ```yaml
 # Cooldown for GA_NitroBoost: matches the 3 s GE_NitroBoost burst so bursts cannot overlap.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_NitroCooldown
 DurationPolicy: HasDuration
 Duration:
@@ -11158,7 +11166,7 @@ GrantedTags:
 # Cost for GA_NitroBoost: spends 25 Boost per burst (four bursts from a full 100-point tank).
 # Drifting refills Boost.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_NitroCost
 DurationPolicy: Instant
 Modifiers:
@@ -11176,7 +11184,7 @@ Modifiers:
 # An ExecutionCalculation reads grip, downforce, speed, and tire temperature and writes
 # AvailableTraction. Instant; the simulation re-applies it each physics step.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Traction_Update
 DurationPolicy: Instant
 Executions:
@@ -11189,7 +11197,7 @@ Executions:
 # Sport tuning package: a permanent performance upgrade fitted to the vehicle.
 # Raises drivetrain output (flat) and grip in the "Upgrades" channel of the traction pipeline.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Tuning_Sport
 DurationPolicy: Infinite
 ApplicationRequiredTags:
@@ -11224,7 +11232,7 @@ GrantedTags:
 #   MaxSpeed:           base 250 + Tuning(+20) + Mud(-30)                               = 240.0
 #   EngineTorque:       base 400 + Tuning(+80)                                          = 480.0
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: Vehicle_SportCar_01
   ActorType: PlayerVehicle
@@ -11286,7 +11294,7 @@ Metadata:
 # Racing action set: groups all on-track driving inputs.
 # Active only while the vehicle is racing and not spun out.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action_set.json
 Name: RacingOnTrack
 Actions:
   - Steer
@@ -11314,7 +11322,7 @@ Metadata:
 # Steer, Throttle, Brake are analog axes; Boost and Drift are digital triggers;
 # Look provides a free-look camera axis while driving.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Steer
 ValueType: Axis1D
 TriggerBehavior: WhileHeld
@@ -11326,7 +11334,7 @@ Metadata:
   Description: Horizontal steering axis (-1 full left, +1 full right)
   Category: Driving
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Throttle
 ValueType: Axis1D
 TriggerBehavior: WhileHeld
@@ -11338,7 +11346,7 @@ Metadata:
   Description: Analog throttle input (0 idle, 1 full power)
   Category: Driving
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Brake
 ValueType: Axis1D
 TriggerBehavior: WhileHeld
@@ -11350,7 +11358,7 @@ Metadata:
   Description: Analog brake input (0 no braking, 1 full braking)
   Category: Driving
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Boost
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -11362,7 +11370,7 @@ Metadata:
   Description: Activate nitro boost
   Category: Driving
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Drift
 ValueType: Digital
 TriggerBehavior: WhileHeld
@@ -11374,7 +11382,7 @@ Metadata:
   Description: Hold to initiate and sustain a drift through corners
   Category: Driving
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Look
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -11393,7 +11401,7 @@ Metadata:
 # Gamepad bindings for the RacingOnTrack action set (Console platform).
 # Maps standard gamepad controls to driving actions with appropriate modifiers.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_mapping.json
 ActionSet: RacingOnTrack
 Platform: Console
 Bindings:
@@ -11442,7 +11450,7 @@ Metadata:
 # StickDeadzone and TriggerDeadzone clean up analog noise;
 # SteeringSensitivity applies an S-curve for progressive steering feel.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: StickDeadzone
 Type: DeadZone
 Params:
@@ -11454,7 +11462,7 @@ Metadata:
   DisplayName: Stick Dead Zone
   Description: Radial dead zone for analog stick inputs
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: TriggerDeadzone
 Type: DeadZone
 Params:
@@ -11466,7 +11474,7 @@ Metadata:
   DisplayName: Trigger Dead Zone
   Description: Axial dead zone for trigger inputs
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: SteeringSensitivity
 Type: ResponseCurve
 Params:
@@ -11483,7 +11491,7 @@ Metadata:
 # Racing genre tag taxonomy. ADDITIVE: this registry introduces genre-specific tags only.
 # Every tag the pack's entities use is declared here, so the pack resolves as a standalone entity set.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_tag.json
 Tags:
   # --- Track surfaces (granted by area/biome effects; drive the grip pipeline) ---
   - Tag: Surface.Asphalt
@@ -11581,7 +11589,7 @@ Tags:
 # Team.Hostile) is the engine team model's job (§17.2). A real title supplies the exact victim from the
 # player's target / the montage hit-window instead.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_BasicAttack
 Tags:
   AbilityTags:
@@ -11615,7 +11623,7 @@ Metadata:
 # Signature melee AoE: spins, striking every enemy in radius with the basic-attack damage effect.
 # Models the GA_Whirlwind tag-query example from the core spec (section 15.3).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Whirlwind
 Tags:
   AbilityTags:
@@ -11655,7 +11663,7 @@ Metadata:
 # RPG core attribute set: primary stats, derived combat stats, vitals, and progression.
 # Extends the core spec's attribute model (no core attribute is redefined here).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: RPGCoreAttributes
 Attributes:
   # --- Primary attributes (player-allocated, drive everything else) ---
@@ -11784,7 +11792,7 @@ Metadata:
 # Instant damage dealt by a weapon strike: subtracts the source's fully-aggregated
 # WeaponDamage (after all damage-bucket channels resolve) from the target's Health.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_BasicAttackDamage
 DurationPolicy: Instant
 Modifiers:
@@ -11805,7 +11813,7 @@ GameplayCues:
 # MainStat scaling: each point of Strength adds +1% WeaponDamage in the "MainStat" channel.
 # Mirrors the ARPG damage-bucket design in the core spec (section 15.3).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_MainStat_Strength
 DurationPolicy: Infinite
 Modifiers:
@@ -11825,7 +11833,7 @@ Modifiers:
 # Timed health regeneration buff: restores 5 Health every second for 5 seconds.
 # Demonstrates HasDuration + periodic execution.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Regeneration
 DurationPolicy: HasDuration
 Duration:
@@ -11850,7 +11858,7 @@ GrantedTags:
 # Equippable item effect: a Fire Sword that grants +20% damage in the "DamageBonuses" channel.
 # Infinite duration while equipped; grants item/element tags consumed by other systems.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Weapon_FireSword
 DurationPolicy: Infinite
 Modifiers:
@@ -11871,7 +11879,7 @@ GrantedTags:
 ```yaml
 # Cooldown for GA_Whirlwind.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_WhirlwindCooldown
 DurationPolicy: HasDuration
 Duration:
@@ -11886,7 +11894,7 @@ GrantedTags:
 ```yaml
 # Cost for GA_Whirlwind: spends 15 Mana per spin (three spins from the base 50-point pool).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_WhirlwindCost
 DurationPolicy: Instant
 Modifiers:
@@ -11904,7 +11912,7 @@ Modifiers:
 # WeaponDamage shows the damage-bucket result of the two active effects below:
 #   base 10  x MainStat(1 + 0.01*50 = 1.50)  x DamageBonuses(1 + 0.20 = 1.20)  = 18.0
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: Hero_Barbarian_01
   ActorType: PlayerCharacter
@@ -11963,7 +11971,7 @@ Metadata:
 ```yaml
 # RPG on-foot action set. Active while the character is alive.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action_set.json
 Name: OnFoot
 Actions:
   - BasicAttack
@@ -11986,7 +11994,7 @@ Metadata:
 # BasicAttack is the primary left-click attack. Ability1 is the first hotbar slot.
 # Move and Look are standard 2D axes for character movement and camera control.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: BasicAttack
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -11999,7 +12007,7 @@ Metadata:
   Description: Primary melee or ranged attack
   Category: Combat
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Ability1
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -12012,7 +12020,7 @@ Metadata:
   Description: First ability hotbar slot
   Category: Combat
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Move
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -12025,7 +12033,7 @@ Metadata:
   Description: Directional movement vector
   Category: Movement
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Look
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -12044,7 +12052,7 @@ Metadata:
 ```yaml
 # RPG PC keyboard+mouse bindings for on-foot gameplay.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_mapping.json
 ActionSet: OnFoot
 Platform: PC
 Bindings:
@@ -12091,7 +12099,7 @@ Metadata:
 ```yaml
 # Reusable input modifiers for the RPG genre pack.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: MouseSensitivity
 Type: Sensitivity
 Params:
@@ -12111,7 +12119,7 @@ Metadata:
 # The core State.* / Ability.* tags it uses are declared at the end so the pack resolves as a
 # standalone entity set.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_tag.json
 Tags:
   # --- Damage types (used by abilities, immunities, and conditional effects) ---
   - Tag: DamageType.Physical
@@ -12244,7 +12252,7 @@ Tags:
 # Aim down sights: hold to apply GE_ADS (tighter cone, slower movement, State.Aiming), release to
 # remove it. Same hold-then-WaitInputRelease shape as the platformer jump. Cannot aim mid-reload.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Aim
 Tags:
   AbilityTags:
@@ -12278,7 +12286,7 @@ Metadata:
 # the automatic fire rate. Cannot fire mid-reload. GE_FireCost and GE_FireCooldown are a flat
 # resource cost and a cooldown tag (effect_fire_cost.yaml, effect_fire_cooldown.yaml).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Fire
 Tags:
   AbilityTags:
@@ -12312,7 +12320,7 @@ Metadata:
 # is non-empty" check (Ammo < MagazineSize AND ReserveAmmo > 0) is evaluated in activation logic,
 # since attribute comparisons cannot be expressed as activation tags.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Reload
 Tags:
   AbilityTags:
@@ -12344,7 +12352,7 @@ Metadata:
 # ammo economy. Extends the core spec's attribute model (no core attribute is redefined here).
 # Base values describe a default automatic rifle so the set is playable as shipped.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: ShooterCombatSet
 Attributes:
   # --- Survivability (shield absorbs first, then health; both regenerate out of combat) ---
@@ -12494,7 +12502,7 @@ Metadata:
 # convention: factor = 1 + Value, so Spread x (1 - 0.75) = x0.25 and MoveSpeed x (1 - 0.3) = x0.70.
 # Spread sits in the Aim channel; the Attachments channel (GE_AttachmentBarrel) multiplies across it.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_ADS
 DurationPolicy: Infinite
 Modifiers:
@@ -12524,7 +12532,7 @@ GameplayCues:
 # from GE_ADS's Aim channel - so the two multiply: base Spread x Aim x Attachments (see the
 # worked example in gameplay_controller.yaml). EffectiveRange is a flat additive bonus.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_AttachmentBarrel
 DurationPolicy: Infinite
 Modifiers:
@@ -12552,7 +12560,7 @@ GrantedTags:
 # and shield-before-health absorption - so it runs through a custom Execution. The calc honors
 # Immunity.Ballistic targets and writes EffectiveDamage (Meta) for telemetry/UI.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_BallisticDamage
 DurationPolicy: Instant
 Executions:
@@ -12568,7 +12576,7 @@ GameplayCues:
 # fire/reload/aim abilities. The rifle's stat block is the ShooterCombatSet base values, so this
 # effect carries no modifiers - swapping weapons means swapping which equip effect is active.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_EquipRifle
 DurationPolicy: Infinite
 GrantedTags:
@@ -12586,7 +12594,7 @@ GameplayCues:
 # automatic fire. A reciprocal is not a linear AttributeBased magnitude, so the duration is a custom
 # calculation that reads the current FireRate: a FireRate upgrade shortens the cooldown.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_FireCooldown
 DurationPolicy: HasDuration
 Duration:
@@ -12604,7 +12612,7 @@ GrantedTags:
 # Cost for GA_Fire: spends one round from the magazine. An empty magazine cannot pay it, which is
 # what stops the gun firing until GA_Reload refills Ammo.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_FireCost
 DurationPolicy: Instant
 Modifiers:
@@ -12623,7 +12631,7 @@ Modifiers:
 # custom Execution that tops the magazine up to MagazineSize and decrements ReserveAmmo by the
 # rounds loaded (capped by what's left in reserve).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Reload
 DurationPolicy: Instant
 Executions:
@@ -12637,7 +12645,7 @@ Executions:
 # State.Reloading, which blocks GA_Fire and GA_Aim. GA_Reload applies this, waits the duration,
 # then applies GE_Reload (the instant magazine transfer). Duration mirrors the ReloadTime attribute.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Reloading
 DurationPolicy: HasDuration
 Duration:
@@ -12659,7 +12667,7 @@ GameplayCues:
 #   MoveSpeed:      base 600 x Aim(1 - 0.3 = 0.70)                                = 420.0
 #   EffectiveRange: base 50 + 30 (barrel)                                         = 80.0
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: Soldier_FPS_01
   ActorType: PlayerCharacter
@@ -12753,7 +12761,7 @@ Metadata:
 # enabled with a tight 0.12 s window (max 2 queued events) so that rapid fire/reload
 # sequences feel responsive without swallowing unintended repeats.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action_set.json
 Name: OnFoot
 Actions:
   - Fire
@@ -12791,7 +12799,7 @@ Metadata:
 # Digital actions produce trigger events; Axis2D actions produce a continuous 2D vector.
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Fire
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -12807,7 +12815,7 @@ Metadata:
   Category: Combat
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Aim
 ValueType: Digital
 TriggerBehavior: WhileHeld
@@ -12822,7 +12830,7 @@ Metadata:
   Category: Combat
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Reload
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -12837,7 +12845,7 @@ Metadata:
   Category: Combat
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Move
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -12852,7 +12860,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Look
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -12867,7 +12875,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Jump
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -12882,7 +12890,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Sprint
 ValueType: Digital
 TriggerBehavior: WhileHeld
@@ -12897,7 +12905,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Interact
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -12911,7 +12919,7 @@ Metadata:
   Category: General
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: CycleWeapon
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -12934,7 +12942,7 @@ Metadata:
 # Both sticks pass through a radial dead zone; the right stick additionally gets an
 # AimAssistCurve (exponential response) for smoother aim control on a gamepad.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_mapping.json
 ActionSet: OnFoot
 Platform: Console
 Bindings:
@@ -13008,7 +13016,7 @@ Metadata:
 # Move uses a WASD composite; Look uses raw mouse axes with a MouseSensitivity modifier
 # so the player can tune X/Y sensitivity independently in the settings screen.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_mapping.json
 ActionSet: OnFoot
 Platform: PC
 Bindings:
@@ -13084,7 +13092,7 @@ Metadata:
 # in the order they are listed on each binding.
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: StickDeadzone
 Type: DeadZone
 Params:
@@ -13097,7 +13105,7 @@ Metadata:
   Description: Radial dead zone for analog sticks - ignores drift below 15% and saturates above 95%
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: MouseSensitivity
 Type: Sensitivity
 Params:
@@ -13110,7 +13118,7 @@ Metadata:
   Description: Per-axis mouse sensitivity multiplier exposed in the player settings screen
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: TriggerThreshold
 Type: TriggerThreshold
 Params:
@@ -13121,7 +13129,7 @@ Metadata:
   Description: Analog trigger press threshold - values below 0.5 are treated as released
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: AimAssistCurve
 Type: ResponseCurve
 Params:
@@ -13133,7 +13141,7 @@ Metadata:
   Description: Exponential response curve for gamepad aiming - slower near center, faster at extremes
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: RadialScaling
 Type: RadialScaling
 Params:
@@ -13151,7 +13159,7 @@ Metadata:
 # The core lifecycle tags it uses (State.Alive / State.InVehicle / State.Cutscene) are declared at
 # the end so the pack resolves as a standalone entity set.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_tag.json
 Tags:
   # --- Weapon-handling states (granted by Effects; tag ownership follows responsibility) ---
   - Tag: State.Aiming
@@ -13279,7 +13287,7 @@ Tags:
 # channel) governs how cleanly it arrives. GE_PassCost and GE_PassCooldown are a flat Stamina cost
 # and a cooldown tag (effect_pass_cost.yaml, effect_pass_cooldown.yaml).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Pass
 Tags:
   AbilityTags:
@@ -13311,7 +13319,7 @@ Metadata:
 # (effect_shoot_cost.yaml, effect_shoot_cooldown.yaml). A tired athlete shoots with reduced ShotAccuracy (the GE_Fatigue coupling),
 # so stamina management feeds directly into finishing.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Shoot
 Tags:
   AbilityTags:
@@ -13343,7 +13351,7 @@ Metadata:
 # GE_SkillMoveCost and GE_SkillMoveCooldown are a flat Stamina cost and a cooldown tag
 # (effect_skill_move_cost.yaml, effect_skill_move_cooldown.yaml).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_SkillMove
 Tags:
   AbilityTags:
@@ -13372,7 +13380,7 @@ Metadata:
 # hold-then-WaitInputRelease shape as the platformer jump and the racing drift. Blocked while Fatigued,
 # so once the engine's low-stamina threshold has applied GE_Fatigue the athlete cannot keep sprinting.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Sprint
 Tags:
   AbilityTags:
@@ -13406,7 +13414,7 @@ Metadata:
 # is where GE_Injury typically gets applied to the loser). GE_TackleCost and GE_TackleCooldown are a
 # flat Stamina cost and a cooldown tag (effect_tackle_cost.yaml, effect_tackle_cooldown.yaml).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Tackle
 Tags:
   AbilityTags:
@@ -13435,7 +13443,7 @@ Metadata:
 # Extends the core spec's attribute model (no core attribute is redefined here).
 # Base values describe a competent all-round outfield athlete so the set is playable as shipped.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: AthletePerformanceSet
 Attributes:
   # --- Stamina resource (drains with sprint/actions; backs the fatigue coupling) ---
@@ -13580,7 +13588,7 @@ Metadata:
 # evaluation, the penalty deepens as the athlete tires further. It also grants Athlete.State.Fatigued,
 # the tag that gates GA_Sprint / GA_SkillMove.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Fatigue
 DurationPolicy: Infinite
 Modifiers:
@@ -13616,7 +13624,7 @@ GameplayCues:
 # MaxStamina ceiling (so the athlete also tires faster while carrying the knock). Grants
 # Athlete.State.Injured for cues, substitution AI, and broadcast overlays.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Injury
 DurationPolicy: HasDuration
 Duration:
@@ -13656,7 +13664,7 @@ GameplayCues:
 #   PassAccuracy : base 70 x Momentum(1 + 0.20) = 84.0  (see gameplay_controller.yaml)
 # HasDuration so the surge self-expires; grants Team.State.HighMomentum for cues and AI.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_MomentumBoost
 DurationPolicy: HasDuration
 Duration:
@@ -13686,7 +13694,7 @@ GameplayCues:
 ```yaml
 # Cooldown for GA_Pass.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_PassCooldown
 DurationPolicy: HasDuration
 Duration:
@@ -13701,7 +13709,7 @@ GrantedTags:
 ```yaml
 # Cost for GA_Pass: a light Stamina spend per pass.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_PassCost
 DurationPolicy: Instant
 Modifiers:
@@ -13717,7 +13725,7 @@ Modifiers:
 ```yaml
 # Cooldown for GA_Shoot: covers the shot animation and recovery.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_ShootCooldown
 DurationPolicy: HasDuration
 Duration:
@@ -13732,7 +13740,7 @@ GrantedTags:
 ```yaml
 # Cost for GA_Shoot: a shot on goal is a hard effort.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_ShootCost
 DurationPolicy: Instant
 Modifiers:
@@ -13755,7 +13763,7 @@ Modifiers:
 # analogue of the shooter pack's ExecCalc_HitResolution - the seam where a genre's signature math
 # plugs into UGAS.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_ShotAttempt
 DurationPolicy: Instant
 Executions:
@@ -13769,7 +13777,7 @@ GameplayCues:
 ```yaml
 # Cooldown for GA_SkillMove.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_SkillMoveCooldown
 DurationPolicy: HasDuration
 Duration:
@@ -13784,7 +13792,7 @@ GrantedTags:
 ```yaml
 # Cost for GA_SkillMove: Stamina spent on a technical dribble.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_SkillMoveCost
 DurationPolicy: Instant
 Modifiers:
@@ -13803,7 +13811,7 @@ Modifiers:
 # Grants Athlete.State.Sprinting for cues and animation; the steady -Stamina/tick is what eventually
 # trips the engine's low-stamina threshold and brings GE_Fatigue (and the Fatigued tag) into play.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_SprintDrain
 DurationPolicy: HasDuration
 Duration:
@@ -13831,7 +13839,7 @@ GrantedTags:
 # pauses/removes this while Athlete.State.Sprinting is present, mirroring the brief's "+Stamina while
 # not sprinting"). The +Stamina is clamped at MaxStamina by the attribute's Clamping.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_StaminaRecover
 DurationPolicy: Infinite
 Period:
@@ -13850,7 +13858,7 @@ Modifiers:
 ```yaml
 # Cooldown for GA_Tackle: a mistimed lunge leaves the defender exposed.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_TackleCooldown
 DurationPolicy: HasDuration
 Duration:
@@ -13865,7 +13873,7 @@ GrantedTags:
 ```yaml
 # Cost for GA_Tackle: Stamina spent on a challenge for the ball.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_TackleCost
 DurationPolicy: Instant
 Modifiers:
@@ -13893,7 +13901,7 @@ Modifiers:
 #   PassAccuracy: base  70 x Momentum(1 + 0.20 = 1.20)                     = 84.0
 # Acceleration, Strength, Tackling, and Composure carry no active modifier, so Current == Base.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: Athlete_Striker_09
   ActorType: PlayerCharacter
@@ -13988,7 +13996,7 @@ Metadata:
 # 0.12 s window so quick pass/skill-move sequences feel responsive without swallowing repeats - the
 # same convention the shooter pack uses for its on-foot set.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action_set.json
 Name: Outfield
 Actions:
   - Move
@@ -14023,7 +14031,7 @@ Metadata:
 # abilities in gameplay_controller.yaml (Sprint, Pass, Shoot, Tackle, SkillMove).
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Move
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -14037,7 +14045,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Look
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -14051,7 +14059,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Sprint
 ValueType: Digital
 TriggerBehavior: WhileHeld
@@ -14066,7 +14074,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Pass
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -14081,7 +14089,7 @@ Metadata:
   Category: OnBall
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Shoot
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -14096,7 +14104,7 @@ Metadata:
   Category: OnBall
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Tackle
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -14111,7 +14119,7 @@ Metadata:
   Category: OffBall
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: SkillMove
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -14135,7 +14143,7 @@ Metadata:
 # partial pulls don't drain stamina. Pass / Shoot / Skill Move sit on the face buttons; Tackle on a
 # shoulder so a defender can challenge without taking a thumb off the move stick.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_mapping.json
 ActionSet: Outfield
 Platform: Console
 Bindings:
@@ -14197,7 +14205,7 @@ Metadata:
 # knobs. Mirrors the shooter/racing modifier conventions.
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: StickDeadzone
 Type: DeadZone
 Params:
@@ -14210,7 +14218,7 @@ Metadata:
   Description: Radial dead zone for analog sticks - ignores drift below 15% and saturates above 95%
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: RadialScaling
 Type: RadialScaling
 Params:
@@ -14221,7 +14229,7 @@ Metadata:
   Description: Normalizes stick input to a maximum radius of 1.0 so diagonal runs match cardinal speed
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: TriggerThreshold
 Type: TriggerThreshold
 Params:
@@ -14239,7 +14247,7 @@ Metadata:
 # The core lifecycle tags it uses (State.Alive / State.Cutscene) are declared at the end so the
 # pack resolves as a standalone entity set.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_tag.json
 Tags:
   # --- Athlete states (granted by Effects; tag ownership follows responsibility) ---
   - Tag: Athlete.State.Sprinting
@@ -14346,7 +14354,7 @@ Tags:
 # (§17.2). Energy refills over time via the periodic GE_EnergyRegen. GE_AreaStrikeCost and
 # GE_AreaStrikeCooldown live in effect_area_strike_cost.yaml and effect_area_strike_cooldown.yaml.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_AreaStrike
 Tags:
   AbilityTags:
@@ -14388,7 +14396,7 @@ Metadata:
 # damage. Affiliation (which units are Faction.Hostile to this attacker) is the engine team model's job —
 # §17.2 defers affiliation to the title, which tags opponents Faction.Hostile per the registry.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_AutoAttack
 Tags:
   AbilityTags:
@@ -14423,7 +14431,7 @@ Metadata:
 # window, then the state expires and the structure is live. GE_BuildCost (effect_build_cost.yaml) is a flat
 # Minerals cost.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_ConstructBuilding
 Tags:
   AbilityTags:
@@ -14456,7 +14464,7 @@ Metadata:
 # Blocked while the structure itself is still under construction. GE_TrainCost and GE_TrainCooldown
 # are a flat Minerals cost and a cooldown tag (effect_train_cost.yaml, effect_train_cooldown.yaml).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_TrainUnit
 Tags:
   AbilityTags:
@@ -14494,7 +14502,7 @@ Metadata:
 # base. They are grouped here so the pack ships one self-contained, playable set; the worked
 # controller (a single unit) only populates the combat attributes - see gameplay_controller.yaml.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: UnitStatsSet
 Attributes:
   # --- Survivability (damage spills into Health once mitigation resolves; 0 is a kill) ---
@@ -14651,7 +14659,7 @@ Metadata:
 ```yaml
 # Cooldown for GA_AreaStrike.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_AreaStrikeCooldown
 DurationPolicy: HasDuration
 Duration:
@@ -14666,7 +14674,7 @@ GrantedTags:
 ```yaml
 # Cost for GA_AreaStrike: spends 75 caster Energy. GE_EnergyRegen refills it at +5 every 2 s.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_AreaStrikeCost
 DurationPolicy: Instant
 Modifiers:
@@ -14686,7 +14694,7 @@ Modifiers:
 # targets and its penalty on Light/Fortified - the area weapon obeys the same rock-paper-scissors
 # rules as single-target fire. Only hostiles are affected (friendly units are skipped).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_AreaStrikeDamage
 DurationPolicy: Instant
 ApplicationRequiredTags:
@@ -14706,7 +14714,7 @@ GameplayCues:
 # weakest against high-multiplier siege - which keeps the rock-paper-scissors matrix meaningful even
 # at full upgrades. Stacks by applying multiple instances (additive flat Add). Requires a built unit.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_ArmorUpgrade
 DurationPolicy: Infinite
 ApplicationRequiredTags:
@@ -14726,7 +14734,7 @@ Modifiers:
 # A reciprocal is not a linear AttributeBased magnitude, so the duration is a custom calculation that
 # reads the current AttackSpeed: an attack-speed buff shortens the cooldown.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_AttackCooldown
 DurationPolicy: HasDuration
 Duration:
@@ -14744,7 +14752,7 @@ GrantedTags:
 # Cost for GA_ConstructBuilding: spends Minerals to place a structure. An under-resourced player
 # cannot pay it, so the build cannot start.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_BuildCost
 DurationPolicy: Instant
 Modifiers:
@@ -14765,7 +14773,7 @@ Modifiers:
 # build system raises BuildProgress from 0 to 100 over the same window. Duration mirrors a typical
 # structure build time. The completion cue fires when the state ends.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Constructing
 DurationPolicy: HasDuration
 Duration:
@@ -14785,7 +14793,7 @@ GameplayCues:
 # attribute's own clamp. Demonstrates that periodic income is not economy-only - the same construct
 # regenerates a per-unit caster pool.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_EnergyRegen
 DurationPolicy: Infinite
 Period:
@@ -14808,7 +14816,7 @@ Modifiers:
 # resources), one active instance per working harvester. ExecuteOnApplication is false so the first
 # payout lands one full second after the harvester starts, not instantly.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_MineralIncome
 DurationPolicy: Infinite
 Period:
@@ -14831,7 +14839,7 @@ Modifiers:
 # against any movement Upgrades a unit carries, instead of fighting them additively. Grants
 # Unit.State.Slowed for cues and stacking rules. Targets must be hostile.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Slow
 DurationPolicy: HasDuration
 Duration:
@@ -14856,13 +14864,14 @@ GameplayCues:
 
 ```yaml
 # Cooldown for GA_TrainUnit: the production timer; the next unit cannot be queued until it ends.
+# Matches the ability's 15 s WaitDelay, so Cooldown.Ability.Train lasts for the whole build.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_TrainCooldown
 DurationPolicy: HasDuration
 Duration:
   Type: ScalableFloat
-  Value: 12.0
+  Value: 15.0
 GrantedTags:
   - Cooldown.Ability.Train
 ```
@@ -14872,7 +14881,7 @@ GrantedTags:
 ```yaml
 # Cost for GA_TrainUnit: spends Minerals to queue one unit.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_TrainCost
 DurationPolicy: Instant
 Modifiers:
@@ -14896,7 +14905,7 @@ Modifiers:
 # of the shooter's hit-resolution calc and the racing pack's traction calc - the seam where the
 # genre's signature math plugs into UGAS.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_UnitDamage
 DurationPolicy: Instant
 Executions:
@@ -14915,7 +14924,7 @@ GameplayCues:
 # The Upgrades channel multiplies against any other channel (e.g. Debuffs), exactly the
 # damage-bucket mechanism from the core spec, reused for tech. Requires a built unit.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_WeaponUpgrade
 DurationPolicy: Infinite
 ApplicationRequiredTags:
@@ -14944,7 +14953,7 @@ Modifiers:
 # The damage matrix worked example in spec.adoc fires THIS tank's Siege attack (AttackDamage 39) at a
 # Light infantry target (Siege vs Light = 1.25, target Armor 2): 39 x 1.25 - 2 = 46.75 final damage.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: Unit_SiegeTank_01
   ActorType: PlayerUnit
@@ -15022,7 +15031,7 @@ Metadata:
 # player is alive and not in a cutscene. Input buffering is enabled with a short window so that
 # rapid build/train hotkey sequences register without swallowing repeats.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action_set.json
 Name: Command
 Actions:
   - Select
@@ -15058,7 +15067,7 @@ Metadata:
 # CameraPan is a continuous 2D vector for edge/keyboard scrolling.
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Select
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -15072,7 +15081,7 @@ Metadata:
   Category: Command
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: AttackMove
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -15087,7 +15096,7 @@ Metadata:
   Category: Command
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Build
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -15102,7 +15111,7 @@ Metadata:
   Category: Production
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Train
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -15117,7 +15126,7 @@ Metadata:
   Category: Production
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: CastAbility
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -15132,7 +15141,7 @@ Metadata:
   Category: Command
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: CameraPan
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -15155,7 +15164,7 @@ Metadata:
 # and keyboard scrolling share one tuned response. The order and camera bindings are non-rebindable
 # anchors of the scheme; the hotkeys remain rebindable.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_mapping.json
 ActionSet: Command
 Platform: PC
 Bindings:
@@ -15215,7 +15224,7 @@ Metadata:
 # the others are designer-owned tuning knobs for camera feel.
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: EdgePanScaling
 Type: Sensitivity
 Params:
@@ -15228,7 +15237,7 @@ Metadata:
   Description: Player-tunable multiplier on map-scroll speed, shared by edge-pan and keyboard panning
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: CameraDeadzone
 Type: DeadZone
 Params:
@@ -15241,7 +15250,7 @@ Metadata:
   Description: Radial dead zone for analog camera-pan input - ignores stick drift below 10%
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: CameraSmoothing
 Type: ResponseCurve
 Params:
@@ -15263,7 +15272,7 @@ Metadata:
 #   - DamageType.* : carried by the attacker (its weapon), read by ExecCalc_ArmorMitigation.
 #   - Armor.Class.*: carried by the target, read by the same calc to pick the RPS multiplier.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_tag.json
 Tags:
   # --- Unit type / role (set on the unit by its production effect; used for bulk queries) ---
   - Tag: Unit.Type.Infantry
@@ -15386,7 +15395,7 @@ Tags:
 # structures are what let a survivor earn Survival.State.Sheltered and escape cold exposure.
 # GE_BuildCost (effect_build_cost.yaml) is a flat Materials cost.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Build
 Tags:
   AbilityTags:
@@ -15416,7 +15425,7 @@ Metadata:
 # Blocked while crafting. A full game would also decrement the specific food item from inventory;
 # here the restore is the modelled effect.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_ConsumeFood
 Tags:
   AbilityTags:
@@ -15449,7 +15458,7 @@ Metadata:
 # craft window, then applies the crafted item's effect (GE_CraftedTool). Blocked while gathering or
 # already crafting. GE_CraftCost (effect_craft_cost.yaml) is a flat Materials cost.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Craft
 Tags:
   AbilityTags:
@@ -15485,7 +15494,7 @@ Metadata:
 # water item (Item.Type.Water). A short drink wait, then the instant GE_DrinkWater tops up Thirst,
 # clearing Survival.State.Dehydrated once Thirst leaves 0. Blocked while crafting.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Drink
 Tags:
   AbilityTags:
@@ -15517,7 +15526,7 @@ Metadata:
 # looking at a valid Resource.Node" check is activation logic in the engine (it depends on the traced
 # target, which a tag on the survivor can't express); the gather loop itself is pure data.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Gather
 Tags:
   AbilityTags:
@@ -15554,7 +15563,7 @@ Metadata:
 # Survival.State.Exhausted (the stamina-zero threshold state) so an exhausted survivor must recover
 # before sprinting again, and while Survival.State.Overencumbered (too laden to run).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_ability.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_ability.json
 Name: GA_Sprint
 Tags:
   AbilityTags:
@@ -15591,7 +15600,7 @@ Metadata:
 # comfortable temperature carrying nothing, so the set is playable as shipped: every need starts
 # full and the needs-decay loop (GE_HungerDecay / GE_ThirstDecay) drains them from there.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/attribute_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/attribute_set.json
 Name: SurvivorVitalsSet
 Attributes:
   # --- Survivability (Health is the sink the cascading threshold penalties drain) ---
@@ -15744,7 +15753,7 @@ Metadata:
 ```yaml
 # Cost for GA_Build: spends 10 Materials per placed structure.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_BuildCost
 DurationPolicy: Instant
 Modifiers:
@@ -15760,7 +15769,7 @@ Modifiers:
 ```yaml
 # Cost for GA_Craft: spends 20 Materials per tool. Too few Materials cannot pay it, so crafting is gated.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_CraftCost
 DurationPolicy: Instant
 Modifiers:
@@ -15779,7 +15788,7 @@ Modifiers:
 # grants Item.Type.Tool. Applied by GA_Craft when the recipe is a tool; removed when the tool is
 # unequipped or breaks. Swapping tools means swapping which GE_CraftedTool-style effect is active.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_CraftedTool
 DurationPolicy: Infinite
 Modifiers:
@@ -15802,7 +15811,7 @@ GameplayCues:
 # item's effect (e.g. GE_CraftedTool). The state blocks gathering and other crafts while the bench
 # is in use. Duration mirrors the craft wait in GA_Craft.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Crafting
 DurationPolicy: HasDuration
 Duration:
@@ -15823,7 +15832,7 @@ GameplayCues:
 # dehydration kills sooner. When both are active the two drains stack additively on Health (the
 # combined per-tick loss is the sum), which the optional ExecCalc_SurvivalTick can fold into one delta.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Dehydration
 DurationPolicy: Infinite
 Period:
@@ -15848,7 +15857,7 @@ GameplayCues:
 # BASE VALUE, lifting it off the 0 floor so the engine clears Survival.State.Dehydrated and removes
 # GE_Dehydration. Applied by GA_Drink. Thirst is clamped to [0, MaxThirst].
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_DrinkWater
 DurationPolicy: Instant
 Modifiers:
@@ -15870,7 +15879,7 @@ GameplayCues:
 # Applied by GA_ConsumeFood at the end of its eat wait. Hunger is clamped to [0, MaxHunger], so a
 # big meal can't overfill the survivor.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_EatFood
 DurationPolicy: Instant
 Modifiers:
@@ -15893,7 +15902,7 @@ GameplayCues:
 # simply cannot sprint until they have recovered. This shows a threshold cascade whose payload is a
 # capability lock rather than a Health drain.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Exhaustion
 DurationPolicy: Infinite
 GrantedTags:
@@ -15913,7 +15922,7 @@ GameplayCues:
 # Once BodyTemperature sits below the comfort window, the engine keeps Survival.State.Cold applied and
 # the cold becomes a Health drain through GE_Hypothermia.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Exposure_Cold
 DurationPolicy: Infinite
 Period:
@@ -15941,7 +15950,7 @@ GameplayCues:
 # lighter clothing counter it. The hot-side Health drain (heatstroke) is the symmetric counterpart
 # to GE_Hypothermia and would be applied by the same temperature-window detector on the high side.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Exposure_Heat
 DurationPolicy: Infinite
 Period:
@@ -15968,7 +15977,7 @@ GameplayCues:
 # CarryWeight crosses MaxCarryWeight, the engine's weight detector applies GE_Overencumbered. A real
 # game would vary the yield by node type (Resource.Node.Tree/Rock/Bush); this is the baseline wood haul.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_GatherResource
 DurationPolicy: Instant
 Modifiers:
@@ -15994,7 +16003,7 @@ GameplayCues:
 # payload. The state both drives the harvest animation/cue and blocks conflicting actions (you can't
 # craft mid-swing). Duration mirrors the gather wait in GA_Gather.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Gathering
 DurationPolicy: HasDuration
 Duration:
@@ -16015,7 +16024,7 @@ GameplayCues:
 # the whole session. When Hunger hits its [0, MaxHunger] clamp floor, the engine's threshold
 # detector grants Survival.State.Starving and applies GE_Starvation (see the spec's signature section).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_HungerDecay
 DurationPolicy: Infinite
 Period:
@@ -16040,7 +16049,7 @@ Modifiers:
 # PUSH is GE_Exposure_Cold's job; this effect is the consequence of being OUT of the window, exactly
 # the "temp out of window -> grant state + drain" cascade documented in the signature section.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Hypothermia
 DurationPolicy: Infinite
 Period:
@@ -16075,7 +16084,7 @@ GameplayCues:
 # in gameplay_controller.yaml). The "CarryWeight > MaxCarryWeight" comparison is engine logic; the
 # MoveSpeed cut is pure data.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Overencumbered
 DurationPolicy: Infinite
 Modifiers:
@@ -16102,7 +16111,7 @@ GameplayCues:
 # Survival.State.Sprinting (the movement system reads this tag to raise the sprint speed). When
 # Stamina reaches 0 the engine grants Survival.State.Exhausted (GE_Exhaustion), which blocks GA_Sprint.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Sprinting
 DurationPolicy: HasDuration
 Duration:
@@ -16129,7 +16138,7 @@ GrantedTags:
 # GE_SprintDrain applies a faster opposing drain (-3/tick) that outpaces this regen (+5/tick
 # less the drain), so net stamina falls during a sprint and recovers once the sprint ends.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_StaminaRegen
 DurationPolicy: Infinite
 Period:
@@ -16152,7 +16161,7 @@ Modifiers:
 # every tick for as long as the survivor starves. This is the "need bottoms out -> drains Health"
 # cascade described in the signature section; the detection is engine logic, the drain is pure data.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_Starvation
 DurationPolicy: Infinite
 Period:
@@ -16182,7 +16191,7 @@ GameplayCues:
 # signature math plugs into UGAS. INFINITE + PERIOD; ExecuteOnApplication so the first tick lands at spawn.
 # Use EITHER this single calc OR the individual GE_Starvation/GE_Dehydration/GE_Hypothermia drains.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_SurvivalTick
 DurationPolicy: Infinite
 Period:
@@ -16200,7 +16209,7 @@ Executions:
 # Thirst reaches the [0, MaxThirst] clamp floor, the engine grants Survival.State.Dehydrated and
 # applies GE_Dehydration. Hot biomes layer an extra thirst drain on top via their own area effect.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_effect.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_effect.json
 Name: GE_ThirstDecay
 DurationPolicy: Infinite
 Period:
@@ -16234,7 +16243,7 @@ Modifiers:
 # GE_HungerDecay / GE_ThirstDecay / GE_StaminaRegen are the always-on needs loop that got the
 # survivor here (Hunger drained to 0, Thirst down to 30, Stamina recovered to full while not sprinting).
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_controller.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_controller.json
 OwnerActor:
   ActorID: Survivor_01
   ActorType: PlayerCharacter
@@ -16350,7 +16359,7 @@ Metadata:
 # menu or cutscene. Input buffering is enabled with a short window so a queued Gather or Eat fires as
 # soon as the previous activity wait ends, without swallowing repeats.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action_set.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action_set.json
 Name: SurvivalOnFoot
 Actions:
   - Move
@@ -16387,7 +16396,7 @@ Metadata:
 # gameplay_controller.yaml reference (Gather -> GA_Gather, Sprint -> GA_Sprint, etc.).
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Move
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -16402,7 +16411,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Look
 ValueType: Axis2D
 TriggerBehavior: WhileHeld
@@ -16417,7 +16426,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Jump
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -16432,7 +16441,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Sprint
 ValueType: Digital
 TriggerBehavior: WhileHeld
@@ -16447,7 +16456,7 @@ Metadata:
   Category: Movement
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Gather
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -16462,7 +16471,7 @@ Metadata:
   Category: Survival
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Craft
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -16477,7 +16486,7 @@ Metadata:
   Category: Survival
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Build
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -16492,7 +16501,7 @@ Metadata:
   Category: Survival
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: ConsumeFood
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -16507,7 +16516,7 @@ Metadata:
   Category: Survival
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_action.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_action.json
 Name: Drink
 ValueType: Digital
 TriggerBehavior: OnPressed
@@ -16530,7 +16539,7 @@ Metadata:
 # (HoldThreshold distinguishes a quick interact tap from a sustained gather); Eat and Drink sit on
 # the number row; Craft and Build open their respective modes.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_mapping.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_mapping.json
 ActionSet: SurvivalOnFoot
 Platform: PC
 Bindings:
@@ -16607,7 +16616,7 @@ Metadata:
 # for a future gamepad mapping; MovementNormalize keeps diagonal WASD/stick movement at unit speed.
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: MouseSensitivity
 Type: Sensitivity
 Params:
@@ -16620,7 +16629,7 @@ Metadata:
   Description: Per-axis mouse sensitivity multiplier exposed in the player settings screen
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: StickDeadzone
 Type: DeadZone
 Params:
@@ -16633,7 +16642,7 @@ Metadata:
   Description: Radial dead zone for analog sticks - ignores drift below 15% and saturates above 95%
 
 ---
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/input_modifier.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/input_modifier.json
 Name: MovementNormalize
 Type: Normalize
 Params:
@@ -16652,7 +16661,7 @@ Metadata:
 # resolves as a standalone entity set.
 # Every survival state below is GRANTED BY AN EFFECT, never written directly by an ability.
 
-$schema: https://ugas.jbltx.com/v1.0.0-draft.8/schemas/gameplay_tag.json
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_tag.json
 Tags:
   # --- Survival states (granted by the cascading threshold effects; gate abilities and cues) ---
   - Tag: Survival.State.Starving

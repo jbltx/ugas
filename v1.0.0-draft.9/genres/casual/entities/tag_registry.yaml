@@ -1,0 +1,80 @@
+# Casual (idle / incremental) genre tag taxonomy. ADDITIVE: introduces genre-specific tags only.
+# The core lifecycle tag it uses (State.Alive) is declared at the end so the pack resolves as a
+# standalone entity set. Dynamic states are granted by Effects
+# (spec section 7.5), never written directly by abilities.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.9/schemas/gameplay_tag.json
+Tags:
+  # --- Meta-progression states (granted by Effects; gate the prestige ability) ---
+  - Tag: Meta.State.PrestigeReady
+    Description: Lifetime currency has crossed the prestige threshold; granted by engine threshold logic and required by GA_Prestige
+    AllowMultiple: false
+  - Tag: Meta.State.Prestiged
+    Description: At least one prestige has been performed this profile; granted by GE_PrestigeBoost
+    AllowMultiple: false
+
+  # --- Booster states (granted by timed reward Effects; drive the Booster income channel) ---
+  - Tag: Booster.State.DoubleIncome
+    Description: A double-income booster is active; granted by GE_DoubleIncome for its duration
+    AllowMultiple: false
+
+  # --- Generator classification (granted by GE_Generator_* effects; for queries and UI) ---
+  - Tag: Generator.Type.Mine
+    Description: Entry-tier generator producing a small flat income
+    AllowMultiple: true
+  - Tag: Generator.Type.Factory
+    Description: Mid-tier generator producing a large flat income
+    AllowMultiple: true
+  - Tag: Generator.Type.Bank
+    Description: High-tier generator producing the largest flat income
+    AllowMultiple: true
+    DevComment: Extension stub — no GE_Generator_Bank effect ships in this pack; reserved for adopters adding a third generator tier.
+
+  # --- Ability classification ---
+  - Tag: Ability.Type.Tap
+    Description: Manual tap that grants a flat lump of currency
+    AllowMultiple: false
+  - Tag: Ability.Type.Buy
+    Description: Purchase ability that spends currency to install a generator
+    AllowMultiple: false
+  - Tag: Ability.Type.Prestige
+    Description: Reset ability that converts run progress into a permanent income multiplier
+    AllowMultiple: false
+  - Tag: Ability.Type.Play
+    Description: Energy-gated active minigame / round ability
+    AllowMultiple: false
+
+  # --- Session state (drives UI and gates energy-cost play) ---
+  - Tag: Session.State.OutOfEnergy
+    Description: Energy has reached 0; granted by engine logic so the UI can prompt a refill (GA_Play cannot pay its cost)
+    AllowMultiple: false
+
+  # --- Core lifecycle tags (declared here so the pack resolves as a standalone entity set) ---
+  - Tag: State.Alive
+    Description: Entity is alive and active
+    AllowMultiple: false
+
+  # --- Ability classification (input routing for the booster action) ---
+  - Tag: Ability.Type.Boost
+    Description: Activates a timed income booster (e.g. GE_DoubleIncome after a rewarded ad)
+    AllowMultiple: false
+
+  # --- Gameplay cues (cosmetic feedback triggered by Effects) ---
+  - Tag: GameplayCue.Idle.Tap
+    Description: Plays the coin pop on a tap reward
+    AllowMultiple: false
+  - Tag: GameplayCue.Idle.Tick
+    Description: Plays the passive-income counter tick
+    AllowMultiple: false
+  - Tag: GameplayCue.Idle.Build
+    Description: Plays the generator construction flourish
+    AllowMultiple: false
+  - Tag: GameplayCue.Idle.Boost
+    Description: Plays the booster-active glow on the income display
+    AllowMultiple: false
+  - Tag: GameplayCue.Idle.Prestige
+    Description: Plays the prestige reset celebration
+    AllowMultiple: false
+  - Tag: GameplayCue.Idle.WelcomeBack
+    Description: Shows the welcome-back offline earnings popup
+    AllowMultiple: false
