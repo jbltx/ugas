@@ -26,7 +26,7 @@ UGAS defines a unified architecture for implementing gameplay abilities, attribu
 ## Using the npm package
 
 Each spec release is published to npm as [`@ugas/spec`](https://www.npmjs.com/package/@ugas/spec)
-once the owner approves it, at the same version (`@ugas/spec@1.0.0-draft.7` is UGAS `v1.0.0-draft.7`). Drafts go out under the
+once the owner approves it, at the same version (`@ugas/spec@<version>` is UGAS `v<version>`). Drafts go out under the
 `next` dist-tag.
 
 ```sh
@@ -37,8 +37,8 @@ npm install @ugas/spec@next
 import { VERSION, SCHEMA_IDS, schemas, bundle, files, checkReferences } from '@ugas/spec';
 import type { GameplayEffect, EntityByType } from '@ugas/spec';
 
-VERSION;                          // '1.0.0-draft.7'
-SCHEMA_IDS.gameplay_effect;       // 'https://ugas.jbltx.com/v1.0.0-draft.7/schemas/gameplay_effect.json'
+VERSION;                          // '<version>'
+SCHEMA_IDS.gameplay_effect;       // 'https://ugas.jbltx.com/v<version>/schemas/gameplay_effect.json'
 files({ kind: 'spec-section' });  // [{ path: 'sections/05-attributes.md', sha256, ... }, ...]
 checkReferences([{ path: 'damage.yaml', entity }]); // [{ path, message }] for each dangling reference
 ```

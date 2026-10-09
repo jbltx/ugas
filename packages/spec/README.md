@@ -4,7 +4,7 @@ The [Universal Gameplay Ability System](https://github.com/jbltx/ugas) specifica
 npm package: JSON schemas, the pre-chunked spec, genre packs, the conformance corpus,
 TypeScript types for every entity, and the cross-entity reference checker.
 
-The package version is the spec release: `@ugas/spec@1.0.0-draft.7` is UGAS `v1.0.0-draft.7`.
+The package version is the spec release: `@ugas/spec@<version>` is UGAS `v<version>`.
 Drafts are published under the `next` dist-tag.
 
 ```sh
@@ -15,9 +15,9 @@ npm install @ugas/spec@next
 
 ```ts
 import {
-  VERSION,        // '1.0.0-draft.7'
+  VERSION,        // '<version>'
   ENTITY_TYPES,   // ['attribute', 'attribute_set', 'gameplay_ability', ...]
-  SCHEMA_IDS,     // { gameplay_effect: 'https://ugas.jbltx.com/v1.0.0-draft.7/schemas/gameplay_effect.json', ... }
+  SCHEMA_IDS,     // { gameplay_effect: 'https://ugas.jbltx.com/v<version>/schemas/gameplay_effect.json', ... }
   schemas,        // per-type JSON Schemas
   bundle,         // schemas/bundle.json: every schema in one offline-resolvable document
   manifest,       // index.json: every packaged file with its kind and sha256
