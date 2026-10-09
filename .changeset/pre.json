@@ -6,6 +6,7 @@
   },
   "changesets": [
     "bundle-rejects-unknown-schema",
+    "casual-boost-wiring",
     "clamp-bounds-clamped-current",
     "combat-pack-modeled-tasks",
     "durations-are-tick-time",
@@ -36,6 +37,7 @@
     "npm-package",
     "portable-skills-consuming-guide",
     "rag-artifacts",
+    "readme-version-placeholders",
     "rpg-pack-basic-attack-modeled",
     "scalable-float-curve",
     "scene-region-matches-spec",
