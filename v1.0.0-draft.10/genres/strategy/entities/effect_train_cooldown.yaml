@@ -1,0 +1,11 @@
+# Cooldown for GA_TrainUnit: the production timer; the next unit cannot be queued until it ends.
+# Matches the ability's 15 s WaitDelay, so Cooldown.Ability.Train lasts for the whole build.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_effect.json
+Name: GE_TrainCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 15.0
+GrantedTags:
+  - Cooldown.Ability.Train

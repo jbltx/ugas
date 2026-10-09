@@ -1,0 +1,3 @@
+# label: invalid — no $schema, so the bundle cannot dispatch it to any entity type
+Name: GE_Damage
+DurationPolicy: Instant

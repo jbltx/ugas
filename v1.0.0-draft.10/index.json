@@ -1,0 +1,3656 @@
+{
+  "spec": "ugas",
+  "version": "1.0.0-draft.10",
+  "resources": [
+    {
+      "id": "spec.adoc",
+      "kind": "spec-source",
+      "title": "UGAS Specification (AsciiDoc source)",
+      "path": "v1.0.0-draft.10/SPEC.adoc",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/SPEC.adoc",
+      "mediaType": "text/asciidoc",
+      "bytes": 8274,
+      "sha256": "dbdd190ca4d0071f33f6bd0c9feb2ad1b107193ceba234cab13d40a8a81c252a"
+    },
+    {
+      "id": "spec",
+      "kind": "spec",
+      "title": "UGAS Specification (Markdown)",
+      "path": "v1.0.0-draft.10/SPEC.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/SPEC.md",
+      "mediaType": "text/markdown",
+      "bytes": 245999,
+      "sha256": "1b576678cd59cf0ae49b3d38fd51f2a12509bd8f77483ebfc50efa2a5839f2f4"
+    },
+    {
+      "id": "conformance.invalid.attribute_bad_category_enum",
+      "kind": "conformance",
+      "title": "Conformance (invalid): attribute_bad_category_enum",
+      "path": "v1.0.0-draft.10/conformance/invalid/attribute_bad_category_enum.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/invalid/attribute_bad_category_enum.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 197,
+      "sha256": "ec60fb375d7aadf2fa2bfff47711942ddf08b75b7e7bca973d01a3ac4b75ab99"
+    },
+    {
+      "id": "conformance.invalid.attribute_missing_required",
+      "kind": "conformance",
+      "title": "Conformance (invalid): attribute_missing_required",
+      "path": "v1.0.0-draft.10/conformance/invalid/attribute_missing_required.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/invalid/attribute_missing_required.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 168,
+      "sha256": "2a020ccd88c95b35fa9a9c60bd73fe83aade2df2804e0b46a54e50834f1c9f09"
+    },
+    {
+      "id": "conformance.invalid.attribute_placeholder_scalar",
+      "kind": "conformance",
+      "title": "Conformance (invalid): attribute_placeholder_scalar",
+      "path": "v1.0.0-draft.10/conformance/invalid/attribute_placeholder_scalar.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/invalid/attribute_placeholder_scalar.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 183,
+      "sha256": "93c56ffe978bbf63a46056b6e4c9fb6c6b3d7a08999e3e6a837f692886a9e434"
+    },
+    {
+      "id": "conformance.invalid.attribute_set_missing_attributes",
+      "kind": "conformance",
+      "title": "Conformance (invalid): attribute_set_missing_attributes",
+      "path": "v1.0.0-draft.10/conformance/invalid/attribute_set_missing_attributes.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/invalid/attribute_set_missing_attributes.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 154,
+      "sha256": "a29c99d3d889d12e004baf2233271275c1b525d88eb3bf69e0f294f7a731d823"
+    },
+    {
+      "id": "conformance.invalid.bundle_missing_schema",
+      "kind": "conformance",
+      "title": "Conformance (invalid): bundle_missing_schema",
+      "path": "v1.0.0-draft.10/conformance/invalid/bundle_missing_schema.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/invalid/bundle_missing_schema.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 125,
+      "sha256": "27215e0ad4108f7e588db5a4a7be723aa8e1c752d9c019ccd1fc9830570188f1"
+    },
+    {
+      "id": "conformance.invalid.bundle_unknown_schema",
+      "kind": "conformance",
+      "title": "Conformance (invalid): bundle_unknown_schema",
+      "path": "v1.0.0-draft.10/conformance/invalid/bundle_unknown_schema.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/invalid/bundle_unknown_schema.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 171,
+      "sha256": "9a57f3ad2137872754e2b1a444c1c7abe869924a62bab7ceeeba98b25c1dd463"
+    },
+    {
+      "id": "conformance.invalid.effect_bad_duration_policy",
+      "kind": "conformance",
+      "title": "Conformance (invalid): effect_bad_duration_policy",
+      "path": "v1.0.0-draft.10/conformance/invalid/effect_bad_duration_policy.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/invalid/effect_bad_duration_policy.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 198,
+      "sha256": "56eb0536899f9a7329ebdbfeca5b172e21b45fd84ef3e45f6c42415c3c9ab425"
+    },
+    {
+      "id": "conformance.invalid.effect_bad_modifier_operation",
+      "kind": "conformance",
+      "title": "Conformance (invalid): effect_bad_modifier_operation",
+      "path": "v1.0.0-draft.10/conformance/invalid/effect_bad_modifier_operation.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/invalid/effect_bad_modifier_operation.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 318,
+      "sha256": "de5ec9c694197238872b08a4cd0f021c0eae45816a425e49d1e7e00160ee9563"
+    },
+    {
+      "id": "conformance.invalid.effect_cone_area_missing_range_angle",
+      "kind": "conformance",
+      "title": "Conformance (invalid): effect_cone_area_missing_range_angle",
+      "path": "v1.0.0-draft.10/conformance/invalid/effect_cone_area_missing_range_angle.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/invalid/effect_cone_area_missing_range_angle.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 223,
+      "sha256": "4a0592b351e30df67f33f3ab46d9425ad062ddac4b0f60648e12f410f13857a9"
+    },
+    {
+      "id": "conformance.invalid.effect_has_duration_missing_duration",
+      "kind": "conformance",
+      "title": "Conformance (invalid): effect_has_duration_missing_duration",
+      "path": "v1.0.0-draft.10/conformance/invalid/effect_has_duration_missing_duration.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/invalid/effect_has_duration_missing_duration.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 187,
+      "sha256": "1041beca46c8454a066095cb9891220e6826cbe008adc3d1f2afde874e4e8892"
+    },
+    {
+      "id": "conformance.invalid.effect_missing_duration_policy",
+      "kind": "conformance",
+      "title": "Conformance (invalid): effect_missing_duration_policy",
+      "path": "v1.0.0-draft.10/conformance/invalid/effect_missing_duration_policy.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/invalid/effect_missing_duration_policy.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 153,
+      "sha256": "cb3a241d36ee97df2e617a23235b3d6864c17661b510babc21ac5edba23f32c9"
+    },
+    {
+      "id": "conformance.invalid.effect_scalable_float_missing_value_and_curve",
+      "kind": "conformance",
+      "title": "Conformance (invalid): effect_scalable_float_missing_value_and_curve",
+      "path": "v1.0.0-draft.10/conformance/invalid/effect_scalable_float_missing_value_and_curve.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/invalid/effect_scalable_float_missing_value_and_curve.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 292,
+      "sha256": "ea5db66bedddad8f97c41fac8d8fc40201ca865a62bbf5ddca5d30b2583ff56b"
+    },
+    {
+      "id": "conformance.invalid.effect_zero_period",
+      "kind": "conformance",
+      "title": "Conformance (invalid): effect_zero_period",
+      "path": "v1.0.0-draft.10/conformance/invalid/effect_zero_period.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/invalid/effect_zero_period.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 220,
+      "sha256": "94759d5cc3fc51ecd89c4d72c60f555b9b9ec5b8ffdafdedd2ac67b9894b4be6"
+    },
+    {
+      "id": "conformance.invalid.scene_region_box_missing_half_extents",
+      "kind": "conformance",
+      "title": "Conformance (invalid): scene_region_box_missing_half_extents",
+      "path": "v1.0.0-draft.10/conformance/invalid/scene_region_box_missing_half_extents.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/invalid/scene_region_box_missing_half_extents.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 251,
+      "sha256": "1364303d32521ee0177518a76af065b574d0e1198fe452e3698252deb70a81e6"
+    },
+    {
+      "id": "conformance.invalid.scene_region_position",
+      "kind": "conformance",
+      "title": "Conformance (invalid): scene_region_position",
+      "path": "v1.0.0-draft.10/conformance/invalid/scene_region_position.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/invalid/scene_region_position.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 310,
+      "sha256": "6f6134b36a5b0b911aad7a26f9d972d661b67fd7dd34fb4e00cfa031be5b5634"
+    },
+    {
+      "id": "conformance.valid.ability_basic",
+      "kind": "conformance",
+      "title": "Conformance (valid): ability_basic",
+      "path": "v1.0.0-draft.10/conformance/valid/ability_basic.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/valid/ability_basic.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 147,
+      "sha256": "a57f93b4dc3dd4705914fa3fe56ae8a559d38b0cab926245c2961637e2728a32"
+    },
+    {
+      "id": "conformance.valid.attribute_resource",
+      "kind": "conformance",
+      "title": "Conformance (valid): attribute_resource",
+      "path": "v1.0.0-draft.10/conformance/valid/attribute_resource.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/valid/attribute_resource.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 208,
+      "sha256": "ac69d8fc790ccc1c3884546e52d7e7389e83ee45fc09fe0194a74bbd232a38b3"
+    },
+    {
+      "id": "conformance.valid.attribute_set_basic",
+      "kind": "conformance",
+      "title": "Conformance (valid): attribute_set_basic",
+      "path": "v1.0.0-draft.10/conformance/valid/attribute_set_basic.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/valid/attribute_set_basic.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 223,
+      "sha256": "3e73c1990419f2c5c8cc326b7d1dd9e90e11fa0cc217d0257c16bbb54ab8fa58"
+    },
+    {
+      "id": "conformance.valid.effect_instant_damage",
+      "kind": "conformance",
+      "title": "Conformance (valid): effect_instant_damage",
+      "path": "v1.0.0-draft.10/conformance/valid/effect_instant_damage.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/valid/effect_instant_damage.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 335,
+      "sha256": "fbb6e4867178ceb1ed01cfb8c1c88c0b6a6a40c63dbebf4facbf1eea296cba0c"
+    },
+    {
+      "id": "conformance.valid.effect_scalable_float_curve",
+      "kind": "conformance",
+      "title": "Conformance (valid): effect_scalable_float_curve",
+      "path": "v1.0.0-draft.10/conformance/valid/effect_scalable_float_curve.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/valid/effect_scalable_float_curve.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 356,
+      "sha256": "15143f712fb2ff1a941d4a2f2f613f4b3eab6408a49b9ba32dfd33bbb91914ea"
+    },
+    {
+      "id": "conformance.valid.scene_regions",
+      "kind": "conformance",
+      "title": "Conformance (valid): scene_regions",
+      "path": "v1.0.0-draft.10/conformance/valid/scene_regions.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/valid/scene_regions.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 692,
+      "sha256": "b67473ca0a96bdf70584217840b4f1975b14533655753427e7583c12b05d5aab"
+    },
+    {
+      "id": "conformance.valid.tag_registry_basic",
+      "kind": "conformance",
+      "title": "Conformance (valid): tag_registry_basic",
+      "path": "v1.0.0-draft.10/conformance/valid/tag_registry_basic.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/conformance/valid/tag_registry_basic.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 172,
+      "sha256": "2d2a5daadaaf9e2fef72fe15fe7e6334406f87278791f92aadc77bae92fc8bf3"
+    },
+    {
+      "id": "genres.README.md",
+      "kind": "doc",
+      "title": "Readme",
+      "path": "v1.0.0-draft.10/genres/README.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/README.md",
+      "mediaType": "text/markdown",
+      "bytes": 6408,
+      "sha256": "ee8268d5dfb06f95068a05330849c2b9a6cd1ca8190d87621b462fb65651c129"
+    },
+    {
+      "id": "genre._template.readme",
+      "kind": "doc",
+      "title": " Template pack README",
+      "path": "v1.0.0-draft.10/genres/_template/README.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/_template/README.md",
+      "mediaType": "text/markdown",
+      "bytes": 863,
+      "sha256": "1037866ca8abfbf565ee742b36e5c25b4e86e67a5e45789463196a5976273070"
+    },
+    {
+      "id": "genre._template.ability",
+      "kind": "genre-entity",
+      "title": " Template: ability",
+      "path": "v1.0.0-draft.10/genres/_template/entities/ability.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/_template/entities/ability.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 598,
+      "sha256": "942e24dc140e9633d057a7ee3b24ce267b931b5362cd23f4055031309c5b1916"
+    },
+    {
+      "id": "genre._template.attribute",
+      "kind": "genre-entity",
+      "title": " Template: attribute",
+      "path": "v1.0.0-draft.10/genres/_template/entities/attribute.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/_template/entities/attribute.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 879,
+      "sha256": "5f0bc4d426a18c4b7d7570fe036b64b305447bfd48fc1fc97ed9c7f3a3cacd3b"
+    },
+    {
+      "id": "genre._template.effect",
+      "kind": "genre-entity",
+      "title": " Template: effect",
+      "path": "v1.0.0-draft.10/genres/_template/entities/effect.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/_template/entities/effect.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 397,
+      "sha256": "6f043d06f81422df15b61507e6a31b9e32b69085782fd32cf9a05ffdcc0aa777"
+    },
+    {
+      "id": "genre._template.input_action",
+      "kind": "genre-entity",
+      "title": " Template: input_action",
+      "path": "v1.0.0-draft.10/genres/_template/entities/input_action.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/_template/entities/input_action.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 387,
+      "sha256": "d116ed2f634055ad839a57f2b2fdc433dc5d731d45dcb271dd7f66ac72da73cb"
+    },
+    {
+      "id": "genre._template.input_action_set",
+      "kind": "genre-entity",
+      "title": " Template: input_action_set",
+      "path": "v1.0.0-draft.10/genres/_template/entities/input_action_set.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/_template/entities/input_action_set.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 358,
+      "sha256": "f063a5df4b8d7e970719c6a4fe3abd12ae691a318ea64650af73f5587a4e4ac1"
+    },
+    {
+      "id": "genre._template.input_mapping",
+      "kind": "genre-entity",
+      "title": " Template: input_mapping",
+      "path": "v1.0.0-draft.10/genres/_template/entities/input_mapping.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/_template/entities/input_mapping.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 368,
+      "sha256": "56d915d04620f7a1557404db531f2d9559aad66542a8e3e66db6787c775d6793"
+    },
+    {
+      "id": "genre._template.input_modifier",
+      "kind": "genre-entity",
+      "title": " Template: input_modifier",
+      "path": "v1.0.0-draft.10/genres/_template/entities/input_modifier.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/_template/entities/input_modifier.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 377,
+      "sha256": "9ec1662c02c3b29278ba18d5628d19299d8a10ad0e4457c7065414ca925b8755"
+    },
+    {
+      "id": "genre._template.tag_registry",
+      "kind": "genre-entity",
+      "title": " Template: tag_registry",
+      "path": "v1.0.0-draft.10/genres/_template/entities/tag_registry.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/_template/entities/tag_registry.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 871,
+      "sha256": "48d36bad481dd8a574e04f4f5bcea8217d648a6044456da66a55aabb1160268f"
+    },
+    {
+      "id": "genre._template.html",
+      "kind": "html",
+      "title": " Template pack (HTML)",
+      "path": "v1.0.0-draft.10/genres/_template/index.html",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/_template/index.html",
+      "mediaType": "text/html",
+      "bytes": 33739,
+      "sha256": "1bb9a7fbc57fb59824a3cd54256624fc715e39920d123bf5cb19f231ebb958da"
+    },
+    {
+      "id": "genre._template.spec",
+      "kind": "genre-pack-spec",
+      "title": " Template pack spec",
+      "path": "v1.0.0-draft.10/genres/_template/spec.adoc",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/_template/spec.adoc",
+      "mediaType": "text/asciidoc",
+      "bytes": 2108,
+      "sha256": "083efe5a094e4821cdda48b48d4981458f093da5d9ca9c3d3b224dad685e0370"
+    },
+    {
+      "id": "genre.action.readme",
+      "kind": "doc",
+      "title": "Action pack README",
+      "path": "v1.0.0-draft.10/genres/action/README.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/README.md",
+      "mediaType": "text/markdown",
+      "bytes": 2117,
+      "sha256": "f1c8181f493862c1150c5e0c3056744c03551b5692e051cd88473ada12d0f327"
+    },
+    {
+      "id": "genre.action.ability_ground_pound",
+      "kind": "genre-entity",
+      "title": "Action: ability_ground_pound",
+      "path": "v1.0.0-draft.10/genres/action/entities/ability_ground_pound.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/entities/ability_ground_pound.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 785,
+      "sha256": "f3490235fa1bcd03c9f7576ef26577bbd083f90388c6240352c5daa7c1de6489"
+    },
+    {
+      "id": "genre.action.ability_jump",
+      "kind": "genre-entity",
+      "title": "Action: ability_jump",
+      "path": "v1.0.0-draft.10/genres/action/entities/ability_jump.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/entities/ability_jump.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1063,
+      "sha256": "53b6d15c75258aa087d5e6be6ca336a1cdf6a23651ffd80c19cf92a5ef5fbaa9"
+    },
+    {
+      "id": "genre.action.attribute_set",
+      "kind": "genre-entity",
+      "title": "Action: attribute_set",
+      "path": "v1.0.0-draft.10/genres/action/entities/attribute_set.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/entities/attribute_set.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 3344,
+      "sha256": "ff1316839c17c4b3f1caf1db094b692a133c2cc9f53ae98073ff6cf3c8258d1c"
+    },
+    {
+      "id": "genre.action.effect_contact_damage",
+      "kind": "genre-entity",
+      "title": "Action: effect_contact_damage",
+      "path": "v1.0.0-draft.10/genres/action/entities/effect_contact_damage.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/entities/effect_contact_damage.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 522,
+      "sha256": "1f5d4547025eb86ad3628a936fbda074733721aa00c310df5c097cc895fc19dd"
+    },
+    {
+      "id": "genre.action.effect_grounded",
+      "kind": "genre-entity",
+      "title": "Action: effect_grounded",
+      "path": "v1.0.0-draft.10/genres/action/entities/effect_grounded.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/entities/effect_grounded.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 406,
+      "sha256": "4c9c1a5a065cf31b4bdcadf6eddc048dbd8536ec47f3bc212e0e51c67a9173d7"
+    },
+    {
+      "id": "genre.action.effect_in_air",
+      "kind": "genre-entity",
+      "title": "Action: effect_in_air",
+      "path": "v1.0.0-draft.10/genres/action/entities/effect_in_air.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/entities/effect_in_air.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 309,
+      "sha256": "9770b7af3a530da940770eeb93488891799e60d5e3bca93de12ddfaf30268cd0"
+    },
+    {
+      "id": "genre.action.effect_invincibility_star",
+      "kind": "genre-entity",
+      "title": "Action: effect_invincibility_star",
+      "path": "v1.0.0-draft.10/genres/action/entities/effect_invincibility_star.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/entities/effect_invincibility_star.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 697,
+      "sha256": "9f8bf390b301f6e5085753350c3ade35ef1785c62a7d37e6df74d6460837361d"
+    },
+    {
+      "id": "genre.action.effect_jump_cut",
+      "kind": "genre-entity",
+      "title": "Action: effect_jump_cut",
+      "path": "v1.0.0-draft.10/genres/action/entities/effect_jump_cut.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/entities/effect_jump_cut.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 606,
+      "sha256": "7a7a094419a1a3f722856d4416fb56a46c0a9d415c424e4bee791299c0c45604"
+    },
+    {
+      "id": "genre.action.effect_super_mushroom",
+      "kind": "genre-entity",
+      "title": "Action: effect_super_mushroom",
+      "path": "v1.0.0-draft.10/genres/action/entities/effect_super_mushroom.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/entities/effect_super_mushroom.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 709,
+      "sha256": "9b40b4c60e5869352c87c30e2b6815abe7a096e7f583e89e9658aeaebe6c6dec"
+    },
+    {
+      "id": "genre.action.gameplay_controller",
+      "kind": "genre-entity",
+      "title": "Action: gameplay_controller",
+      "path": "v1.0.0-draft.10/genres/action/entities/gameplay_controller.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/entities/gameplay_controller.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1703,
+      "sha256": "0a8ddb438c322b2028c9e547f625d873426dfd743a72870692e147961665def1"
+    },
+    {
+      "id": "genre.action.input_action_set_onfoot",
+      "kind": "genre-entity",
+      "title": "Action: input_action_set_onfoot",
+      "path": "v1.0.0-draft.10/genres/action/entities/input_action_set_onfoot.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/entities/input_action_set_onfoot.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 708,
+      "sha256": "ff4956640b6357651e3a73a6bf9b2d644b7467dcab131188b03b83fac33d1a4d"
+    },
+    {
+      "id": "genre.action.input_actions",
+      "kind": "genre-entity",
+      "title": "Action: input_actions",
+      "path": "v1.0.0-draft.10/genres/action/entities/input_actions.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/entities/input_actions.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1528,
+      "sha256": "fbd09a4cd9a1e50c78e80d748f0b087cd3076fea14820db266a683f676d5f039"
+    },
+    {
+      "id": "genre.action.input_mapping_onfoot_gamepad",
+      "kind": "genre-entity",
+      "title": "Action: input_mapping_onfoot_gamepad",
+      "path": "v1.0.0-draft.10/genres/action/entities/input_mapping_onfoot_gamepad.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/entities/input_mapping_onfoot_gamepad.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 974,
+      "sha256": "7f4244c6c8ed1b5d22717803b19bce756016fb65ba37ddec3a9c3fb8ca1b7d8f"
+    },
+    {
+      "id": "genre.action.input_mapping_onfoot_pc",
+      "kind": "genre-entity",
+      "title": "Action: input_mapping_onfoot_pc",
+      "path": "v1.0.0-draft.10/genres/action/entities/input_mapping_onfoot_pc.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/entities/input_mapping_onfoot_pc.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1011,
+      "sha256": "8d886dfde51d2264886d93f2222671ebc0e04152f039ca34367eee5da9600446"
+    },
+    {
+      "id": "genre.action.input_modifiers",
+      "kind": "genre-entity",
+      "title": "Action: input_modifiers",
+      "path": "v1.0.0-draft.10/genres/action/entities/input_modifiers.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/entities/input_modifiers.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 662,
+      "sha256": "dbd9feecf4a3216b17b81fcc4e47c81079c1b37044e36f2bb161191efa6cf7fe"
+    },
+    {
+      "id": "genre.action.tag_registry",
+      "kind": "genre-entity",
+      "title": "Action: tag_registry",
+      "path": "v1.0.0-draft.10/genres/action/entities/tag_registry.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/entities/tag_registry.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 2960,
+      "sha256": "11576dc994c85105c8c62fce9db90fbaf7486161263c0a367f29e5933037369a"
+    },
+    {
+      "id": "genre.action.html",
+      "kind": "html",
+      "title": "Action pack (HTML)",
+      "path": "v1.0.0-draft.10/genres/action/index.html",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/index.html",
+      "mediaType": "text/html",
+      "bytes": 49024,
+      "sha256": "ee65b4074794023eb83c42bec98ed767301e1fc11ec7eac6e7d58ff395a659e0"
+    },
+    {
+      "id": "genre.action.meta",
+      "kind": "doc",
+      "title": "Action pack metadata",
+      "path": "v1.0.0-draft.10/genres/action/pack.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/pack.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 425,
+      "sha256": "c02767763d8777db37dda4a0239913ccd94f3e04e4b7a3977a2326de12dbd58f"
+    },
+    {
+      "id": "genre.action.spec",
+      "kind": "genre-pack-spec",
+      "title": "Action pack spec",
+      "path": "v1.0.0-draft.10/genres/action/spec.adoc",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/action/spec.adoc",
+      "mediaType": "text/asciidoc",
+      "bytes": 8268,
+      "sha256": "63ace12a6b5a9e3cc42e139d7e59a3bf0f009068c1b4027eda4b9f3cab69487b"
+    },
+    {
+      "id": "genre.casual.readme",
+      "kind": "doc",
+      "title": "Casual pack README",
+      "path": "v1.0.0-draft.10/genres/casual/README.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/README.md",
+      "mediaType": "text/markdown",
+      "bytes": 4385,
+      "sha256": "f7605992f2ad4278e97a14b3a49655694108044f0e20c4bdededbe8c8a8d834a"
+    },
+    {
+      "id": "genre.casual.ability_boost",
+      "kind": "genre-entity",
+      "title": "Casual: ability_boost",
+      "path": "v1.0.0-draft.10/genres/casual/entities/ability_boost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/ability_boost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 892,
+      "sha256": "1c3eac3ca742cb586e456be38e71e0adb66386ad0dae7aaee9c83c16f7a57eb0"
+    },
+    {
+      "id": "genre.casual.ability_buy_generator",
+      "kind": "genre-entity",
+      "title": "Casual: ability_buy_generator",
+      "path": "v1.0.0-draft.10/genres/casual/entities/ability_buy_generator.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/ability_buy_generator.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1205,
+      "sha256": "3ec37091390c1601d58911bf3bf821f164443f93aac7c6cc063a1bd06f8a5505"
+    },
+    {
+      "id": "genre.casual.ability_play",
+      "kind": "genre-entity",
+      "title": "Casual: ability_play",
+      "path": "v1.0.0-draft.10/genres/casual/entities/ability_play.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/ability_play.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 985,
+      "sha256": "ef24aa99465916b4b346a1da480a9f348065760c1408561ecbcebdb185365b72"
+    },
+    {
+      "id": "genre.casual.ability_prestige",
+      "kind": "genre-entity",
+      "title": "Casual: ability_prestige",
+      "path": "v1.0.0-draft.10/genres/casual/entities/ability_prestige.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/ability_prestige.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1159,
+      "sha256": "cdd87a6b8076857098830b353cac57f8f93a3f4913064cd8434ba46c83acfbfc"
+    },
+    {
+      "id": "genre.casual.ability_tap",
+      "kind": "genre-entity",
+      "title": "Casual: ability_tap",
+      "path": "v1.0.0-draft.10/genres/casual/entities/ability_tap.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/ability_tap.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 603,
+      "sha256": "f51fd4e1f1c6d65fce52789c337b87a4aa8442ded8cc1d716fd6c6afd35271a6"
+    },
+    {
+      "id": "genre.casual.attribute_set",
+      "kind": "genre-entity",
+      "title": "Casual: attribute_set",
+      "path": "v1.0.0-draft.10/genres/casual/entities/attribute_set.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/attribute_set.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 3651,
+      "sha256": "5024e4c652379d5d925a4c92c69f4abffb49cd2ebdeaa0f7f8f26d021dc617e7"
+    },
+    {
+      "id": "genre.casual.effect_boost_cooldown",
+      "kind": "genre-entity",
+      "title": "Casual: effect_boost_cooldown",
+      "path": "v1.0.0-draft.10/genres/casual/entities/effect_boost_cooldown.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/effect_boost_cooldown.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 413,
+      "sha256": "3e0cce3686defe34b36ae02ab913269f38f081045430c08034157d94a6120426"
+    },
+    {
+      "id": "genre.casual.effect_buy_generator_cost",
+      "kind": "genre-entity",
+      "title": "Casual: effect_buy_generator_cost",
+      "path": "v1.0.0-draft.10/genres/casual/entities/effect_buy_generator_cost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/effect_buy_generator_cost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 439,
+      "sha256": "a2009b1700301c8d50b23ac5e5969549d2399cd4cfb9860a6245cbb14ea44d3b"
+    },
+    {
+      "id": "genre.casual.effect_double_income",
+      "kind": "genre-entity",
+      "title": "Casual: effect_double_income",
+      "path": "v1.0.0-draft.10/genres/casual/entities/effect_double_income.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/effect_double_income.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 995,
+      "sha256": "911e509b39ed119d92c2e638426761d0c74697d90730045744d9e0232539b4ec"
+    },
+    {
+      "id": "genre.casual.effect_energy_regen",
+      "kind": "genre-entity",
+      "title": "Casual: effect_energy_regen",
+      "path": "v1.0.0-draft.10/genres/casual/entities/effect_energy_regen.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/effect_energy_regen.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 725,
+      "sha256": "71e3ca6e50a07ab53b76b1e3b9d938a6642cb8c45386218073daecc9175b1259"
+    },
+    {
+      "id": "genre.casual.effect_generator_factory",
+      "kind": "genre-entity",
+      "title": "Casual: effect_generator_factory",
+      "path": "v1.0.0-draft.10/genres/casual/entities/effect_generator_factory.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/effect_generator_factory.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 715,
+      "sha256": "8f452b17332795f2e568eac105e0c7e0f592dcfd614f7b49fffc2cdeec07f634"
+    },
+    {
+      "id": "genre.casual.effect_generator_mine",
+      "kind": "genre-entity",
+      "title": "Casual: effect_generator_mine",
+      "path": "v1.0.0-draft.10/genres/casual/entities/effect_generator_mine.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/effect_generator_mine.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 788,
+      "sha256": "01ab22d375576afb5fe158e7671f973bace08c2ce479db82530179b337e4e0c0"
+    },
+    {
+      "id": "genre.casual.effect_offline_progress",
+      "kind": "genre-entity",
+      "title": "Casual: effect_offline_progress",
+      "path": "v1.0.0-draft.10/genres/casual/entities/effect_offline_progress.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/effect_offline_progress.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 921,
+      "sha256": "9eff6db27867b6c10f74572a07a58d7b9ac1630b3f5148988a4acd0ca5bdc5a8"
+    },
+    {
+      "id": "genre.casual.effect_passive_income",
+      "kind": "genre-entity",
+      "title": "Casual: effect_passive_income",
+      "path": "v1.0.0-draft.10/genres/casual/entities/effect_passive_income.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/effect_passive_income.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1037,
+      "sha256": "3044e82199f3db5cf442bc0c198f40e835c92dd7d9a5712164000d8fa14b6210"
+    },
+    {
+      "id": "genre.casual.effect_play_cost",
+      "kind": "genre-entity",
+      "title": "Casual: effect_play_cost",
+      "path": "v1.0.0-draft.10/genres/casual/entities/effect_play_cost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/effect_play_cost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 421,
+      "sha256": "8063d2864fdb9a1232aef80fda92b84df77670ead34a3f7a9ee4a2ea316fd277"
+    },
+    {
+      "id": "genre.casual.effect_prestige_boost",
+      "kind": "genre-entity",
+      "title": "Casual: effect_prestige_boost",
+      "path": "v1.0.0-draft.10/genres/casual/entities/effect_prestige_boost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/effect_prestige_boost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1248,
+      "sha256": "cfa4949a3e250a45ce57565985f0f72c68e826d2091bfc471d8f131f43ffee41"
+    },
+    {
+      "id": "genre.casual.effect_tap_reward",
+      "kind": "genre-entity",
+      "title": "Casual: effect_tap_reward",
+      "path": "v1.0.0-draft.10/genres/casual/entities/effect_tap_reward.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/effect_tap_reward.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 639,
+      "sha256": "5411bb774016b993523af6afc3fb3f37a2095bc1af51f967b0d65c9d9b9e45e4"
+    },
+    {
+      "id": "genre.casual.gameplay_controller",
+      "kind": "genre-entity",
+      "title": "Casual: gameplay_controller",
+      "path": "v1.0.0-draft.10/genres/casual/entities/gameplay_controller.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/gameplay_controller.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 3648,
+      "sha256": "802e610889998677d53095c78acd57d835b076477292e80aea21ef081ce38b27"
+    },
+    {
+      "id": "genre.casual.input_action_set_idle",
+      "kind": "genre-entity",
+      "title": "Casual: input_action_set_idle",
+      "path": "v1.0.0-draft.10/genres/casual/entities/input_action_set_idle.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/input_action_set_idle.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 874,
+      "sha256": "888a65df3eeea8bd005ab5fbe4585847faf90e1955642e9b3fb5d0d44d84172a"
+    },
+    {
+      "id": "genre.casual.input_actions",
+      "kind": "genre-entity",
+      "title": "Casual: input_actions",
+      "path": "v1.0.0-draft.10/genres/casual/entities/input_actions.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/input_actions.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 2110,
+      "sha256": "992fa450a2391897b251d8cff3887dab3178c1e44a07b6890ca9498b0caefd87"
+    },
+    {
+      "id": "genre.casual.input_mapping_idle_pc",
+      "kind": "genre-entity",
+      "title": "Casual: input_mapping_idle_pc",
+      "path": "v1.0.0-draft.10/genres/casual/entities/input_mapping_idle_pc.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/input_mapping_idle_pc.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 961,
+      "sha256": "cbd16c7a0e7100aae2ff61d03cce750db5f95843e7e7e294c5a2a8db2c385044"
+    },
+    {
+      "id": "genre.casual.input_mapping_idle_touch",
+      "kind": "genre-entity",
+      "title": "Casual: input_mapping_idle_touch",
+      "path": "v1.0.0-draft.10/genres/casual/entities/input_mapping_idle_touch.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/input_mapping_idle_touch.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1208,
+      "sha256": "1d2e8e61cd4774a52f7acd62811a29609c9082c220a6040e3767eb45917a03a1"
+    },
+    {
+      "id": "genre.casual.input_modifiers",
+      "kind": "genre-entity",
+      "title": "Casual: input_modifiers",
+      "path": "v1.0.0-draft.10/genres/casual/entities/input_modifiers.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/input_modifiers.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 936,
+      "sha256": "2f672ccfa96338d0f1a5a74621326cd7dcee1a59d0d77779d8c29f4273b2a610"
+    },
+    {
+      "id": "genre.casual.tag_registry",
+      "kind": "genre-entity",
+      "title": "Casual: tag_registry",
+      "path": "v1.0.0-draft.10/genres/casual/entities/tag_registry.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/entities/tag_registry.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 3827,
+      "sha256": "3467d75e2a76b544d2f401f14610cc696251abf62a09af3e660e626bd2d258da"
+    },
+    {
+      "id": "genre.casual.html",
+      "kind": "html",
+      "title": "Casual pack (HTML)",
+      "path": "v1.0.0-draft.10/genres/casual/index.html",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/index.html",
+      "mediaType": "text/html",
+      "bytes": 56392,
+      "sha256": "77c3ed0867a2c205f02b14687962cc7ee37b1d4b5ca58bfe6b11fab26c8bdb38"
+    },
+    {
+      "id": "genre.casual.meta",
+      "kind": "doc",
+      "title": "Casual pack metadata",
+      "path": "v1.0.0-draft.10/genres/casual/pack.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/pack.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 293,
+      "sha256": "6e34e62afbe878236fe01040b392bdf4045b1fac77f49d1ed620401988f15364"
+    },
+    {
+      "id": "genre.casual.spec",
+      "kind": "genre-pack-spec",
+      "title": "Casual pack spec",
+      "path": "v1.0.0-draft.10/genres/casual/spec.adoc",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/casual/spec.adoc",
+      "mediaType": "text/asciidoc",
+      "bytes": 14441,
+      "sha256": "1af8cf74080f752ef33970f5c94be546613b18fb783f00cb852c4c7a3832afc2"
+    },
+    {
+      "id": "genre.combat.readme",
+      "kind": "doc",
+      "title": "Combat pack README",
+      "path": "v1.0.0-draft.10/genres/combat/README.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/README.md",
+      "mediaType": "text/markdown",
+      "bytes": 4231,
+      "sha256": "1d8ba35fd7ac8c4b27c91fbb39cdb2199b022042d10bb671b33abf7f2c17a87d"
+    },
+    {
+      "id": "genre.combat.ability_block",
+      "kind": "genre-entity",
+      "title": "Combat: ability_block",
+      "path": "v1.0.0-draft.10/genres/combat/entities/ability_block.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/ability_block.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1333,
+      "sha256": "808100d8dafb882b55bc05ad0886515f329a464f4b7b12249815212982f749ea"
+    },
+    {
+      "id": "genre.combat.ability_heavy_attack",
+      "kind": "genre-entity",
+      "title": "Combat: ability_heavy_attack",
+      "path": "v1.0.0-draft.10/genres/combat/entities/ability_heavy_attack.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/ability_heavy_attack.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1649,
+      "sha256": "140a3b7a4b47e10f5bdc2f2c56b58ad73d9115a35fa7f6421f7a7475f01d0be9"
+    },
+    {
+      "id": "genre.combat.ability_light_attack",
+      "kind": "genre-entity",
+      "title": "Combat: ability_light_attack",
+      "path": "v1.0.0-draft.10/genres/combat/entities/ability_light_attack.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/ability_light_attack.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1569,
+      "sha256": "5915f4eb4e05885f549c87b5445cb3bc5b4f26d9e08b4e2403257471e09dea82"
+    },
+    {
+      "id": "genre.combat.ability_special",
+      "kind": "genre-entity",
+      "title": "Combat: ability_special",
+      "path": "v1.0.0-draft.10/genres/combat/entities/ability_special.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/ability_special.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1824,
+      "sha256": "f005ab371aba935bd880e52af45ff499055a49cf342f25d8c9fc1edb9f02dfaf"
+    },
+    {
+      "id": "genre.combat.attribute_set",
+      "kind": "genre-entity",
+      "title": "Combat: attribute_set",
+      "path": "v1.0.0-draft.10/genres/combat/entities/attribute_set.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/attribute_set.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 4283,
+      "sha256": "769176e893ae5d03af91080cc5b44402f43ce9e2d53ad5e8a7f123fb6f167956"
+    },
+    {
+      "id": "genre.combat.effect_blocking",
+      "kind": "genre-entity",
+      "title": "Combat: effect_blocking",
+      "path": "v1.0.0-draft.10/genres/combat/entities/effect_blocking.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/effect_blocking.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1325,
+      "sha256": "5ad7afbde5bdc19fc16dc938e3b4d5244249a2b47cf12aee3ca424c847726159"
+    },
+    {
+      "id": "genre.combat.effect_blockstun",
+      "kind": "genre-entity",
+      "title": "Combat: effect_blockstun",
+      "path": "v1.0.0-draft.10/genres/combat/entities/effect_blockstun.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/effect_blockstun.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 741,
+      "sha256": "e1503fa733865841f81a1b2a0b685c799719717c94b6257e6a41c324480cd62f"
+    },
+    {
+      "id": "genre.combat.effect_heavy_attack_cooldown",
+      "kind": "genre-entity",
+      "title": "Combat: effect_heavy_attack_cooldown",
+      "path": "v1.0.0-draft.10/genres/combat/entities/effect_heavy_attack_cooldown.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/effect_heavy_attack_cooldown.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 305,
+      "sha256": "bb211c0d6f2e77475a1ced917e4c6528bdab7a7b5954797af5e3818b578dd636"
+    },
+    {
+      "id": "genre.combat.effect_hitstun",
+      "kind": "genre-entity",
+      "title": "Combat: effect_hitstun",
+      "path": "v1.0.0-draft.10/genres/combat/entities/effect_hitstun.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/effect_hitstun.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 627,
+      "sha256": "ab4a5762a62939a16a774fb5750e2a45b3fa94c228637c2d8ce96d44954bf45d"
+    },
+    {
+      "id": "genre.combat.effect_light_attack_cooldown",
+      "kind": "genre-entity",
+      "title": "Combat: effect_light_attack_cooldown",
+      "path": "v1.0.0-draft.10/genres/combat/entities/effect_light_attack_cooldown.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/effect_light_attack_cooldown.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 314,
+      "sha256": "ad06a2d2c98508598fb10bda53c56c292116d45da1fdd8692b104753e6e9ef30"
+    },
+    {
+      "id": "genre.combat.effect_melee_damage",
+      "kind": "genre-entity",
+      "title": "Combat: effect_melee_damage",
+      "path": "v1.0.0-draft.10/genres/combat/entities/effect_melee_damage.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/effect_melee_damage.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1037,
+      "sha256": "bec9d8a67e4fe023ad74f3ba8b8d92e60df5e464986a811273bca2a3e6105afb"
+    },
+    {
+      "id": "genre.combat.effect_special_cooldown",
+      "kind": "genre-entity",
+      "title": "Combat: effect_special_cooldown",
+      "path": "v1.0.0-draft.10/genres/combat/entities/effect_special_cooldown.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/effect_special_cooldown.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 317,
+      "sha256": "8adc74bc09f69f2fa3bec594190b3a6f405f6fc2d2c580a44c14e27b04eabfd0"
+    },
+    {
+      "id": "genre.combat.effect_stagger",
+      "kind": "genre-entity",
+      "title": "Combat: effect_stagger",
+      "path": "v1.0.0-draft.10/genres/combat/entities/effect_stagger.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/effect_stagger.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 820,
+      "sha256": "f3785d42a4f70a64498368e0656a9b02976a2ea2f5aa1efc3c85b32d70a5cc13"
+    },
+    {
+      "id": "genre.combat.effect_super_cost",
+      "kind": "genre-entity",
+      "title": "Combat: effect_super_cost",
+      "path": "v1.0.0-draft.10/genres/combat/entities/effect_super_cost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/effect_super_cost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 386,
+      "sha256": "af47d90505365f6ac00fbfd10e1e101690e167aabac8fe2fe9e385482592a74b"
+    },
+    {
+      "id": "genre.combat.gameplay_controller",
+      "kind": "genre-entity",
+      "title": "Combat: gameplay_controller",
+      "path": "v1.0.0-draft.10/genres/combat/entities/gameplay_controller.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/gameplay_controller.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 2939,
+      "sha256": "8b52808ebfd8e1712b9f7b427198c23af63c1b483054bc3d2515957afdd6017f"
+    },
+    {
+      "id": "genre.combat.input_action_set_brawl",
+      "kind": "genre-entity",
+      "title": "Combat: input_action_set_brawl",
+      "path": "v1.0.0-draft.10/genres/combat/entities/input_action_set_brawl.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/input_action_set_brawl.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 995,
+      "sha256": "545aad1130e1a34a7a7f77c76db46707e6ab4b256ec2bab4b0785d927f1a6d7e"
+    },
+    {
+      "id": "genre.combat.input_actions",
+      "kind": "genre-entity",
+      "title": "Combat: input_actions",
+      "path": "v1.0.0-draft.10/genres/combat/entities/input_actions.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/input_actions.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 2103,
+      "sha256": "4a59b105b110af395bf57b5a70018a20733c955444c96339119a158e9cb40f41"
+    },
+    {
+      "id": "genre.combat.input_mapping_brawl_gamepad",
+      "kind": "genre-entity",
+      "title": "Combat: input_mapping_brawl_gamepad",
+      "path": "v1.0.0-draft.10/genres/combat/entities/input_mapping_brawl_gamepad.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/input_mapping_brawl_gamepad.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1363,
+      "sha256": "25c151f6fe6063be9eddcec771357bfb3f6d515b8cb3409545f70b2ebd57d010"
+    },
+    {
+      "id": "genre.combat.input_modifiers",
+      "kind": "genre-entity",
+      "title": "Combat: input_modifiers",
+      "path": "v1.0.0-draft.10/genres/combat/entities/input_modifiers.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/input_modifiers.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1294,
+      "sha256": "9823a9f9c903db87aae9cfd58693f6098f78610634ddada06437451b8f686192"
+    },
+    {
+      "id": "genre.combat.tag_registry",
+      "kind": "genre-entity",
+      "title": "Combat: tag_registry",
+      "path": "v1.0.0-draft.10/genres/combat/entities/tag_registry.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/entities/tag_registry.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 4446,
+      "sha256": "1762270472b58c9d2be61fd086f9cd81d031e2638fb840919ac1aada3ee5c514"
+    },
+    {
+      "id": "genre.combat.html",
+      "kind": "html",
+      "title": "Combat pack (HTML)",
+      "path": "v1.0.0-draft.10/genres/combat/index.html",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/index.html",
+      "mediaType": "text/html",
+      "bytes": 55339,
+      "sha256": "0e4ac2ba65579b15836d734299afb729723863bab314c6cb3139122d4d97a215"
+    },
+    {
+      "id": "genre.combat.meta",
+      "kind": "doc",
+      "title": "Combat pack metadata",
+      "path": "v1.0.0-draft.10/genres/combat/pack.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/pack.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 475,
+      "sha256": "3a535426598e6bab6a45ba3b2362c27fe5ac4a6990fbc640bceb60e2b1210eea"
+    },
+    {
+      "id": "genre.combat.spec",
+      "kind": "genre-pack-spec",
+      "title": "Combat pack spec",
+      "path": "v1.0.0-draft.10/genres/combat/spec.adoc",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/combat/spec.adoc",
+      "mediaType": "text/asciidoc",
+      "bytes": 13722,
+      "sha256": "edbaccdc1717381d68dcd41eef7fc404f3a1382368a7e7b9eb71cc8a73c45664"
+    },
+    {
+      "id": "genres.index.adoc",
+      "kind": "doc",
+      "title": "Index",
+      "path": "v1.0.0-draft.10/genres/index.adoc",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/index.adoc",
+      "mediaType": "text/asciidoc",
+      "bytes": 5339,
+      "sha256": "63709dc48e9b61961d7794b86346c6d8d5dad5c3ee337ee4189be86d9ddfe589"
+    },
+    {
+      "id": "genres.index.html",
+      "kind": "html",
+      "title": "Index",
+      "path": "v1.0.0-draft.10/genres/index.html",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/index.html",
+      "mediaType": "text/html",
+      "bytes": 42243,
+      "sha256": "b191a9d711589228b1fd25e802c013793fac03bcd0f42ae0c613219c30d56730"
+    },
+    {
+      "id": "genres.index",
+      "kind": "genre-index",
+      "title": "Genre pack index",
+      "path": "v1.0.0-draft.10/genres/index.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/index.json",
+      "mediaType": "application/json",
+      "bytes": 50615,
+      "sha256": "9a2a994386c07b41a90ac50cef484f74998a7c7de384d3e68ebbd183060184a6"
+    },
+    {
+      "id": "genre.puzzle.readme",
+      "kind": "doc",
+      "title": "Puzzle pack README",
+      "path": "v1.0.0-draft.10/genres/puzzle/README.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/README.md",
+      "mediaType": "text/markdown",
+      "bytes": 3212,
+      "sha256": "0ae74c11d8d7e49c0213cf930f34db71387653a3b9ae319ed89f2f53cff7806a"
+    },
+    {
+      "id": "genre.puzzle.ability_activate_powerup",
+      "kind": "genre-entity",
+      "title": "Puzzle: ability_activate_powerup",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/ability_activate_powerup.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/ability_activate_powerup.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1297,
+      "sha256": "80b7cb83261f6897afe60261f49bc718509c13ba8f79b242700cfb3b6aa3d2cb"
+    },
+    {
+      "id": "genre.puzzle.ability_swap_tiles",
+      "kind": "genre-entity",
+      "title": "Puzzle: ability_swap_tiles",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/ability_swap_tiles.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/ability_swap_tiles.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1487,
+      "sha256": "687be7194d758a97ada908b0c11dfde2c71785e116ad4bd1236445ed596973d3"
+    },
+    {
+      "id": "genre.puzzle.ability_use_hint",
+      "kind": "genre-entity",
+      "title": "Puzzle: ability_use_hint",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/ability_use_hint.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/ability_use_hint.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 943,
+      "sha256": "b01f08fe41804ab515991f235ed8bd923be97168d8bfac8462c762e487e16d6a"
+    },
+    {
+      "id": "genre.puzzle.attribute_set",
+      "kind": "genre-entity",
+      "title": "Puzzle: attribute_set",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/attribute_set.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/attribute_set.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 4452,
+      "sha256": "854d31e1231f201015fcd2b9c7b9ba824c16c9a721d514d2d026365b0a6fded9"
+    },
+    {
+      "id": "genre.puzzle.effect_cascade_chain",
+      "kind": "genre-entity",
+      "title": "Puzzle: effect_cascade_chain",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/effect_cascade_chain.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/effect_cascade_chain.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1010,
+      "sha256": "0a71befb9113af16f73eb088bc36b6b97a668d995b5a642f90dbf2b9c7e34c22"
+    },
+    {
+      "id": "genre.puzzle.effect_combo_build",
+      "kind": "genre-entity",
+      "title": "Puzzle: effect_combo_build",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/effect_combo_build.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/effect_combo_build.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1021,
+      "sha256": "4ec3ebab155825b3cf8e31551c3ca3c2a21a32c2e07a93db367d7252263d57c3"
+    },
+    {
+      "id": "genre.puzzle.effect_hint_cooldown",
+      "kind": "genre-entity",
+      "title": "Puzzle: effect_hint_cooldown",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/effect_hint_cooldown.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/effect_hint_cooldown.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 299,
+      "sha256": "1a2349bc2bf413bd21442756ef8e76504448f1f904ef92140fc5d29e98e1cee5"
+    },
+    {
+      "id": "genre.puzzle.effect_match_clear",
+      "kind": "genre-entity",
+      "title": "Puzzle: effect_match_clear",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/effect_match_clear.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/effect_match_clear.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1041,
+      "sha256": "a8a7bccd6ec85c5ec908c1bd8971fc72fc3b53b7e7a035ead31ed4806b88d1d9"
+    },
+    {
+      "id": "genre.puzzle.effect_move_cost",
+      "kind": "genre-entity",
+      "title": "Puzzle: effect_move_cost",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/effect_move_cost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/effect_move_cost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 376,
+      "sha256": "6fb4fd861050eb79965093ac4e3a573e29cc91aedcd5b7afa1c8d66447d2915a"
+    },
+    {
+      "id": "genre.puzzle.effect_powerup_bomb",
+      "kind": "genre-entity",
+      "title": "Puzzle: effect_powerup_bomb",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/effect_powerup_bomb.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/effect_powerup_bomb.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1137,
+      "sha256": "ca0ce60be03d868216f10db67a0ad1515f9cb0ac4561508b5ba4675dd0494fcb"
+    },
+    {
+      "id": "genre.puzzle.effect_reset_chain",
+      "kind": "genre-entity",
+      "title": "Puzzle: effect_reset_chain",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/effect_reset_chain.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/effect_reset_chain.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 931,
+      "sha256": "0c745a1973cb9d9a825dd1bf32a62b011eabffee0095eb830299b96ffae67e2f"
+    },
+    {
+      "id": "genre.puzzle.effect_time_bonus",
+      "kind": "genre-entity",
+      "title": "Puzzle: effect_time_bonus",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/effect_time_bonus.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/effect_time_bonus.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 668,
+      "sha256": "d79d212088d5b5b488a6f72fd12579143c843b712c17b5935df03f840d77898f"
+    },
+    {
+      "id": "genre.puzzle.gameplay_controller",
+      "kind": "genre-entity",
+      "title": "Puzzle: gameplay_controller",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/gameplay_controller.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/gameplay_controller.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 3334,
+      "sha256": "51cadec25737ea22f83c114504c018e75143a95e33edeaf334970617814ac7a1"
+    },
+    {
+      "id": "genre.puzzle.input_action_set_board",
+      "kind": "genre-entity",
+      "title": "Puzzle: input_action_set_board",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/input_action_set_board.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/input_action_set_board.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 979,
+      "sha256": "505c7a64855b940f87f732569333bdee41a0acb61c716364cb1233b2b3a89ca3"
+    },
+    {
+      "id": "genre.puzzle.input_actions",
+      "kind": "genre-entity",
+      "title": "Puzzle: input_actions",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/input_actions.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/input_actions.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1559,
+      "sha256": "fe2917bffc3988bd4dfd7ab719df5e99ee932d9fb876f4fd9a919c1264aaf4dd"
+    },
+    {
+      "id": "genre.puzzle.input_mapping_board_pc",
+      "kind": "genre-entity",
+      "title": "Puzzle: input_mapping_board_pc",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/input_mapping_board_pc.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/input_mapping_board_pc.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 885,
+      "sha256": "3b2cb27218f073a662463e725d28d2f53dc2f05285045927cddef73c4f5f07b1"
+    },
+    {
+      "id": "genre.puzzle.input_mapping_board_touch",
+      "kind": "genre-entity",
+      "title": "Puzzle: input_mapping_board_touch",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/input_mapping_board_touch.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/input_mapping_board_touch.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 834,
+      "sha256": "424a059ced71b3b278a5138dc6af70f9524caf9198365fb4729cef5d94903672"
+    },
+    {
+      "id": "genre.puzzle.tag_registry",
+      "kind": "genre-entity",
+      "title": "Puzzle: tag_registry",
+      "path": "v1.0.0-draft.10/genres/puzzle/entities/tag_registry.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/entities/tag_registry.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 3693,
+      "sha256": "533cfd25fae0546e95efec927e45c1f6bd3656ca3467c8e314ff9bc2f750990e"
+    },
+    {
+      "id": "genre.puzzle.html",
+      "kind": "html",
+      "title": "Puzzle pack (HTML)",
+      "path": "v1.0.0-draft.10/genres/puzzle/index.html",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/index.html",
+      "mediaType": "text/html",
+      "bytes": 52835,
+      "sha256": "c2647e04113221743fc8d29d06033ebd8906cc5297d3e7018661431e0cbd1388"
+    },
+    {
+      "id": "genre.puzzle.meta",
+      "kind": "doc",
+      "title": "Puzzle pack metadata",
+      "path": "v1.0.0-draft.10/genres/puzzle/pack.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/pack.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 433,
+      "sha256": "aa0383866ae4ac1c91cd3cb2567ead37209e42f718557b07188ab30cdab5ac3a"
+    },
+    {
+      "id": "genre.puzzle.spec",
+      "kind": "genre-pack-spec",
+      "title": "Puzzle pack spec",
+      "path": "v1.0.0-draft.10/genres/puzzle/spec.adoc",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/puzzle/spec.adoc",
+      "mediaType": "text/asciidoc",
+      "bytes": 12320,
+      "sha256": "3aeaf780ae311977367031e49460b9ea4487be3ff93a15c058690f6dd54d7079"
+    },
+    {
+      "id": "genre.racing.readme",
+      "kind": "doc",
+      "title": "Racing pack README",
+      "path": "v1.0.0-draft.10/genres/racing/README.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/README.md",
+      "mediaType": "text/markdown",
+      "bytes": 2386,
+      "sha256": "45b71b52e715318a8759be79d25a009596a2903ec05c0e29f2fe78a86a8b2574"
+    },
+    {
+      "id": "genre.racing.ability_drift",
+      "kind": "genre-entity",
+      "title": "Racing: ability_drift",
+      "path": "v1.0.0-draft.10/genres/racing/entities/ability_drift.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/ability_drift.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 711,
+      "sha256": "eb034eaccf52529f25452d874c6d717418cdad31c2fb1e1e1340f552df586fb3"
+    },
+    {
+      "id": "genre.racing.ability_nitro_boost",
+      "kind": "genre-entity",
+      "title": "Racing: ability_nitro_boost",
+      "path": "v1.0.0-draft.10/genres/racing/entities/ability_nitro_boost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/ability_nitro_boost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 699,
+      "sha256": "7b0162171bad084c6db6607a03c189025ba854cc670863e6173a4209206ecbe2"
+    },
+    {
+      "id": "genre.racing.attribute_set",
+      "kind": "genre-entity",
+      "title": "Racing: attribute_set",
+      "path": "v1.0.0-draft.10/genres/racing/entities/attribute_set.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/attribute_set.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 2991,
+      "sha256": "238102cfe38185a7e21aa66540365126f0652c82ba50c0d1d6f69d349fed4d43"
+    },
+    {
+      "id": "genre.racing.effect_biome_asphalt",
+      "kind": "genre-entity",
+      "title": "Racing: effect_biome_asphalt",
+      "path": "v1.0.0-draft.10/genres/racing/entities/effect_biome_asphalt.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/effect_biome_asphalt.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 528,
+      "sha256": "dfeef2447e38997796be93b8d5540ad6630850aa53bb70f2701b4a074dfb632c"
+    },
+    {
+      "id": "genre.racing.effect_biome_mud",
+      "kind": "genre-entity",
+      "title": "Racing: effect_biome_mud",
+      "path": "v1.0.0-draft.10/genres/racing/entities/effect_biome_mud.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/effect_biome_mud.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 631,
+      "sha256": "2606ee891b3bec1a280606ee22f49886c6de874f34f0c722ad16fb31e3a49095"
+    },
+    {
+      "id": "genre.racing.effect_drift_charge",
+      "kind": "genre-entity",
+      "title": "Racing: effect_drift_charge",
+      "path": "v1.0.0-draft.10/genres/racing/entities/effect_drift_charge.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/effect_drift_charge.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 546,
+      "sha256": "614805ab813b8e4081ec574bb58b8f1f11d04509ec4afdc8ac2fad489536345f"
+    },
+    {
+      "id": "genre.racing.effect_nitro_boost",
+      "kind": "genre-entity",
+      "title": "Racing: effect_nitro_boost",
+      "path": "v1.0.0-draft.10/genres/racing/entities/effect_nitro_boost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/effect_nitro_boost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 643,
+      "sha256": "4beb92ea65697713907a16fab3953176fcb9717d44873891fc4f1150b57ff078"
+    },
+    {
+      "id": "genre.racing.effect_nitro_cooldown",
+      "kind": "genre-entity",
+      "title": "Racing: effect_nitro_cooldown",
+      "path": "v1.0.0-draft.10/genres/racing/entities/effect_nitro_cooldown.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/effect_nitro_cooldown.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 306,
+      "sha256": "7a884ce8ac2f9f57c2a63678d5069e2c3220438fd7b0dd967070dd8b3802bf0d"
+    },
+    {
+      "id": "genre.racing.effect_nitro_cost",
+      "kind": "genre-entity",
+      "title": "Racing: effect_nitro_cost",
+      "path": "v1.0.0-draft.10/genres/racing/entities/effect_nitro_cost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/effect_nitro_cost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 352,
+      "sha256": "e8fd66d3c10c6bcecce93db23cbd46bb398f117cc9970228f41474945af70801"
+    },
+    {
+      "id": "genre.racing.effect_traction_update",
+      "kind": "genre-entity",
+      "title": "Racing: effect_traction_update",
+      "path": "v1.0.0-draft.10/genres/racing/entities/effect_traction_update.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/effect_traction_update.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 434,
+      "sha256": "c9a2ae37ac55b15ba7f5b8d262e111121f6644ee18e6a4036078324b3fa86624"
+    },
+    {
+      "id": "genre.racing.effect_tuning_sport",
+      "kind": "genre-entity",
+      "title": "Racing: effect_tuning_sport",
+      "path": "v1.0.0-draft.10/genres/racing/entities/effect_tuning_sport.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/effect_tuning_sport.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 725,
+      "sha256": "445a4fc8635a90c7bcb48a5bbe776a6c0f5a7be5f1d31e5df5f3a37eace36745"
+    },
+    {
+      "id": "genre.racing.gameplay_controller",
+      "kind": "genre-entity",
+      "title": "Racing: gameplay_controller",
+      "path": "v1.0.0-draft.10/genres/racing/entities/gameplay_controller.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/gameplay_controller.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1852,
+      "sha256": "854868b684b38fd163afe15311e50928222f7ca10615f4fa598dd00fac0bf3f3"
+    },
+    {
+      "id": "genre.racing.input_action_set_racing",
+      "kind": "genre-entity",
+      "title": "Racing: input_action_set_racing",
+      "path": "v1.0.0-draft.10/genres/racing/entities/input_action_set_racing.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/input_action_set_racing.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 512,
+      "sha256": "d746119130fd1daad76903fc39e5fef3d1e903977d3e3ae16080f433fe4d1e33"
+    },
+    {
+      "id": "genre.racing.input_actions",
+      "kind": "genre-entity",
+      "title": "Racing: input_actions",
+      "path": "v1.0.0-draft.10/genres/racing/entities/input_actions.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/input_actions.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1940,
+      "sha256": "ab43573b06a067fec3665e92a921eba1887e2975c81bb41290d6855d8843d3c5"
+    },
+    {
+      "id": "genre.racing.input_mapping_racing_gamepad",
+      "kind": "genre-entity",
+      "title": "Racing: input_mapping_racing_gamepad",
+      "path": "v1.0.0-draft.10/genres/racing/entities/input_mapping_racing_gamepad.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/input_mapping_racing_gamepad.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1105,
+      "sha256": "6a732fbb71f111eeee70c3ee927b39f7bb20315bf45d524600b5c7b6b3d3e6ba"
+    },
+    {
+      "id": "genre.racing.input_modifiers",
+      "kind": "genre-entity",
+      "title": "Racing: input_modifiers",
+      "path": "v1.0.0-draft.10/genres/racing/entities/input_modifiers.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/input_modifiers.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1088,
+      "sha256": "21a22cbcfea2d6ac710792ee39da66915a79cc4d433d0a6828ce5095049af705"
+    },
+    {
+      "id": "genre.racing.tag_registry",
+      "kind": "genre-entity",
+      "title": "Racing: tag_registry",
+      "path": "v1.0.0-draft.10/genres/racing/entities/tag_registry.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/entities/tag_registry.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 3329,
+      "sha256": "f43fb5a1e6625c2fccae91843a4e2264aebedc2abce7452c628c4aa3bc6a861d"
+    },
+    {
+      "id": "genre.racing.html",
+      "kind": "html",
+      "title": "Racing pack (HTML)",
+      "path": "v1.0.0-draft.10/genres/racing/index.html",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/index.html",
+      "mediaType": "text/html",
+      "bytes": 47017,
+      "sha256": "2abd7d97440e9928b6222f5e9c64d910d920c9b3dcbaea9cf6c21d31a46d2a9a"
+    },
+    {
+      "id": "genre.racing.meta",
+      "kind": "doc",
+      "title": "Racing pack metadata",
+      "path": "v1.0.0-draft.10/genres/racing/pack.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/pack.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 370,
+      "sha256": "a5112c9a3a175a9d21a664a2a3ec029ffeded4625c2933436fbc781e31257272"
+    },
+    {
+      "id": "genre.racing.spec",
+      "kind": "genre-pack-spec",
+      "title": "Racing pack spec",
+      "path": "v1.0.0-draft.10/genres/racing/spec.adoc",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/racing/spec.adoc",
+      "mediaType": "text/asciidoc",
+      "bytes": 7983,
+      "sha256": "d0be4f04c441cb9514c9d79026c4cdbedc7a49463f15a9f7bac2a86368cffdc9"
+    },
+    {
+      "id": "genre.rpg.readme",
+      "kind": "doc",
+      "title": "Rpg pack README",
+      "path": "v1.0.0-draft.10/genres/rpg/README.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/README.md",
+      "mediaType": "text/markdown",
+      "bytes": 2090,
+      "sha256": "531d2af034be144d273372589c616dbd4c1614854327d6e6a93b780fb44caa28"
+    },
+    {
+      "id": "genre.rpg.ability_basic_attack",
+      "kind": "genre-entity",
+      "title": "Rpg: ability_basic_attack",
+      "path": "v1.0.0-draft.10/genres/rpg/entities/ability_basic_attack.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/entities/ability_basic_attack.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1352,
+      "sha256": "c8c9e6b365275419262f8109f2b05a236bc086fa581571c04911f9810c5ad8bc"
+    },
+    {
+      "id": "genre.rpg.ability_whirlwind",
+      "kind": "genre-entity",
+      "title": "Rpg: ability_whirlwind",
+      "path": "v1.0.0-draft.10/genres/rpg/entities/ability_whirlwind.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/entities/ability_whirlwind.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1032,
+      "sha256": "60b46265d58f3f724e091e583f439446f8941e5dbd35e84a8acd8b5c7f8fc005"
+    },
+    {
+      "id": "genre.rpg.attribute_set",
+      "kind": "genre-entity",
+      "title": "Rpg: attribute_set",
+      "path": "v1.0.0-draft.10/genres/rpg/entities/attribute_set.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/entities/attribute_set.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 3515,
+      "sha256": "8ca622d1b1cb1177c62af5e6d4c236c40241095229870dacfdb9e995f56d9949"
+    },
+    {
+      "id": "genre.rpg.effect_basic_attack_damage",
+      "kind": "genre-entity",
+      "title": "Rpg: effect_basic_attack_damage",
+      "path": "v1.0.0-draft.10/genres/rpg/entities/effect_basic_attack_damage.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/entities/effect_basic_attack_damage.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 519,
+      "sha256": "799d22b1a103ff33413288e7b478925d2fdc208b83d75276407dbabe81b9d43c"
+    },
+    {
+      "id": "genre.rpg.effect_mainstat_strength",
+      "kind": "genre-entity",
+      "title": "Rpg: effect_mainstat_strength",
+      "path": "v1.0.0-draft.10/genres/rpg/entities/effect_mainstat_strength.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/entities/effect_mainstat_strength.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 500,
+      "sha256": "f185e1dea2da6c4bea292dc63716fd966d35431da9f5c8fef7c41fda717a05f2"
+    },
+    {
+      "id": "genre.rpg.effect_regeneration",
+      "kind": "genre-entity",
+      "title": "Rpg: effect_regeneration",
+      "path": "v1.0.0-draft.10/genres/rpg/entities/effect_regeneration.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/entities/effect_regeneration.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 505,
+      "sha256": "a84a29000331cc5b09c77dc5a812afbf2eb99a3bfb76f041344aa32dfb7c37e2"
+    },
+    {
+      "id": "genre.rpg.effect_weapon_firesword",
+      "kind": "genre-entity",
+      "title": "Rpg: effect_weapon_firesword",
+      "path": "v1.0.0-draft.10/genres/rpg/entities/effect_weapon_firesword.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/entities/effect_weapon_firesword.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 539,
+      "sha256": "5b8d3274dc9c7cf01856d9d21d9c42feab6bfb9bef665fdd61cade3691d7a363"
+    },
+    {
+      "id": "genre.rpg.effect_whirlwind_cooldown",
+      "kind": "genre-entity",
+      "title": "Rpg: effect_whirlwind_cooldown",
+      "path": "v1.0.0-draft.10/genres/rpg/entities/effect_whirlwind_cooldown.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/entities/effect_whirlwind_cooldown.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 251,
+      "sha256": "1b1595d9dfcbc260c0f2fae0f0acd800593e8d1b8c69642680e576cd74f770ae"
+    },
+    {
+      "id": "genre.rpg.effect_whirlwind_cost",
+      "kind": "genre-entity",
+      "title": "Rpg: effect_whirlwind_cost",
+      "path": "v1.0.0-draft.10/genres/rpg/entities/effect_whirlwind_cost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/entities/effect_whirlwind_cost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 327,
+      "sha256": "a19a7e7be6b40eefd8fd62af55944474fef65c493ff49b71692fdce8219ca7d0"
+    },
+    {
+      "id": "genre.rpg.gameplay_controller",
+      "kind": "genre-entity",
+      "title": "Rpg: gameplay_controller",
+      "path": "v1.0.0-draft.10/genres/rpg/entities/gameplay_controller.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/entities/gameplay_controller.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1558,
+      "sha256": "8c2e9cc364d4fe75a45f62d189ad34d05454bc59932758066cdebe81d2aad7df"
+    },
+    {
+      "id": "genre.rpg.input_action_set_onfoot",
+      "kind": "genre-entity",
+      "title": "Rpg: input_action_set_onfoot",
+      "path": "v1.0.0-draft.10/genres/rpg/entities/input_action_set_onfoot.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/entities/input_action_set_onfoot.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 370,
+      "sha256": "e442d0f330c3653d9e69008b64fb631062b7baff92e72e66a3d0a2a7f5f11ded"
+    },
+    {
+      "id": "genre.rpg.input_actions",
+      "kind": "genre-entity",
+      "title": "Rpg: input_actions",
+      "path": "v1.0.0-draft.10/genres/rpg/entities/input_actions.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/entities/input_actions.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1390,
+      "sha256": "03e0cdbe7d4092bcce4d56162820ebc2aba4cd42dca89d1ef225391514461fc6"
+    },
+    {
+      "id": "genre.rpg.input_mapping_onfoot_pc",
+      "kind": "genre-entity",
+      "title": "Rpg: input_mapping_onfoot_pc",
+      "path": "v1.0.0-draft.10/genres/rpg/entities/input_mapping_onfoot_pc.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/entities/input_mapping_onfoot_pc.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 900,
+      "sha256": "42f5d7b91592c0d997ef4ca89167e3a3355311c7ef99eb1ef694f149489b2841"
+    },
+    {
+      "id": "genre.rpg.input_modifiers",
+      "kind": "genre-entity",
+      "title": "Rpg: input_modifiers",
+      "path": "v1.0.0-draft.10/genres/rpg/entities/input_modifiers.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/entities/input_modifiers.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 345,
+      "sha256": "5fd15321f56c748b5421ec73703ed5c4d7b0143c32170838cc3556145bb328db"
+    },
+    {
+      "id": "genre.rpg.tag_registry",
+      "kind": "genre-entity",
+      "title": "Rpg: tag_registry",
+      "path": "v1.0.0-draft.10/genres/rpg/entities/tag_registry.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/entities/tag_registry.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 4625,
+      "sha256": "5fa2f33e1fbea1261df079ee50d481b0dec7e57da437383c6efc11193da83014"
+    },
+    {
+      "id": "genre.rpg.html",
+      "kind": "html",
+      "title": "Rpg pack (HTML)",
+      "path": "v1.0.0-draft.10/genres/rpg/index.html",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/index.html",
+      "mediaType": "text/html",
+      "bytes": 44420,
+      "sha256": "b47ba679243894ca70f8e9e18425dcfa00f819becad91e0b0d9f043ba5a7ff5e"
+    },
+    {
+      "id": "genre.rpg.meta",
+      "kind": "doc",
+      "title": "Rpg pack metadata",
+      "path": "v1.0.0-draft.10/genres/rpg/pack.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/pack.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 353,
+      "sha256": "50bc41eebda71fef53087cbffe3195fae140ffd1998b13d833466905787e19b0"
+    },
+    {
+      "id": "genre.rpg.spec",
+      "kind": "genre-pack-spec",
+      "title": "Rpg pack spec",
+      "path": "v1.0.0-draft.10/genres/rpg/spec.adoc",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/rpg/spec.adoc",
+      "mediaType": "text/asciidoc",
+      "bytes": 6205,
+      "sha256": "c06e230dc195dcf692a3fa50ef52f15c2d2a8a9c2dd16afbefa4e512bf88d6df"
+    },
+    {
+      "id": "genre.shooter.readme",
+      "kind": "doc",
+      "title": "Shooter pack README",
+      "path": "v1.0.0-draft.10/genres/shooter/README.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/README.md",
+      "mediaType": "text/markdown",
+      "bytes": 2992,
+      "sha256": "de7c1ca3ae36f78d10fac6f0a332a0847705a0e89927471b0d2cd39b35e551b6"
+    },
+    {
+      "id": "genre.shooter.ability_aim",
+      "kind": "genre-entity",
+      "title": "Shooter: ability_aim",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/ability_aim.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/ability_aim.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 778,
+      "sha256": "f87f61169fb984debfffb9b9e0c27f652895b936713429cfd0b76e04111357ba"
+    },
+    {
+      "id": "genre.shooter.ability_fire",
+      "kind": "genre-entity",
+      "title": "Shooter: ability_fire",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/ability_fire.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/ability_fire.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1077,
+      "sha256": "77a5b7692357fcc8c19a107e28695ac71c39bc56e3466ddd41a878360e8e05ba"
+    },
+    {
+      "id": "genre.shooter.ability_reload",
+      "kind": "genre-entity",
+      "title": "Shooter: ability_reload",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/ability_reload.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/ability_reload.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 940,
+      "sha256": "5ec940aabf7f570e81556719fcd0e55a6dde5342085b836818593dd8cb70f81e"
+    },
+    {
+      "id": "genre.shooter.attribute_set",
+      "kind": "genre-entity",
+      "title": "Shooter: attribute_set",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/attribute_set.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/attribute_set.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 4864,
+      "sha256": "32b874a6978089eb0479a34aab4d7d581b80aee0cba4ec079e9a28af65a0ce33"
+    },
+    {
+      "id": "genre.shooter.effect_ads",
+      "kind": "genre-entity",
+      "title": "Shooter: effect_ads",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/effect_ads.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/effect_ads.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 823,
+      "sha256": "7fb8919b7db3376874a0b7cafaeea062a5c82839c624f1c8be6a8e51284df285"
+    },
+    {
+      "id": "genre.shooter.effect_attachment_barrel",
+      "kind": "genre-entity",
+      "title": "Shooter: effect_attachment_barrel",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/effect_attachment_barrel.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/effect_attachment_barrel.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 787,
+      "sha256": "c348622cd211b2f2918b5cac96b5685ad4f9127f0be3e9d4b360345b4dc82552"
+    },
+    {
+      "id": "genre.shooter.effect_ballistic_damage",
+      "kind": "genre-entity",
+      "title": "Shooter: effect_ballistic_damage",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/effect_ballistic_damage.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/effect_ballistic_damage.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 702,
+      "sha256": "5dfc33e9da3b8a60a41856cff6f644ab9ad2b0f0214e6fbd075627a4020e3799"
+    },
+    {
+      "id": "genre.shooter.effect_equip_rifle",
+      "kind": "genre-entity",
+      "title": "Shooter: effect_equip_rifle",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/effect_equip_rifle.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/effect_equip_rifle.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 530,
+      "sha256": "b0c2c64430978869720b9a7b3f8eb728fde5a64d6173872b78cf700bb7be73af"
+    },
+    {
+      "id": "genre.shooter.effect_fire_cooldown",
+      "kind": "genre-entity",
+      "title": "Shooter: effect_fire_cooldown",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/effect_fire_cooldown.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/effect_fire_cooldown.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 571,
+      "sha256": "5db0df7c2bb335c50633debc8c34ca8d4a140a7f3cc0f19911d22f932fbfc30f"
+    },
+    {
+      "id": "genre.shooter.effect_fire_cost",
+      "kind": "genre-entity",
+      "title": "Shooter: effect_fire_cost",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/effect_fire_cost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/effect_fire_cost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 385,
+      "sha256": "a894ed53ef3f0714271e3882b790cb5138d7c079eca747743896e129c6d6acd0"
+    },
+    {
+      "id": "genre.shooter.effect_reload",
+      "kind": "genre-entity",
+      "title": "Shooter: effect_reload",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/effect_reload.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/effect_reload.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 517,
+      "sha256": "b4028d907f5d2d211458ba25bd4a16b90ee982cbc91049196d740dbcd6d93bcf"
+    },
+    {
+      "id": "genre.shooter.effect_reloading",
+      "kind": "genre-entity",
+      "title": "Shooter: effect_reloading",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/effect_reloading.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/effect_reloading.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 535,
+      "sha256": "d5798138349efd79d030c40dec97649d010962d5771fa314603d65cd24140a65"
+    },
+    {
+      "id": "genre.shooter.gameplay_controller",
+      "kind": "genre-entity",
+      "title": "Shooter: gameplay_controller",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/gameplay_controller.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/gameplay_controller.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 2616,
+      "sha256": "668e609ab2fd1d9e288e05f3c14e297ff61968350f4ce46a7de3352071d46c6e"
+    },
+    {
+      "id": "genre.shooter.input_action_set_onfoot",
+      "kind": "genre-entity",
+      "title": "Shooter: input_action_set_onfoot",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/input_action_set_onfoot.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/input_action_set_onfoot.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 946,
+      "sha256": "39e676325d3c77dadbaa6947dc17b357aa06ccc3b249bfabbc355bd5ae41d5db"
+    },
+    {
+      "id": "genre.shooter.input_actions",
+      "kind": "genre-entity",
+      "title": "Shooter: input_actions",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/input_actions.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/input_actions.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 3363,
+      "sha256": "948c1ab18880e9e72f52574b10ebf3b03981c3c7f8ce67aa5c6ce16d52fbbc79"
+    },
+    {
+      "id": "genre.shooter.input_mapping_onfoot_gamepad",
+      "kind": "genre-entity",
+      "title": "Shooter: input_mapping_onfoot_gamepad",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/input_mapping_onfoot_gamepad.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/input_mapping_onfoot_gamepad.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1697,
+      "sha256": "b592f07ba6a946b8c379dded12818478736902937a10e0743f98daa6d7f247df"
+    },
+    {
+      "id": "genre.shooter.input_mapping_onfoot_pc",
+      "kind": "genre-entity",
+      "title": "Shooter: input_mapping_onfoot_pc",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/input_mapping_onfoot_pc.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/input_mapping_onfoot_pc.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1467,
+      "sha256": "aa470e72e8cce24238f89b386598b3ddc329c7e407e56aa7fa9513b36f813cd8"
+    },
+    {
+      "id": "genre.shooter.input_modifiers",
+      "kind": "genre-entity",
+      "title": "Shooter: input_modifiers",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/input_modifiers.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/input_modifiers.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1975,
+      "sha256": "da0b47645b4e5384027e6d46e59a2942aca3a683f0bf45370aacf217f3f289bd"
+    },
+    {
+      "id": "genre.shooter.tag_registry",
+      "kind": "genre-entity",
+      "title": "Shooter: tag_registry",
+      "path": "v1.0.0-draft.10/genres/shooter/entities/tag_registry.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/entities/tag_registry.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 4554,
+      "sha256": "befbe8ce2101ca14eee18dc48ac1372f6398fcc5b149e872562065161842ca51"
+    },
+    {
+      "id": "genre.shooter.html",
+      "kind": "html",
+      "title": "Shooter pack (HTML)",
+      "path": "v1.0.0-draft.10/genres/shooter/index.html",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/index.html",
+      "mediaType": "text/html",
+      "bytes": 51873,
+      "sha256": "82c126c569d48195bb7179b5eaa342d71305de40774a5874cac38147abb9db1b"
+    },
+    {
+      "id": "genre.shooter.meta",
+      "kind": "doc",
+      "title": "Shooter pack metadata",
+      "path": "v1.0.0-draft.10/genres/shooter/pack.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/pack.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 444,
+      "sha256": "033a9742b4133f5b6a21e4d93a4eec8f135fc1eae99dcc1e1ac5f21863653f50"
+    },
+    {
+      "id": "genre.shooter.spec",
+      "kind": "genre-pack-spec",
+      "title": "Shooter pack spec",
+      "path": "v1.0.0-draft.10/genres/shooter/spec.adoc",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/shooter/spec.adoc",
+      "mediaType": "text/asciidoc",
+      "bytes": 10092,
+      "sha256": "07755319e28d6a0fde20c811ca1df2be10621130687b5f925972ce9a27696655"
+    },
+    {
+      "id": "genre.sports.readme",
+      "kind": "doc",
+      "title": "Sports pack README",
+      "path": "v1.0.0-draft.10/genres/sports/README.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/README.md",
+      "mediaType": "text/markdown",
+      "bytes": 4276,
+      "sha256": "aee6c800245a4c2948a73ba9e0914eee7e5a90104a1313c47ec9cf883595ab1c"
+    },
+    {
+      "id": "genre.sports.ability_pass",
+      "kind": "genre-entity",
+      "title": "Sports: ability_pass",
+      "path": "v1.0.0-draft.10/genres/sports/entities/ability_pass.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/ability_pass.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 963,
+      "sha256": "f160f2d247b5cd312036912d5e31c0c6234a41ba477857ba731008641c5038ff"
+    },
+    {
+      "id": "genre.sports.ability_shoot",
+      "kind": "genre-entity",
+      "title": "Sports: ability_shoot",
+      "path": "v1.0.0-draft.10/genres/sports/entities/ability_shoot.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/ability_shoot.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1257,
+      "sha256": "d99d41cb2fff424ad4dcdbf7aeb2e4aa3f443f3e3be6f0466f5bdbc9e2758ff2"
+    },
+    {
+      "id": "genre.sports.ability_skill_move",
+      "kind": "genre-entity",
+      "title": "Sports: ability_skill_move",
+      "path": "v1.0.0-draft.10/genres/sports/entities/ability_skill_move.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/ability_skill_move.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 987,
+      "sha256": "cca3fe70167b48d8f831aaefad39be2be58ebdcab6d4b0dcd8761eb493c4439a"
+    },
+    {
+      "id": "genre.sports.ability_sprint",
+      "kind": "genre-entity",
+      "title": "Sports: ability_sprint",
+      "path": "v1.0.0-draft.10/genres/sports/entities/ability_sprint.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/ability_sprint.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1023,
+      "sha256": "32c0ef70069d0cf59405c04f90769ef4b6d3a31a526d8f9599d823f5736bdb78"
+    },
+    {
+      "id": "genre.sports.ability_tackle",
+      "kind": "genre-entity",
+      "title": "Sports: ability_tackle",
+      "path": "v1.0.0-draft.10/genres/sports/entities/ability_tackle.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/ability_tackle.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1013,
+      "sha256": "e52813c269f3c534aba2c01e80080fb2072b065cf422fe44df2c59db35d0ed0c"
+    },
+    {
+      "id": "genre.sports.attribute_set",
+      "kind": "genre-entity",
+      "title": "Sports: attribute_set",
+      "path": "v1.0.0-draft.10/genres/sports/entities/attribute_set.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/attribute_set.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 4532,
+      "sha256": "4ab3cd3277fcdf5829c82813176b3ba17f349d29cca7cf0234ffb892d08f7a47"
+    },
+    {
+      "id": "genre.sports.effect_fatigue",
+      "kind": "genre-entity",
+      "title": "Sports: effect_fatigue",
+      "path": "v1.0.0-draft.10/genres/sports/entities/effect_fatigue.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/effect_fatigue.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 2226,
+      "sha256": "6f459422c87491eb8e6e6909ed0cd06237f2ab46b08db3bff889e78adfa529fb"
+    },
+    {
+      "id": "genre.sports.effect_injury",
+      "kind": "genre-entity",
+      "title": "Sports: effect_injury",
+      "path": "v1.0.0-draft.10/genres/sports/entities/effect_injury.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/effect_injury.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 916,
+      "sha256": "3301908803f7ee911662abf7f2baf78a86ad6281a3274f1df0859c3d10157e79"
+    },
+    {
+      "id": "genre.sports.effect_momentum_boost",
+      "kind": "genre-entity",
+      "title": "Sports: effect_momentum_boost",
+      "path": "v1.0.0-draft.10/genres/sports/entities/effect_momentum_boost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/effect_momentum_boost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1232,
+      "sha256": "b50fb6b27dd3d3974fb47dc093ac7e2dd475ad36a33fcd382893e7c6f0d5a35f"
+    },
+    {
+      "id": "genre.sports.effect_pass_cooldown",
+      "kind": "genre-entity",
+      "title": "Sports: effect_pass_cooldown",
+      "path": "v1.0.0-draft.10/genres/sports/entities/effect_pass_cooldown.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/effect_pass_cooldown.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 236,
+      "sha256": "5adfd897bbde07dd8e0a7afc3fe2bffdcb6f9104eaad4dcbb9311b1d18374683"
+    },
+    {
+      "id": "genre.sports.effect_pass_cost",
+      "kind": "genre-entity",
+      "title": "Sports: effect_pass_cost",
+      "path": "v1.0.0-draft.10/genres/sports/entities/effect_pass_cost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/effect_pass_cost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 284,
+      "sha256": "b9f6f0bcd10a6754d8498b2ebf9072295866fa6aee8b5978c987327044b35893"
+    },
+    {
+      "id": "genre.sports.effect_shoot_cooldown",
+      "kind": "genre-entity",
+      "title": "Sports: effect_shoot_cooldown",
+      "path": "v1.0.0-draft.10/genres/sports/entities/effect_shoot_cooldown.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/effect_shoot_cooldown.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 279,
+      "sha256": "1dc6a02699530b3717d4a194391a3e63f1a8b6640340b153f729feb82d85958e"
+    },
+    {
+      "id": "genre.sports.effect_shoot_cost",
+      "kind": "genre-entity",
+      "title": "Sports: effect_shoot_cost",
+      "path": "v1.0.0-draft.10/genres/sports/entities/effect_shoot_cost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/effect_shoot_cost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 287,
+      "sha256": "2aa2415c986ddd5b2ef8098cbffcb99d724acdd05305b7f835897bf4c4e6c05d"
+    },
+    {
+      "id": "genre.sports.effect_shot_attempt",
+      "kind": "genre-entity",
+      "title": "Sports: effect_shot_attempt",
+      "path": "v1.0.0-draft.10/genres/sports/entities/effect_shot_attempt.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/effect_shot_attempt.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 929,
+      "sha256": "05bfead7956516b4cfb5dda5e2ad473e965a48fe2e8d8c0637b36895417cd49f"
+    },
+    {
+      "id": "genre.sports.effect_skill_move_cooldown",
+      "kind": "genre-entity",
+      "title": "Sports: effect_skill_move_cooldown",
+      "path": "v1.0.0-draft.10/genres/sports/entities/effect_skill_move_cooldown.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/effect_skill_move_cooldown.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 251,
+      "sha256": "e787ca40b04a7b50fbeb5161efabac3ae2a33d438a58f948d1b0b161545d175d"
+    },
+    {
+      "id": "genre.sports.effect_skill_move_cost",
+      "kind": "genre-entity",
+      "title": "Sports: effect_skill_move_cost",
+      "path": "v1.0.0-draft.10/genres/sports/entities/effect_skill_move_cost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/effect_skill_move_cost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 300,
+      "sha256": "d12f6b5bf4b6f20a4298071cfc822c1b7cce08c251a2300cb8cf895e6f0c42b8"
+    },
+    {
+      "id": "genre.sports.effect_sprint_drain",
+      "kind": "genre-entity",
+      "title": "Sports: effect_sprint_drain",
+      "path": "v1.0.0-draft.10/genres/sports/entities/effect_sprint_drain.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/effect_sprint_drain.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 746,
+      "sha256": "2b6c1d03934c24babaf61c343943bc40bdd5038d53cd8abf9d1577412442c976"
+    },
+    {
+      "id": "genre.sports.effect_stamina_recover",
+      "kind": "genre-entity",
+      "title": "Sports: effect_stamina_recover",
+      "path": "v1.0.0-draft.10/genres/sports/entities/effect_stamina_recover.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/effect_stamina_recover.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 752,
+      "sha256": "853f1e6c9822103f8c7a5f1b67c1620b1a17ec37144d3b2adafc5c216f16c656"
+    },
+    {
+      "id": "genre.sports.effect_tackle_cooldown",
+      "kind": "genre-entity",
+      "title": "Sports: effect_tackle_cooldown",
+      "path": "v1.0.0-draft.10/genres/sports/entities/effect_tackle_cooldown.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/effect_tackle_cooldown.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 288,
+      "sha256": "d9491de7affe1e46311ec7f0e27e82b94232c53145c43777a614c0accffe8557"
+    },
+    {
+      "id": "genre.sports.effect_tackle_cost",
+      "kind": "genre-entity",
+      "title": "Sports: effect_tackle_cost",
+      "path": "v1.0.0-draft.10/genres/sports/entities/effect_tackle_cost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/effect_tackle_cost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 299,
+      "sha256": "3e2bdf36404f238eaf574d1ca1341b7ed7f02b75adc6cc7147c32da7074bbe30"
+    },
+    {
+      "id": "genre.sports.gameplay_controller",
+      "kind": "genre-entity",
+      "title": "Sports: gameplay_controller",
+      "path": "v1.0.0-draft.10/genres/sports/entities/gameplay_controller.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/gameplay_controller.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 3196,
+      "sha256": "196b42190f32690f574072f469bda295c32b3593b6f147be1d79fda0b834ba04"
+    },
+    {
+      "id": "genre.sports.input_action_set_outfield",
+      "kind": "genre-entity",
+      "title": "Sports: input_action_set_outfield",
+      "path": "v1.0.0-draft.10/genres/sports/entities/input_action_set_outfield.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/input_action_set_outfield.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 932,
+      "sha256": "f82e98aae6cd8f312c1dc87c448c2ffa3963e244af7ef213b059fffeefabea24"
+    },
+    {
+      "id": "genre.sports.input_actions",
+      "kind": "genre-entity",
+      "title": "Sports: input_actions",
+      "path": "v1.0.0-draft.10/genres/sports/entities/input_actions.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/input_actions.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 2674,
+      "sha256": "8ec4c61f91acbdfd6c8e52c06e46ed80671aa1ff8fe22b60e8211c30903095e1"
+    },
+    {
+      "id": "genre.sports.input_mapping_outfield_gamepad",
+      "kind": "genre-entity",
+      "title": "Sports: input_mapping_outfield_gamepad",
+      "path": "v1.0.0-draft.10/genres/sports/entities/input_mapping_outfield_gamepad.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/input_mapping_outfield_gamepad.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1643,
+      "sha256": "e68a94e316f5521fc1e265fc8af5d5c0cb1153fef18742b7f2a1c232f34fdd41"
+    },
+    {
+      "id": "genre.sports.input_modifiers",
+      "kind": "genre-entity",
+      "title": "Sports: input_modifiers",
+      "path": "v1.0.0-draft.10/genres/sports/entities/input_modifiers.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/input_modifiers.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1277,
+      "sha256": "5b3a0a8765dd707e42c1701c011500989c317c7e5816cd7b905072173a58540e"
+    },
+    {
+      "id": "genre.sports.tag_registry",
+      "kind": "genre-entity",
+      "title": "Sports: tag_registry",
+      "path": "v1.0.0-draft.10/genres/sports/entities/tag_registry.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/entities/tag_registry.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 3863,
+      "sha256": "fe33a2c5dfa1c30393a4a3101c1174512b7b22774e67f6a1f91990ca98103267"
+    },
+    {
+      "id": "genre.sports.html",
+      "kind": "html",
+      "title": "Sports pack (HTML)",
+      "path": "v1.0.0-draft.10/genres/sports/index.html",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/index.html",
+      "mediaType": "text/html",
+      "bytes": 56273,
+      "sha256": "11cd84f1a28e776807be19f79bbe62958bb9f34ec9e3c71f4125d5dfa5842369"
+    },
+    {
+      "id": "genre.sports.meta",
+      "kind": "doc",
+      "title": "Sports pack metadata",
+      "path": "v1.0.0-draft.10/genres/sports/pack.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/pack.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 421,
+      "sha256": "6e4fef8d296bedefbd3862fd12c35cf29176f590c76f76cc25f1e5b6eab6be08"
+    },
+    {
+      "id": "genre.sports.spec",
+      "kind": "genre-pack-spec",
+      "title": "Sports pack spec",
+      "path": "v1.0.0-draft.10/genres/sports/spec.adoc",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/sports/spec.adoc",
+      "mediaType": "text/asciidoc",
+      "bytes": 13487,
+      "sha256": "c15d2e69c9a8f82041ee92c04f37fde4881ef6973336de7e87cc4348148a5550"
+    },
+    {
+      "id": "genre.strategy.readme",
+      "kind": "doc",
+      "title": "Strategy pack README",
+      "path": "v1.0.0-draft.10/genres/strategy/README.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/README.md",
+      "mediaType": "text/markdown",
+      "bytes": 4358,
+      "sha256": "6012697894361b8cff7807a63772399857a9a2d19741492233da975759b4c6af"
+    },
+    {
+      "id": "genre.strategy.ability_area_strike",
+      "kind": "genre-entity",
+      "title": "Strategy: ability_area_strike",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/ability_area_strike.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/ability_area_strike.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1479,
+      "sha256": "0467565fffd83dd8ef9677df98daa5e66b38731aae3e634748f35f1a7f1ab463"
+    },
+    {
+      "id": "genre.strategy.ability_auto_attack",
+      "kind": "genre-entity",
+      "title": "Strategy: ability_auto_attack",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/ability_auto_attack.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/ability_auto_attack.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1481,
+      "sha256": "6b5f468a90fdf456714d7ad4c0f712060546f501e5d2f80b5689b849e19ac1ce"
+    },
+    {
+      "id": "genre.strategy.ability_construct_building",
+      "kind": "genre-entity",
+      "title": "Strategy: ability_construct_building",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/ability_construct_building.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/ability_construct_building.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1173,
+      "sha256": "96f766e177e04c500c056d2e8081af3a6d0bdf3c398269c3bcb3aca5d6f0ade9"
+    },
+    {
+      "id": "genre.strategy.ability_train_unit",
+      "kind": "genre-entity",
+      "title": "Strategy: ability_train_unit",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/ability_train_unit.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/ability_train_unit.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1070,
+      "sha256": "f23da61b9f37335b56032269a9673260efa252c4e52bd9b18ec376408652aedd"
+    },
+    {
+      "id": "genre.strategy.attribute_set",
+      "kind": "genre-entity",
+      "title": "Strategy: attribute_set",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/attribute_set.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/attribute_set.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 5955,
+      "sha256": "bbd9392502a9efe21e26efcb3a07038c26b1477c9ce456f3cb3f323799f3384a"
+    },
+    {
+      "id": "genre.strategy.effect_area_strike_cooldown",
+      "kind": "genre-entity",
+      "title": "Strategy: effect_area_strike_cooldown",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/effect_area_strike_cooldown.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/effect_area_strike_cooldown.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 255,
+      "sha256": "a6968495ab25c698747133403b203de00f2490963a5f44803a078d665f6317c5"
+    },
+    {
+      "id": "genre.strategy.effect_area_strike_cost",
+      "kind": "genre-entity",
+      "title": "Strategy: effect_area_strike_cost",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/effect_area_strike_cost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/effect_area_strike_cost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 332,
+      "sha256": "a0f77eab2e5de73f4ef7f3f8d010f3046cd514c0715e9712bd3ca09bf6c0afc6"
+    },
+    {
+      "id": "genre.strategy.effect_areastrike_damage",
+      "kind": "genre-entity",
+      "title": "Strategy: effect_areastrike_damage",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/effect_areastrike_damage.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/effect_areastrike_damage.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 751,
+      "sha256": "ce91dea01ca4c9963db3cf06ead2a6913e258f187869413f3903c45f18654855"
+    },
+    {
+      "id": "genre.strategy.effect_armor_upgrade",
+      "kind": "genre-entity",
+      "title": "Strategy: effect_armor_upgrade",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/effect_armor_upgrade.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/effect_armor_upgrade.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 767,
+      "sha256": "1886711d6345d8068ed09685ffbb45934d0960853524eed25141112c94e83c36"
+    },
+    {
+      "id": "genre.strategy.effect_attack_cooldown",
+      "kind": "genre-entity",
+      "title": "Strategy: effect_attack_cooldown",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/effect_attack_cooldown.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/effect_attack_cooldown.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 569,
+      "sha256": "73f24e5bab00915761bf51ae6094a045d3ce1c113874cecb0e21ba638ceefb81"
+    },
+    {
+      "id": "genre.strategy.effect_build_cost",
+      "kind": "genre-entity",
+      "title": "Strategy: effect_build_cost",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/effect_build_cost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/effect_build_cost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 377,
+      "sha256": "0dbc104d0b968b3d3b05a7fd06c625ac4715854df9de469f8c8e8b6d2c5c6eb8"
+    },
+    {
+      "id": "genre.strategy.effect_constructing",
+      "kind": "genre-entity",
+      "title": "Strategy: effect_constructing",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/effect_constructing.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/effect_constructing.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 835,
+      "sha256": "62a74e4693f0817e570787c366b3d5087b5274800c1a1140219f1c8a54c74e35"
+    },
+    {
+      "id": "genre.strategy.effect_energy_regen",
+      "kind": "genre-entity",
+      "title": "Strategy: effect_energy_regen",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/effect_energy_regen.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/effect_energy_regen.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 615,
+      "sha256": "390a0dca4a06ec88d7f3347451a6e48777936077312df5e539dc5edecc292b52"
+    },
+    {
+      "id": "genre.strategy.effect_mineral_income",
+      "kind": "genre-entity",
+      "title": "Strategy: effect_mineral_income",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/effect_mineral_income.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/effect_mineral_income.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 751,
+      "sha256": "adf329ab1c15d8ff73467e88d813d8a2e007968fcc214261a9fa1ec6f726f5f6"
+    },
+    {
+      "id": "genre.strategy.effect_slow",
+      "kind": "genre-entity",
+      "title": "Strategy: effect_slow",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/effect_slow.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/effect_slow.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 881,
+      "sha256": "22b820112ec1eec947540e1899ca52a66b39248ad05ec9fa8eb7035144c48b20"
+    },
+    {
+      "id": "genre.strategy.effect_train_cooldown",
+      "kind": "genre-entity",
+      "title": "Strategy: effect_train_cooldown",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/effect_train_cooldown.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/effect_train_cooldown.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 405,
+      "sha256": "50b1cb6bc4c5a73a5ba0e7724e297d3c12a6acea7dee1a86a3d2947663ed11d7"
+    },
+    {
+      "id": "genre.strategy.effect_train_cost",
+      "kind": "genre-entity",
+      "title": "Strategy: effect_train_cost",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/effect_train_cost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/effect_train_cost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 295,
+      "sha256": "94c39c3b06a7847e0d548e5f076b895f082c9158319d3ae8e180c33b430cf93d"
+    },
+    {
+      "id": "genre.strategy.effect_unit_damage",
+      "kind": "genre-entity",
+      "title": "Strategy: effect_unit_damage",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/effect_unit_damage.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/effect_unit_damage.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1039,
+      "sha256": "0c8c02f6c3e9efec0935993f9116118584c9fe6fca7c262c54ef75207c6d1482"
+    },
+    {
+      "id": "genre.strategy.effect_weapon_upgrade",
+      "kind": "genre-entity",
+      "title": "Strategy: effect_weapon_upgrade",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/effect_weapon_upgrade.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/effect_weapon_upgrade.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 865,
+      "sha256": "29c610b7d788fc9df01155270e681b6179a027335f1d0b56d35f7cd354d2945e"
+    },
+    {
+      "id": "genre.strategy.gameplay_controller",
+      "kind": "genre-entity",
+      "title": "Strategy: gameplay_controller",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/gameplay_controller.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/gameplay_controller.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 2754,
+      "sha256": "d8de2887a8c68690ea4424c852d26d7a5078ff25678f3a06af52605deb970c9d"
+    },
+    {
+      "id": "genre.strategy.input_action_set_command",
+      "kind": "genre-entity",
+      "title": "Strategy: input_action_set_command",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/input_action_set_command.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/input_action_set_command.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 859,
+      "sha256": "f379d3c8682723cd38899cb34788258b2c44402d86cb1f877069ceda78412b1f"
+    },
+    {
+      "id": "genre.strategy.input_actions",
+      "kind": "genre-entity",
+      "title": "Strategy: input_actions",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/input_actions.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/input_actions.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 2715,
+      "sha256": "359247c2f5ba9958f50c003c8ad25e705f1ca4aab9e33571bcdfd39698bdef6f"
+    },
+    {
+      "id": "genre.strategy.input_mapping_command_pc",
+      "kind": "genre-entity",
+      "title": "Strategy: input_mapping_command_pc",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/input_mapping_command_pc.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/input_mapping_command_pc.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1448,
+      "sha256": "964da6f780bb6df314dc2e22e2b8d8cfc8c6ca143b478d24b9d4f91bfe3c3191"
+    },
+    {
+      "id": "genre.strategy.input_modifiers",
+      "kind": "genre-entity",
+      "title": "Strategy: input_modifiers",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/input_modifiers.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/input_modifiers.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1283,
+      "sha256": "c8a5611b09861335b90634afbdc7acf853121b8211a784b560267351f16b595b"
+    },
+    {
+      "id": "genre.strategy.tag_registry",
+      "kind": "genre-entity",
+      "title": "Strategy: tag_registry",
+      "path": "v1.0.0-draft.10/genres/strategy/entities/tag_registry.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/entities/tag_registry.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 5087,
+      "sha256": "c959e58c912d2d6016c9f9cffe7459768d036db821784c589fa00260e48b96e4"
+    },
+    {
+      "id": "genre.strategy.html",
+      "kind": "html",
+      "title": "Strategy pack (HTML)",
+      "path": "v1.0.0-draft.10/genres/strategy/index.html",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/index.html",
+      "mediaType": "text/html",
+      "bytes": 59871,
+      "sha256": "39d80533ef6c9e30f247d6ecefc138822525301707f4b7622fa12d079339380b"
+    },
+    {
+      "id": "genre.strategy.meta",
+      "kind": "doc",
+      "title": "Strategy pack metadata",
+      "path": "v1.0.0-draft.10/genres/strategy/pack.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/pack.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 429,
+      "sha256": "1487a95f6ed9ca3cb5adbcbaf29c54356569f148d984ba39bd73b6305562cf9a"
+    },
+    {
+      "id": "genre.strategy.spec",
+      "kind": "genre-pack-spec",
+      "title": "Strategy pack spec",
+      "path": "v1.0.0-draft.10/genres/strategy/spec.adoc",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/strategy/spec.adoc",
+      "mediaType": "text/asciidoc",
+      "bytes": 15723,
+      "sha256": "9cb8fe7907060b1303e3c8b5947918052dcd5bc692f91d68eb208e22ba8b8d52"
+    },
+    {
+      "id": "genre.survival-crafting.readme",
+      "kind": "doc",
+      "title": "Survival Crafting pack README",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/README.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/README.md",
+      "mediaType": "text/markdown",
+      "bytes": 5093,
+      "sha256": "bc6ba7b3182d7ab161c66550a189e66363b7c9bcbf1f6e3373c172fb547c3d9f"
+    },
+    {
+      "id": "genre.survival-crafting.ability_build",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: ability_build",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/ability_build.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/ability_build.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1015,
+      "sha256": "1aa90e6b5d229912b031195c8bfd5262faffc558b2f7df7f89ba70379be8b76e"
+    },
+    {
+      "id": "genre.survival-crafting.ability_consume_food",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: ability_consume_food",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/ability_consume_food.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/ability_consume_food.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 955,
+      "sha256": "928a35ff7c641f4329d2c2cedf92d923db7145c4c6c7eb9046fce657919b3868"
+    },
+    {
+      "id": "genre.survival-crafting.ability_craft",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: ability_craft",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/ability_craft.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/ability_craft.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1253,
+      "sha256": "60ef5b12faec31b6ac70645c0676da79e02eb8dabc472586069e3176fa984b2c"
+    },
+    {
+      "id": "genre.survival-crafting.ability_drink",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: ability_drink",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/ability_drink.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/ability_drink.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 812,
+      "sha256": "87cdeafa190150395c969b60da97b98aabc9cc0738398ca63601b48785130178"
+    },
+    {
+      "id": "genre.survival-crafting.ability_gather",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: ability_gather",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/ability_gather.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/ability_gather.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1171,
+      "sha256": "46115fd8dd030d47ff00e7b19563add70685c3db66134ef32bec19bcc1305428"
+    },
+    {
+      "id": "genre.survival-crafting.ability_sprint",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: ability_sprint",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/ability_sprint.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/ability_sprint.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1163,
+      "sha256": "defb53856c860e40cb4d2ce05750450f1db1a3de7c1ef60f8da9e706a2be3fb6"
+    },
+    {
+      "id": "genre.survival-crafting.attribute_set",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: attribute_set",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/attribute_set.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/attribute_set.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 5601,
+      "sha256": "46b33e4d013e41032c05bb905fa56cbe2904f155373e9b9216dbcbfb883a4e77"
+    },
+    {
+      "id": "genre.survival-crafting.effect_build_cost",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_build_cost",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_build_cost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_build_cost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 299,
+      "sha256": "812fc447687d917d8d412ee936f889ccef63552809b6563b7a5384a3d0786a09"
+    },
+    {
+      "id": "genre.survival-crafting.effect_craft_cost",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_craft_cost",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_craft_cost.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_craft_cost.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 342,
+      "sha256": "ab8121595fd8b1078c7b623dfd55b8b5f2da9af25339104fb04fc6194c049bf9"
+    },
+    {
+      "id": "genre.survival-crafting.effect_crafted_tool",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_crafted_tool",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_crafted_tool.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_crafted_tool.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 717,
+      "sha256": "60237e93a1b6409f9438d51bf560d9e7fa3d991899d4f9226e34e3e5e93f69ba"
+    },
+    {
+      "id": "genre.survival-crafting.effect_crafting",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_crafting",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_crafting.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_crafting.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 616,
+      "sha256": "c3fece4cdce660cb2ea756c5964cfbd73998599d5ae8b78a79790232f08cc34e"
+    },
+    {
+      "id": "genre.survival-crafting.effect_dehydration",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_dehydration",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_dehydration.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_dehydration.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 866,
+      "sha256": "1e686fcd3efacd674194e653134eef82378647000fc270d7321e22eacceb3bcf"
+    },
+    {
+      "id": "genre.survival-crafting.effect_drink_water",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_drink_water",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_drink_water.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_drink_water.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 553,
+      "sha256": "ce06d1acf44111018aec6a1b11d0fb9392fc31f7e5e25d2e52758cbc3286c000"
+    },
+    {
+      "id": "genre.survival-crafting.effect_eat_food",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_eat_food",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_eat_food.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_eat_food.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 706,
+      "sha256": "71ad29d3bdf350f10a75391fff62da89a1c2b6f198e8a53f9aa0251ed39d50cd"
+    },
+    {
+      "id": "genre.survival-crafting.effect_exhaustion",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_exhaustion",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_exhaustion.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_exhaustion.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 758,
+      "sha256": "651a52b76ba7da515a0bac946b3f44d68ce76a3bb65ecaf3b7d2a7570ccc9809"
+    },
+    {
+      "id": "genre.survival-crafting.effect_exposure_cold",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_exposure_cold",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_exposure_cold.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_exposure_cold.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1039,
+      "sha256": "07349b3ac5f06d38aa3f70de0bcd2231a739dcb4a831857598254e1b9e2a2490"
+    },
+    {
+      "id": "genre.survival-crafting.effect_exposure_heat",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_exposure_heat",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_exposure_heat.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_exposure_heat.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 959,
+      "sha256": "b41269cfe797d30c15424a9ee44d68604c9d4a747a23729e343040cd828a0d15"
+    },
+    {
+      "id": "genre.survival-crafting.effect_gather_resource",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_gather_resource",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_gather_resource.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_gather_resource.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 896,
+      "sha256": "64abeadd3a477c09a3d14200c9160d88a7a0efb3b589bc636f17606e9a8d55bd"
+    },
+    {
+      "id": "genre.survival-crafting.effect_gathering",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_gathering",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_gathering.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_gathering.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 629,
+      "sha256": "301709a74b5c08b9b63a64641bb4e747aa658197bf0c5a62626d80a9e838886d"
+    },
+    {
+      "id": "genre.survival-crafting.effect_hunger_decay",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_hunger_decay",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_hunger_decay.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_hunger_decay.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 765,
+      "sha256": "8765984ab3e2e001fd75c37189c21315a9b32a8ec65d51891b1c8e6f12ec00e9"
+    },
+    {
+      "id": "genre.survival-crafting.effect_hypothermia",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_hypothermia",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_hypothermia.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_hypothermia.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1179,
+      "sha256": "5289c85857461d0427965124effb8cdbf44a5c0e503a4c4c473e89476c8ba7d4"
+    },
+    {
+      "id": "genre.survival-crafting.effect_overencumbered",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_overencumbered",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_overencumbered.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_overencumbered.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 998,
+      "sha256": "67be7b56119b441fa2f977ba5803ce35c47eabc75286b140db672c1b2e76f439"
+    },
+    {
+      "id": "genre.survival-crafting.effect_sprinting",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_sprinting",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_sprinting.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_sprinting.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1052,
+      "sha256": "938e2a99708ad30eee9a8beef1187d66a0139f7ec16188215c93cd74f0033dc9"
+    },
+    {
+      "id": "genre.survival-crafting.effect_stamina_regen",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_stamina_regen",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_stamina_regen.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_stamina_regen.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 655,
+      "sha256": "91da3fbfd955f1d8d693a90ff98737901db12254c86f30cf14eed530adb96ec5"
+    },
+    {
+      "id": "genre.survival-crafting.effect_starvation",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_starvation",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_starvation.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_starvation.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 867,
+      "sha256": "00c5975ed23cc77cfcc28f1d4e3b3a6dc9e7184799cf7130b3ef05e7ce954967"
+    },
+    {
+      "id": "genre.survival-crafting.effect_survival_tick",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_survival_tick",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_survival_tick.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_survival_tick.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1043,
+      "sha256": "c4fe94bc0550616564c89a353123de785af3c63abe722b65cc08393c6408fef2"
+    },
+    {
+      "id": "genre.survival-crafting.effect_thirst_decay",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: effect_thirst_decay",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/effect_thirst_decay.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/effect_thirst_decay.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 672,
+      "sha256": "ed9dfdcb051ba3a010f9679f539f87a3fd6188ad336eb19de1d362b0d4ecda0e"
+    },
+    {
+      "id": "genre.survival-crafting.gameplay_controller",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: gameplay_controller",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/gameplay_controller.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/gameplay_controller.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 4091,
+      "sha256": "ba110edbae408e16a469c019d097747d5dffd8b6b5f7937b740ec83e30c67a8f"
+    },
+    {
+      "id": "genre.survival-crafting.input_action_set_survival",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: input_action_set_survival",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/input_action_set_survival.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/input_action_set_survival.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 908,
+      "sha256": "df1a940cbf4b73afe1209a1e1a94ceff3107793a9e8127f48a415825b531c986"
+    },
+    {
+      "id": "genre.survival-crafting.input_actions",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: input_actions",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/input_actions.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/input_actions.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 3478,
+      "sha256": "59aeb842b678bef9bf761282627231ba8bc04e157b36307d3765638af415764d"
+    },
+    {
+      "id": "genre.survival-crafting.input_mapping_survival_pc",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: input_mapping_survival_pc",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/input_mapping_survival_pc.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/input_mapping_survival_pc.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1630,
+      "sha256": "57614ba8ed14c8c6eafa835138d0a67c58602fdad82c0811dc99ac22fda3868d"
+    },
+    {
+      "id": "genre.survival-crafting.input_modifiers",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: input_modifiers",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/input_modifiers.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/input_modifiers.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1414,
+      "sha256": "d0a2b063807adc553366f73782fdd51871b32d537c5361b9ddda04a791a974ee"
+    },
+    {
+      "id": "genre.survival-crafting.tag_registry",
+      "kind": "genre-entity",
+      "title": "Survival Crafting: tag_registry",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/entities/tag_registry.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/entities/tag_registry.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 6687,
+      "sha256": "f2900d9d7e08286477c780f58624a445f4d614063af50104203da7fa28eac16a"
+    },
+    {
+      "id": "genre.survival-crafting.html",
+      "kind": "html",
+      "title": "Survival Crafting pack (HTML)",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/index.html",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/index.html",
+      "mediaType": "text/html",
+      "bytes": 62571,
+      "sha256": "a1fe0610fc5dcc4e2d9c7f288cc175d5c81545f4d56e0415d09eecc3f6753509"
+    },
+    {
+      "id": "genre.survival-crafting.meta",
+      "kind": "doc",
+      "title": "Survival Crafting pack metadata",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/pack.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/pack.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 419,
+      "sha256": "b6ec70dff416ce2f270a3b7b326d2fe74ca4cb1497a86e173a4a9bce8418011b"
+    },
+    {
+      "id": "genre.survival-crafting.spec",
+      "kind": "genre-pack-spec",
+      "title": "Survival Crafting pack spec",
+      "path": "v1.0.0-draft.10/genres/survival-crafting/spec.adoc",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/survival-crafting/spec.adoc",
+      "mediaType": "text/asciidoc",
+      "bytes": 17994,
+      "sha256": "bbfc2f45a2dc991f78c02ff1126fcc814752cbfc21aeaa8fbb24778a12947a95"
+    },
+    {
+      "id": "genres.taxonomy.adoc",
+      "kind": "doc",
+      "title": "Taxonomy",
+      "path": "v1.0.0-draft.10/genres/taxonomy.adoc",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/taxonomy.adoc",
+      "mediaType": "text/asciidoc",
+      "bytes": 7630,
+      "sha256": "41f1e5e63b6c79ef1d032bb926b4ba5010cd80a7afe0385fbe7f7e8036d107ac"
+    },
+    {
+      "id": "genres.taxonomy.html",
+      "kind": "html",
+      "title": "Taxonomy",
+      "path": "v1.0.0-draft.10/genres/taxonomy.html",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/genres/taxonomy.html",
+      "mediaType": "text/html",
+      "bytes": 48613,
+      "sha256": "e42dfe449c9cd7ea0482d8ccbcd56c9ba259dce1e6f6ea38ebe2be067f440bf7"
+    },
+    {
+      "id": "spec.html",
+      "kind": "html",
+      "title": "UGAS Specification (HTML)",
+      "path": "v1.0.0-draft.10/index.html",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/index.html",
+      "mediaType": "text/html",
+      "bytes": 410725,
+      "sha256": "93ccc932cf03f69347575fec973108e3362b5c363ee50b4bb6b1eb9d43dbfdbb"
+    },
+    {
+      "id": "rag.chunks",
+      "kind": "rag",
+      "title": "RAG Chunks",
+      "path": "v1.0.0-draft.10/rag/chunks.jsonl",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/rag/chunks.jsonl",
+      "mediaType": "application/jsonl",
+      "bytes": 307246,
+      "sha256": "55fc1526d4e0e23c4a5aa11b78e9f96dcbe50c738bacb61c370109f0f49ad1db"
+    },
+    {
+      "id": "rag.llms-index",
+      "kind": "rag",
+      "title": "RAG Llms Index",
+      "path": "v1.0.0-draft.10/rag/llms-index.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/rag/llms-index.json",
+      "mediaType": "application/json",
+      "bytes": 2237,
+      "sha256": "4e7b6800cbf00929c42042d0d3d75100179c53b6e08da107527a014404b27af3"
+    },
+    {
+      "id": "schemas.readme",
+      "kind": "doc",
+      "title": "Schema README",
+      "path": "v1.0.0-draft.10/schemas/README.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/README.md",
+      "mediaType": "text/markdown",
+      "bytes": 8471,
+      "sha256": "3c2f4e8fbed6ac11024f544cf8ad4baea397a161010ca162e0362cfb5acb93fd"
+    },
+    {
+      "id": "schema.attribute",
+      "kind": "schema",
+      "title": "Attribute schema",
+      "path": "v1.0.0-draft.10/schemas/attribute.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/attribute.json",
+      "mediaType": "application/schema+json",
+      "bytes": 1668,
+      "sha256": "2ac42db5d666f290bc1e6be3b88a7c9a0eb9712327f3d639157a7a9385610ed3"
+    },
+    {
+      "id": "schema.attribute.yaml",
+      "kind": "schema",
+      "title": "Attribute schema (YAML)",
+      "path": "v1.0.0-draft.10/schemas/attribute.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/attribute.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 967,
+      "sha256": "21f7dee0e3e883e82bc6aa6b137b7798837a9f628df475ccbaedc24d44095070"
+    },
+    {
+      "id": "schema.attribute_set",
+      "kind": "schema",
+      "title": "Attribute Set schema",
+      "path": "v1.0.0-draft.10/schemas/attribute_set.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/attribute_set.json",
+      "mediaType": "application/schema+json",
+      "bytes": 2356,
+      "sha256": "777e38334838acf02025399c1c5f57faec30ac789e41e2dab2af932cba456ec8"
+    },
+    {
+      "id": "schema.attribute_set.yaml",
+      "kind": "schema",
+      "title": "Attribute Set schema (YAML)",
+      "path": "v1.0.0-draft.10/schemas/attribute_set.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/attribute_set.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1489,
+      "sha256": "b7040fef4923b2555442dd93b23bc6f5f74e79086b1367ed361d6da24a05175f"
+    },
+    {
+      "id": "schema.bundle",
+      "kind": "schema-bundle",
+      "title": "Offline JSON-Schema bundle",
+      "path": "v1.0.0-draft.10/schemas/bundle.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/bundle.json",
+      "mediaType": "application/schema+json",
+      "bytes": 61178,
+      "sha256": "f914a130bb90a5951c63480a3bb01a7dea78dca65fce4385e29237adb75a52ca"
+    },
+    {
+      "id": "example.arena_scene",
+      "kind": "example",
+      "title": "Arena Scene",
+      "path": "v1.0.0-draft.10/schemas/examples/arena_scene.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/examples/arena_scene.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 974,
+      "sha256": "2d8120580e083c78ed63f24a71556c5b45d3377deb453c317c0ee4c276527c1c"
+    },
+    {
+      "id": "example.damage_effect",
+      "kind": "example",
+      "title": "Damage Effect",
+      "path": "v1.0.0-draft.10/schemas/examples/damage_effect.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/examples/damage_effect.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 395,
+      "sha256": "afd552f946ed6227f842ba39f40e8ea86f777dc02e713137cfa1680943e794f6"
+    },
+    {
+      "id": "example.fire_action",
+      "kind": "example",
+      "title": "Fire Action",
+      "path": "v1.0.0-draft.10/schemas/examples/fire_action.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/examples/fire_action.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 418,
+      "sha256": "3a20c977f7a650f3f2ac046e8f8797e56b3e51301dd3618afba0620d45973b77"
+    },
+    {
+      "id": "example.fireball_ability",
+      "kind": "example",
+      "title": "Fireball Ability",
+      "path": "v1.0.0-draft.10/schemas/examples/fireball_ability.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/examples/fireball_ability.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1004,
+      "sha256": "edd6e918c157fda918ad09c1ac39e57ddbbc0dc8475184d44f9282cc3c716883"
+    },
+    {
+      "id": "example.fireball_cooldown_effect",
+      "kind": "example",
+      "title": "Fireball Cooldown Effect",
+      "path": "v1.0.0-draft.10/schemas/examples/fireball_cooldown_effect.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/examples/fireball_cooldown_effect.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 365,
+      "sha256": "b547f7057444c1486340115a7d8a9c29bc4cd1516e2fe5a4de1e187acc45d0d1"
+    },
+    {
+      "id": "example.health_attribute",
+      "kind": "example",
+      "title": "Health Attribute",
+      "path": "v1.0.0-draft.10/schemas/examples/health_attribute.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/examples/health_attribute.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 443,
+      "sha256": "435103a13f6566b4004c8add72326edc7505ae8f201717dbb1ee8cd7a074a744"
+    },
+    {
+      "id": "example.mana_attribute",
+      "kind": "example",
+      "title": "Mana Attribute",
+      "path": "v1.0.0-draft.10/schemas/examples/mana_attribute.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/examples/mana_attribute.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 421,
+      "sha256": "766979d334924fd3990b876aa8d46bc852b4c45ee1a88fae8fbc96c141167a4f"
+    },
+    {
+      "id": "example.mana_cost_effect",
+      "kind": "example",
+      "title": "Mana Cost Effect",
+      "path": "v1.0.0-draft.10/schemas/examples/mana_cost_effect.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/examples/mana_cost_effect.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 369,
+      "sha256": "19fb01cd6afb857d8cbd65bd86dfcb64a378078ce7eafc0f6c2bc4c2c24e4a65"
+    },
+    {
+      "id": "example.max_health_attribute",
+      "kind": "example",
+      "title": "Max Health Attribute",
+      "path": "v1.0.0-draft.10/schemas/examples/max_health_attribute.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/examples/max_health_attribute.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 414,
+      "sha256": "734f8e249b836088d475e6b25aeb2d57e070cededac25a82aca51668d200a88e"
+    },
+    {
+      "id": "example.mouse_sensitivity_modifier",
+      "kind": "example",
+      "title": "Mouse Sensitivity Modifier",
+      "path": "v1.0.0-draft.10/schemas/examples/mouse_sensitivity_modifier.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/examples/mouse_sensitivity_modifier.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 448,
+      "sha256": "447dd1c6578c0f6229a587e770deea5fce051448c62186231c71d2e62ca40f6e"
+    },
+    {
+      "id": "example.onfoot_action_set",
+      "kind": "example",
+      "title": "Onfoot Action Set",
+      "path": "v1.0.0-draft.10/schemas/examples/onfoot_action_set.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/examples/onfoot_action_set.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 566,
+      "sha256": "0f854e88e894b70cd9bd2e897f5fe9768874ac40395afa46c8e50f5cb7c6724e"
+    },
+    {
+      "id": "example.onfoot_actions",
+      "kind": "example",
+      "title": "Onfoot Actions",
+      "path": "v1.0.0-draft.10/schemas/examples/onfoot_actions.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/examples/onfoot_actions.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 2491,
+      "sha256": "c52383c531f5a2fc3ee27fa7a8621ac5d7b71668193afa613c2c940c8a23e681"
+    },
+    {
+      "id": "example.onfoot_pc_mapping",
+      "kind": "example",
+      "title": "Onfoot Pc Mapping",
+      "path": "v1.0.0-draft.10/schemas/examples/onfoot_pc_mapping.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/examples/onfoot_pc_mapping.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1375,
+      "sha256": "4d91fb73f5da4facd76a36941c892ccb42cc8229a6ca589809f1e1829643e13e"
+    },
+    {
+      "id": "example.stick_deadzone_modifier",
+      "kind": "example",
+      "title": "Stick Deadzone Modifier",
+      "path": "v1.0.0-draft.10/schemas/examples/stick_deadzone_modifier.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/examples/stick_deadzone_modifier.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 423,
+      "sha256": "059d17393ae1a3c0be8bc791950cfdb8ef385ca1a0184b7a6729f11e94472343"
+    },
+    {
+      "id": "example.tag_registry",
+      "kind": "example",
+      "title": "Tag Registry",
+      "path": "v1.0.0-draft.10/schemas/examples/tag_registry.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/examples/tag_registry.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 3234,
+      "sha256": "59d6581f38dac1eb7b9baeaffd01b89d3f60728348bec96cbf9e1a62d08438c6"
+    },
+    {
+      "id": "schema.gameplay_ability",
+      "kind": "schema",
+      "title": "Gameplay Ability schema",
+      "path": "v1.0.0-draft.10/schemas/gameplay_ability.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_ability.json",
+      "mediaType": "application/schema+json",
+      "bytes": 4759,
+      "sha256": "e9e9b87489fce960f0bbbf0d5496c32f3d118c2348a84f5a52a28ec73f4901aa"
+    },
+    {
+      "id": "schema.gameplay_ability.yaml",
+      "kind": "schema",
+      "title": "Gameplay Ability schema (YAML)",
+      "path": "v1.0.0-draft.10/schemas/gameplay_ability.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_ability.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 3598,
+      "sha256": "dec778da2a1ae993037671f82be526d20bf0ab174d7866348001daa20d2e1e83"
+    },
+    {
+      "id": "schema.gameplay_controller",
+      "kind": "schema",
+      "title": "Gameplay Controller schema",
+      "path": "v1.0.0-draft.10/schemas/gameplay_controller.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_controller.json",
+      "mediaType": "application/schema+json",
+      "bytes": 7176,
+      "sha256": "f2598169649424e9ac230fd69ca89324e62f310e5870c2fd8322e2de5317bc77"
+    },
+    {
+      "id": "schema.gameplay_controller.yaml",
+      "kind": "schema",
+      "title": "Gameplay Controller schema (YAML)",
+      "path": "v1.0.0-draft.10/schemas/gameplay_controller.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_controller.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 5507,
+      "sha256": "30dc03b5a68bd428f78e47249524ce9a3e3dc8431fde47b528e66110fa2fc914"
+    },
+    {
+      "id": "schema.gameplay_effect",
+      "kind": "schema",
+      "title": "Gameplay Effect schema",
+      "path": "v1.0.0-draft.10/schemas/gameplay_effect.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_effect.json",
+      "mediaType": "application/schema+json",
+      "bytes": 9622,
+      "sha256": "c739a81ecb3e5cbe3f057f7bfb051be278c42e02a1c3ff087bf63f84c0712b7f"
+    },
+    {
+      "id": "schema.gameplay_effect.yaml",
+      "kind": "schema",
+      "title": "Gameplay Effect schema (YAML)",
+      "path": "v1.0.0-draft.10/schemas/gameplay_effect.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_effect.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 8322,
+      "sha256": "8d7ae3906d2face43aa7507f66ee0baf8b7113836cdae25e2f38ef3500e13b67"
+    },
+    {
+      "id": "schema.gameplay_tag",
+      "kind": "schema",
+      "title": "Gameplay Tag schema",
+      "path": "v1.0.0-draft.10/schemas/gameplay_tag.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_tag.json",
+      "mediaType": "application/schema+json",
+      "bytes": 907,
+      "sha256": "bdc43a529b71afdcd5da5510511ffb564404e51e8d86dcd6288fc508a0b59986"
+    },
+    {
+      "id": "schema.gameplay_tag.yaml",
+      "kind": "schema",
+      "title": "Gameplay Tag schema (YAML)",
+      "path": "v1.0.0-draft.10/schemas/gameplay_tag.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_tag.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 553,
+      "sha256": "1628d8f5e035c949a6bd851497810f3274dce77555f530d075bdeae3930f2425"
+    },
+    {
+      "id": "schema.input_action",
+      "kind": "schema",
+      "title": "Input Action schema",
+      "path": "v1.0.0-draft.10/schemas/input_action.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/input_action.json",
+      "mediaType": "application/schema+json",
+      "bytes": 2513,
+      "sha256": "12835da6531f5a3f0cd7438354c59cb4a31c70d9485483b0bf3cf6c9be4aadf0"
+    },
+    {
+      "id": "schema.input_action.yaml",
+      "kind": "schema",
+      "title": "Input Action schema (YAML)",
+      "path": "v1.0.0-draft.10/schemas/input_action.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/input_action.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1975,
+      "sha256": "2d5e22625e308c9dc0eb815e9f05309995eed2a6339022547556d1f28156e7d4"
+    },
+    {
+      "id": "schema.input_action_set",
+      "kind": "schema",
+      "title": "Input Action Set schema",
+      "path": "v1.0.0-draft.10/schemas/input_action_set.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/input_action_set.json",
+      "mediaType": "application/schema+json",
+      "bytes": 2463,
+      "sha256": "5d50f9dbe13675e45adfad230935e1f464f051b1b72249f1ecf0904c0693b20e"
+    },
+    {
+      "id": "schema.input_action_set.yaml",
+      "kind": "schema",
+      "title": "Input Action Set schema (YAML)",
+      "path": "v1.0.0-draft.10/schemas/input_action_set.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/input_action_set.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 1781,
+      "sha256": "b9b22d9e162b643f9dc66a4979887f50c82df1d075d901a5f357fc059ab7b4dd"
+    },
+    {
+      "id": "schema.input_mapping",
+      "kind": "schema",
+      "title": "Input Mapping schema",
+      "path": "v1.0.0-draft.10/schemas/input_mapping.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/input_mapping.json",
+      "mediaType": "application/schema+json",
+      "bytes": 4305,
+      "sha256": "daf43a72e6a2adafa370322cf2a0e56585700d7c70338223ccd36176eea40318"
+    },
+    {
+      "id": "schema.input_mapping.yaml",
+      "kind": "schema",
+      "title": "Input Mapping schema (YAML)",
+      "path": "v1.0.0-draft.10/schemas/input_mapping.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/input_mapping.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 3427,
+      "sha256": "32f18fdf3f938d3ecd1fb5364c441439f1494196c0dafd4ffb7e232daf9d5d65"
+    },
+    {
+      "id": "schema.input_modifier",
+      "kind": "schema",
+      "title": "Input Modifier schema",
+      "path": "v1.0.0-draft.10/schemas/input_modifier.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/input_modifier.json",
+      "mediaType": "application/schema+json",
+      "bytes": 4886,
+      "sha256": "64f5f3db14886181c6e6ecf694b8684569c8ce32686255cc5594581c7feebca9"
+    },
+    {
+      "id": "schema.input_modifier.yaml",
+      "kind": "schema",
+      "title": "Input Modifier schema (YAML)",
+      "path": "v1.0.0-draft.10/schemas/input_modifier.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/input_modifier.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 3785,
+      "sha256": "0a6ead6ed714c354350ec312ea0fbffeb28335a403d35f5360c8d1fe1bddb263"
+    },
+    {
+      "id": "meta.genres-index.schema",
+      "kind": "meta-schema",
+      "title": "Genres Index.schema manifest schema",
+      "path": "v1.0.0-draft.10/schemas/manifest/genres-index.schema.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/manifest/genres-index.schema.json",
+      "mediaType": "application/schema+json",
+      "bytes": 1548,
+      "sha256": "7f006a1c1a3f8c368b0fadd1fbf833dd92d0f2f194d496eecef054c3c350498e"
+    },
+    {
+      "id": "meta.index.schema",
+      "kind": "meta-schema",
+      "title": "Index.schema manifest schema",
+      "path": "v1.0.0-draft.10/schemas/manifest/index.schema.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/manifest/index.schema.json",
+      "mediaType": "application/schema+json",
+      "bytes": 2193,
+      "sha256": "72913bf2d952af7a8074cfcf9edfbf81d76db2a801a2cf8b1ea2e31b636e83d5"
+    },
+    {
+      "id": "meta.rag-chunk.schema",
+      "kind": "meta-schema",
+      "title": "Rag Chunk.schema manifest schema",
+      "path": "v1.0.0-draft.10/schemas/manifest/rag-chunk.schema.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/manifest/rag-chunk.schema.json",
+      "mediaType": "application/schema+json",
+      "bytes": 1100,
+      "sha256": "161d284c6d4dd837d37a62f2d011575b0747b6c31ae0fb995466c9434669e8f3"
+    },
+    {
+      "id": "meta.sections-index.schema",
+      "kind": "meta-schema",
+      "title": "Sections Index.schema manifest schema",
+      "path": "v1.0.0-draft.10/schemas/manifest/sections-index.schema.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/manifest/sections-index.schema.json",
+      "mediaType": "application/schema+json",
+      "bytes": 1392,
+      "sha256": "ba7f51b2c741d2e21bd17ac2a944792f67d298704c30153da1a15d318e746a98"
+    },
+    {
+      "id": "meta.versions.schema",
+      "kind": "meta-schema",
+      "title": "Versions.schema manifest schema",
+      "path": "v1.0.0-draft.10/schemas/manifest/versions.schema.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/manifest/versions.schema.json",
+      "mediaType": "application/schema+json",
+      "bytes": 972,
+      "sha256": "481d2556fcf7a22b0afc3cba5221c003435b7b579ea87c47f9ba5d44bc407ca3"
+    },
+    {
+      "id": "schema.scene",
+      "kind": "schema",
+      "title": "Scene schema",
+      "path": "v1.0.0-draft.10/schemas/scene.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/scene.json",
+      "mediaType": "application/schema+json",
+      "bytes": 8080,
+      "sha256": "b615ff8b3536d95d8123ec5dac5a9e7c26c1eda12df1cf751b390b50525869a0"
+    },
+    {
+      "id": "schema.scene.yaml",
+      "kind": "schema",
+      "title": "Scene schema (YAML)",
+      "path": "v1.0.0-draft.10/schemas/scene.yaml",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/schemas/scene.yaml",
+      "mediaType": "application/yaml",
+      "bytes": 5644,
+      "sha256": "1f4c0173ad0a364332a8da3ed2953fc0f58f4526217d41b25fc14ad29ffee3ae"
+    },
+    {
+      "id": "spec.preamble",
+      "kind": "spec-section",
+      "title": "Preamble",
+      "path": "v1.0.0-draft.10/sections/00-preamble.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/00-preamble.md",
+      "mediaType": "text/markdown",
+      "bytes": 2612,
+      "sha256": "4381f245f8fdffdb6576b13a23b6da9682b085f2821f7b52037d23353b3ddd79"
+    },
+    {
+      "id": "spec.introduction",
+      "kind": "spec-section",
+      "title": "1. Introduction",
+      "path": "v1.0.0-draft.10/sections/01-introduction.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/01-introduction.md",
+      "mediaType": "text/markdown",
+      "bytes": 3905,
+      "sha256": "613b8f9516344445d0a460380cf87d5a14c6e1f0a43fbab598ed1eb28e098dcb"
+    },
+    {
+      "id": "spec.terminology",
+      "kind": "spec-section",
+      "title": "2. Terminology",
+      "path": "v1.0.0-draft.10/sections/02-terminology.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/02-terminology.md",
+      "mediaType": "text/markdown",
+      "bytes": 2717,
+      "sha256": "bae949c1df99a4966d20397099fd56bb22dd37df4f0a75cf2468aa9dc13340a9"
+    },
+    {
+      "id": "spec.architectural-overview",
+      "kind": "spec-section",
+      "title": "3. Architectural Overview",
+      "path": "v1.0.0-draft.10/sections/03-architectural-overview.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/03-architectural-overview.md",
+      "mediaType": "text/markdown",
+      "bytes": 7876,
+      "sha256": "74a7ad367f7c2155f20dbab7dad2ebbbb4645d3c53535dc6583d62dae2e006a1"
+    },
+    {
+      "id": "spec.gameplay-controllergc",
+      "kind": "spec-section",
+      "title": "4. Gameplay Controller(GC)",
+      "path": "v1.0.0-draft.10/sections/04-gameplay-controllergc.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/04-gameplay-controllergc.md",
+      "mediaType": "text/markdown",
+      "bytes": 6586,
+      "sha256": "6e5624ff1f5d2f7bf72dc68984e14855fdc7f8f5425dd67d7d2808c634259cd9"
+    },
+    {
+      "id": "spec.attributes",
+      "kind": "spec-section",
+      "title": "5. Attributes",
+      "path": "v1.0.0-draft.10/sections/05-attributes.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/05-attributes.md",
+      "mediaType": "text/markdown",
+      "bytes": 12847,
+      "sha256": "0ad7e8920e76ab391d3b1363e81b0cdafa08b17151ff539757b1db0d27abafd8"
+    },
+    {
+      "id": "spec.attribute-sets",
+      "kind": "spec-section",
+      "title": "6. Attribute Sets",
+      "path": "v1.0.0-draft.10/sections/06-attribute-sets.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/06-attribute-sets.md",
+      "mediaType": "text/markdown",
+      "bytes": 3906,
+      "sha256": "c780a74a6ebe4505ae1b805e828eb40b9e9f6179720ff1379f4d0f187604877b"
+    },
+    {
+      "id": "spec.gameplay-tags",
+      "kind": "spec-section",
+      "title": "7. Gameplay Tags",
+      "path": "v1.0.0-draft.10/sections/07-gameplay-tags.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/07-gameplay-tags.md",
+      "mediaType": "text/markdown",
+      "bytes": 9087,
+      "sha256": "a06bbb57b6d6c4c8d67b2db2cd10b46ead1c724d324dc9e922d970abf2772481"
+    },
+    {
+      "id": "spec.gameplay-abilities",
+      "kind": "spec-section",
+      "title": "8. Gameplay Abilities",
+      "path": "v1.0.0-draft.10/sections/08-gameplay-abilities.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/08-gameplay-abilities.md",
+      "mediaType": "text/markdown",
+      "bytes": 26438,
+      "sha256": "757893f3bca79fd955a0c9bc41fd0b5d0616130ca55852e560266028f3859082"
+    },
+    {
+      "id": "spec.gameplay-effects",
+      "kind": "spec-section",
+      "title": "9. Gameplay Effects",
+      "path": "v1.0.0-draft.10/sections/09-gameplay-effects.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/09-gameplay-effects.md",
+      "mediaType": "text/markdown",
+      "bytes": 24854,
+      "sha256": "ab415fc847489a60447f9c7837ec72f21f379a6ff137bc5f3854773a63f9cc30"
+    },
+    {
+      "id": "spec.ability-tasks",
+      "kind": "spec-section",
+      "title": "10. Ability Tasks",
+      "path": "v1.0.0-draft.10/sections/10-ability-tasks.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/10-ability-tasks.md",
+      "mediaType": "text/markdown",
+      "bytes": 11643,
+      "sha256": "1ebc37f829cb4e41c2e71b3a77d4102dc4cb7c61011529593105384d8f9b914a"
+    },
+    {
+      "id": "spec.input-integration",
+      "kind": "spec-section",
+      "title": "11. Input Integration",
+      "path": "v1.0.0-draft.10/sections/11-input-integration.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/11-input-integration.md",
+      "mediaType": "text/markdown",
+      "bytes": 16043,
+      "sha256": "c1942a7e549790a3207d5f63c54b10b9cc1080140b0bf2392f0e8d26133c4cea"
+    },
+    {
+      "id": "spec.gameplay-cues",
+      "kind": "spec-section",
+      "title": "12. Gameplay Cues",
+      "path": "v1.0.0-draft.10/sections/12-gameplay-cues.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/12-gameplay-cues.md",
+      "mediaType": "text/markdown",
+      "bytes": 3482,
+      "sha256": "ca2a038dd322559ebab5f86674b5525958c0967ed5e1283985da34a97485eb12"
+    },
+    {
+      "id": "spec.network-replication",
+      "kind": "spec-section",
+      "title": "13. Network Replication",
+      "path": "v1.0.0-draft.10/sections/13-network-replication.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/13-network-replication.md",
+      "mediaType": "text/markdown",
+      "bytes": 26740,
+      "sha256": "6f6fce28f42cff10fbc32f0beb25f93fd843cd3dc0ab70e3f6a74a8c7cbab560"
+    },
+    {
+      "id": "spec.state-persistence",
+      "kind": "spec-section",
+      "title": "14. State Persistence",
+      "path": "v1.0.0-draft.10/sections/14-state-persistence.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/14-state-persistence.md",
+      "mediaType": "text/markdown",
+      "bytes": 11411,
+      "sha256": "5ae03bf83b0b76571732aeb4b5d68e4b5d6fffb0493376615b564646bbfc65aa"
+    },
+    {
+      "id": "spec.implementation-examples",
+      "kind": "spec-section",
+      "title": "15. Implementation Examples",
+      "path": "v1.0.0-draft.10/sections/15-implementation-examples.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/15-implementation-examples.md",
+      "mediaType": "text/markdown",
+      "bytes": 6557,
+      "sha256": "f0a55dd67a1f42a32c8ec306c815dc53ff7ff81e4202e24a22e8a5c391783a73"
+    },
+    {
+      "id": "spec.case-studies",
+      "kind": "spec-section",
+      "title": "16. Case Studies",
+      "path": "v1.0.0-draft.10/sections/16-case-studies.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/16-case-studies.md",
+      "mediaType": "text/markdown",
+      "bytes": 17395,
+      "sha256": "60778f89c1244c65c6008829317d8e33165c901696504e023d8cb25d27d54d8b"
+    },
+    {
+      "id": "spec.world-spatial-model",
+      "kind": "spec-section",
+      "title": "17. World & Spatial Model",
+      "path": "v1.0.0-draft.10/sections/17-world-spatial-model.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/17-world-spatial-model.md",
+      "mediaType": "text/markdown",
+      "bytes": 18277,
+      "sha256": "73dc9143f381d08d443f50820a2195033533ac8a65e7507a9a2a363e91e5960d"
+    },
+    {
+      "id": "spec.scene-composition",
+      "kind": "spec-section",
+      "title": "18. Scene Composition",
+      "path": "v1.0.0-draft.10/sections/18-scene-composition.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/18-scene-composition.md",
+      "mediaType": "text/markdown",
+      "bytes": 7823,
+      "sha256": "a2a8e3e0862de0b245f09f67b67fb385e259921a641dda5c7af7289dafafd76f"
+    },
+    {
+      "id": "spec.mathematical-notation",
+      "kind": "spec-section",
+      "title": "Mathematical Notation",
+      "path": "v1.0.0-draft.10/sections/19-mathematical-notation.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/19-mathematical-notation.md",
+      "mediaType": "text/markdown",
+      "bytes": 2057,
+      "sha256": "15ffccf1e20215a24112a7624c24faad0c6ee92f5559c5272779a2cf0b55ae53"
+    },
+    {
+      "id": "spec.complete-schema-reference",
+      "kind": "spec-section",
+      "title": "Complete Schema Reference",
+      "path": "v1.0.0-draft.10/sections/20-complete-schema-reference.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/20-complete-schema-reference.md",
+      "mediaType": "text/markdown",
+      "bytes": 21835,
+      "sha256": "7dc48fa71dba014dd676b5529b4054a775722c3ae6ff0c25fba21dd7f72bd9d9"
+    },
+    {
+      "id": "spec.references-and-citations",
+      "kind": "spec-section",
+      "title": "References and Citations",
+      "path": "v1.0.0-draft.10/sections/21-references-and-citations.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/21-references-and-citations.md",
+      "mediaType": "text/markdown",
+      "bytes": 1632,
+      "sha256": "4133c0fb05e915de5b915020e7121c9b4b30a92504e4320c0638d37f4c2b0163"
+    },
+    {
+      "id": "spec.document-history",
+      "kind": "spec-section",
+      "title": "Document History",
+      "path": "v1.0.0-draft.10/sections/22-document-history.md",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/22-document-history.md",
+      "mediaType": "text/markdown",
+      "bytes": 254,
+      "sha256": "be244efa3a1910b28e1529cc04c66804ac8bb50276bcb828b9bad98b2a58e1a6"
+    },
+    {
+      "id": "sections.index",
+      "kind": "section-index",
+      "title": "Spec section index",
+      "path": "v1.0.0-draft.10/sections/index.json",
+      "url": "https://ugas.jbltx.com/v1.0.0-draft.10/sections/index.json",
+      "mediaType": "application/json",
+      "bytes": 6438,
+      "sha256": "0b8e7d07c9efcfd87417bcdce56f3ff064a3665170d1554685cf9cb66a007a56"
+    }
+  ]
+}

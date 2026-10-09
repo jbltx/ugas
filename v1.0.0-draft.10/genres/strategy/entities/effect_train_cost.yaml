@@ -1,0 +1,11 @@
+# Cost for GA_TrainUnit: spends Minerals to queue one unit.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_effect.json
+Name: GE_TrainCost
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Minerals
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -50.0

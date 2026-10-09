@@ -1,0 +1,10 @@
+# Cooldown for GA_AreaStrike.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_effect.json
+Name: GE_AreaStrikeCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 10.0
+GrantedTags:
+  - Cooldown.Ability.AreaStrike

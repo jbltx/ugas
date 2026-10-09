@@ -1,0 +1,11 @@
+# Cooldown for GA_Boost: 300 seconds from activation. Longer than GE_DoubleIncome's 60-second run, so
+# a booster always ends before the next one can start and the Booster channel never holds two.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_effect.json
+Name: GE_BoostCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 300.0
+GrantedTags:
+  - Cooldown.Ability.Boost

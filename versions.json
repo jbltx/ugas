@@ -1,6 +1,12 @@
 {
-  "latest": "v1.0.0-draft.9",
+  "latest": "v1.0.0-draft.10",
   "versions": [
+    {
+      "version": "v1.0.0-draft.10",
+      "status": "pre-release",
+      "released": "2026-10-09",
+      "changelog": "https://github.com/jbltx/ugas/blob/main/CHANGELOG.md"
+    },
     {
       "version": "v1.0.0-draft.9",
       "status": "pre-release",

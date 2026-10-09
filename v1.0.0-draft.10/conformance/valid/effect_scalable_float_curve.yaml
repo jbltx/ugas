@@ -1,0 +1,11 @@
+# label: valid — a ScalableFloat magnitude may read a Curve instead of a Value (§9.4.2)
+$schema: https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_effect.json
+Name: GE_ScaledDamage
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Health
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Curve: DamageCurve
+      CurveInput: Level
