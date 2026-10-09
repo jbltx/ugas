@@ -36,8 +36,8 @@ is designed from first principles and grounded in the genre's standard mechanics
 | `entities/gameplay_controller.yaml` | Worked example: an idle save with 3 mines + 1 factory, prestiged, boosted |
 | `entities/input_actions.yaml` | Tap, BuyGenerator, Prestige, Play, Boost input actions |
 | `entities/input_action_set_idle.yaml` | `Idle`: the single touch-first idle input context |
-| `entities/input_mapping_idle_touch.yaml` | Touch bindings: whole-screen tap + on-screen economy and boost buttons |
-| `entities/input_mapping_idle_pc.yaml` | Mouse/keyboard bindings for desktop/web (`D` boosts) |
+| `entities/input_mapping_idle_touch.yaml` | Touch bindings: whole-screen tap + on-screen economy buttons |
+| `entities/input_mapping_idle_pc.yaml` | Mouse/keyboard bindings for desktop/web |
 | `entities/input_modifiers.yaml` | `TapDebounce`, `TouchPressThreshold` |
 
 ## How to use

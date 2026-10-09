@@ -193,7 +193,9 @@ Defined in `entities/tag_registry.yaml` (additive only):
 * `entities/ability_boost.yaml` — `GA_Boost`: applies `GE_DoubleIncome` to the owner. No cost; rationed
   by `Cooldown: GE_BoostCooldown` (`entities/effect_boost_cooldown.yaml`, 300 s, grants
   `Cooldown.Ability.Boost`). The cooldown outlasts the 60 s booster, so boosters never overlap. What
-  earns the boost (a rewarded ad, a chest) is engine logic that fires the `Boost` action.
+  earns the boost (a rewarded ad, a chest) is engine logic that fires the `Boost` action. Neither
+  input mapping binds `Boost` to a key or button, since a direct binding would grant the reward
+  without earning it.
 
 [[genre-effects]]
 == Genre Effects

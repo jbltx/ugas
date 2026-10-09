@@ -2,6 +2,8 @@
 # Tap is the whole-screen click; the economy/meta actions are on-screen buttons (distinct touch
 # targets). Tap runs through TapDebounce so an accidental double-fire within a few frames is
 # swallowed, keeping rapid tapping clean. Buttons are not rebindable (they are UI elements).
+# Boost has no button on purpose: it is a reward, fired by engine logic once a rewarded ad or a
+# chest pays out (see ability_boost.yaml). A button would hand out the booster for free.
 
 $schema: https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/input_mapping.json
 ActionSet: Idle
@@ -30,12 +32,6 @@ Bindings:
     Inputs:
       - Device: Touch
         Input: Touch.Button.Play
-    bIsRebindable: false
-
-  - Action: Boost
-    Inputs:
-      - Device: Touch
-        Input: Touch.Button.Boost
     bIsRebindable: false
 Metadata:
   DisplayName: Idle - Touch
