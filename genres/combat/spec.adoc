@@ -1,7 +1,7 @@
 = UGAS Genre Pack: Combat
 Mickael Bonfill <jbltx>
-:revnumber: 1.0.0-draft.10
-:ugas-version: v1.0.0-draft.10
+:revnumber: 1.0.0-draft.11
+:ugas-version: v1.0.0-draft.11
 :doctype: book
 :toc: left
 :toc-title: Table of Contents

@@ -6,6 +6,7 @@
   },
   "changesets": [
     "bundle-rejects-unknown-schema",
+    "casual-boost-reward-only",
     "casual-boost-wiring",
     "clamp-bounds-clamped-current",
     "combat-pack-modeled-tasks",
