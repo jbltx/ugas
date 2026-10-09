@@ -27,15 +27,17 @@ is designed from first principles and grounded in the genre's standard mechanics
 | `entities/effect_tap_reward.yaml` | `GE_TapReward`: instant `+Currency`, the payload of `GA_Tap` |
 | `entities/effect_buy_generator_cost.yaml` | `GE_BuyGeneratorCost`: instant `-Currency` cost of `GA_BuyGenerator` (base price) |
 | `entities/effect_play_cost.yaml` | `GE_PlayCost`: instant `-20 Energy` cost of `GA_Play`; the energy gate |
+| `entities/effect_boost_cooldown.yaml` | `GE_BoostCooldown`: 300 s cooldown of `GA_Boost`; grants `Cooldown.Ability.Boost` |
 | `entities/ability_tap.yaml` | `GA_Tap`: the active click; applies `GE_TapReward` |
 | `entities/ability_buy_generator.yaml` | `GA_BuyGenerator`: spend currency to install a generator |
 | `entities/ability_prestige.yaml` | `GA_Prestige`: reset for a permanent multiplier; gated by `Meta.State.PrestigeReady` |
 | `entities/ability_play.yaml` | `GA_Play`: spend energy to play an active round |
+| `entities/ability_boost.yaml` | `GA_Boost`: apply `GE_DoubleIncome`; no cost, 300 s cooldown |
 | `entities/gameplay_controller.yaml` | Worked example: an idle save with 3 mines + 1 factory, prestiged, boosted |
 | `entities/input_actions.yaml` | Tap, BuyGenerator, Prestige, Play, Boost input actions |
 | `entities/input_action_set_idle.yaml` | `Idle`: the single touch-first idle input context |
-| `entities/input_mapping_idle_touch.yaml` | Touch bindings: whole-screen tap + on-screen economy buttons |
-| `entities/input_mapping_idle_pc.yaml` | Mouse/keyboard bindings for desktop/web |
+| `entities/input_mapping_idle_touch.yaml` | Touch bindings: whole-screen tap + on-screen economy and boost buttons |
+| `entities/input_mapping_idle_pc.yaml` | Mouse/keyboard bindings for desktop/web (`D` boosts) |
 | `entities/input_modifiers.yaml` | `TapDebounce`, `TouchPressThreshold` |
 
 ## How to use

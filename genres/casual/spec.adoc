@@ -173,7 +173,8 @@ Defined in `entities/tag_registry.yaml` (additive only):
 * *Booster states* — `Booster.State.DoubleIncome` (granted by `GE_DoubleIncome`).
 * *Generator classification* — `Generator.Type.Mine|Factory|Bank` (`AllowMultiple`, so the engine can
   count installed generators).
-* *Ability types* — `Ability.Type.Tap|Buy|Prestige|Play`.
+* *Ability types* — `Ability.Type.Tap|Buy|Prestige|Play|Boost`.
+* *Cooldowns* — `Cooldown.Ability.Boost` (granted by `GE_BoostCooldown`).
 * *Session state* — `Session.State.OutOfEnergy`.
 
 [[genre-abilities]]
@@ -189,6 +190,10 @@ Defined in `entities/tag_registry.yaml` (additive only):
   logic.
 * `entities/ability_play.yaml` — `GA_Play`: spends `Energy` (`Cost: GE_PlayCost`); blocked while
   `Session.State.OutOfEnergy`. The energy-gated active round.
+* `entities/ability_boost.yaml` — `GA_Boost`: applies `GE_DoubleIncome` to the owner. No cost; rationed
+  by `Cooldown: GE_BoostCooldown` (`entities/effect_boost_cooldown.yaml`, 300 s, grants
+  `Cooldown.Ability.Boost`). The cooldown outlasts the 60 s booster, so boosters never overlap. What
+  earns the boost (a rewarded ad, a chest) is engine logic that fires the `Boost` action.
 
 [[genre-effects]]
 == Genre Effects
@@ -203,7 +208,10 @@ Defined in `entities/tag_registry.yaml` (additive only):
   `Prestige` channel on `CurrencyPerSecond` and `PrestigeMultiplier`; grants `Meta.State.Prestiged`.
 * `entities/effect_energy_regen.yaml` — `GE_EnergyRegen`: `Infinite` + `Period`; `+Energy` each tick.
 * `entities/effect_double_income.yaml` — `GE_DoubleIncome`: `HasDuration` reward; latexmath:[\times 2]
-  `CurrencyPerSecond` in the `Booster` channel; grants `Booster.State.DoubleIncome`.
+  `CurrencyPerSecond` in the `Booster` channel; grants `Booster.State.DoubleIncome`. Applied by
+  `GA_Boost`.
+* `entities/effect_boost_cooldown.yaml` — `GE_BoostCooldown`: `HasDuration` 300 s; grants
+  `Cooldown.Ability.Boost`, the cooldown of `GA_Boost`.
 * `entities/effect_offline_progress.yaml` — `GE_OfflineProgress`: `Instant`; runs the
   `ExecCalc_OfflineProgress` `ExecutionCalculation` to pay accrued offline income into `Currency`.
 * `entities/effect_tap_reward.yaml` — `GE_TapReward`: `Instant`; flat `+Currency`, the payload of
