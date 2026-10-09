@@ -1,0 +1,10 @@
+# Cooldown for GA_Shoot: covers the shot animation and recovery.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_effect.json
+Name: GE_ShootCooldown
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 1.5
+GrantedTags:
+  - Cooldown.Ability.Shoot

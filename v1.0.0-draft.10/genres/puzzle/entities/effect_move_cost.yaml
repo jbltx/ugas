@@ -1,0 +1,12 @@
+# Cost for GA_SwapTiles and GA_ActivatePowerup: spends one move. At 0 MovesRemaining no move can
+# pay it, which is what ends the level.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_effect.json
+Name: GE_MoveCost
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: MovesRemaining
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -1.0

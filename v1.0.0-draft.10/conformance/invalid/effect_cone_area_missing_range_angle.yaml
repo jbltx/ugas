@@ -1,0 +1,6 @@
+# label: invalid — a Cone area needs a range (Radius) and HalfAngleDeg (§17.3)
+$schema: https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_effect.json
+Name: GE_FireBreath
+DurationPolicy: Instant
+Area:
+  Shape: Cone

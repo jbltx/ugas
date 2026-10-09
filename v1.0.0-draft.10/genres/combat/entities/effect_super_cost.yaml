@@ -1,0 +1,12 @@
+# Cost for GA_Special: spends a full bar of Super (MaxSuper 100). A partial gauge cannot pay it,
+# so the special is gated on meter with no extra check.
+
+$schema: https://ugas.jbltx.com/v1.0.0-draft.10/schemas/gameplay_effect.json
+Name: GE_SuperCost
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: Super
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -100.0
