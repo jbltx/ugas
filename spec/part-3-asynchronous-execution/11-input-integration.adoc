@@ -11,21 +11,15 @@ The UGAS input system implements the Command pattern to decouple hardware inputs
 
 The input layer defines four formal entity schemas that sit between raw hardware and the ability system:
 
+[source,mermaid]
 ----
-┌──────────────┐      ┌──────────────┐      ┌──────────────┐
-│    Device    │─────▶│   Modifier   │─────▶│    Action    │
-│    Input     │      │   Pipeline   │      │   (InputID)  │
-└──────────────┘      └──────────────┘      └──────┬───────┘
-                                                   │
-                             ┌──────────────┐      │
-                             │  Action Set  │◀─────┘
-                             │  (context)   │
-                             └──────┬───────┘
-                                    │
-                             ┌──────────────┐
-                             │   Ability    │
-                             │  Activation  │
-                             └──────────────┘
+flowchart TB
+    accTitle: Input integration pipeline
+    accDescr: Device input passes through a modifier pipeline to an action identified by InputID, then through an action set context to ability activation.
+    Device[Device Input] --> Modifiers[Modifier Pipeline]
+    Modifiers --> Action["Action (InputID)"]
+    Action --> ActionSet["Action Set (context)"]
+    ActionSet --> Ability[Ability Activation]
 ----
 
 The _Mapping_ entity connects Device Inputs to Actions, applying Modifiers along the way. Action Sets group Actions into switchable contexts driven by Gameplay Tags on the owning GC.

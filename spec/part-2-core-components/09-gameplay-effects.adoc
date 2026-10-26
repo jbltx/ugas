@@ -447,14 +447,22 @@ Execution Policies define how multiple instances of the same Effect interact. Th
 
 Each instance of the effect runs simultaneously, applying N times the magnitude.
 
+[source,mermaid]
 ----
-Time ───────────────────────────────────▶
-Instance 1: ████████████████
-Instance 2:     ████████████████
-Instance 3:         ████████████████
+gantt
+    accTitle: Effects running in parallel
+    accDescr: Three eight-second instances start at seconds zero, two, and four. At second five, all three are active and the combined magnitude is three times the base.
+    title RunInParallel — illustrative time in seconds
+    dateFormat HH:mm:ss
+    axisFormat %S
+    tickInterval 2second
+    todayMarker off
+    Instance 1 : 00:00:00, 8s
+    Instance 2 : 00:00:02, 8s
+    Instance 3 : 00:00:04, 8s
+----
 
 Combined magnitude at t=5: 3× base
-----
 
 Use case: Stackable damage-over-time effects, multiple buff sources
 
@@ -462,11 +470,19 @@ Use case: Stackable damage-over-time effects, multiple buff sources
 
 Instances queue and execute one after another.
 
+[source,mermaid]
 ----
-Time ───────────────────────────────────▶
-Instance 1: ████████████████
-Instance 2:                 ████████████████
-Instance 3:                                 ████████████████
+gantt
+    accTitle: Effects running in sequence
+    accDescr: Three eight-second instances execute one after another, with each starting when the preceding instance ends.
+    title RunInSequence — illustrative time in seconds
+    dateFormat HH:mm:ss
+    axisFormat %S
+    tickInterval 4second
+    todayMarker off
+    Instance 1 : first, 00:00:00, 8s
+    Instance 2 : second, after first, 8s
+    Instance 3 : after second, 8s
 ----
 
 Use case: Channeled effects, crowd control chains
@@ -477,13 +493,22 @@ _Chaining mechanism:_ The GC owns the queue for each `RunInSequence` effect clas
 
 Multiple applications merge into a single logical instance with combined duration.
 
+[source,mermaid]
 ----
-Time ───────────────────────────────────▶
-Instance 1: ████████████████
-Instance 2:     ████████████████
-Instance 3:         ████████████████
-
-Merged:     ████████████████████████████
+gantt
+    accTitle: Effects merged into one duration
+    accDescr: Three eight-second applications start at seconds zero, two, and four. The merged logical instance spans the earliest start at zero through the latest end at twelve seconds.
+    title RunInMerge — illustrative time in seconds
+    dateFormat HH:mm:ss
+    axisFormat %S
+    tickInterval 2second
+    todayMarker off
+    section Applications
+    Instance 1 : 00:00:00, 8s
+    Instance 2 : 00:00:02, 8s
+    Instance 3 : 00:00:04, 8s
+    section Logical instance
+    Merged : 00:00:00, 12s
 ----
 
 Use case: Buff refreshing, grace periods

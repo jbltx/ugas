@@ -8,31 +8,16 @@ Tasks leverage the Observer design pattern for efficiency. Instead of polling a 
 
 ==== 10.2 Task Lifecycle
 
+[source,mermaid]
 ----
-         ┌─────────────┐
-         │  Inactive   │
-         └──────┬──────┘
-                │ Instantiate
-                ▼
-         ┌─────────────┐
-         │   Ready     │
-         └──────┬──────┘
-                │ Activate
-                ▼
-         ┌─────────────┐     Tick (if needed)
-    ┌───▶│   Active    │◀────────────────┐
-    │    └──────┬──────┘                 │
-    │           │                        │
-    │           ├────────────────────────┘
-    │           │ Trigger/Complete
-    │           ▼
-    │    ┌─────────────┐
-    │    │  Completed  │
-    │    └─────────────┘
-    │
-    │    ┌─────────────┐
-    └────│  Cancelled  │
-         └─────────────┘
+stateDiagram-v2
+    accTitle: Ability Task lifecycle
+    accDescr: A task is instantiated from Inactive to Ready, then activated. Active tasks may tick, complete when triggered, or be cancelled when the ability is cancelled or the owner dies.
+    Inactive --> Ready: Instantiate
+    Ready --> Active: Activate
+    Active --> Active: Tick (if needed)
+    Active --> Completed: Trigger / Complete
+    Active --> Cancelled: Cancel
 ----
 
 _Instantiation_: Task is created with configuration parameters
