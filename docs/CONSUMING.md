@@ -27,6 +27,7 @@ dependency instead of fetching.
 | `schemas/bundle.json` | All schemas in one self-contained document; validate any entity **offline** against it. |
 | `schemas/manifest/*.schema.json` | Meta-schemas for the manifests above, so you can validate what you vendor. |
 | `conformance/valid/` + `conformance/invalid/` | Labelled corpus to test your loader/validator against. |
+| `conformance/behavior/` | Versioned prediction, RNG, and async-validation scenarios; discover fixtures with manifest kind `behavioral-conformance`. |
 | `rag/chunks.jsonl` + `rag/llms-index.json` | Finer retrieval chunks + an author-intent → chunk-id map for RAG/intent routing. |
 | `llms.txt` / `llms-full.txt` | Human/agent index and a single-fetch everything file (at the docs root, not versioned). |
 
@@ -71,6 +72,22 @@ errors = list(validator.iter_errors(entity))  # [] == valid
 
 Run the shipped `conformance/` corpus through the same code to confirm your validator agrees:
 every `valid/` entity should pass and every `invalid/` entity should fail.
+
+## Behavioral conformance
+
+Entity schema validity does not demonstrate runtime correctness. The separate
+`conformance/behavior/` corpus contains initial state, ordered operations, and expected
+observations for the prediction, RNG, and asynchronous-validation contracts. Its README
+specifies the adapter mapping and its `format.schema.json` validates fixture structure.
+Do not pass these scenarios to the gameplay entity schema bundle.
+
+From a source checkout, run `python scripts/run_behavior_conformance.py` (requires
+`jsonschema`). To test the packaged files, add
+`--corpus packages/spec/build/conformance/behavior`. A downstream engine can export
+`{fixture_id: [observation_after_each_step, ...]}` and pass `--results results.json` to
+check the same expectations without executing the Python reference models. These models
+cover protocol transitions; engine-specific task capture, transport, and physics integration
+still require tests in the adapter.
 
 ## Authoring skills
 

@@ -150,6 +150,25 @@ def check_rag(version_dir: Path, errors: list[str]) -> None:
                     fail(f"rag/llms-index.json intent {intent!r} references unknown chunk {cid}", errors)
 
 
+def check_behavior(version_dir: Path, manifest: dict, errors: list[str]) -> None:
+    corpus = version_dir / "conformance" / "behavior"
+    if not corpus.is_dir():  # Older version trees have no behavioral corpus.
+        return
+    from run_behavior_conformance import run
+    try:
+        run(corpus)
+        expected = {p.name for p in corpus.glob("*.json") if p.name != "format.schema.json"}
+        listed = {Path(r["path"]).name for r in manifest["resources"]
+                  if r["kind"] == "behavioral-conformance"}
+        if expected != listed:
+            fail("behavior corpus manifest membership differs from disk", errors)
+        for resource in manifest["resources"]:
+            if resource["kind"] == "conformance" and "/conformance/behavior/" in resource["path"]:
+                fail("behavior fixture misclassified as an entity fixture", errors)
+    except Exception as exc:
+        fail(f"behavioral conformance: {exc}", errors)
+
+
 def check_llms(version_dir: Path, llms_path: Path, manifest: dict, errors: list[str]) -> None:
     text = llms_path.read_text(encoding="utf-8")
     packs = sorted(
@@ -184,6 +203,7 @@ def main(argv: list[str]) -> int:
     manifest = validate_meta(version_dir, errors)
     if manifest is not None:
         check_checksums(version_dir, manifest, errors)
+        check_behavior(version_dir, manifest, errors)
         check_llms(version_dir, llms_path, manifest, errors)
     check_genre_index(version_dir, errors)
     check_bundle(version_dir, errors)

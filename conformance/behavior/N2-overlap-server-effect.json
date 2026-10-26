@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "id": "N2-overlap-server-effect",
+  "description": "Reject older input, preserve server effect, replay later input once.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      }
+    },
+    {
+      "op": "submit",
+      "args": {
+        "base": 2,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 20
+          }
+        ]
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 105,
+          "cooldowns": [],
+          "tags": [],
+          "effects": [
+            "server-mana"
+          ]
+        },
+        "outcomes": [
+          {
+            "base": 1,
+            "accepted": [
+              false
+            ]
+          }
+        ],
+        "resolved_through": 1
+      },
+      "expect": {
+        "state": {
+          "mana": 85,
+          "cooldowns": [
+            "2:0"
+          ],
+          "tags": [
+            "2:0"
+          ],
+          "effects": [
+            "server-mana"
+          ]
+        },
+        "journal": [
+          2
+        ],
+        "pending": [
+          2
+        ]
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 1,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": []
+      },
+      "expect": {
+        "state": {
+          "mana": 85,
+          "cooldowns": [
+            "2:0"
+          ],
+          "tags": [
+            "2:0"
+          ],
+          "effects": [
+            "server-mana"
+          ]
+        }
+      }
+    }
+  ]
+}

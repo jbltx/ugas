@@ -110,7 +110,7 @@ The ONLY authorized mechanism for modifying attributes or tags. Three duration p
 
 ### Gameplay Abilities
 
-Asynchronous, stateful action units with lifecycle: Grant -> TryActivate -> Activating (Validating) -> Commit -> Active (Executing) -> End/Cancel -> Ending
+Asynchronous, stateful action units with lifecycle: Grant -> TryActivate -> Activating (Validating) -> optional PendingConfirmation -> Commit -> Active (Executing) -> End/Cancel -> Ending
 
 ## Quick Start
 

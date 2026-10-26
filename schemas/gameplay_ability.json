@@ -91,13 +91,34 @@
         },
         "TimeoutMs": {
           "type": "number",
-          "description": "Maximum time to wait for the validation result before treating it as an asynchronous failure (transition Fail -> Granted, nothing consumed)."
+          "description": "Positive server monotonic timeout in milliseconds (§8.8). When omitted the adapter MUST supply a documented finite positive default; expiry fails without commit.",
+          "exclusiveMinimum": 0
         },
         "Predicted": {
           "type": "boolean",
-          "description": "If true, the owning client MAY speculatively commit and enter Active while the server holds PendingConfirmation, reconciling via the prediction model (§13.8)."
+          "description": "If true, Required MUST be true. The owning client MAY predict while authority validates; inability to predict still submits the same authority request (§8.8)."
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["Predicted"],
+            "properties": {
+              "Predicted": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": ["Required"],
+            "properties": {
+              "Required": {
+                "const": true
+              }
+            }
+          }
+        }
+      ]
     },
     "Tasks": {
       "type": "array",

@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "id": "R4-late-nonpredictable",
+  "description": "A non-predictable dependency discovered after commit unwinds without resubmission.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ],
+        "late_nonpredictable": true
+      },
+      "expect": {
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "journal": [],
+        "trace": [
+          "send:1",
+          "predict:1",
+          "unwind:1"
+        ]
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 90,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": [
+          {
+            "base": 1,
+            "accepted": [
+              true
+            ]
+          }
+        ],
+        "resolved_through": 1
+      },
+      "expect": {
+        "state": {
+          "mana": 90,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "pending": []
+      }
+    }
+  ]
+}

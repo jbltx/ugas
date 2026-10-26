@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "id": "N8-action-bound",
+  "description": "Per-frame action capacity also bounds same-frame work; overflow goes to authority.",
+  "model": "prediction",
+  "initial": {
+    "max_actions": 1
+  },
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      }
+    },
+    {
+      "op": "submit",
+      "args": {
+        "base": 2,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      },
+      "expect": {
+        "state": {
+          "mana": 90,
+          "cooldowns": [
+            "1:0"
+          ],
+          "tags": [
+            "1:0"
+          ],
+          "effects": []
+        },
+        "pending": [
+          1,
+          2
+        ],
+        "journal": [
+          1
+        ]
+      }
+    }
+  ]
+}

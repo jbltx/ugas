@@ -1,0 +1,8 @@
+{
+  "$schema": "https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json",
+  "Name": "ability_async_prediction_disabled_required",
+  "AsyncValidation": {
+    "Required": false,
+    "Predicted": true
+  }
+}

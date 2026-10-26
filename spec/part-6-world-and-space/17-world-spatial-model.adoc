@@ -315,9 +315,11 @@ identically on the predicting client and the authoritative server, or reconcile.
 ===== Semantics (normative)
 
 . *Deterministic inputs.* A predicted query MUST run against state both ends agree on: positions in the
-  prediction's `CaptureState()` scope (§13.8.3) for the owning GC, and replicated positions for others.
-  Where positions differ across the wire the query may mis-predict and MUST reconcile via §13.5 against
-  the server's authoritative result.
+  recorded query inputs/results in the prediction journal (§13.8.5), including sampled owner and
+  replicated target positions. World/physics positions are NOT part of the GC snapshot (§13.8.3).
+  Replay MUST use the recorded inputs, not resample the current world. Missing/non-replayable inputs
+  disable prediction. Where sampled positions differ across the wire the query may mispredict and
+  MUST reconcile via §13.5 against the server's authoritative result.
 . *Stable ordering.* Ordered results (`Nearest`, and any `MaxTargets` / `MaxResults` truncation) MUST
   use the deterministic tie-break of §17.2 rule 3 so client and server select the same subset; an
   ambiguous order MUST NOT pick different targets on each end.

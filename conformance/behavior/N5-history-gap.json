@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "id": "N5-history-gap",
+  "description": "Missing replay suffix installs authority without inventing replay steps.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      }
+    },
+    {
+      "op": "submit",
+      "args": {
+        "base": 2,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 105,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": [
+          {
+            "base": 1,
+            "accepted": [
+              false
+            ]
+          }
+        ],
+        "resolved_through": 1,
+        "complete_history": false
+      },
+      "expect": {
+        "state": {
+          "mana": 105,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "journal": [],
+        "pending": [
+          2
+        ],
+        "ready": false
+      }
+    }
+  ]
+}

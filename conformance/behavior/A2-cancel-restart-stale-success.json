@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "id": "A2-cancel-restart-stale-success",
+  "description": "A late result must match attempt identity, not merely a pending phase.",
+  "model": "async",
+  "steps": [
+    {
+      "op": "start",
+      "args": {
+        "id": "A"
+      }
+    },
+    {
+      "op": "cancel",
+      "args": {
+        "id": "A"
+      }
+    },
+    {
+      "op": "start",
+      "args": {
+        "id": "B"
+      }
+    },
+    {
+      "op": "resolve",
+      "args": {
+        "id": "A"
+      },
+      "expect": {
+        "mana": 100,
+        "pending": [
+          "B"
+        ],
+        "commits": []
+      }
+    },
+    {
+      "op": "resolve",
+      "args": {
+        "id": "B"
+      }
+    },
+    {
+      "op": "resolve",
+      "args": {
+        "id": "B"
+      },
+      "expect": {
+        "mana": 90,
+        "commits": [
+          "B"
+        ],
+        "terminal": {
+          "A": "Cancelled",
+          "B": "Accepted"
+        }
+      }
+    }
+  ]
+}

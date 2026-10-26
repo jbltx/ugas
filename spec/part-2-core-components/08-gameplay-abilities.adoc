@@ -66,7 +66,13 @@ struct AbilitySpec {
   /** Runtime parameters */
   Parameters: Map<string, any>;
 
-  /** Is currently active? */
+  /** Runtime attempt identity is separate from the reusable grant Handle. */
+  AttemptId?: uint64;
+  State: AbilityState;
+  ValidationDeadline?: number; // server monotonic milliseconds
+  TerminalOutcome?: "Accepted" | "Rejected" | "Cancelled";
+
+  /** Is currently active? PendingConfirmation is false. */
   IsActive: boolean;
 
   /**
@@ -85,48 +91,33 @@ The base lifecycle assumes the `Activating (Validating)` checks of §8.3 are syn
 `PendingConfirmation` sits between `Activating (Validating)` and `Commit`. Synchronous-only abilities skip it and go `Validating -> Commit` exactly as before; abilities that require asynchronous validation (§8.8) route through it. Under client-side prediction (§13.8) the predicting client may instead *speculatively* enter Active while the authoritative side holds the activation in `PendingConfirmation` until the server confirms or rejects the prediction key — the reject edge rolls the speculative activation back to `Granted` via §13.5.
 
 ----
-                    ┌──────────────┐
-                    │  NotGranted  │
-                    └──────┬───────┘
-                           │ Grant
-                           ▼
-                    ┌──────────────┐
-        ┌──────────▶│   Granted    │◀────────────────┐
-        │           │  (Inactive)  │◀──────────┐     │
-        │           └──────┬───────┘           │     │
-        │                  │ TryActivate       │     │
-        │                  ▼                   │     │
-        │           ┌──────────────┐           │     │
-        │           │  Activating  │───────────┤     │
-        │           │ (Validating) │  Fail     │     │
-        │           └──┬────────┬──┘           │     │
-        │   sync-only  │        │ requires      │     │
-        │  (§8.3 pass) │        │ async         │     │
-        │              │        ▼ validation    │     │
-        │              │ ┌────────────────────┐ │     │
-        │              │ │ PendingConfirmation │─┘     │
-        │              │ │  (awaiting server   │ Fail  │
-        │              │ │     validation)     │ (async│
-        │              │ └─────────┬───────────┘ reject)│
-        │              │           │ Confirm            │
-        │              │           │ (async success)    │
-        │              ▼           ▼                    │
-        │           ┌──────────────────┐                │
-        │           │      Commit      │ ───────────────┘
-        │           │ (cost/cooldown)  │  RejectPrediction
-        │           └────────┬─────────┘  -> rollback (§13.5)
-        │                    │ proceed
-        │                    ▼
-        │           ┌──────────────────┐
-        │           │      Active      │   Client prediction (§13.8):
-        │           │   (Executing)    │   client enters Active SPECULATIVELY
-        │           │                  │   while server stays in
-        │           └────────┬─────────┘   PendingConfirmation until the
-        │                    │ End/Cancel   prediction key resolves.
-        │                    ▼              ConfirmPrediction -> no change;
-        │           ┌──────────────────┐    RejectPrediction -> rollback to
-        └───────────│      Ending      │    Granted via §13.5.
-                    └──────────────────┘
+NotGranted -- Grant --> Granted -- TryActivate --> Validating
+                           ^                         |
+                           |                 synchronous checks
+                           |                  /              \
+                           |               fail              pass
+                           |                |                  |
+                           +----------------+          async required?
+                           |                            /           \
+                           |                          yes            no
+                           |                           |              |
+                           |                  PendingConfirmation    |
+                           |                    /             \       |
+                           |              fail/cancel       success   |
+                           |                   |              |       |
+                           +-------------------+     recheck + Commit <+
+                           |                              /       \
+                           |                           fail       success
+                           +----------------------------+           |
+                           |                                      Active
+                           |                                        |
+                           +------------ Ending <--------------- End/Cancel
+
+Predicting client: capture first, then speculative Commit/Active.
+Server: remain PendingConfirmation until validation and recheck succeed.
+Success AND failure: reconcile authoritative state and replay eligible later inputs (§13.5).
+Cancelled/ended local presentation is never resurrected by a late response.
+
 ----
 
 ==== 8.3 Activation Requirements
@@ -134,7 +125,7 @@ The base lifecycle assumes the `Activating (Validating)` checks of §8.3 are syn
 Before an Ability can activate, the following checks MUST pass:
 
 1. _Granted Check_: Ability must be granted to the GC
-2. _Not Already Active_: Ability must not currently be active (unless configured for multiple instances)
+2. _No Conflicting Activation_: A single-instance ability must be neither active nor pending validation. Multiple-instance abilities require separate attempt state for each instance.
 3. _Required Tags_: Owner must have all tags in `ActivationRequiredTags`
 4. _Blocked Tags_: Owner must NOT have any tags in `ActivationBlockedTags`
 5. _Cost Verification_: If CostEffect is defined, owner must have sufficient resources
@@ -143,6 +134,7 @@ Before an Ability can activate, the following checks MUST pass:
 [source,typescript]
 ----
 function CanActivateAbility(spec: AbilitySpec): boolean {
+  if (!IsStillGranted(spec) || HasConflictingActiveOrPendingAttempt(spec)) return false;
   const ownerTags = GC.GetOwnedTags();
 
   // Check required tags
@@ -171,7 +163,12 @@ function CanActivateAbility(spec: AbilitySpec): boolean {
 
 ==== 8.4 Commit Phase
 
-The Commit phase is the point of no return where resources are consumed and cooldowns begin. Once committed:
+Commit is the serialized point at which authoritative resources are consumed and cooldowns
+begin. Recheck mutable activation requirements immediately before it, excluding only the
+current attempt from the pending-conflict check. Check and commit MUST run on the same GC
+mutation executor, without a yield between them. A failed commit MUST leave no partial cost,
+cooldown, or activation-tag effects and MUST NOT enter Active. Speculative client commit
+is reversible through §13.5. Once authoritative commit succeeds:
 
 1. Cost Effect is applied (resources consumed)
 2. Cooldown Effect is applied (cooldown tag granted)
@@ -181,26 +178,31 @@ The Commit phase is the point of no return where resources are consumed and cool
 [source,typescript]
 ----
 function CommitAbility(spec: AbilitySpec): boolean {
+  // Internal GC transaction: defer callbacks until the attempt is terminal (§8.8).
+  // On any failure roll back staged effects and return false.
+  const transaction = BeginCommitTransaction(spec);
+  if (!RecheckMutableRequirements(spec, spec.AttemptId)) return transaction.Fail();
   // Apply cost
   if (spec.AbilityClass.CostEffect) {
     const costSpec = MakeOutgoingSpec(spec.AbilityClass.CostEffect, spec.Level);
-    ApplyGameplayEffectToSelf(costSpec);
+    if (!transaction.StageEffect(costSpec)) return transaction.Fail();
   }
 
   // Apply cooldown
   if (spec.AbilityClass.CooldownEffect) {
     const cooldownSpec = MakeOutgoingSpec(spec.AbilityClass.CooldownEffect, spec.Level);
-    ApplyGameplayEffectToSelf(cooldownSpec);
+    if (!transaction.StageEffect(cooldownSpec)) return transaction.Fail();
   }
 
   // Grant activation tags via an auto-generated Infinite Effect.
   // Direct tag mutation is prohibited (§3.1); all tag state flows through Effects.
   if (!spec.AbilityClass.ActivationOwnedTags.IsEmpty()) {
     const ownedTagsSpec = MakeOwnedTagsEffect(spec.AbilityClass.ActivationOwnedTags, spec.Level);
-    spec.ActiveOwnedTagsHandle = ApplyGameplayEffectToSelf(ownedTagsSpec);
+    // On commit publish its handle as spec.ActiveOwnedTagsHandle.
+    if (!transaction.StageOwnedTagsEffect(ownedTagsSpec)) return transaction.Fail();
   }
 
-  return true;
+  return transaction.Commit();
 }
 ----
 
@@ -309,7 +311,7 @@ Ability:
   AsyncValidation:                # Optional: async server validation (§8.8)
     Required: boolean             # If true, route through PendingConfirmation
     Kind: string                  # AntiCheat | RemoteInventory | Entitlement | Custom
-    TimeoutMs: number             # Max wait before treating as async failure
+    TimeoutMs: number             # Positive monotonic ms; omitted uses finite adapter default
     Predicted: boolean            # If true, client may speculatively Activate (§13.8)
 
   Tasks:                          # Sequential task definitions
@@ -324,159 +326,133 @@ Ability:
 
 '''
 
+[[async-validation]]
 ==== 8.8 Asynchronous Validation and Predicted Activation
 
-The lifecycle of §8.2 assumes the §8.3 activation checks are synchronous. Some activations require *asynchronous* server-side validation whose result is not available in the activating frame — for example server-side anti-cheat confirmation, a resource check against a remote inventory service, or multi-step authentication for a premium consumable. Under the client-side prediction this specification mandates (§13.4–§13.8), the client predicts success synchronously and goes Active, but the server MAY reject the activation after its asynchronous validation resolves. Without a modeled state for the unresolved authoritative outcome, that late rejection has no defined transition — the race condition this section resolves.
+An activation may require an asynchronous server-side decision (anti-cheat, remote inventory,
+or entitlement). The optional `AsyncValidation` marker selects this path. When `Required`
+is absent or false, activation retains the synchronous §8.3 → §8.4 path. `Predicted` defaults
+to false; true requires `Required: true`. `Kind` remains an extensible adapter-defined string.
 
-This section introduces an explicit lifecycle state, `PendingConfirmation`, for an activation that has passed the synchronous §8.3 checks but whose authoritative outcome is not yet known. It is additive to §8.2–§8.7 and MUST NOT contradict them, and it builds on the networking model of §13.5, §13.7, and §13.8 without modifying it. Where this section uses MUST/SHOULD/MAY it carries the same RFC-2119 force as the rest of this specification.
-
+[[pending-confirmation]]
 ===== 8.8.1 The PendingConfirmation State
 
-`PendingConfirmation` denotes an activation that has passed the synchronous §8.3 checks but whose authoritative result is still outstanding pending asynchronous validation. While an activation is in `PendingConfirmation`:
+An activation passing §8.3 with `AsyncValidation.Required == true` MUST enter
+`PendingConfirmation` before authoritative Commit. While pending it MUST NOT consume cost,
+start cooldown, grant ActivationOwnedTags, or execute authoritative gameplay Tasks.
+`IsActive` is false, but the pending attempt blocks another activation of a single-instance
+ability. Presentation-only wind-up is permitted. Multiple-instance abilities require distinct
+attempt records; one shared `spec.State` cannot represent several concurrent validations.
 
-1. It MUST NOT have committed (§8.4). Cost and Cooldown Effects MUST NOT have been applied, and `ActivationOwnedTags` MUST NOT have been granted, on the side that is awaiting confirmation. Commit is reached only on confirmation.
-2. It MUST NOT be executing ability Tasks that produce authoritative gameplay mutations. An implementation MAY run non-authoritative presentation work (e.g. a wind-up animation or a local-visual cue) while pending, consistent with the speculative/local-visual rule of §13.7 and §13.8.4.
-3. `spec.IsActive` MUST be `false` on the authoritative side while pending; the ability is not yet Active in the §8.2 sense. (Under prediction, the predicting client MAY report a *speculative* Active locally — see §8.8.4.)
+Every activation has an immutable attempt ID distinct from its grant handle, even without
+client prediction. Callbacks, timeout/cancel messages, and prediction keys identify that
+attempt. IDs MUST NOT be reused within an epoch; stale messages cannot apply to a new attempt
+on the same grant. Ungrant, owner death/destruction, or disconnect MUST retire affected pending
+attempts and release their timers/reservations according to the adapter contract.
 
-An ability is eligible for `PendingConfirmation` only when it is marked as requiring asynchronous validation. The OPTIONAL `AsyncValidation` block of the §8.7 schema is the normative marker: when `AsyncValidation.Required` is `true`, an activation that passes the §8.3 checks MUST enter `PendingConfirmation` before Commit rather than committing synchronously. When the marker is absent or `Required` is `false`, the ability retains the synchronous §8.2 behaviour (`Validating -> Commit`) unchanged. An implementation MAY represent the marker by other means, but the resulting semantics MUST match this section.
+An explicit `TimeoutMs` MUST be finite and greater than zero. If omitted, the adapter MUST
+supply and document a finite positive default. The server sets the deadline from its own
+monotonic clock at entry to pending. Timeout is elapsed real time, unaffected by gameplay
+pause or time scale. Async success at or after the deadline is failure, even if the timeout
+callback has not yet run. Client prediction has its separate, usually shorter, §13.8.2 window.
 
 ===== 8.8.2 Transition Table
 
-The following transitions are added to §8.2. All other §8.2 transitions are unchanged.
-
-[cols="2,2,3",options="header"]
+[cols="2,2,4",options="header"]
 |===
-| From
-| To
-| Trigger / Condition
-
-| Activating (Validating)
-| Commit
-| Synchronous §8.3 checks pass AND the ability does NOT require async validation (`AsyncValidation.Required` is absent/false). Unchanged from §8.2.
-
-| Activating (Validating)
-| PendingConfirmation
-| Synchronous §8.3 checks pass AND the ability requires async validation (`AsyncValidation.Required == true`). No cost/cooldown consumed yet.
-
-| Activating (Validating)
-| Granted (via Fail)
-| A synchronous §8.3 check fails. Unchanged from §8.2.
-
-| PendingConfirmation
-| Commit -> Active
-| Asynchronous validation succeeds (server authority), or `ConfirmPrediction(key)` is received (§13.7) for a predicted activation. Cost/Cooldown/`ActivationOwnedTags` are applied at Commit (§8.4).
-
-| PendingConfirmation
-| Granted (via Fail)
-| Asynchronous validation fails, `AsyncValidation.TimeoutMs` elapses, or `RejectPrediction(key)` is received (§13.7). No cost/cooldown was consumed. For a predicted speculative Active, the client MUST roll back via §13.5 (see §8.8.4).
-
-| PendingConfirmation
-| Granted (via Cancel)
-| The activation is cancelled or interrupted while pending (§8.6, §8.8.5).
+| From | To | Trigger
+| Validating | Commit → Active | Synchronous-only checks and commit succeed.
+| Validating | PendingConfirmation | Async required; synchronous checks pass; reserve an attempt ID.
+| Validating | Granted | Check/commit fails; no partial mutation survives.
+| PendingConfirmation | Commit → Active | Matching attempt succeeds before deadline, mutable requirements still pass, and commit succeeds.
+| PendingConfirmation | Granted (Fail) | Validation failure, deadline expiry, failed recheck, or failed commit.
+| PendingConfirmation | Granted (Cancel) | Cancellation, interruption, ungrant, or owner teardown wins before commit.
+| Speculative Active | Reconciled state | Authoritative success or failure via §13.5; local cost/timing may differ.
 |===
 
-A `PendingConfirmation` activation has, by construction, not consumed cost or cooldown; therefore both the Fail and Cancel exits from `PendingConfirmation` return the ability to `Granted` with no resources spent and no cooldown started.
+Pending failure/cancellation consumes no authoritative resources. All exits terminalize the
+attempt exactly once. A terminal result cannot change merely because another callback arrives.
+A rejected parent attempt rejects dependent predicted children per §13.8.4.
 
 ===== 8.8.3 Path A — Server-Authoritative Async Validation (No Prediction)
 
-This is the pure server-authoritative flow (prediction disabled, or `AsyncValidation.Predicted` not set). After the synchronous §8.3 checks pass, an ability requiring async validation enters `PendingConfirmation` *before* Commit. The server initiates the asynchronous validation (anti-cheat, remote inventory, entitlement/auth). The activation remains pending — no cost, no cooldown, not executing — until the validation resolves:
-
-* On asynchronous *success*, the activation proceeds to Commit (§8.4) and then to Active (§8.2). This is the only point at which cost and cooldown are consumed.
-* On asynchronous *failure* (including a `TimeoutMs` expiry), the activation transitions to Fail and back to `Granted`. Because Commit was never reached, no cost or cooldown was consumed and `ActivationOwnedTags` were never granted; no rollback of authoritative gameplay state is required.
+Validation completion, timeout, cancellation, and commit MUST be serialized on the GC mutation
+executor. Checking an ID/state on a worker thread and committing later is not sufficient.
+After the wait, recheck grant/owner validity, tags, cost, cooldown, target eligibility, and any
+validation-result expiry. Ignore only the current attempt in the pending-conflict check.
+The recheck and §8.4 transaction cannot yield; two abilities cannot spend the same last resource.
 
 [source,typescript]
 ----
-// Server-authoritative async validation (no client prediction).
-function TryActivateAbility_ServerAsync(spec: AbilitySpec): void {
-  // 1. Synchronous §8.3 checks first.
-  if (!CanActivateAbility(spec)) {
-    Fail(spec); // -> Granted (§8.2)
+function StartAsyncActivation(spec: AbilitySpec, request: ActivationRequest): void {
+  // Runs on the GC mutation executor; SubmitOnce retransmits share request identity.
+  if (ReturnExistingOutcomeIfDuplicate(request)) return;
+  if (!CanActivateAbility(spec)) { RejectOnce(request); return; }
+  const attempt = RegisterPendingAttempt(spec, request, EffectiveTimeout(spec));
+  // Register pending state and timer BEFORE invoking a possibly synchronous callback.
+  BeginAsyncValidation(attempt.Id, result =>
+    GC.EnqueueMutation(() => ResolveValidation(spec, attempt.Id, result)));
+}
+
+function ResolveValidation(spec: AbilitySpec, id: AttemptId, result: ValidationResult): void {
+  const attempt = GetPendingAttempt(spec, id);
+  if (!attempt) return; // A cancelled, B pending: A's result cannot act on B.
+  if (!result.ok || MonotonicMillis() >= attempt.Deadline ||
+      !RecheckMutableRequirements(spec, id) || !CommitAbility(spec)) {
+    TerminalizeBeforeCallbacks(attempt, Rejected); // invalidate ID; cancel timer; cleanup
+    PublishOutcomeOnce(attempt);
     return;
   }
-
-  // 2. Synchronous-only ability: commit immediately (unchanged §8.2 path).
-  if (!spec.AbilityClass.AsyncValidation?.Required) {
-    CommitAbility(spec); // §8.4
-    ActivateAbility(spec);
-    return;
-  }
-
-  // 3. Async ability: enter PendingConfirmation BEFORE commit.
-  //    No cost/cooldown consumed; ability is not yet Active.
-  spec.State = AbilityState.PendingConfirmation;
-  spec.IsActive = false;
-
-  BeginAsyncValidation(spec, spec.AbilityClass.AsyncValidation, (result) => {
-    if (spec.State !== AbilityState.PendingConfirmation) {
-      return; // Cancelled/interrupted while pending (§8.8.5) — ignore late result.
-    }
-    if (result.ok) {
-      CommitAbility(spec);   // §8.4 — cost/cooldown applied HERE, not before.
-      ActivateAbility(spec); // -> Active
-    } else {
-      Fail(spec);            // -> Granted; nothing was consumed.
-    }
-  });
+  TerminalizeBeforeCallbacks(attempt, Accepted);
+  ActivateAbility(spec);
+  PublishOutcomeOnce(attempt); // complete group update, including authoritative state
 }
 ----
 
-While an activation is pending under Path A, an implementation MUST define how concurrent input and cancellation are treated; the RECOMMENDED behaviour is in §8.8.5.
+Commit stages effects and defers reentrant callbacks until terminalization. Cancellation
+processed before commit invalidates the attempt first, then attempts to abort the remote
+validation. Aborting is best effort: late results MUST be discarded. Cancellation processed
+after successful commit follows §8.6's active-ability cancellation policy, including its
+cost/cooldown rules; it cannot retroactively turn success into an uncommitted attempt.
+
+Remote inventory reservations or purchases require an adapter-defined idempotent
+reserve/commit/release protocol using the attempt ID. A local gameplay rollback cannot undo
+an external service transaction. The adapter MUST not treat an irreversible remote operation
+as speculative client work.
 
 ===== 8.8.4 Path B — Client-Side Prediction
 
-This is the flow when prediction is enabled for the ability (`AsyncValidation.Predicted == true`) and the activation is predicted by the owning client per §13.8. It resolves the race directly: the authoritative side now has a modeled `PendingConfirmation` state to occupy while the client is speculatively Active, so a late server rejection has the defined `RejectPrediction -> rollback -> Granted` transition rather than an undefined one.
+When `AsyncValidation.Predicted == true`, the owning client MAY speculatively commit while
+the server holds PendingConfirmation. Use exactly the §13.4 request/prediction procedure:
+capture before any mutation, check eligibility and finite limits, then submit once whether
+or not prediction was possible. A window guard MUST NOT return before authority submission.
+The authoritative server commits only after successful validation and rechecking requirements.
 
-1. *Client (speculative).* The client runs the synchronous §8.3 checks locally and, if they pass, *predictively commits and enters Active (speculative)*, carrying a `PredictionKey` generated per §13.8.1. Before predicting it MUST capture rollback state via `CaptureState()` (§13.8.3) and it MUST respect the bounded prediction window of §13.8.2. The speculative Active MUST be treated as unconfirmed (§13.7); any effect it applies to a non-owned GC is speculative/local-visual only (§13.8.4).
-2. *Server (authoritative).* The server receives the predicted activation, runs the synchronous checks, and holds the activation in `PendingConfirmation` while its asynchronous validation runs. The server does NOT mirror the client's speculative Active; it commits only when validation succeeds.
-3. *Confirmation.* On asynchronous success the server emits `ConfirmPrediction(key)` (§13.7). The client's speculative Active is confirmed with no visible change — the predicted commit becomes authoritative. The server itself transitions `PendingConfirmation -> Commit -> Active`.
-4. *Rejection.* On asynchronous failure (or `TimeoutMs`) the server emits `RejectPrediction(key)` (§13.7). The client MUST roll back the speculative activation via the §13.5 reconciliation path, restoring the `CaptureState()` snapshot of §13.8.3 (which includes ability activation state, so the speculatively-consumed cost/cooldown and granted `ActivationOwnedTags` are reverted), and the ability returns to `Granted`. The authoritative server side, which only ever held `PendingConfirmation`, transitions to Fail -> `Granted` without ever having committed.
+Both success and rejection feed the §13.5 reconciliation procedure, using the attempt's group
+and authoritative state revision. Success does not mean “no change”: cooldown timing, cost,
+targets, or intervening server state may differ. Rejection removes the speculative cost,
+cooldown, tags, and dependent effects. Do not restore an old attempt snapshot over later
+confirmed changes; rebuild the eligible replay suffix instead.
 
-[source,typescript]
-----
-// Client: predict, then reconcile on the server's confirm/reject.
-function TryActivateAbility_Predicted_Async(handle: AbilitySpecHandle): void {
-  const spec = GetAbilitySpec(handle);
-  if (!CanActivateAbility(spec)) return;       // local synchronous §8.3 checks
-
-  // Window guard (§13.8.2) — do not predict past the bounded window.
-  if (!PredictionWindowAllowsNewActivation()) return;
-
-  const key = GeneratePredictionKey();         // §13.8.1
-  this.PredictedActivations.set(key, {
-    Handle: handle,
-    Timestamp: GetCurrentTime(),
-    State: CaptureState()                       // §13.8.3 — owning GC only
-  });
-
-  // Predictive commit + speculative Active (unconfirmed, §13.7).
-  CommitAbility(spec);
-  ActivateAbility(spec);                        // speculative Active
-
-  Server_TryActivateAbility(handle, key);       // server holds PendingConfirmation
-}
-
-// Client: server outcome of the predicted (async-validated) activation.
-function OnServerActivationResponse_Async(key: PredictionKey, ok: boolean): void {
-  const prediction = this.PredictedActivations.get(key);
-  if (!prediction) return;
-
-  if (!ok) {
-    // RejectPrediction: roll back speculative activation via §13.5,
-    // restoring the §13.8.3 snapshot. Ability returns to Granted.
-    RollbackToState(prediction.State);
-  }
-  // ConfirmPrediction: no visible change; predicted commit was correct.
-  this.PredictedActivations.delete(key);
-}
-----
-
-Because a predicted activation participates in the prediction model, it is bound by the same group and key rules: if it is part of a multi-ability prediction group it is confirmed or rejected atomically with that `PredictionKey.Base` (§13.8.4), so a chained activation predicted off this one is never left confirmed while this one is rolled back.
+A group result includes all Sub outcomes (§13.8.4). Parent success with child failure is
+permitted, but accepted children require accepted ancestors. Pending validation prevents a
+terminal group result and cannot advance the resolved-input watermark.
 
 ===== 8.8.5 Interaction with Cancellation, Interruption, and the Prediction Window
 
-*Cancellation while pending (§8.6).* A `PendingConfirmation` activation MAY be cancelled or interrupted by any of the §8.6 mechanisms (self-cancel, external `CancelAbility`, a cancel tag, or owner death) before its asynchronous validation resolves. On such a cancel the ability MUST leave `PendingConfirmation` and return to `Granted`. Because nothing was committed, the §8.6 teardown is reduced: there are no committed cost/cooldown effects to reverse and no `ActiveOwnedTagsHandle` to remove (it is set only at Commit, §8.4). An implementation MUST NOT consume cost or cooldown as a side effect of cancelling a pending activation.
+Cancel a pending authoritative attempt by matching ID, invalidate it before cleanup, stop its
+timer, and emit at most one terminal result. It has no committed cost/cooldown to reverse and
+no ActivationOwnedTags effect to remove. Stale success, cancellation, and timer callbacks
+MUST NOT affect a later attempt on the same grant.
 
-*In-flight async validation.* When a pending activation is cancelled, an implementation SHOULD attempt to abort the in-flight asynchronous validation, but MUST tolerate a validation result that arrives after the cancel. A late result for an activation that is no longer in `PendingConfirmation` MUST be discarded (it MUST NOT retroactively commit, re-activate, or consume resources). For the predicted Path B, a cancel before resolution MUST still roll back the speculative activation via §13.5 if the server subsequently rejects, and a late `ConfirmPrediction` for an already-cancelled key MUST NOT resurrect the activation.
+Client cancellation stops speculative presentation and sends an idempotent cancel for that
+attempt. The server determines whether cancel or commit won; replicated state may still show
+a cost/cooldown if commit won. A late confirmation MUST NOT resurrect an ended/cancelled local
+activation or emit its cues again. Terminal and presentation-retirement information survives
+local rollback until safe to retire under §13.8.5.
 
-*Prediction window bound (§13.8.2).* A speculative Active awaiting confirmation is server-unconfirmed predicted state and therefore counts against the bounded prediction window of §13.8.2. A client MUST NOT remain speculatively Active past that window while awaiting confirmation: if the window bound (`MaxPredictionMillis` / `MaxPredictionFrames`) is reached before `ConfirmPrediction`/`RejectPrediction` arrives, the client MUST fall back to awaiting server authority per §13.8.2 — surrendering the speculative outcome and applying authoritative state on the next update — rather than holding the unconfirmed activation indefinitely. An asynchronous validation whose expected latency exceeds the prediction window SHOULD be modelled as server-authoritative (Path A, `Predicted == false`) so the user is not shown a speculative outcome that routinely exceeds the window and rolls back.
+Prediction expiry restores authoritative state and retires speculation; it does not cancel
+the remote request. Late authority may update state once but cannot execute the activation a
+second time. An ability whose expected validation delay exceeds the prediction window SHOULD
+use Path A to avoid routine visual correction.
 

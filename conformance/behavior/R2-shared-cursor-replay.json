@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "id": "R2-shared-cursor-replay",
+  "description": "Calculation A and periodic calculation B share a cursor; restoring reproduces B.",
+  "model": "rng",
+  "steps": [
+    {
+      "op": "next"
+    },
+    {
+      "op": "save",
+      "args": {
+        "name": "after-A"
+      }
+    },
+    {
+      "op": "next",
+      "expect": {
+        "output": [
+          2707161783,
+          2068313097
+        ]
+      }
+    },
+    {
+      "op": "restore",
+      "args": {
+        "name": "after-A"
+      },
+      "expect": {
+        "draws": 1
+      }
+    },
+    {
+      "op": "next",
+      "expect": {
+        "output": [
+          2707161783,
+          2068313097,
+          2068313097
+        ],
+        "draws": 2
+      }
+    }
+  ]
+}

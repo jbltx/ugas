@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "id": "R3-child-stream",
+  "description": "Different Sub uses a distinct reproducible stream; vector cross-checked with BigInt implementation.",
+  "model": "rng",
+  "initial": {
+    "seed": "42",
+    "sub": 55
+  },
+  "steps": [
+    {
+      "op": "next"
+    },
+    {
+      "op": "next",
+      "expect": {
+        "output": [
+          2916272015,
+          861791403
+        ],
+        "draws": 2
+      }
+    }
+  ]
+}
