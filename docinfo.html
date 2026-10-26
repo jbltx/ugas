@@ -6,4 +6,41 @@ body { font-family: 'Noto Sans', sans-serif; }
 h1, h2, h3, h4, h5, h6 { font-family: 'Noto Serif', serif; }
 #toctitle { font-family: 'Noto Serif', serif; }
 code, pre, .listingblock pre { font-family: 'Noto Sans Mono', monospace; }
+.mermaid-diagram { overflow-x: auto; text-align: center; margin-bottom: 1.25em; }
+.mermaid-diagram svg { height: auto; }
 </style>
+<script type="module">
+const diagrams = document.querySelectorAll('pre > code.language-mermaid');
+if (diagrams.length) {
+  try {
+    // Keep source blocks intact if the CDN cannot load; DocBook/Markdown exports
+    // also retain these blocks without requiring a diagram renderer at build time.
+    const { default: mermaid } = await import('https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs');
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: 'strict',
+      suppressErrorRendering: true,
+      theme: 'neutral',
+      gantt: { fontSize: 14, sectionFontSize: 14, leftPadding: 140 },
+    });
+    for (const [index, code] of diagrams.entries()) {
+      try {
+        const { svg } = await mermaid.render(`ugas-diagram-${index}`, code.textContent);
+        const diagram = document.createElement('div');
+        diagram.className = 'mermaid-diagram';
+        diagram.innerHTML = svg;
+        // Preserve readable labels on narrow screens; the wrapper scrolls.
+        const graphic = diagram.querySelector('svg');
+        graphic.style.width = `${graphic.viewBox.baseVal.width}px`;
+        graphic.style.minWidth = `${Math.min(720, graphic.viewBox.baseVal.width)}px`;
+        graphic.style.maxWidth = '100%';
+        code.parentElement.replaceWith(diagram);
+      } catch (error) {
+        console.error(`Unable to render UGAS diagram ${index + 1}`, error);
+      }
+    }
+  } catch (error) {
+    console.error('Unable to load Mermaid; displaying diagram source', error);
+  }
+}
+</script>

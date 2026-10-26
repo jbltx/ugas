@@ -9,21 +9,17 @@ UGAS defines a client-server replication model where:
 - Clients may predict state changes locally
 - Server reconciles predicted state with authoritative state
 
+[source,mermaid]
 ----
-┌──────────────────┐            ┌──────────────────┐
-│      SERVER      │            │      CLIENT      │
-│                  │            │                  │
-│  ┌────────────┐  │  Replicate │  ┌────────────┐  │
-│  │    GC      │──┼───────────▶│  │    GC      │  │
-│  │(Authority) │  │            │  │  (Proxy)   │  │
-│  └────────────┘  │            │  └────────────┘  │
-│                  │            │                  │
-│                  │  Predict   │                  │
-│                  │◀───────────┼──(Local Input)   │
-│                  │            │                  │
-│                  │ Reconcile  │                  │
-│                  │───────────▶│                  │
-└──────────────────┘            └──────────────────┘
+sequenceDiagram
+    accTitle: Server authority and client prediction
+    accDescr: The server replicates its authoritative Gameplay Controller to the client proxy. The client predicts from local input and sends it to the server, which reconciles the client with authoritative state.
+    participant Server as Server GC (Authority)
+    participant Client as Client GC (Proxy)
+    Server->>Client: Replicate
+    Note over Client: Local input / prediction
+    Client->>Server: Predicted input
+    Server->>Client: Reconcile
 ----
 
 ==== 13.2 Replication Modes

@@ -23,6 +23,18 @@ UGAS defines a unified architecture for implementing gameplay abilities, attribu
 | [genres/](genres/README.md) | Genre packs: per-genre additional specs + ready-to-use templates |
 | [docs/CONSUMING.md](docs/CONSUMING.md) | Consuming UGAS programmatically: manifests, pre-chunked spec, offline schema bundle, and the vendoring playbook |
 
+### Spec diagrams
+
+Write diagrams in `[source,mermaid]` AsciiDoc blocks, including `accTitle` and
+`accDescr` for accessibility. The shared [docinfo.html](docinfo.html) renders them
+with pinned Mermaid 11.12.1 in the HTML spec, including PR previews and releases.
+Build locally with `asciidoctor SPEC.adoc -o /tmp/ugas-spec.html` and open the result
+in a browser. Rendering requires JavaScript and access to jsDelivr; if Mermaid
+cannot load, the diagram source remains visible.
+
+The DocBook/Pandoc export preserves these blocks as fenced `mermaid` source in
+`SPEC.md`, `llms-full.txt`, and the generated section files used by the npm package.
+
 ## Using the npm package
 
 Each spec release is published to npm as [`@ugas/spec`](https://www.npmjs.com/package/@ugas/spec)

@@ -31,30 +31,29 @@ Avatar Actor::
 
 For simple entities (AI-controlled enemies, destructible objects), the Owner and Avatar MAY be the same Actor:
 
+[source,mermaid]
 ----
-┌─────────────────────────────┐
-│         AI ENEMY            │
-│  ┌───────────────────────┐  │
-│  │         GC            │  │
-│  │   Owner: this         │  │
-│  │   Avatar: this        │  │
-│  └───────────────────────┘  │
-└─────────────────────────────┘
+flowchart TB
+    accTitle: Shared owner and avatar
+    accDescr: An AI enemy contains a Gameplay Controller whose owner and avatar both reference that same enemy.
+    subgraph Enemy[AI Enemy]
+        GC["Gameplay Controller<br/>Owner: this<br/>Avatar: this"]
+    end
 ----
 
 ===== Split-Actor Configuration
 
 For player-controlled characters in networked games, the Owner and Avatar SHOULD be separate to ensure GC persistence across respawns:
 
+[source,mermaid]
 ----
-┌─────────────────────────────┐        ┌─────────────────────────────┐
-│       PLAYER STATE          │        │      PLAYER CHARACTER       │
-│  (Persists entire session)  │        │  (Destroyed on death)       │
-│  ┌───────────────────────┐  │        │                             │
-│  │         GC            │──┼────────┼──▶ Avatar reference         │
-│  │   Owner: this         │  │        │                             │
-│  └───────────────────────┘  │        └─────────────────────────────┘
-└─────────────────────────────┘
+flowchart LR
+    accTitle: Separate owner and avatar
+    accDescr: The Player State persists for the entire session and owns the Gameplay Controller. Its avatar reference points to the Player Character, which is destroyed on death.
+    subgraph Owner[Player State]
+        GC["Gameplay Controller<br/>Owner: this<br/>Persists entire session"]
+    end
+    GC -->|Avatar reference| Avatar["Player Character<br/>(destroyed on death)"]
 ----
 
 ==== 4.3 Lifecycle

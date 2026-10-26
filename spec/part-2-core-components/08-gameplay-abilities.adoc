@@ -90,35 +90,29 @@ The base lifecycle assumes the `Activating (Validating)` checks of §8.3 are syn
 
 `PendingConfirmation` sits between `Activating (Validating)` and `Commit`. Synchronous-only abilities skip it and go `Validating -> Commit` exactly as before; abilities that require asynchronous validation (§8.8) route through it. Under client-side prediction (§13.8) the predicting client may instead *speculatively* enter Active while the authoritative side holds the activation in `PendingConfirmation` until the server confirms or rejects the prediction key — the reject edge rolls the speculative activation back to `Granted` via §13.5.
 
+[source,mermaid]
 ----
-NotGranted -- Grant --> Granted -- TryActivate --> Validating
-                           ^                         |
-                           |                 synchronous checks
-                           |                  /              \
-                           |               fail              pass
-                           |                |                  |
-                           +----------------+          async required?
-                           |                            /           \
-                           |                          yes            no
-                           |                           |              |
-                           |                  PendingConfirmation    |
-                           |                    /             \       |
-                           |              fail/cancel       success   |
-                           |                   |              |       |
-                           +-------------------+     recheck + Commit <+
-                           |                              /       \
-                           |                           fail       success
-                           +----------------------------+           |
-                           |                                      Active
-                           |                                        |
-                           +------------ Ending <--------------- End/Cancel
-
-Predicting client: capture first, then speculative Commit/Active.
-Server: remain PendingConfirmation until validation and recheck succeed.
-Success AND failure: reconcile authoritative state and replay eligible later inputs (§13.5).
-Cancelled/ended local presentation is never resurrected by a late response.
-
+flowchart TB
+    accTitle: Gameplay Ability lifecycle
+    accDescr: Granting enables activation. Synchronous checks may fail or route to asynchronous confirmation or commit. Failed validation or commit returns to Granted. Successful commit enters Active; ending or cancellation returns through Ending to Granted.
+    NotGranted -->|Grant| Granted
+    Granted -->|TryActivate| Validating["Validating<br/>Synchronous checks"]
+    Validating -->|Fail| Granted
+    Validating -->|Pass| AsyncRequired{"Async required?"}
+    AsyncRequired -->|Yes| PendingConfirmation
+    AsyncRequired -->|No| Commit[Recheck + Commit]
+    PendingConfirmation -->|Fail / cancel| Granted
+    PendingConfirmation -->|Success| Commit
+    Commit -->|Fail| Granted
+    Commit -->|Success| Active
+    Active -->|End / Cancel| Ending
+    Ending --> Granted
 ----
+
+* Predicting client: capture first, then speculative Commit/Active.
+* Server: remain PendingConfirmation until validation and recheck succeed.
+* Success AND failure: reconcile authoritative state and replay eligible later inputs (§13.5).
+* Cancelled/ended local presentation is never resurrected by a late response.
 
 ==== 8.3 Activation Requirements
 
