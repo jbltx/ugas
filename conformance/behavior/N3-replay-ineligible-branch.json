@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "id": "N3-replay-ineligible-branch",
+  "description": "Insufficient resources discard a child and descendants, while an eligible sibling still replays.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          },
+          {
+            "sub": 1,
+            "parent": 0,
+            "cost": 20,
+            "target": "enemy"
+          },
+          {
+            "sub": 2,
+            "parent": 1,
+            "cost": 0,
+            "target": "enemy"
+          },
+          {
+            "sub": 3,
+            "parent": 0,
+            "cost": 5
+          }
+        ]
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 20,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": []
+      },
+      "expect": {
+        "state": {
+          "mana": 5,
+          "cooldowns": [
+            "1:0",
+            "1:3"
+          ],
+          "tags": [
+            "1:0",
+            "1:3"
+          ],
+          "effects": []
+        },
+        "pending": [
+          1
+        ],
+        "journal": [
+          1
+        ],
+        "overlays": []
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 2,
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": []
+      },
+      "expect": {
+        "state": {
+          "mana": 85,
+          "cooldowns": [
+            "1:0",
+            "1:3"
+          ],
+          "tags": [
+            "1:0",
+            "1:3"
+          ],
+          "effects": []
+        },
+        "pending": [
+          1
+        ],
+        "journal": [
+          1
+        ],
+        "overlays": []
+      }
+    }
+  ]
+}

@@ -18,6 +18,7 @@ from jsonschema import Draft7Validator
 from behavior_model import MODELS
 
 ROOT = Path(__file__).resolve().parent.parent
+REFERENCE_MODE = object()  # JSON null must never select reference execution.
 
 
 def load(path):
@@ -32,14 +33,17 @@ def load(path):
                       parse_float=finite_float)
 
 
-def run_case(case, external=None):
-    model = None if external is not None else MODELS[case["model"]](**case.get("initial", {}))
-    if external is not None and (not isinstance(external, list) or len(external) != len(case["steps"])):
-        raise ValueError("observation count differs from step count")
+def run_case(case, external=REFERENCE_MODE):
+    if external is not REFERENCE_MODE:
+        if not isinstance(external, list):
+            raise ValueError("adapter observations must be a list")
+        if len(external) != len(case["steps"]):
+            raise ValueError("observation count differs from step count")
+    model = MODELS[case["model"]](**case.get("initial", {})) if external is REFERENCE_MODE else None
     observations = []
     for i, step in enumerate(case["steps"]):
         error = None
-        if external is None:
+        if external is REFERENCE_MODE:
             try:
                 method = getattr(model, step["op"])
                 method(**step.get("args", {}))
@@ -59,7 +63,9 @@ def run_case(case, external=None):
     return observations
 
 
-def run(corpus, results=None):
+def run(corpus, results=REFERENCE_MODE):
+    if results is not REFERENCE_MODE and not isinstance(results, dict):
+        raise ValueError("adapter results must be an object keyed by fixture ID")
     schema = load(corpus / "format.schema.json")
     Draft7Validator.check_schema(schema)
     validator = Draft7Validator(schema)
@@ -76,15 +82,15 @@ def run(corpus, results=None):
         seen.add(case["id"])
         if not any(step.get("expect") for step in case["steps"]):
             raise ValueError(f"{path.name}: missing behavioral assertions")
-        if results is not None and case["id"] not in results:
+        if results is not REFERENCE_MODE and case["id"] not in results:
             raise ValueError(f"missing adapter result: {case['id']}")
         try:
-            observations[case["id"]] = run_case(case, None if results is None else results[case["id"]])
+            observations[case["id"]] = run_case(case, REFERENCE_MODE if results is REFERENCE_MODE else results[case["id"]])
         except (ValueError, TypeError, AttributeError) as exc:
             raise ValueError(f"{path.name}: {exc}") from exc
     if not seen:
         raise ValueError("empty behavior corpus")
-    if results is not None and set(results) != seen:
+    if results is not REFERENCE_MODE and set(results) != seen:
         raise ValueError("adapter result IDs differ from the corpus")
     return observations
 
@@ -95,9 +101,7 @@ def main():
     parser.add_argument("--results", type=Path, help="verify externally produced observations")
     args = parser.parse_args()
     try:
-        results = load(args.results) if args.results else None
-        if args.results and not isinstance(results, dict):
-            raise ValueError("adapter results must be an object keyed by fixture ID")
+        results = load(args.results) if args.results else REFERENCE_MODE
         observations = run(args.corpus, results)
     except Exception as exc:
         print(f"Behavior conformance failed: {exc}", file=sys.stderr)

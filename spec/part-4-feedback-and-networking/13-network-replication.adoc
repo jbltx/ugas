@@ -403,6 +403,10 @@ a complete suffix after the restore checkpoint within BOTH window limits and the
 record/action/byte limits. Replaying MUST use the recorded DeltaTime, input order, keys,
 seeds, and RNG positions; allocating new identities or reading current wall-clock time changes
 the simulation. No RPCs, remote validation calls, or duplicate presentation may escape replay.
+Recheck activation requirements against the corrected state before each replayed activation.
+An ineligible activation and its dependent descendants MUST NOT spend resources or grant
+tags/cooldowns; remove their speculation while retaining the original authoritative request.
+Other eligible branches may still replay.
 
 If the required suffix is absent, exceeds either limit, depends on non-replayable external
 state, or cannot resume its tasks, install authoritative state and await a fresh checkpoint.
@@ -450,6 +454,9 @@ and cannot be reconstructed from that checkpoint, use authority recovery rather 
 it against an incompatible state. Lost results are retransmitted under the same request ID
 or recovered from a fresh authoritative checkpoint. Disconnect retires the epoch and clears
 local speculation; reconnect requires a new epoch/checkpoint before predicting.
+The resolved-input watermark MUST NOT exceed the highest input sequence allocated in that
+epoch. An invalid watermark triggers resynchronization without retiring request identities
+or advancing input allocation.
 
 Example: input 10 predicts cost 10 from Mana 100, then input 11 predicts cost 20. Authority
 rejects input 10 and includes an unrelated Mana +5 effect in its checkpoint (Mana 105).

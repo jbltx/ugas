@@ -199,15 +199,25 @@ class Prediction:
         self.frame_actions = 0
         self.window_start = None
 
-    def _apply(self, request, replay=False):
+    def _apply(self, request, replay=False, subs=None):
+        allowed = set(subs) if subs is not None else {n["sub"] for n in request["nodes"]}
+        applied = []
         for node in request["nodes"]:
+            if node["sub"] not in allowed:
+                continue
             label = f'{request["base"]}:{node["sub"]}'
+            if ((node["parent"] is not None and node["parent"] not in applied)
+                    or self.state["mana"] < node["cost"]):
+                self.trace.append("ineligible:" + label)
+                continue
             self.state["mana"] -= node["cost"]
             self.state["cooldowns"].append(label)
             self.state["tags"].append(label)
+            applied.append(node["sub"])
             if node.get("target") and not node.get("authority_only") and label not in self.presentation_retired:
                 self.overlays.add(label)
         self.trace.append(("replay:" if replay else "predict:") + str(request["base"]))
+        return applied
 
     def _record(self, action):
         if not self.journal or self.journal[-1]["frame"] != self.frame:
@@ -249,15 +259,17 @@ class Prediction:
         self.frame_actions += len(nodes)
         before = deepcopy(self.state)
         overlays = self.overlays.copy()
-        self._apply(request)
+        subs = self._apply(request)
         if local_failure or late_nonpredictable:
             self.state = before
             self.overlays = overlays
             self.trace.append("unwind:" + str(base))
             return
+        if not subs:
+            return  # The original authoritative request remains outstanding.
         if self.window_start is None:
             self.window_start = (self.now, self.frame)
-        self._record({"kind": "request", "request": request})
+        self._record({"kind": "request", "request": request, "subs": subs})
 
     def _discard(self, reason):
         self.state = deepcopy(self.baseline)
@@ -303,6 +315,7 @@ class Prediction:
             return
         try:
             require(resolved_through >= self.watermark, "decreasing resolution watermark")
+            require(resolved_through < self.next_base, "resolution watermark exceeds allocated inputs")
             resolved = set()
             for group in outcomes:
                 base = group["base"]
@@ -343,19 +356,31 @@ class Prediction:
                 self.terminal[group["base"]] = group["accepted"][:]
         for base in list(self.requests):
             if base <= resolved_through:
-                self.requests.pop(base)
+                retired = self.requests.pop(base)
                 self.terminal.pop(base, None)
+                self.presentation_retired.difference_update(
+                    f'{base}:{node["sub"]}' for node in retired["nodes"])
         if not complete_history or (not self.ready and suffix):
             self._discard("resync")
             return
         self.ready = True
+        replayed = []
         for record in suffix:
+            actions = []
             for action in record["actions"]:
                 if action["kind"] == "request":
-                    self._apply(action["request"], replay=True)
+                    subs = self._apply(action["request"], replay=True, subs=action["subs"])
+                    if subs:
+                        actions.append({**action, "subs": subs})
                 else:
                     self._tick(action["milliseconds"])
                     self.trace.append("replay-step:" + str(record["frame"]))
+                    actions.append(action)
+            if actions:
+                replayed.append({**record, "actions": actions})
+        self.journal = replayed
+        if not replayed:
+            self.window_start = None
         self.trace.append("update:" + str(revision))
 
     def reconnect(self, epoch, owner="player"):

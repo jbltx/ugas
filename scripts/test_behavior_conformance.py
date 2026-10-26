@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from jsonschema import ValidationError
 from behavior_model import AsyncActivation, Prediction, RNG
@@ -15,6 +16,22 @@ CORPUS = ROOT / "conformance/behavior"
 
 
 class BehaviorConformanceTests(unittest.TestCase):
+    def test_null_adapter_observations_never_run_reference_models(self):
+        observations = run(CORPUS)
+        one_null = deepcopy(observations)
+        one_null["A1-success-duplicate"] = None
+        all_null = dict.fromkeys(observations)
+        case = load(CORPUS / "A1-success-duplicate.json")
+        # Removing the models makes an accidental reference execution fail this test.
+        with patch("run_behavior_conformance.MODELS", {}):
+            for name, results in (("one null", one_null), ("all null", all_null)):
+                with self.subTest(name=name), self.assertRaisesRegex(ValueError, "observations must be a list"):
+                    run(CORPUS, results)
+            with self.assertRaisesRegex(ValueError, "observations must be a list"):
+                run_case(case, None)
+            with self.assertRaisesRegex(ValueError, "results must be an object"):
+                run(CORPUS, None)
+
     def test_external_results_are_checked_not_reexecuted(self):
         observations = run(CORPUS)
         self.assertEqual(run(CORPUS, observations), observations)
@@ -103,6 +120,87 @@ class BehaviorConformanceTests(unittest.TestCase):
             model.update(3, baseline, [{"base": 1, "accepted": [True]}])
         self.assertEqual(model.revision, 2)
         self.assertFalse(model.ready)
+
+    def test_replay_drops_unaffordable_root_without_losing_request(self):
+        model = Prediction()
+        nodes = [{"sub": 0, "parent": None, "cost": 10, "target": "enemy"}]
+        model.submit(1, nodes)
+        baseline = {"mana": 5, "tags": [], "cooldowns": [], "effects": []}
+        model.update(1, baseline, [])
+        self.assertEqual(model.state, baseline)
+        self.assertEqual(model.overlays, set())
+        self.assertEqual(model.observe()["journal"], [])
+        self.assertEqual(model.observe()["pending"], [1])
+        model.submit(1, nodes)
+        self.assertEqual(model.trace.count("send:1"), 1)
+        model.update(2, {**baseline, "mana": 100}, [])
+        self.assertEqual(model.state["mana"], 100)
+
+    def test_replay_drops_ineligible_descendants_but_keeps_siblings(self):
+        model = Prediction()
+        nodes = [
+            {"sub": 0, "parent": None, "cost": 10},
+            {"sub": 1, "parent": 0, "cost": 20, "target": "enemy"},
+            {"sub": 2, "parent": 1, "cost": 0, "target": "enemy"},
+            {"sub": 3, "parent": 0, "cost": 5},
+        ]
+        model.submit(1, nodes)
+        baseline = {"mana": 20, "tags": [], "cooldowns": [], "effects": []}
+        model.update(1, baseline, [])
+        self.assertEqual(model.state, {**baseline, "mana": 5, "tags": ["1:0", "1:3"], "cooldowns": ["1:0", "1:3"]})
+        self.assertEqual(model.overlays, set())
+        self.assertEqual(model.requests[1]["nodes"], nodes)
+        model.update(2, {**baseline, "mana": 100}, [])
+        self.assertEqual(model.state["mana"], 85)
+        self.assertEqual(model.state["tags"], ["1:0", "1:3"])
+
+    def test_initial_prediction_also_checks_affordability(self):
+        model = Prediction(mana=5)
+        model.submit(1, [{"sub": 0, "parent": None, "cost": 10}])
+        self.assertEqual(model.state["mana"], 5)
+        self.assertEqual(model.state["tags"], [])
+        self.assertEqual(model.observe()["journal"], [])
+        self.assertEqual(model.observe()["pending"], [1])
+
+    def test_presentation_retirement_is_bounded_across_resolved_cycles(self):
+        model = Prediction(max_requests=1)
+        baseline = deepcopy(model.baseline)
+        for base in range(1, 101):
+            model.submit(base, [{"sub": 0, "parent": None, "cost": 10, "target": "enemy"}])
+            model.cancel(base)
+            self.assertEqual(model.presentation_retired, {f"{base}:0"})
+            # A terminal outcome alone is not yet a safe retirement watermark.
+            model.update(2 * base - 1, baseline, [{"base": base, "accepted": [False]}],
+                         resolved_through=base - 1)
+            self.assertEqual(model.presentation_retired, {f"{base}:0"})
+            model.update(2 * base, baseline, [], resolved_through=base)
+            self.assertEqual(model.presentation_retired, set())
+            self.assertEqual(model.requests, {})
+            self.assertEqual(model.journal, [])
+            # A retransmission below the watermark must not revive presentation.
+            model.submit(base, [{"sub": 0, "parent": None, "cost": 10, "target": "enemy"}])
+            self.assertEqual(model.overlays, set())
+        self.assertEqual(sum(item.startswith("send:") for item in model.trace), 100)
+
+    def test_future_watermark_resyncs_without_losing_next_input(self):
+        model = Prediction()
+        nodes = [{"sub": 0, "parent": None, "cost": 10}]
+        model.submit(1, nodes)
+        with self.assertRaisesRegex(ValueError, "watermark exceeds allocated inputs"):
+            model.update(1, deepcopy(model.baseline), [{"base": 1, "accepted": [False]}],
+                         resolved_through=99)
+        self.assertEqual((model.revision, model.watermark, model.next_base), (0, 0, 2))
+        self.assertFalse(model.ready)
+        model.submit(2, nodes)
+        self.assertEqual(model.observe()["pending"], [1, 2])
+        self.assertIn("send:2", model.trace)
+        self.assertIn("authority:2", model.trace)
+        model.update(1, deepcopy(model.baseline), [
+            {"base": 1, "accepted": [False]}, {"base": 2, "accepted": [False]},
+        ], resolved_through=2)
+        self.assertEqual(model.watermark, 2)
+        with self.assertRaisesRegex(ValueError, "watermark exceeds allocated inputs"):
+            model.update(2, deepcopy(model.baseline), [], resolved_through=3)
 
     def test_invalid_rng_inputs_and_extreme_ranges(self):
         with self.assertRaises(ValueError):

@@ -32,7 +32,8 @@ each step, including `error: null` on success. Export the observations as
 python scripts/run_behavior_conformance.py --results adapter-results.json
 ```
 
-The result set must contain exactly the corpus's IDs, with one observation per step.
+The result set must contain exactly the corpus's IDs, with an observation array containing
+one object per step. Null results are invalid and never select reference execution.
 Map error codes to the fixture's strings at the adapter boundary. Additional observation
 fields are allowed. A missing field that the fixture checks is a failure.
 
@@ -59,6 +60,10 @@ fields are allowed. A missing field that the fixture checks is a failure.
   represents any failed eligibility check (seed/profile, external input, task, or calculation).
   `late_nonpredictable` and `local_failure` exercise partial-work rollback. Trace `send:N`
   means one logical request; network retransmissions reuse the same identity.
+  Prediction and replay recheck each node's affordability and parent eligibility. An
+  ineligible node and its descendants are removed from speculative replay, while eligible
+  siblings survive; the original server request retains all its nodes until authority
+  resolves it. Later checkpoints do not revive branches dropped from the journal.
   `advance` advances monotonic time/frame and optionally distinct simulation milliseconds;
   empty-input simulation steps are retained. An optional periodic Mana effect retains
   elapsed simulation time and tick count across replay. `update` supplies authoritative
@@ -67,6 +72,9 @@ fields are allowed. A missing field that the fixture checks is a failure.
   groups. `checkpoint_frame` excludes already-incorporated timer steps. `resolved_through`
   is a terminal watermark, while `receipt` is only receipt. `complete_history: false`
   forces recovery. `cancel` retires local presentation; only the server decides the outcome.
+  Watermarks beyond the allocated inputs are invalid and force resynchronization without
+  retiring requests. Cancelled-presentation records are freed once their request identities
+  pass the contiguous resolution watermark and leave the replay journal.
   `reconnect` clears speculation and retires the old epoch. Observe final gameplay state,
   overlays, pending groups, journal group IDs, frame count, readiness, revision and trace.
 
