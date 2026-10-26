@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "id": "A3-deadline-before-timer",
+  "description": "Success at the deadline fails even when timer dispatch is delayed.",
+  "model": "async",
+  "steps": [
+    {
+      "op": "start",
+      "args": {
+        "id": "A",
+        "timeout": 10
+      }
+    },
+    {
+      "op": "advance",
+      "args": {
+        "milliseconds": 10,
+        "fire_timers": false
+      }
+    },
+    {
+      "op": "resolve",
+      "args": {
+        "id": "A"
+      },
+      "expect": {
+        "mana": 100,
+        "commits": [],
+        "terminal": {
+          "A": "Rejected"
+        }
+      }
+    },
+    {
+      "op": "cancel",
+      "args": {
+        "id": "A"
+      },
+      "expect": {
+        "terminal": {
+          "A": "Rejected"
+        }
+      }
+    }
+  ]
+}

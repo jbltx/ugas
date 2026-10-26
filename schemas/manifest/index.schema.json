@@ -48,6 +48,7 @@
             "genre-pack-spec",
             "genre-entity",
             "conformance",
+            "behavioral-conformance",
             "rag",
             "html",
             "doc",

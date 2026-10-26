@@ -239,10 +239,11 @@ class ExecCalc_ArmorPenetration extends ExecutionCalculation {
     // Draw from the deterministic, seeded stream (context.RNG) rather than a
     // bare RandomFloat(), so a predicting client and the server roll the same
     // crit and avoid a rollback. The stream is seeded from PredictionKey.Seed
-    // (§13.8.1) and positioned per the (Sub, draw index) scheme; see the
+    // (§13.8.1) and positioned at the activation Sub's shared cursor (§9.5.1); see the
     // "Randomness in Execution Calculations" rule in §9.5. (This calculation
     // stays Predictable; a roll that must be server-only would instead set
-    // Predictable = false and abort prediction per §13.8.2.)
+    // Predictable = false: check before speculative commit, or unwind and
+    // await the SAME authoritative request if discovered later (§13.4).)
     if (context.RNG.NextFloat() < critChance) {
       damage *= critDamage;
       context.SetTag("Hit.Critical");

@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "id": "A3-success-wins",
+  "description": "Cancel after commit ends activation but does not refund cost or change terminal success.",
+  "model": "async",
+  "steps": [
+    {
+      "op": "start",
+      "args": {
+        "id": "A"
+      }
+    },
+    {
+      "op": "resolve",
+      "args": {
+        "id": "A"
+      }
+    },
+    {
+      "op": "cancel",
+      "args": {
+        "id": "A"
+      },
+      "expect": {
+        "mana": 90,
+        "active": [],
+        "commits": [
+          "A"
+        ],
+        "terminal": {
+          "A": "Accepted"
+        },
+        "tags": [],
+        "cooldowns": [
+          "Spell"
+        ]
+      }
+    }
+  ]
+}

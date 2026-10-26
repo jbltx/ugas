@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "id": "N7-checkpoint-timer-suffix",
+  "description": "A nonzero checkpoint excludes incorporated timer steps and replays only later deltas until the next checkpoint retires them.",
+  "model": "prediction",
+  "initial": {
+    "period_ms": 10,
+    "tick_mana": 5
+  },
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      },
+      "expect": {
+        "state": {
+          "mana": 90,
+          "cooldowns": ["1:0"],
+          "tags": ["1:0"],
+          "effects": [],
+          "period": {"elapsed": 0, "count": 0}
+        }
+      }
+    },
+    {
+      "op": "advance",
+      "args": {
+        "milliseconds": 10,
+        "simulation_ms": 10
+      },
+      "expect": {
+        "state": {
+          "mana": 95,
+          "cooldowns": ["1:0"],
+          "tags": ["1:0"],
+          "effects": [],
+          "period": {"elapsed": 0, "count": 1}
+        }
+      }
+    },
+    {
+      "op": "advance",
+      "args": {
+        "milliseconds": 15,
+        "simulation_ms": 15
+      },
+      "expect": {
+        "state": {
+          "mana": 100,
+          "cooldowns": ["1:0"],
+          "tags": ["1:0"],
+          "effects": [],
+          "period": {"elapsed": 5, "count": 2}
+        },
+        "history_frames": 3
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 95,
+          "cooldowns": ["1:0"],
+          "tags": ["1:0"],
+          "effects": [],
+          "period": {"elapsed": 0, "count": 1}
+        },
+        "outcomes": [{"base": 1, "accepted": [true]}],
+        "checkpoint_frame": 1,
+        "resolved_through": 1
+      },
+      "expect": {
+        "state": {
+          "mana": 100,
+          "cooldowns": ["1:0"],
+          "tags": ["1:0"],
+          "effects": [],
+          "period": {"elapsed": 5, "count": 2}
+        },
+        "pending": [],
+        "journal": [],
+        "history_frames": 1,
+        "watermark": 1,
+        "ready": true,
+        "trace": ["send:1", "predict:1", "replay-step:2", "update:1"]
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 2,
+        "state": {
+          "mana": 100,
+          "cooldowns": ["1:0"],
+          "tags": ["1:0"],
+          "effects": [],
+          "period": {"elapsed": 5, "count": 2}
+        },
+        "outcomes": [],
+        "checkpoint_frame": 2,
+        "resolved_through": 1
+      },
+      "expect": {
+        "state": {
+          "mana": 100,
+          "cooldowns": ["1:0"],
+          "tags": ["1:0"],
+          "effects": [],
+          "period": {"elapsed": 5, "count": 2}
+        },
+        "pending": [],
+        "journal": [],
+        "history_frames": 0,
+        "watermark": 1,
+        "ready": true,
+        "trace": ["send:1", "predict:1", "replay-step:2", "update:1", "update:2"]
+      }
+    }
+  ]
+}

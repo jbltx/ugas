@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "id": "N3-numeric-representation",
+  "description": "Decimal and exponent integer inputs preserve attempt identities and parent indexing while fractional costs and timing remain unchanged.",
+  "model": "prediction",
+  "initial": {
+    "mana": 100.5,
+    "period_ms": 1.5,
+    "tick_mana": 0.25
+  },
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1.0,
+        "nodes": [
+          {"sub": -0.0, "parent": null, "cost": 10.25, "target": "enemy"},
+          {"sub": 1e0, "parent": 0.0, "cost": 0.5, "target": "enemy", "authority_only": false}
+        ]
+      },
+      "expect": {
+        "state": {
+          "mana": 89.75,
+          "cooldowns": ["1:0", "1:1"],
+          "tags": ["1:0", "1:1"],
+          "effects": [],
+          "period": {"elapsed": 0, "count": 0}
+        },
+        "overlays": ["1:0", "1:1"],
+        "pending": [1],
+        "trace": ["send:1", "predict:1"]
+      }
+    },
+    {
+      "op": "advance",
+      "args": {
+        "milliseconds": 1.5,
+        "frames": 1.0,
+        "simulation_ms": 1.5
+      },
+      "expect": {
+        "state": {
+          "mana": 90,
+          "cooldowns": ["1:0", "1:1"],
+          "tags": ["1:0", "1:1"],
+          "effects": [],
+          "period": {"elapsed": 0, "count": 1}
+        },
+        "history_frames": 2
+      }
+    },
+    {
+      "op": "cancel",
+      "args": {"base": 1e0},
+      "expect": {
+        "overlays": [],
+        "trace": ["send:1", "predict:1", "cancel:1"]
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1.0,
+        "state": {
+          "mana": 90,
+          "cooldowns": ["1:0", "1:1"],
+          "tags": ["1:0", "1:1"],
+          "effects": [],
+          "period": {"elapsed": 0, "count": 1.0}
+        },
+        "outcomes": [{"base": 1e0, "accepted": [true, true]}],
+        "resolved_through": 1.0,
+        "checkpoint_frame": 1.0
+      },
+      "expect": {
+        "state": {
+          "mana": 90,
+          "cooldowns": ["1:0", "1:1"],
+          "tags": ["1:0", "1:1"],
+          "effects": [],
+          "period": {"elapsed": 0, "count": 1}
+        },
+        "overlays": [],
+        "pending": [],
+        "journal": [],
+        "history_frames": 0,
+        "watermark": 1,
+        "trace": ["send:1", "predict:1", "cancel:1", "update:1"]
+      }
+    }
+  ]
+}

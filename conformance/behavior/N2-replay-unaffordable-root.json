@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "id": "N2-replay-unaffordable-root",
+  "description": "A corrected balance invalidates speculation without losing or duplicating its server request.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10,
+            "target": "enemy"
+          }
+        ]
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 5,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": []
+      },
+      "expect": {
+        "state": {
+          "mana": 5,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "pending": [
+          1
+        ],
+        "journal": [],
+        "overlays": []
+      }
+    },
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10,
+            "target": "enemy"
+          }
+        ]
+      },
+      "expect": {
+        "pending": [
+          1
+        ],
+        "trace": [
+          "send:1",
+          "predict:1",
+          "ineligible:1:0",
+          "replay:1",
+          "update:1"
+        ]
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 2,
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": []
+      },
+      "expect": {
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "pending": [
+          1
+        ],
+        "journal": [],
+        "overlays": []
+      }
+    }
+  ]
+}

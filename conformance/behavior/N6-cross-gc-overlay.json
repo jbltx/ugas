@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "id": "N6-cross-gc-overlay",
+  "description": "Cross-GC target only receives presentation; cancellation/late success does not resurrect it.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10,
+            "target": "enemy"
+          }
+        ]
+      },
+      "expect": {
+        "overlays": [
+          "1:0"
+        ]
+      }
+    },
+    {
+      "op": "cancel",
+      "args": {
+        "base": 1
+      },
+      "expect": {
+        "overlays": []
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": []
+      },
+      "expect": {
+        "overlays": []
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 2,
+        "state": {
+          "mana": 90,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": [
+          {
+            "base": 1,
+            "accepted": [
+              true
+            ]
+          }
+        ],
+        "resolved_through": 1
+      },
+      "expect": {
+        "overlays": [],
+        "state": {
+          "mana": 90,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        }
+      }
+    }
+  ]
+}

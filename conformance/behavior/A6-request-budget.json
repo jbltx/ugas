@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "id": "A6-request-budget",
+  "description": "Pending/terminal identity storage has a finite budget.",
+  "model": "async",
+  "initial": {
+    "max_requests": 1
+  },
+  "steps": [
+    {
+      "op": "start",
+      "args": {
+        "id": "A"
+      }
+    },
+    {
+      "op": "start",
+      "args": {
+        "id": "B",
+        "ability": "Other"
+      },
+      "expect": {
+        "pending": [
+          "A"
+        ]
+      },
+      "error": "request budget exhausted"
+    }
+  ]
+}

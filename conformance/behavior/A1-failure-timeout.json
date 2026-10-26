@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "id": "A1-failure-timeout",
+  "description": "Failure and timeout consume nothing and stop pending work.",
+  "model": "async",
+  "steps": [
+    {
+      "op": "start",
+      "args": {
+        "id": "A"
+      }
+    },
+    {
+      "op": "resolve",
+      "args": {
+        "id": "A",
+        "ok": false
+      },
+      "expect": {
+        "mana": 100,
+        "pending": []
+      }
+    },
+    {
+      "op": "start",
+      "args": {
+        "id": "B",
+        "timeout": 10
+      }
+    },
+    {
+      "op": "advance",
+      "args": {
+        "milliseconds": 10
+      },
+      "expect": {
+        "mana": 100,
+        "pending": [],
+        "commits": [],
+        "terminal": {
+          "A": "Rejected",
+          "B": "Rejected"
+        }
+      }
+    },
+    {
+      "op": "resolve",
+      "args": {
+        "id": "B"
+      },
+      "expect": {
+        "mana": 100,
+        "commits": []
+      }
+    }
+  ]
+}

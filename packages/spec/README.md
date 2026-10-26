@@ -65,11 +65,17 @@ with their sha256 in `index.json`. Import them through the subpath exports, e.g.
 | `SPEC.md`, `sections/` | The spec in one file, and pre-chunked by section (`sections/index.json`) |
 | `schemas/` | `<type>.json` / `.yaml`, `bundle.json`, `examples/`, `manifest/` meta-schemas |
 | `genres/` | `index.json`, and per pack `spec.adoc` and `entities/*.yaml` |
-| `conformance/` | `valid/` and `invalid/` entities for testing a loader or validator |
+| `conformance/` | `valid/` and `invalid/` entity fixtures; `behavior/` runtime contract scenarios and format schema |
 | `rag/` | Retrieval chunks and an intent index |
 
 See [Consuming UGAS programmatically](https://github.com/jbltx/ugas/blob/main/docs/CONSUMING.md)
 for how the artifacts fit together.
+
+Use `files({ kind: 'behavioral-conformance' })` to discover the behavioral scenarios.
+Their format schema and adapter instructions are available at
+`conformance/behavior/format.schema.json` and `conformance/behavior/README.md` through the
+existing `@ugas/spec/conformance/*` export. They are separate from the `conformance` kind
+used for entity schema acceptance tests.
 
 ## License
 

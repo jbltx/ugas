@@ -1,0 +1,9 @@
+{
+  "$schema": "https://ugas.jbltx.com/%%UGAS_VERSION%%/schemas/gameplay_ability.json",
+  "Name": "ability_async_authority",
+  "AsyncValidation": {
+    "Required": true,
+    "Predicted": false,
+    "TimeoutMs": 5000
+  }
+}

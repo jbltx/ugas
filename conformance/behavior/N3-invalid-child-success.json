@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "id": "N3-invalid-child-success",
+  "description": "A child cannot be accepted with a rejected parent; partial outcomes are also invalid.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          },
+          {
+            "sub": 1,
+            "parent": 0,
+            "cost": 5
+          }
+        ]
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": [
+          {
+            "base": 1,
+            "accepted": [
+              false,
+              true
+            ]
+          }
+        ]
+      },
+      "expect": {
+        "revision": 0,
+        "ready": false,
+        "overlays": []
+      },
+      "error": "accepted descendant of rejected parent"
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": [
+          {
+            "base": 1,
+            "accepted": [
+              false
+            ]
+          }
+        ]
+      },
+      "expect": {
+        "revision": 0,
+        "ready": false,
+        "overlays": []
+      },
+      "error": "partial group outcome"
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": [
+          {
+            "base": 1,
+            "accepted": [
+              false,
+              false
+            ]
+          }
+        ],
+        "resolved_through": 1
+      },
+      "expect": {
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "pending": []
+      }
+    }
+  ]
+}

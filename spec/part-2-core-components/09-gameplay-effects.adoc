@@ -354,8 +354,8 @@ Execution Calculations frequently make randomized decisions — a critical-hit r
 
 . *Seeded, deterministic stream.* Any randomness consumed during a *predicted* Execution Calculation MUST be drawn from the deterministic RNG stream exposed as `context.RNG`. That stream MUST be seeded from the activation's `PredictionKey.Seed` (§13.8.1) and advanced deterministically, so that the predicting client and the authoritative server, starting from the same server-coordinated seed, produce identical results and no rollback is caused by RNG drift alone.
 . *No ambient randomness.* Implementations MUST NOT consume gameplay-affecting randomness during prediction from any source other than `context.RNG` (this mirrors the prohibition in §13.8.1). A bare `RandomFloat()`-style global, a thread-local PRNG, wall-clock time, or any other non-seeded source MUST NOT be used for a roll that influences gameplay state.
-. *Stream positioning (reproducibility).* `context.RNG` MUST be positioned per the `(Sub, draw index)` scheme of §13.8.1: each activation under a prediction `Base` consumes a disjoint sub-stream selected by its `PredictionKey.Sub`, and successive draws within one `Execute()` advance a monotonic draw index. Consequently, the _n_-th draw of a given calculation under a given `(Base, Sub)` is reproducible — re-running `Execute()` during reconciliation replay (§13.5) yields the same sequence. Implementations MUST NOT make the result depend on draw _ordering across_ calculations that is not itself deterministic.
-. *Non-predictable opt-out (escape hatch).* An Execution Calculation that genuinely requires non-reproducible or server-only randomness — for example, a roll that MUST NOT be inferable client-side, or one seeded from a source the client cannot reproduce — MUST declare itself non-predictable by setting `Predictable = false` (equivalently, carrying a `RequiresServerAuthority` marker). When such a calculation participates in an activation, that activation MUST abort prediction and fall back to awaiting server authority for the random outcome, exactly as in the prediction-window fallback of §13.8.2; the authoritative result then replicates normally. This is the second option called out by issue #5: random Execution Calculations that cannot be predicted abort to server authority rather than mispredict.
+. *Stream positioning (reproducibility).* One runtime-owned stream belongs to each activation Sub. All calculations/effects caused by that activation share its cursor; creating a fresh stream for every `Execute()` is forbidden. Effects retain the stream if they outlive their originating ability. Schedule draws by simulation step, effect application order (or stable handle order for simultaneous periodic ticks), calculation declaration order, and §17.2 target order. Async callback arrival order MUST NOT determine draw order. Snapshot the stream state and raw-draw count; restore them before replay, without allocating a new seed or Sub. The runtime releases a stream only after its last consumer finishes and no retained checkpoint needs it.
+. *Non-predictable opt-out (escape hatch).* An Execution Calculation that genuinely requires non-reproducible or server-only randomness — for example, a roll that MUST NOT be inferable client-side, or one seeded from a source the client cannot reproduce — MUST declare itself non-predictable by setting `Predictable = false` (equivalently, carrying a `RequiresServerAuthority` marker). When such a calculation participates in an activation, that activation MUST abort prediction and fall back to awaiting server authority for the random outcome, exactly as in the prediction-window fallback of §13.8.2; the authoritative result then replicates normally. Known non-predictable dependencies MUST be checked before speculative commit. A dependency discovered later unwinds speculation using §13.8.5 and preserves the original authoritative request; it MUST NOT lose or duplicate that input.
 . *Single-player / non-networked.* The same `context.RNG` path is used when there is no server: the stream is seeded from a local source (e.g. a per-session or per-activation seed) instead of `PredictionKey.Seed`. No `RandomFloat()`-style ambient global is permitted for gameplay-affecting rolls even offline, so that calculation behavior is identical in shape across networked and standalone play and remains reproducible for replays and tests.
 
 `context.RNG` is a small `DeterministicRNG` interface that conforming implementations MUST provide on the Execution Calculation `context`:
@@ -367,9 +367,10 @@ interface DeterministicRNG {
   NextFloat(): float;
 
   /**
-   * Next integer in [minInclusive, maxExclusive). Advances the stream by
-   * one draw. Derived deterministically from the same sequence as
-   * NextFloat(), so a given draw index yields a stable value.
+   * Next integer in [minInclusive, maxExclusive). Rejection sampling can
+   * consume multiple raw draws; all of them advance the stored cursor.
+   * Bounds are signed 32-bit integers, with maxExclusive also allowing 2^31.
+   * Invalid bounds fail before consuming a draw.
    */
   NextInt(minInclusive: int, maxExclusive: int): int;
 }
@@ -377,8 +378,53 @@ interface DeterministicRNG {
 
 [NOTE]
 ====
-The seed itself is owned by the networking layer, not by the Execution Calculation: §13.8.1 defines `PredictionKey.Seed` as server-coordinated and forbids client-chosen seeds (so a client cannot bias a predicted crit). §9.5 only defines the _consumption_ contract — how a calculation draws from that seed via `context.RNG`. A calculation MUST NOT read `PredictionKey.Seed` directly or reconstruct its own RNG; it MUST go through `context.RNG` so stream positioning stays consistent with §13.8.1.
+The seed itself is owned by the networking layer, not by the Execution Calculation: §13.8.1 defines `PredictionKey.Seed` as server-coordinated and forbids client-chosen seeds (this prevents seed substitution, not selective timing using known seeds). §9.5 only defines the _consumption_ contract — how a calculation draws from that seed via `context.RNG`. A calculation MUST NOT read `PredictionKey.Seed` directly or reconstruct its own RNG; it MUST go through `context.RNG` so stream positioning stays consistent with §13.8.1.
 ====
+
+[[deterministic-rng-profile]]
+===== 9.5.1 Deterministic RNG Profile
+
+Predicting peers MUST agree on a versioned profile covering seed derivation, initialization,
+integer widths, output conversion, and execution ordering. The reference profile is
+`ugas-pcg32-v1` (PCG XSH-RR 64/32). An unsupported/mismatched profile disables prediction;
+server authority remains available. Alternative profiles require explicit agreement.
+
+All state/seed arithmetic below wraps modulo 2^64; output arithmetic wraps modulo 2^32.
+Shifts are unsigned logical shifts. The server group Seed initializes state; Sub selects
+`increment = (Sub << 1) | 1`. Initialize state to zero, step once, add Seed modulo 2^64,
+and step again. Initialization's two steps do not count as gameplay draws. Sub ranges from
+0 through 65534; the reserved NONE value is not a stream selector. Encode 64-bit values as
+unsigned decimal strings in JSON (never lossy JSON numbers); a binary encoding uses eight
+little-endian bytes. Stream state consists of profile, state, increment, and raw-draw count.
+
+[source,python]
+----
+MASK64 = (1 << 64) - 1
+MASK32 = (1 << 32) - 1
+
+def step(state, increment):
+    old = state
+    state = (old * 6364136223846793005 + increment) & MASK64
+    x = (((old >> 18) ^ old) >> 27) & MASK32
+    rotation = old >> 59
+    word = ((x >> rotation) | (x << ((-rotation) & 31))) & MASK32
+    return state, word
+----
+
+`NextFloat()` consumes one word and returns `(word >> 8) / 16777216`, exactly representable
+as a binary32 value in [0, 1). `NextInt(min, max)` requires integer bounds with
+-2^31 <= min < max <= 2^31. Compute span = max - min using at least 64 bits and threshold
+= 2^32 modulo span. Draw words until word >= threshold, then return min + (word modulo span).
+Every rejected candidate advances the raw-draw count. Invalid bounds fail without drawing.
+Adapters MAY bound RNG work; exhausting that budget MUST fail/fall back, never bias a result
+by replacing rejection sampling with a modulo-only draw.
+
+With Seed 42 and Sub 54, the first six raw words are `a15c02b7`, `7b47f409`, `ba1d3330`,
+`83d2f293`, `bfa4784b`, `cbed606e` (hexadecimal). The fixtures in `conformance/behavior/`
+include these words, float/integer conversion, rejected integer candidates, and checkpoint
+restoration. Standalone play uses the same interface with an injected local seed/cursor.
+Matching random draws does not guarantee matching damage if captured attributes differ;
+ordinary authoritative reconciliation still applies.
 
 ==== 9.6 Execution Policies
 
@@ -548,8 +594,8 @@ struct EffectContext {
   /**
    * Deterministic, seeded RNG for any randomness consumed by an Execution
    * Calculation (§9.5). During prediction this stream is seeded from
-   * `PredictionKey.Seed` (§13.8.1) and positioned per the (Sub, draw index)
-   * scheme so client and server agree; offline it is seeded from a local
+   * `PredictionKey.Seed` (§13.8.1) and positioned per the activation Sub and its shared raw-draw cursor
+   * (§9.5.1) so client and server agree; offline it is seeded from a local
    * source. Gameplay-affecting rolls MUST use this rather than an ambient
    * global. See "Randomness in Execution Calculations" in §9.5.
    */

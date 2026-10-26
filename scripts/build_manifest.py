@@ -137,8 +137,13 @@ def classify(rel: Path, section_titles: dict[str, dict]) -> tuple[str, str, str]
 
     # Conformance corpus
     if parts[0] == "conformance" and len(parts) >= 2:
-        bucket = parts[1]  # valid | invalid
-        return "conformance", f"conformance.{bucket}.{stem}", f"Conformance ({bucket}): {stem}"
+        bucket = parts[1]
+        if bucket == "behavior":
+            kind = "behavioral-conformance" if rel.suffix == ".json" and name != "format.schema.json" else "doc"
+            return kind, f"conformance.behavior.{name}", f"Behavior conformance: {stem}"
+        if bucket in {"valid", "invalid"}:
+            return "conformance", f"conformance.{bucket}.{stem}", f"Conformance ({bucket}): {stem}"
+        return "doc", f"conformance.{rel.as_posix()}", name
 
     # RAG artifacts
     if parts[0] == "rag":
