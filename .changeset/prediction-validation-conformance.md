@@ -13,3 +13,5 @@
 [Fixed] Reject null adapter observations instead of running the reference model. Recheck affordability and parent eligibility during prediction/replay, retire cancelled-presentation records with resolved requests, and reject future resolution watermarks before they can discard subsequent inputs. Add regression scenarios and repeated-retirement checks for these cases.
 
 [Fixed] Clock-only checks no longer add unbounded timer records or advance gameplay without frame progress. Adapter observations compare JSON types recursively, rejecting boolean/number substitutions while treating equivalent numeric representations and reordered object keys as equal.
+
+[Added] Independently verify included attempts before terminal outcomes arrive and timer replay across nonzero checkpoints. Mutation regressions ensure the conformance cases reject ignored inclusion and incorrect timer replay boundaries.

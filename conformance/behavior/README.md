@@ -78,6 +78,10 @@ fields are allowed. A missing field that the fixture checks is a failure.
   groups. `checkpoint_frame` excludes already-incorporated timer steps. `resolved_through`
   is a terminal watermark, while `receipt` is only receipt. `complete_history: false`
   forces recovery. `cancel` retires local presentation; only the server decides the outcome.
+  Dedicated cases exercise inclusion before terminal outcomes arrive and a nonzero
+  checkpoint that retains later timer steps before a subsequent checkpoint retires them.
+  Mutation regressions verify that ignoring inclusion, replaying incorporated ticks, or
+  dropping the later timer suffix fails those cases.
   Watermarks beyond the allocated inputs are invalid and force resynchronization without
   retiring requests. Cancelled-presentation records are freed once their request identities
   pass the contiguous resolution watermark and leave the replay journal.

@@ -16,6 +16,32 @@ CORPUS = ROOT / "conformance/behavior"
 
 
 class BehaviorConformanceTests(unittest.TestCase):
+    def test_corpus_rejects_ignoring_included_attempts(self):
+        case = load(CORPUS / "N2-included-before-outcome.json")
+        run_case(case)
+        update = Prediction.update
+
+        def ignore_included(model, **args):
+            return update(model, **{**args, "included": []})
+
+        with patch.object(Prediction, "update", ignore_included):
+            with self.assertRaisesRegex(ValueError, r"step 3 \(update\), state"):
+                run_case(case)
+
+    def test_corpus_rejects_replaying_the_wrong_timer_suffix(self):
+        case = load(CORPUS / "N7-checkpoint-timer-suffix.json")
+        run_case(case)
+        update = Prediction.update
+        # Both replaying every tick and suppressing every tick must fail.
+        for checkpoint_frame in (0, 2):
+            def wrong_boundary(model, **args):
+                return update(model, **{**args, "checkpoint_frame": checkpoint_frame})
+
+            with self.subTest(checkpoint_frame=checkpoint_frame):
+                with patch.object(Prediction, "update", wrong_boundary):
+                    with self.assertRaisesRegex(ValueError, r"step 4 \(update\), state"):
+                        run_case(case)
+
     def test_clock_only_checks_cannot_grow_replay_work(self):
         model = Prediction(max_actions=1, max_frames=2)
         model.submit(1, [{"sub": 0, "parent": None, "cost": 10}])
