@@ -281,6 +281,7 @@ class Prediction:
 
     def advance(self, milliseconds, frames=1, simulation_ms=None):
         require(milliseconds >= 0 and frames >= 0, "time cannot move backwards")
+        require(frames > 0 or simulation_ms in (None, 0), "simulation time requires frame progress")
         self.now += milliseconds
         self.frame += frames
         if frames:
@@ -289,7 +290,9 @@ class Prediction:
             start_time, start_frame = self.window_start
             if self.now - start_time >= self.max_millis or self.frame - start_frame >= self.max_frames:
                 self._discard("expired")
-            else:
+            elif frames:
+                # A clock-only check can expire prediction but never simulates or records
+                # another substep. Each new frame contributes at most one timer record.
                 delta = milliseconds if simulation_ms is None else simulation_ms
                 self._tick(delta)
                 self._record({"kind": "tick", "milliseconds": delta})

@@ -33,6 +33,23 @@ def load(path):
                       parse_float=finite_float)
 
 
+def json_equal(actual, expected):
+    """Compare JSON values without treating booleans as numbers.
+
+    JSON numbers such as 1 and 1.0 are equivalent, and object key order is irrelevant.
+    Container contents keep the same type distinctions recursively.
+    """
+    if type(expected) in (int, float):
+        return type(actual) in (int, float) and actual == expected
+    if type(actual) is not type(expected):
+        return False
+    if isinstance(expected, list):
+        return len(actual) == len(expected) and all(json_equal(a, e) for a, e in zip(actual, expected))
+    if isinstance(expected, dict):
+        return actual.keys() == expected.keys() and all(json_equal(actual[key], value) for key, value in expected.items())
+    return actual == expected
+
+
 def run_case(case, external=REFERENCE_MODE):
     if external is not REFERENCE_MODE:
         if not isinstance(external, list):
@@ -57,7 +74,7 @@ def run_case(case, external=REFERENCE_MODE):
                 raise ValueError(f"step {i + 1}: expected an observation object")
         expected = {"error": step.get("error"), **step.get("expect", {})}
         for key, value in expected.items():
-            if key not in observation or observation[key] != value:
+            if key not in observation or not json_equal(observation[key], value):
                 raise ValueError(f"step {i + 1} ({step['op']}), {key}: expected {value!r}, got {observation.get(key)!r}")
         observations.append(observation)
     return observations

@@ -16,6 +16,84 @@ CORPUS = ROOT / "conformance/behavior"
 
 
 class BehaviorConformanceTests(unittest.TestCase):
+    def test_clock_only_checks_cannot_grow_replay_work(self):
+        model = Prediction(max_actions=1, max_frames=2)
+        model.submit(1, [{"sub": 0, "parent": None, "cost": 10}])
+        model.advance(0, frames=1, simulation_ms=0)
+        journal = deepcopy(model.journal)
+        for _ in range(10000):
+            model.advance(0, frames=0, simulation_ms=0)
+        self.assertEqual(model.journal, journal)
+        self.assertEqual(sum(len(record["actions"]) for record in model.journal), 2)
+        model.update(1, deepcopy(model.baseline), [], checkpoint_frame=0)
+        self.assertEqual(model.trace.count("replay-step:1"), 1)
+        self.assertTrue(model.ready)
+
+    def test_clock_only_checks_expire_without_ticking_gameplay(self):
+        model = Prediction(period_ms=10, tick_mana=5)
+        model.submit(1, [{"sub": 0, "parent": None, "cost": 10}])
+        state = deepcopy(model.state)
+        journal = deepcopy(model.journal)
+        model.advance(249, frames=0)
+        self.assertEqual(model.state, state)
+        self.assertEqual(model.journal, journal)
+        self.assertEqual(model.frame, 0)
+        self.assertEqual(model.now, 249)
+        model.advance(1, frames=0)
+        self.assertFalse(model.ready)
+        self.assertEqual(model.state, model.baseline)
+        self.assertEqual(model.journal, [])
+
+    def test_clock_only_checks_do_not_reset_action_capacity(self):
+        model = Prediction(max_actions=1)
+        nodes = [{"sub": 0, "parent": None, "cost": 10}]
+        model.submit(1, nodes)
+        model.advance(1, frames=0)
+        model.submit(2, nodes)
+        self.assertEqual(model.state["mana"], 90)
+        self.assertEqual(model.observe()["journal"], [1])
+        self.assertIn("authority:2", model.trace)
+
+    def test_simulation_delta_requires_frame_progress_before_mutation(self):
+        model = Prediction(period_ms=10, tick_mana=5)
+        model.submit(1, [{"sub": 0, "parent": None, "cost": 10}])
+        before = deepcopy(vars(model))
+        with self.assertRaisesRegex(ValueError, "simulation time requires frame progress"):
+            model.advance(1, frames=0, simulation_ms=10)
+        self.assertEqual(vars(model), before)
+
+    def test_adapter_comparison_distinguishes_booleans_recursively(self):
+        observations = run(CORPUS)
+        cases = [
+            ("R1-float-and-integer", 0, "draws", True),
+            ("N2-replay-unaffordable-root", 1, "pending", [True]),
+            ("N9-future-watermark", 1, "ready", 0),
+            ("N9-future-watermark", 3, "ready", 1),
+            ("N9-future-watermark", 1, "watermark", False),
+            ("N7-idle-periodic-replay", 1, "state", {
+                **observations["N7-idle-periodic-replay"][1]["state"],
+                "period": {"elapsed": False, "count": True},
+            }),
+        ]
+        for id, index, field, value in cases:
+            with self.subTest(id=id, field=field):
+                broken = deepcopy(observations)
+                broken[id][index][field] = value
+                with self.assertRaisesRegex(ValueError, field):
+                    run(CORPUS, broken)
+
+    def test_adapter_number_representation_and_object_order_are_equivalent(self):
+        def numeric_json(value):
+            if type(value) is int:
+                return float(value)
+            if isinstance(value, list):
+                return [numeric_json(item) for item in value]
+            if isinstance(value, dict):
+                return {key: numeric_json(item) for key, item in reversed(list(value.items()))}
+            return value
+        converted = numeric_json(run(CORPUS))
+        self.assertEqual(run(CORPUS, converted), converted)
+
     def test_null_adapter_observations_never_run_reference_models(self):
         observations = run(CORPUS)
         one_null = deepcopy(observations)

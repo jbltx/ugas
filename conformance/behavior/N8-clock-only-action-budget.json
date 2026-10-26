@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "id": "N8-clock-only-action-budget",
+  "description": "Clock checks neither add timer records nor reopen per-frame activation capacity.",
+  "model": "prediction",
+  "initial": {
+    "max_actions": 1,
+    "max_frames": 2
+  },
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      }
+    },
+    {
+      "op": "advance",
+      "args": {
+        "milliseconds": 0,
+        "frames": 1,
+        "simulation_ms": 0
+      }
+    },
+    {
+      "op": "submit",
+      "args": {
+        "base": 2,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      }
+    },
+    {
+      "op": "advance",
+      "args": {
+        "milliseconds": 0,
+        "frames": 0,
+        "simulation_ms": 0
+      },
+      "expect": {
+        "state": {
+          "mana": 80,
+          "tags": [
+            "1:0",
+            "2:0"
+          ],
+          "cooldowns": [
+            "1:0",
+            "2:0"
+          ],
+          "effects": []
+        },
+        "history_frames": 2
+      }
+    },
+    {
+      "op": "submit",
+      "args": {
+        "base": 3,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      },
+      "expect": {
+        "state": {
+          "mana": 80,
+          "tags": [
+            "1:0",
+            "2:0"
+          ],
+          "cooldowns": [
+            "1:0",
+            "2:0"
+          ],
+          "effects": []
+        },
+        "journal": [
+          1,
+          2
+        ],
+        "pending": [
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 100,
+          "tags": [],
+          "cooldowns": [],
+          "effects": []
+        },
+        "outcomes": [],
+        "checkpoint_frame": 0
+      },
+      "expect": {
+        "state": {
+          "mana": 80,
+          "tags": [
+            "1:0",
+            "2:0"
+          ],
+          "cooldowns": [
+            "1:0",
+            "2:0"
+          ],
+          "effects": []
+        },
+        "history_frames": 2,
+        "trace": [
+          "send:1",
+          "predict:1",
+          "send:2",
+          "predict:2",
+          "send:3",
+          "authority:3",
+          "replay:1",
+          "replay-step:1",
+          "replay:2",
+          "update:1"
+        ]
+      }
+    }
+  ]
+}

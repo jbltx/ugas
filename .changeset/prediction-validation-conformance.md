@@ -11,3 +11,5 @@
 [Added] Publish versioned behavioral conformance fixtures separately from entity-schema fixtures, with a Python reference runner, external adapter-result verification, package discovery, and CI coverage. Adapters must agree on RNG profiles and treat atomic group reconciliation as applying one complete dependency-consistent outcome set, not an all-or-nothing server transaction.
 
 [Fixed] Reject null adapter observations instead of running the reference model. Recheck affordability and parent eligibility during prediction/replay, retire cancelled-presentation records with resolved requests, and reject future resolution watermarks before they can discard subsequent inputs. Add regression scenarios and repeated-retirement checks for these cases.
+
+[Fixed] Clock-only checks no longer add unbounded timer records or advance gameplay without frame progress. Adapter observations compare JSON types recursively, rejecting boolean/number substitutions while treating equivalent numeric representations and reordered object keys as equal.

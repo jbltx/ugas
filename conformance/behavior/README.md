@@ -3,8 +3,10 @@
 These fixtures exercise the normative prediction (§13.8), deterministic RNG (§9.5.1), and
 asynchronous activation (§8.8) contracts. `format.schema.json` defines version 1. Every
 fixture has an ID, a model, optional initial settings, and ordered steps. A step invokes an
-operation with `args`; `expect` compares the named observation fields exactly (including
-array order). Omitted observation fields are unconstrained. `error` expects a specific
+operation with `args`; `expect` compares the named observation fields recursively (including
+array order and JSON type). Booleans are distinct from numbers at every nesting level;
+equivalent JSON numbers such as `1` and `1.0` compare equal, and object key order is irrelevant.
+Omitted observation fields are unconstrained. `error` expects a specific
 validation/budget error; absent `error` requires success. Unknown operations, arguments,
 fixture versions, duplicate IDs, and non-finite numbers are rejected.
 
@@ -65,7 +67,11 @@ fields are allowed. A missing field that the fixture checks is a failure.
   siblings survive; the original server request retains all its nodes until authority
   resolves it. Later checkpoints do not revive branches dropped from the journal.
   `advance` advances monotonic time/frame and optionally distinct simulation milliseconds;
-  empty-input simulation steps are retained. An optional periodic Mana effect retains
+  empty-input simulation steps are retained. With `frames: 0` it only advances the monotonic
+  clock and checks expiry: it does not tick gameplay, append a timer record, or reset action
+  capacity. `simulation_ms` must then be absent or zero; a positive value fails before any
+  mutation. Each advancing call records at most one timer action in a new frame, bounding
+  each frame to `max_actions` activation nodes plus one timer action. An optional periodic Mana effect retains
   elapsed simulation time and tick count across replay. `update` supplies authoritative
   state and complete Sub outcomes; it does not simulate the server. In this single-stream
   model, Base also identifies input sequence; `included` identifies wholly incorporated

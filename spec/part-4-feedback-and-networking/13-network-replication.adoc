@@ -328,6 +328,9 @@ report backpressure explicitly; never silently drop an accepted input or allocat
 Adapters MUST also bound actions per frame, children per group, bytes per journal record,
 pending requests, and snapshot storage. Frames alone do not bound arbitrarily many actions.
 Limits MUST be advertised/documented; overflow uses authority or explicit backpressure.
+Clock-only expiry checks MUST NOT append simulation steps to replay history. An adapter
+that simulates multiple substeps within one frame MUST include those substeps in a finite
+replay-work budget; a frame limit alone does not bound them.
 
 [[prediction-snapshot]]
 ===== 13.8.3 CaptureState() Scope

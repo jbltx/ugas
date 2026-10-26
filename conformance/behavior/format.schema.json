@@ -604,11 +604,13 @@
                       },
                       "frames": {
                         "type": "integer",
-                        "minimum": 0
+                        "minimum": 0,
+                        "description": "Defaults to 1. Zero advances only the monotonic clock and checks expiry, without changing gameplay, recording a timer step, or resetting action capacity."
                       },
                       "simulation_ms": {
                         "type": "number",
-                        "minimum": 0
+                        "minimum": 0,
+                        "description": "Simulation time for advancing frames; defaults to milliseconds. With frames=0 it must be absent or zero; a positive value is a runtime error."
                       }
                     },
                     "required": [
