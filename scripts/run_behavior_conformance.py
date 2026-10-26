@@ -50,20 +50,38 @@ def json_equal(actual, expected):
     return actual == expected
 
 
+def normalize_input_numbers(value):
+    """Use Python integers for integer-valued JSON inputs, including nested IDs.
+
+    Draft-07 accepts 1, 1.0 and 1e0 as integers. Model indexing, bitwise operations
+    and identity formatting must not depend on their JSON spelling. Fractional
+    numbers and nonnumeric values (especially booleans) retain their types.
+    """
+    if type(value) is float and value.is_integer():
+        return int(value)
+    if isinstance(value, list):
+        return [normalize_input_numbers(item) for item in value]
+    if isinstance(value, dict):
+        return {key: normalize_input_numbers(item) for key, item in value.items()}
+    return value
+
+
 def run_case(case, external=REFERENCE_MODE):
     if external is not REFERENCE_MODE:
         if not isinstance(external, list):
             raise ValueError("adapter observations must be a list")
         if len(external) != len(case["steps"]):
             raise ValueError("observation count differs from step count")
-    model = MODELS[case["model"]](**case.get("initial", {})) if external is REFERENCE_MODE else None
+    model = None
+    if external is REFERENCE_MODE:
+        model = MODELS[case["model"]](**normalize_input_numbers(case.get("initial", {})))
     observations = []
     for i, step in enumerate(case["steps"]):
         error = None
         if external is REFERENCE_MODE:
             try:
                 method = getattr(model, step["op"])
-                method(**step.get("args", {}))
+                method(**normalize_input_numbers(step.get("args", {})))
             except ValueError as exc:
                 error = str(exc)
             observation = deepcopy(model.observe())

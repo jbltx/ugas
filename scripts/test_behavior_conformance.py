@@ -10,12 +10,46 @@ from unittest.mock import patch
 
 from jsonschema import ValidationError
 from behavior_model import AsyncActivation, Prediction, RNG
-from run_behavior_conformance import ROOT, load, run, run_case
+from run_behavior_conformance import ROOT, json_equal, load, run, run_case
 
 CORPUS = ROOT / "conformance/behavior"
 
 
 class BehaviorConformanceTests(unittest.TestCase):
+    def test_fixture_integer_inputs_accept_equivalent_numeric_forms(self):
+        observations = run(CORPUS)
+        with tempfile.TemporaryDirectory() as directory:
+            corpus = Path(directory)
+            (corpus / "format.schema.json").write_text((CORPUS / "format.schema.json").read_text())
+            for path in sorted(CORPUS.glob("*.json")):
+                if path.name == "format.schema.json":
+                    continue
+                case = load(path)
+                # Change input representation only; keep golden observations fixed.
+                if "initial" in case:
+                    case["initial"] = json.loads(json.dumps(case["initial"]), parse_int=float)
+                for step in case["steps"]:
+                    if "args" in step:
+                        step["args"] = json.loads(json.dumps(step["args"]), parse_int=float)
+                encoded = json.dumps(case)
+                with self.subTest(id=case["id"]):
+                    self.assertTrue(json_equal(run_case(case), observations[case["id"]]))
+                    self.assertEqual(json.dumps(case), encoded)
+                (corpus / path.name).write_text(encoded)
+            self.assertTrue(json_equal(run(corpus), observations))
+            self.assertEqual(run(corpus, observations), observations)
+
+    def test_integer_input_normalization_does_not_admit_invalid_types(self):
+        with tempfile.TemporaryDirectory() as directory:
+            corpus = Path(directory)
+            (corpus / "format.schema.json").write_text((CORPUS / "format.schema.json").read_text())
+            for value in (True, 55.5, "55"):
+                case = load(CORPUS / "R3-child-stream.json")
+                case["initial"]["sub"] = value
+                (corpus / "case.json").write_text(json.dumps(case))
+                with self.subTest(value=value), self.assertRaises(ValidationError):
+                    run(corpus)
+
     def test_corpus_rejects_ignoring_included_attempts(self):
         case = load(CORPUS / "N2-included-before-outcome.json")
         run_case(case)

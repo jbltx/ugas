@@ -10,6 +10,12 @@ Omitted observation fields are unconstrained. `error` expects a specific
 validation/budget error; absent `error` requires success. Unknown operations, arguments,
 fixture versions, duplicate IDs, and non-finite numbers are rejected.
 
+Integer-valued inputs may use integer, decimal, or exponent notation (for example,
+`55`, `55.0`, or `5.5e1`). After schema validation, the reference runner normalizes
+integer-valued numeric inputs recursively before model execution, so RNG streams,
+parent indices, identity labels, and traces are independent of number spelling.
+Fractional values, booleans, strings, and nulls retain their meaning.
+
 Run from a source checkout with Python and `jsonschema` installed:
 
 ```sh

@@ -15,3 +15,5 @@
 [Fixed] Clock-only checks no longer add unbounded timer records or advance gameplay without frame progress. Adapter observations compare JSON types recursively, rejecting boolean/number substitutions while treating equivalent numeric representations and reordered object keys as equal.
 
 [Added] Independently verify included attempts before terminal outcomes arrive and timer replay across nonzero checkpoints. Mutation regressions ensure the conformance cases reject ignored inclusion and incorrect timer replay boundaries.
+
+[Fixed] Normalize integer-valued fixture inputs before reference execution so decimal and exponent notation preserve RNG streams, parent indexing, and prediction identities. Cover numeric input equivalence across the corpus and preserve fractional values and JSON type validation.
