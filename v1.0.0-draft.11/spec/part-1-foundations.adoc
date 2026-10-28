@@ -1,0 +1,7 @@
+== Part I: Foundations
+
+include::part-1-foundations/01-introduction.adoc[]
+
+include::part-1-foundations/02-terminology.adoc[]
+
+include::part-1-foundations/03-architectural-overview.adoc[]

@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "id": "R3-numeric-representation",
+  "description": "Exponent notation for an integer Sub selects the same known-answer RNG stream.",
+  "model": "rng",
+  "initial": {
+    "seed": "42",
+    "sub": 5.5e1
+  },
+  "steps": [
+    {
+      "op": "next"
+    },
+    {
+      "op": "next",
+      "expect": {
+        "output": [2916272015, 861791403],
+        "draws": 2
+      }
+    }
+  ]
+}

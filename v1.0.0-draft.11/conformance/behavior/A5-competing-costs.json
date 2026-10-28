@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "id": "A5-competing-costs",
+  "description": "Two abilities cannot both spend the last resource.",
+  "model": "async",
+  "initial": {
+    "mana": 10
+  },
+  "steps": [
+    {
+      "op": "start",
+      "args": {
+        "id": "A",
+        "ability": "One"
+      }
+    },
+    {
+      "op": "start",
+      "args": {
+        "id": "B",
+        "ability": "Two"
+      }
+    },
+    {
+      "op": "resolve",
+      "args": {
+        "id": "B"
+      }
+    },
+    {
+      "op": "resolve",
+      "args": {
+        "id": "A"
+      },
+      "expect": {
+        "mana": 0,
+        "commits": [
+          "B"
+        ],
+        "terminal": {
+          "A": "Rejected",
+          "B": "Accepted"
+        }
+      }
+    }
+  ]
+}

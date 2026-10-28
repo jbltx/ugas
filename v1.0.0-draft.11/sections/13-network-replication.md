@@ -1,0 +1,307 @@
+## 13. Network Replication
+
+### 13.1 Replication Architecture
+
+UGAS defines a client-server replication model where:
+
+- The server is authoritative for all gameplay state
+
+- Clients receive replicated state updates
+
+- Clients may predict state changes locally
+
+- Server reconciles predicted state with authoritative state
+
+``` mermaid
+sequenceDiagram
+    accTitle: Server authority and client prediction
+    accDescr: The server replicates its authoritative Gameplay Controller to the client proxy. The client predicts from local input and sends it to the server, which reconciles the client with authoritative state.
+    participant Server as Server GC (Authority)
+    participant Client as Client GC (Proxy)
+    Server->>Client: Replicate
+    Note over Client: Local input / prediction
+    Client->>Server: Predicted input
+    Server->>Client: Reconcile
+```
+
+### 13.2 Replication Modes
+
+| Mode      | Effects    | Cues | Tags | Attributes | Use Case                    |
+|-----------|------------|------|------|------------|-----------------------------|
+| `Minimal` | None       | All  | All  | None       | AI entities, distant actors |
+| `Mixed`   | Owner only | All  | All  | Owner only | Player characters           |
+| `Full`    | All        | All  | All  | All        | Single-player, debugging    |
+
+Minimal Mode  
+Only Cue triggers and Tag changes are replicated. Effects and Attributes are server-only. Suitable for AI entities where clients don’t need full state.
+
+Mixed Mode  
+Full replication to the owning client; minimal replication to others. The standard mode for player characters in multiplayer games.
+
+Full Mode  
+Complete replication to all clients. Used for single-player games or debugging. Higher bandwidth cost.
+
+### 13.3 Bandwidth Optimization
+
+#### Delta Compression
+
+Only changed values are transmitted:
+
+``` typescript
+struct ReplicatedAttributeSet {
+  /** Bitmask of changed attributes since last update */
+  DirtyMask: uint32;
+
+  /** Only changed attribute values */
+  ChangedValues: float[];
+}
+```
+
+#### Dirty Bit Tracking
+
+Attributes track their dirty state:
+
+``` typescript
+function SetBaseValue(attribute: Attribute, newValue: float): void {
+  if (attribute.BaseValue !== newValue) {
+    attribute.BaseValue = newValue;
+    attribute.bIsDirty = true;
+    this.DirtyAttributes.add(attribute);
+  }
+}
+```
+
+#### Quantization
+
+For bandwidth-critical scenarios, attribute values MAY be quantized:
+
+``` typescript
+struct QuantizedHealth {
+  /** 0-255 representing 0-100% health */
+  HealthPercent: uint8;
+}
+```
+
+### 13.4 Client-Side Prediction
+
+A client MAY predict an owned GC’s ability activation when it has the replayable state, server-assigned seed, and capacity required by §13.8. Prediction is optional; submitting an otherwise valid input to authority MUST NOT depend on being able to predict it.
+
+``` typescript
+function TryActivateAbility_Predicted(handle: AbilitySpecHandle): void {
+  const request = NewActivationRequest(handle); // stable attempt ID, even without prediction
+  if (CanPredict(request)) {
+    const before = CaptureState();             // BEFORE cost, tags, tasks, or effects
+    RegisterPrediction(request, before);
+    if (!TryActivateAbility_Local(handle, request.Key)) {
+      RestorePredictionState(before);          // undo partial speculative work, silently
+      RetireLocalSpeculation(request);
+    }
+  }
+  SubmitOnce(request); // authority fallback also submits; retransmits reuse the same ID
+}
+```
+
+`CanPredict` includes the window/capacity checks, synchronous activation requirements, replayable tasks and external inputs, and the predictability of known calculations. If a non-predictable dependency is discovered after execution starts, the client MUST unwind the affected speculation (§13.8.5), retain the same request identity, and await its authoritative result. It MUST NOT resubmit a second logical activation.
+
+### 13.5 Server Reconciliation
+
+Confirmation does not imply identical state: costs, targets, cooldown timing, or intervening server effects can differ. Success and failure both use the authoritative update protocol of §13.8.6. Restoring an old per-ability snapshot over current state is insufficient when predictions overlap.
+
+``` typescript
+function OnAuthoritativeUpdate(update: PredictionUpdate): void {
+  if (!ValidateEpochOwnerRevisionAndOutcomes(update)) return;
+  AcceptTerminalOutcomes(update);              // once; receipt is not resolution
+  const suffix = FindCompleteReplaySuffix(update);
+  InstallAuthoritativeState(update.State);     // includes unrelated server-originated effects
+  if (suffix == null || !WithinReplayBudget(suffix)) {
+    DiscardSpeculationAndPresentation();
+    AwaitResynchronization();                  // never replay a truncated history
+    return;
+  }
+  for (const frame of suffix) {
+    ReplayOwningGC(frame, update.Outcomes);    // original IDs; no RPCs or duplicate cues
+  }
+}
+```
+
+Replay MUST exclude inputs already incorporated in the checkpoint, rejected attempts and all their dependent descendants. Applying a newer update MUST NOT erase unrelated confirmed state. Old/duplicate revisions cannot overwrite newer state. Visual blending MAY hide corrections, but cannot change the authoritative gameplay result.
+
+### 13.6 Replication Frequency Recommendations
+
+| Actor Type                               | Update Rate | Notes                                                                         |
+|------------------------------------------|-------------|-------------------------------------------------------------------------------|
+| Player Character (LAN / low-latency)     | 60-100 Hz   | High frequency for responsive feel                                            |
+| Player Character (mobile / high-latency) | 20-30 Hz    | Reduce to manage bandwidth; compensate with aggressive client-side prediction |
+| Important AI                             | 30-60 Hz    | Moderate frequency                                                            |
+| Distant Actors                           | 10-20 Hz    | Lower frequency acceptable                                                    |
+| Static Objects                           | On Change   | Event-based only                                                              |
+
+> *High-latency guidance:* On connections with RTT \> 150 ms (common on mobile or cross-region play), implementations SHOULD lower the player-character replication rate to 20-30 Hz and increase prediction window depth accordingly. Attribute and Tag state SHOULD be sent at a lower rate than position to prioritise movement responsiveness. Dead-reckoning or interpolation SHOULD be applied on the receiving end.
+
+### 13.7 Effect Application Authorization
+
+`ApplyGameplayEffectToTarget` is the primary mutation surface of the GC pipeline and therefore a critical security boundary in networked environments.
+
+#### Core requirement
+
+In any networked environment, a call to `ApplyGameplayEffectToTarget` that originates on a client MUST be validated by the server before the effect is executed on authoritative state. Clients MUST NOT be permitted to mutate server-authoritative GC state directly.
+
+#### Validation pipeline
+
+The server-side validation step MUST check, at minimum:
+
+1.  *Instigator authority* — the instigating GC is owned by the requesting client (or is a server-controlled entity).
+
+2.  *Ability ownership* — the effect is being applied as part of an ability that the instigator has been granted (i.e., the ability spec exists in the instigator’s granted-ability list).
+
+3.  *Target reachability* — the target GC is a legitimate target for the instigator at the time of application (range, line-of-sight, or game-rule checks as appropriate to the title).
+
+4.  *Effect class whitelist* — the effect class is one the ability is permitted to apply; implementations SHOULD reject arbitrary `EffectClass` values supplied by the client.
+
+If any check fails, the server MUST reject the application and MUST reconcile any prediction the client has already applied locally (via the standard reconciliation path in §13.5).
+
+#### Predicted applications
+
+When a client applies an effect locally as part of a prediction (using a `PredictionKey`), the local application is speculative only. The authoritative application — or its rejection — is determined by the server. Implementations MUST treat predicted effect applications as unconfirmed until the server acknowledges the prediction key. When the predicted effect targets a GC the predicting client does not own, the additional cross-GC rules of §13.8.4 apply.
+
+``` typescript
+// Client: speculative application
+const predictionKey = GeneratePredictionKey();
+const specHandle = MakeOutgoingSpec(GE_Damage, level, predictionKey);
+ApplyGameplayEffectToTarget(target.GC, specHandle, predictionKey);
+// For a non-owned target this creates only a presentation overlay (§13.8.4).
+
+// Server: receives the RPC, validates, then applies authoritatively
+function Server_ApplyEffect(
+  instigatorGC: GameplayController,
+  targetGC: GameplayController,
+  specHandle: EffectSpecHandle,
+  predictionKey: PredictionKey
+): void {
+  // 1. Validate instigator owns the ability that produced this spec
+  if (!ValidateInstigatorAuthority(instigatorGC, specHandle)) {
+    RejectPrediction(predictionKey);
+    return;
+  }
+  // 2. Validate target is reachable / eligible
+  if (!ValidateTarget(instigatorGC, targetGC, specHandle)) {
+    RejectPrediction(predictionKey);
+    return;
+  }
+  // Authoritative application — triggers replication to all clients
+  ApplyGameplayEffectToTarget(targetGC, specHandle);
+  RecordSubOutcome(predictionKey, Accepted); // publish the complete group result (§13.8.6)
+}
+```
+
+#### Authoritative-only effects
+
+Some effects MUST only ever be applied by the server (e.g., spawn effects, death effects, anti-cheat corrections). These effects SHOULD be tagged with `Gameplay.Effect.AuthoritativeOnly` and implementations MUST refuse to apply them on a client even if a prediction key is present.
+
+### 13.8 Prediction Model (Normative)
+
+This section defines the contract used by §13.4–§13.7 and §8.8. An adapter MUST document its finite limits, supported replay state and negotiated RNG profile. Unsupported prediction falls back to authority; it does not authorize dropping the activation request.
+
+#### 13.8.1 PredictionKey
+
+``` typescript
+struct PredictionKey {
+  ClientId: uint32;        // bound to the authenticated connection, never trusted from payload
+  Epoch: uint64;           // server-issued connection generation
+  OwnerGC: GCIdentity;     // stable identity, not a recycled object address
+  Base: uint32;            // monotonic per connection epoch, one per independent input
+  Sub: uint16;             // 0 for root; 1..65534 for dependent activations
+  ParentSub: uint16;       // NONE (65535) only for root
+  Seed: uint64;            // server-assigned seed for Base
+}
+const NONE = 65535;
+```
+
+The correlation identity is `(ClientId, Epoch, OwnerGC, Base, Sub)`. `Seed` is validated against the server’s assignment, not used to make a substituted key a new identity. The server MUST reject wrong owners/epochs, unknown parents, cycles, duplicate Sub values with different payloads, and values outside negotiated limits. Identical retransmissions MUST return the existing outcome without committing again. Renew the epoch before Base wrap; never allocate `NONE` as a Sub. An exhausted group falls back to authority without reusing keys. Retire old epochs so delayed packets cannot refer to a new activation.
+
+Independent inputs, including two in one simulation frame, obtain distinct Base values. Same-frame activations caused by a root’s attribute/tag/event changes share its Base and Seed, allocate increasing Sub values, and record the actual parent. A later-frame activation depending on an unresolved earlier group MUST run authoritatively unless the adapter supplies an explicit, bounded causal-dependency extension; the core ParentSub field only names a parent within the same Base.
+
+Seed derivation  
+The server MUST supply seeds before prediction, either by distributing upcoming seeds or by sharing a root seed and an agreed derivation function. The server MUST validate the assigned seed and RNG profile on each request. Missing or mismatched seed/profile disables prediction. Calculations MUST consume the runtime stream specified in §9.5, never create their own stream. Knowing future seeds can permit selective input timing; server-originated seeds do not prevent this. Hidden or reward-sensitive randomness MUST use server authority.
+
+#### 13.8.2 Prediction Window (Maximum Depth)
+
+| Limit                 | Recommended default | Measurement                                                                            |
+|-----------------------|---------------------|----------------------------------------------------------------------------------------|
+| `MaxPredictionMillis` | 250 ms              | Local monotonic elapsed time since the oldest speculative frame.                       |
+| `MaxPredictionFrames` | 16                  | Number of simulated steps since the confirmed checkpoint, including empty-input steps. |
+
+Both limits MUST be finite and positive; the first reached stops speculation. At equality, the client MUST NOT advance further speculative simulation. Check limits before each step and activation, and expire speculation even when no new input arrives. A title MAY configure other limits (including for §13.6’s high latency guidance), but MUST retain finite bounds. Wall-clock adjustments and game-time pause/scale MUST NOT extend the real-time limit.
+
+At expiry the client MUST discard speculative gameplay and presentation, restore the latest confirmed baseline, and await authoritative state. Expiry is not a server rejection or a cancellation. A delayed success may still update replicated cost/cooldown/state; it MUST NOT execute the request twice or resurrect an ended local presentation. Ordinary authority-only requests continue within finite transport/pending-request limits. If those are exhausted, report backpressure explicitly; never silently drop an accepted input or allocate indefinitely.
+
+Adapters MUST also bound actions per frame, children per group, bytes per journal record, pending requests, and snapshot storage. Frames alone do not bound arbitrarily many actions. Limits MUST be advertised/documented; overflow uses authority or explicit backpressure. Clock-only expiry checks MUST NOT append simulation steps to replay history. An adapter that simulates multiple substeps within one frame MUST include those substeps in a finite replay-work budget; a frame limit alone does not bound them.
+
+#### 13.8.3 CaptureState() Scope
+
+Capture the owning GC before the first mutation of each speculative root. Child activations share that root checkpoint. A snapshot MUST be a deep copy or an equivalent immutable checkpoint/undo journal; references to mutable live state are insufficient.
+
+| State          | Required contents                                                                                                                                                 |
+|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Attributes     | Base and Current values for registered Attribute Sets.                                                                                                            |
+| Effects        | Active and queued effect instances, captured magnitudes, handles, remaining duration, periodic phase/count, execution-policy state, and grant provenance (§14.3). |
+| Abilities      | Grants, active/pending phases, attempt IDs, activation-owned effect handles, cooldown/charge state, and resumable task state.                                     |
+| Tags           | Owned-tag counts and the effect/ability handles responsible for those counts.                                                                                     |
+| Replay context | Simulation frame, input sequence, simulation time, RNG state/raw-draw cursors, and deterministic scheduler state necessary to resume the above.                   |
+
+Reuse §14.3 effect records where their semantics match, but a prediction snapshot is a runtime checkpoint, not a §14 save file. It additionally preserves Current values and live execution state. Pending remote operations are identified by attempt ID; restoring a snapshot MUST NOT restart a remote validation or undo an authoritative cancellation/outcome.
+
+Restoration MUST NOT reapply Instant effects, re-consume costs, send RPCs, invoke gameplay callbacks, or emit cues. Replayable task implementations MUST supply capture/restore behavior; otherwise the dependent activation is non-predictable. Replayed gameplay events needed to rebuild local state run in a replay context that suppresses external side effects and duplicate presentation. Cancellation/ended-presentation records survive rollback.
+
+World/physics state and other GCs are excluded. Spatial query inputs/results belong in the journal (§17.7); they do not expand the GC checkpoint into a world snapshot. Snapshot cost scales with the owning GC’s state size, not just the number of activations. An adapter MAY use delta checkpoints, but MUST preserve these semantics and its declared memory bound.
+
+#### 13.8.4 Multi-Ability and Cross-GC Prediction
+
+A Base resolves with one complete set of terminal outcomes for its Sub keys. A parent may succeed while a child fails, but a child MUST NOT succeed if any ancestor failed. Parent rejection rejects its descendants. The client applies the complete group result atomically; this does not require reversing already committed server effects on unrelated GCs. A group with pending async validation is not terminal. Receipt acknowledgements are not confirmation. Malformed/partial outcome sets MUST trigger resynchronization, not partial reconciliation.
+
+A client predicting an effect on a GC it does not own MAY create a presentation overlay keyed by the prediction identity. It MUST NOT mutate that target’s gameplay Attributes/Tags, run target gameplay callbacks, or use the overlay to trigger another gameplay prediction. Confirm replaces the overlay with replicated presentation; reject, local cancellation, or expiry removes it. Repeated results cannot remove or emit presentation twice. Corrections to the target GC arrive by ordinary replication, never the owner’s rollback. Effects marked `Gameplay.Effect.AuthoritativeOnly` are excluded even from speculative application (§13.7).
+
+#### 13.8.5 Input History, Rollback Retention, and Replay Bounds
+
+``` typescript
+struct PredictedInputRecord {
+  Sequence: uint64;        // monotonic input-step sequence, echoed by authority
+  Frame: uint64;
+  SampledAt: number;       // LOCAL monotonic milliseconds; never compared to server time
+  DeltaTime: number;       // simulation seconds advanced by this step
+  Actions: OrderedInput[]; // action values plus activation requests and original keys
+  ExternalInputs: ReplayInputs; // recorded query inputs/results or other reproducible inputs
+}
+```
+
+Keep one record per simulated step, including idle steps that advance effects/tasks. Retain a complete suffix after the restore checkpoint within BOTH window limits and the configured record/action/byte limits. Replaying MUST use the recorded DeltaTime, input order, keys, seeds, and RNG positions; allocating new identities or reading current wall-clock time changes the simulation. No RPCs, remote validation calls, or duplicate presentation may escape replay. Recheck activation requirements against the corrected state before each replayed activation. An ineligible activation and its dependent descendants MUST NOT spend resources or grant tags/cooldowns; remove their speculation while retaining the original authoritative request. Other eligible branches may still replay.
+
+If the required suffix is absent, exceeds either limit, depends on non-replayable external state, or cannot resume its tasks, install authoritative state and await a fresh checkpoint. Do not replay a truncated suffix or invent missing steps. A locally failed/aborted prediction is unwound before later independent speculation is rebuilt; its dependent children are dropped.
+
+The replay ring is separate from bounded unresolved-request metadata. A request may remain unresolved longer than the prediction window, but its speculative state may not. Discard expired replay data while retaining request identity until resolution or epoch retirement. Keep terminal outcomes through a contiguous resolved-input watermark; receipt of a request or resolution of a later input cannot advance past an earlier pending input. If retaining identities would exceed the finite request budget, apply backpressure/resynchronize the epoch.
+
+Replay is owning-GC-only: it never advances physics, the world, other GCs, or external services. An adapter MUST bound total replay work by the window and per-step action limits.
+
+#### 13.8.6 Authoritative Updates and Recovery
+
+``` typescript
+struct PredictionUpdate {
+  Epoch: uint64;
+  OwnerGC: GCIdentity;
+  Revision: uint64;             // monotonically increasing authoritative state revision
+  CheckpointFrame: uint64;
+  CheckpointSequence: uint64;   // input boundary represented by State
+  ResolvedThrough: uint64;      // contiguous terminal-input watermark, NOT packet receipt
+  Outcomes: GroupOutcome[];     // complete per-Base sets of (Sub, ParentSub, Accepted/Rejected)
+  IncludedAttempts: AttemptId[];// executions already represented in State (including later inputs)
+  State: PredictionSnapshot;    // owning GC only, including server-originated changes
+}
+```
+
+An adapter MUST map the checkpoint to the client’s input journal without comparing clocks. It MUST identify all incorporated attempts, including commits beyond a still-pending input, so replay never charges them again. Outcomes/identities omitted because they precede the acknowledged resolved watermark need not be repeated. A fresh checkpoint plus watermark must suffice to recover after packet loss; a delta requires its declared base revision.
+
+Only accept a matching epoch/owner and a newer revision with valid, dependency-closed outcomes and nondecreasing watermarks. A duplicate result is idempotent; an older state cannot overwrite newer state. If an unresolved attempt predates the supplied replay boundary and cannot be reconstructed from that checkpoint, use authority recovery rather than replay it against an incompatible state. Lost results are retransmitted under the same request ID or recovered from a fresh authoritative checkpoint. Disconnect retires the epoch and clears local speculation; reconnect requires a new epoch/checkpoint before predicting. The resolved-input watermark MUST NOT exceed the highest input sequence allocated in that epoch. An invalid watermark triggers resynchronization without retiring request identities or advancing input allocation.
+
+Example: input 10 predicts cost 10 from Mana 100, then input 11 predicts cost 20. Authority rejects input 10 and includes an unrelated Mana +5 effect in its checkpoint (Mana 105). Replaying still-eligible input 11 once yields Mana 85, not 80 or 100. If input 11 is already included, use the authoritative Mana directly without charging it again. If input 11’s child fails, discard only that child’s branch. If the checkpoint’s replay suffix is missing or the window expires, show the authoritative baseline and wait; do not keep the old speculative cost.
+
+The portable examples under `conformance/behavior/` exercise this protocol’s bounded reference model. They do not substitute for engine-specific task/physics/transport integration tests.

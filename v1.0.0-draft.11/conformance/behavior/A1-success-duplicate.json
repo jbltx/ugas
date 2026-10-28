@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "id": "A1-success-duplicate",
+  "description": "No spend pending; one commit despite repeated delivery.",
+  "model": "async",
+  "steps": [
+    {
+      "op": "start",
+      "args": {
+        "id": "A"
+      },
+      "expect": {
+        "mana": 100,
+        "pending": [
+          "A"
+        ],
+        "commits": [],
+        "cooldowns": [],
+        "tags": []
+      }
+    },
+    {
+      "op": "resolve",
+      "args": {
+        "id": "A"
+      },
+      "expect": {
+        "mana": 90,
+        "active": [
+          "A"
+        ],
+        "commits": [
+          "A"
+        ],
+        "tags": [
+          "A"
+        ]
+      }
+    },
+    {
+      "op": "resolve",
+      "args": {
+        "id": "A"
+      },
+      "expect": {
+        "mana": 90,
+        "commits": [
+          "A"
+        ],
+        "terminal": {
+          "A": "Accepted"
+        }
+      }
+    }
+  ]
+}

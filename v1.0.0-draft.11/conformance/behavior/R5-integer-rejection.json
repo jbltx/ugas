@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "id": "R5-integer-rejection",
+  "description": "The second raw word is below the rejection threshold; the third supplies the result.",
+  "model": "rng",
+  "steps": [
+    {
+      "op": "next"
+    },
+    {
+      "op": "next",
+      "args": {
+        "kind": "int",
+        "minimum": -1,
+        "maximum": 2147483648
+      },
+      "expect": {
+        "output": [
+          2707161783,
+          974992174
+        ],
+        "draws": 3
+      }
+    }
+  ]
+}

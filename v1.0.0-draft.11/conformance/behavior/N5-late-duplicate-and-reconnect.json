@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "id": "N5-late-duplicate-and-reconnect",
+  "description": "Expiry does not cancel authority; duplicate/old-epoch state cannot overwrite it.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      }
+    },
+    {
+      "op": "advance",
+      "args": {
+        "milliseconds": 250
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 90,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": [
+          {
+            "base": 1,
+            "accepted": [
+              true
+            ]
+          }
+        ],
+        "resolved_through": 1
+      },
+      "expect": {
+        "state": {
+          "mana": 90,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "pending": []
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 20,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": []
+      },
+      "expect": {
+        "state": {
+          "mana": 90,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "revision": 1
+      }
+    },
+    {
+      "op": "reconnect",
+      "args": {
+        "epoch": 2
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 10,
+        "state": {
+          "mana": 0,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": [],
+        "epoch": 1
+      },
+      "expect": {
+        "state": {
+          "mana": 90,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "epoch": 2,
+        "ready": false
+      }
+    }
+  ]
+}

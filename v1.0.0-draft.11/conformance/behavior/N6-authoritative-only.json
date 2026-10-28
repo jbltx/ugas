@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "id": "N6-authoritative-only",
+  "description": "AuthoritativeOnly effects cannot create speculative target overlays.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10,
+            "target": "enemy",
+            "authority_only": true
+          }
+        ]
+      },
+      "expect": {
+        "overlays": []
+      }
+    }
+  ]
+}

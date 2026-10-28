@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "id": "N9-watermark-pending",
+  "description": "Resolution of a later input cannot retire an earlier pending attempt.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      }
+    },
+    {
+      "op": "submit",
+      "args": {
+        "base": 2,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": [
+          {
+            "base": 2,
+            "accepted": [
+              false
+            ]
+          }
+        ],
+        "resolved_through": 2
+      },
+      "expect": {
+        "revision": 0,
+        "pending": [
+          1,
+          2
+        ]
+      },
+      "error": "watermark crossed pending input"
+    }
+  ]
+}

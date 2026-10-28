@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "id": "N4-window-time",
+  "description": "At either bound speculation is discarded; a new input still submits once.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      }
+    },
+    {
+      "op": "advance",
+      "args": {
+        "milliseconds": 250,
+        "frames": 1
+      },
+      "expect": {
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "journal": [],
+        "pending": [
+          1
+        ],
+        "ready": false
+      }
+    },
+    {
+      "op": "submit",
+      "args": {
+        "base": 2,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      },
+      "expect": {
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "pending": [
+          1,
+          2
+        ],
+        "trace": [
+          "send:1",
+          "predict:1",
+          "expired",
+          "send:2",
+          "authority:2"
+        ]
+      }
+    }
+  ]
+}

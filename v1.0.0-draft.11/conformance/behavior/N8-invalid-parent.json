@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "id": "N8-invalid-parent",
+  "description": "Invalid ancestry is rejected before dispatch or mutation.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          },
+          {
+            "sub": 1,
+            "parent": 2,
+            "cost": 10
+          }
+        ]
+      },
+      "expect": {
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "pending": [],
+        "trace": []
+      },
+      "error": "invalid parent"
+    }
+  ]
+}

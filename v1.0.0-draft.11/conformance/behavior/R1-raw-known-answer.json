@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "id": "R1-raw-known-answer",
+  "description": "PCG published Seed 42/Sub 54 vector; raw outputs are unsigned.",
+  "model": "rng",
+  "steps": [
+    {
+      "op": "next"
+    },
+    {
+      "op": "next"
+    },
+    {
+      "op": "next"
+    },
+    {
+      "op": "next"
+    },
+    {
+      "op": "next"
+    },
+    {
+      "op": "next",
+      "expect": {
+        "output": [
+          2707161783,
+          2068313097,
+          3122475824,
+          2211639955,
+          3215226955,
+          3421331566
+        ],
+        "draws": 6
+      }
+    }
+  ]
+}

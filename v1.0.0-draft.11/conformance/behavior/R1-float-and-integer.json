@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "id": "R1-float-and-integer",
+  "description": "Binary32 fraction and bounded integer conversion share one cursor.",
+  "model": "rng",
+  "steps": [
+    {
+      "op": "next",
+      "args": {
+        "kind": "float"
+      },
+      "expect": {
+        "output": [
+          0.6303101778030396
+        ],
+        "draws": 1
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "kind": "float"
+      },
+      "expect": {
+        "output": [
+          0.6303101778030396,
+          0.4815666675567627
+        ],
+        "draws": 2
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "kind": "int",
+        "minimum": 0,
+        "maximum": 10
+      },
+      "expect": {
+        "output": [
+          0.6303101778030396,
+          0.4815666675567627,
+          4
+        ],
+        "draws": 3
+      }
+    },
+    {
+      "op": "next",
+      "args": {
+        "kind": "int",
+        "minimum": 0,
+        "maximum": 0
+      },
+      "expect": {
+        "draws": 3
+      },
+      "error": "invalid integer range"
+    }
+  ]
+}

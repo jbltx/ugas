@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "id": "N9-future-watermark",
+  "description": "An impossible resolution watermark resynchronizes without consuming future request IDs.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": [
+          {
+            "base": 1,
+            "accepted": [
+              false
+            ]
+          }
+        ],
+        "resolved_through": 99
+      },
+      "expect": {
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "watermark": 0,
+        "revision": 0,
+        "ready": false,
+        "pending": [
+          1
+        ]
+      },
+      "error": "resolution watermark exceeds allocated inputs"
+    },
+    {
+      "op": "submit",
+      "args": {
+        "base": 2,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      },
+      "expect": {
+        "pending": [
+          1,
+          2
+        ],
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "trace": [
+          "send:1",
+          "predict:1",
+          "resync",
+          "send:2",
+          "authority:2"
+        ]
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": [
+          {
+            "base": 1,
+            "accepted": [
+              false
+            ]
+          },
+          {
+            "base": 2,
+            "accepted": [
+              false
+            ]
+          }
+        ],
+        "resolved_through": 2
+      },
+      "expect": {
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "watermark": 2,
+        "revision": 1,
+        "ready": true,
+        "pending": []
+      }
+    }
+  ]
+}

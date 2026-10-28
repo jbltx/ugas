@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "id": "A3-cancel-wins",
+  "description": "Cancel processed before success prevents commit.",
+  "model": "async",
+  "steps": [
+    {
+      "op": "start",
+      "args": {
+        "id": "A"
+      }
+    },
+    {
+      "op": "cancel",
+      "args": {
+        "id": "A"
+      }
+    },
+    {
+      "op": "resolve",
+      "args": {
+        "id": "A"
+      },
+      "expect": {
+        "mana": 100,
+        "commits": [],
+        "terminal": {
+          "A": "Cancelled"
+        },
+        "tags": []
+      }
+    }
+  ]
+}
