@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "id": "N2-included-before-outcome",
+  "description": "An included attempt is excluded from replay while its terminal outcome remains pending.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      }
+    },
+    {
+      "op": "submit",
+      "args": {
+        "base": 2,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 20
+          }
+        ]
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 80,
+          "cooldowns": ["2:0"],
+          "tags": ["2:0"],
+          "effects": []
+        },
+        "outcomes": [],
+        "included": [2]
+      },
+      "expect": {
+        "state": {
+          "mana": 70,
+          "cooldowns": ["2:0", "1:0"],
+          "tags": ["2:0", "1:0"],
+          "effects": []
+        },
+        "pending": [1, 2],
+        "journal": [1],
+        "history_frames": 1,
+        "watermark": 0
+      }
+    }
+  ]
+}

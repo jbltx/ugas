@@ -1,0 +1,452 @@
+=== 8. Gameplay Abilities
+
+==== 8.1 Ability Definition
+
+A Gameplay Ability is a self-contained unit of logic defining an action an Actor can perform. Unlike simple function calls, Abilities are asynchronous, stateful objects with defined lifecycles.
+
+===== Ability Class Structure
+
+[source,typescript]
+----
+abstract class GameplayAbility {
+  /** Tags describing this ability */
+  AbilityTags: TagContainer;
+
+  /** Tags that block this ability's activation */
+  BlockedByTags: TagContainer;
+
+  /** Tags that this ability blocks when active */
+  BlockAbilitiesWithTags: TagContainer;
+
+  /** Tags required on owner for activation */
+  ActivationRequiredTags: TagContainer;
+
+  /** Tags that prevent activation if present */
+  ActivationBlockedTags: TagContainer;
+
+  /**
+   * Tags applied to the owner while this ability is active.
+   * Implementations MUST apply these as an auto-generated Infinite GameplayEffect
+   * on CommitAbility and remove that effect on EndAbility/CancelAbility.
+   * Direct tag mutation is prohibited (see §3.1).
+   */
+  ActivationOwnedTags: TagContainer;
+
+  /** Cost effect applied on commit */
+  CostEffect?: GameplayEffectClass;
+
+  /** Cooldown effect applied on commit */
+  CooldownEffect?: GameplayEffectClass;
+
+  /** Called when ability is activated */
+  abstract ActivateAbility(context: AbilityContext): void;
+
+  /** Called when ability ends */
+  abstract EndAbility(wasCancelled: boolean): void;
+}
+----
+
+===== AbilitySpec (Instance Data)
+
+[source,typescript]
+----
+struct AbilitySpec {
+  /** Reference to the ability class */
+  AbilityClass: GameplayAbilityClass;
+
+  /** Current level of this ability instance */
+  Level: number;
+
+  /** Input action binding (if any) */
+  InputID?: InputID;
+
+  /** Handle for identification */
+  Handle: AbilitySpecHandle;
+
+  /** Runtime parameters */
+  Parameters: Map<string, any>;
+
+  /** Runtime attempt identity is separate from the reusable grant Handle. */
+  AttemptId?: uint64;
+  State: AbilityState;
+  ValidationDeadline?: number; // server monotonic milliseconds
+  TerminalOutcome?: "Accepted" | "Rejected" | "Cancelled";
+
+  /** Is currently active? PendingConfirmation is false. */
+  IsActive: boolean;
+
+  /**
+   * Handle to the auto-generated Infinite Effect that grants ActivationOwnedTags.
+   * Set by CommitAbility; cleared by EndAbility/CancelAbility.
+   * Undefined when the ability is not active.
+   */
+  ActiveOwnedTagsHandle?: ActiveEffectHandle;
+}
+----
+
+==== 8.2 Lifecycle State Machine
+
+The base lifecycle assumes the `Activating (Validating)` checks of §8.3 are synchronous: an ability that passes them proceeds straight to Commit (§8.4). Some activations, however, require *asynchronous* server-side validation (anti-cheat, remote inventory, entitlement/auth) whose result is not known synchronously. The `PendingConfirmation` state models that unresolved authoritative outcome; its full normative treatment, including the client-side prediction path, is in §8.8.
+
+`PendingConfirmation` sits between `Activating (Validating)` and `Commit`. Synchronous-only abilities skip it and go `Validating -> Commit` exactly as before; abilities that require asynchronous validation (§8.8) route through it. Under client-side prediction (§13.8) the predicting client may instead *speculatively* enter Active while the authoritative side holds the activation in `PendingConfirmation` until the server confirms or rejects the prediction key — the reject edge rolls the speculative activation back to `Granted` via §13.5.
+
+[source,mermaid]
+----
+flowchart TB
+    accTitle: Gameplay Ability lifecycle
+    accDescr: Granting enables activation. Synchronous checks may fail or route to asynchronous confirmation or commit. Failed validation or commit returns to Granted. Successful commit enters Active; ending or cancellation returns through Ending to Granted.
+    NotGranted -->|Grant| Granted
+    Granted -->|TryActivate| Validating["Validating<br/>Synchronous checks"]
+    Validating -->|Fail| Granted
+    Validating -->|Pass| AsyncRequired{"Async required?"}
+    AsyncRequired -->|Yes| PendingConfirmation
+    AsyncRequired -->|No| Commit[Recheck + Commit]
+    PendingConfirmation -->|Fail / cancel| Granted
+    PendingConfirmation -->|Success| Commit
+    Commit -->|Fail| Granted
+    Commit -->|Success| Active
+    Active -->|End / Cancel| Ending
+    Ending --> Granted
+----
+
+* Predicting client: capture first, then speculative Commit/Active.
+* Server: remain PendingConfirmation until validation and recheck succeed.
+* Success AND failure: reconcile authoritative state and replay eligible later inputs (§13.5).
+* Cancelled/ended local presentation is never resurrected by a late response.
+
+==== 8.3 Activation Requirements
+
+Before an Ability can activate, the following checks MUST pass:
+
+1. _Granted Check_: Ability must be granted to the GC
+2. _No Conflicting Activation_: A single-instance ability must be neither active nor pending validation. Multiple-instance abilities require separate attempt state for each instance.
+3. _Required Tags_: Owner must have all tags in `ActivationRequiredTags`
+4. _Blocked Tags_: Owner must NOT have any tags in `ActivationBlockedTags`
+5. _Cost Verification_: If CostEffect is defined, owner must have sufficient resources
+6. _Cooldown Verification_: Cooldown tag must not be present
+
+[source,typescript]
+----
+function CanActivateAbility(spec: AbilitySpec): boolean {
+  if (!IsStillGranted(spec) || HasConflictingActiveOrPendingAttempt(spec)) return false;
+  const ownerTags = GC.GetOwnedTags();
+
+  // Check required tags
+  if (!ownerTags.HasAll(spec.AbilityClass.ActivationRequiredTags)) {
+    return false;
+  }
+
+  // Check blocked tags
+  if (ownerTags.HasAny(spec.AbilityClass.ActivationBlockedTags)) {
+    return false;
+  }
+
+  // Check cooldown
+  if (ownerTags.MatchesTag(GetCooldownTag(spec))) {
+    return false;
+  }
+
+  // Check cost
+  if (!CanAffordCost(spec)) {
+    return false;
+  }
+
+  return true;
+}
+----
+
+==== 8.4 Commit Phase
+
+Commit is the serialized point at which authoritative resources are consumed and cooldowns
+begin. Recheck mutable activation requirements immediately before it, excluding only the
+current attempt from the pending-conflict check. Check and commit MUST run on the same GC
+mutation executor, without a yield between them. A failed commit MUST leave no partial cost,
+cooldown, or activation-tag effects and MUST NOT enter Active. Speculative client commit
+is reversible through §13.5. Once authoritative commit succeeds:
+
+1. Cost Effect is applied (resources consumed)
+2. Cooldown Effect is applied (cooldown tag granted)
+3. Activation Owned Tags are granted
+4. Ability proceeds to execution
+
+[source,typescript]
+----
+function CommitAbility(spec: AbilitySpec): boolean {
+  // Internal GC transaction: defer callbacks until the attempt is terminal (§8.8).
+  // On any failure roll back staged effects and return false.
+  const transaction = BeginCommitTransaction(spec);
+  if (!RecheckMutableRequirements(spec, spec.AttemptId)) return transaction.Fail();
+  // Apply cost
+  if (spec.AbilityClass.CostEffect) {
+    const costSpec = MakeOutgoingSpec(spec.AbilityClass.CostEffect, spec.Level);
+    if (!transaction.StageEffect(costSpec)) return transaction.Fail();
+  }
+
+  // Apply cooldown
+  if (spec.AbilityClass.CooldownEffect) {
+    const cooldownSpec = MakeOutgoingSpec(spec.AbilityClass.CooldownEffect, spec.Level);
+    if (!transaction.StageEffect(cooldownSpec)) return transaction.Fail();
+  }
+
+  // Grant activation tags via an auto-generated Infinite Effect.
+  // Direct tag mutation is prohibited (§3.1); all tag state flows through Effects.
+  if (!spec.AbilityClass.ActivationOwnedTags.IsEmpty()) {
+    const ownedTagsSpec = MakeOwnedTagsEffect(spec.AbilityClass.ActivationOwnedTags, spec.Level);
+    // On commit publish its handle as spec.ActiveOwnedTagsHandle.
+    if (!transaction.StageOwnedTagsEffect(ownedTagsSpec)) return transaction.Fail();
+  }
+
+  return transaction.Commit();
+}
+----
+
+==== 8.5 Costs and Cooldowns as Effects
+
+Costs and Cooldowns are NOT separate variables but are implemented as specialized Gameplay Effects.
+
+===== Cost Effect Pattern
+
+[source,yaml,subs="+attributes"]
+----
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_effect.json
+Name: "GE_Fireball_Cost"
+DurationPolicy: Instant
+Modifiers:
+  - Attribute: "Mana"
+    Operation: Add
+    Magnitude:
+      Type: ScalableFloat
+      Value: -50.0  # Negative to subtract
+----
+
+===== Cooldown Effect Pattern
+
+[source,yaml,subs="+attributes"]
+----
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_effect.json
+Name: "GE_Fireball_Cooldown"
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 5.0  # 5 second cooldown
+GrantedTags:
+  - "Cooldown.Ability.Fireball"
+----
+
+This pattern enables external modification of costs and cooldowns. For example, a "Mana Efficiency" buff could apply a multiplier to all cost effects:
+
+[source,yaml,subs="+attributes"]
+----
+$schema: https://ugas.jbltx.com/{ugas-version}/schemas/gameplay_effect.json
+Name: "GE_ManaEfficiency_Buff"
+DurationPolicy: HasDuration
+Duration:
+  Type: ScalableFloat
+  Value: 30.0
+Modifiers:
+  - Attribute: "ManaCostMultiplier"
+    Operation: Multiply
+    Magnitude:
+      Type: ScalableFloat
+      Value: -0.25  # -25% mana cost
+----
+
+==== 8.6 Cancellation and Interruption
+
+Abilities may be cancelled by:
+
+1. _Self-Cancellation_: Ability logic calls EndAbility(true)
+2. _External Cancel_: Another system calls CancelAbility on the GC
+3. _Cancel Tags_: An Effect grants a tag in the Ability's `CancelAbilitiesWithTags` set
+4. _Owner Death_: Owner's Health reaches zero
+
+[source,typescript]
+----
+function CancelAbility(handle: AbilitySpecHandle): void {
+  const spec = GetAbilitySpec(handle);
+  if (!spec.IsActive) return;
+
+  // Remove activation tags by removing the Effect that granted them.
+  // Direct tag mutation is prohibited (§3.1).
+  if (spec.ActiveOwnedTagsHandle) {
+    RemoveActiveGameplayEffect(spec.ActiveOwnedTagsHandle);
+    spec.ActiveOwnedTagsHandle = undefined;
+  }
+
+  // Call ability's end handler
+  spec.AbilityInstance.EndAbility(true /* wasCancelled */);
+
+  // Cleanup active tasks
+  CancelAllAbilityTasks(handle);
+
+  spec.IsActive = false;
+}
+----
+
+==== 8.7 Schema Definition
+
+[source,yaml]
+----
+Ability:
+  Name: string                    # Required: Unique identifier
+
+  Tags:
+    AbilityTags: [string]         # Tags describing this ability
+    BlockedByTags: [string]       # Tags that block activation
+    BlockAbilitiesWithTags: [string]  # Tags blocked while active
+    CancelAbilitiesWithTags: [string] # Tags cancelled on activation
+    ActivationRequiredTags: [string]  # Required for activation
+    ActivationBlockedTags: [string]   # Block activation if present
+    ActivationOwnedTags: [string]     # Granted while active
+
+  Cost: string                    # Effect name for cost
+  Cooldown: string                # Effect name for cooldown
+
+  AsyncValidation:                # Optional: async server validation (§8.8)
+    Required: boolean             # If true, route through PendingConfirmation
+    Kind: string                  # AntiCheat | RemoteInventory | Entitlement | Custom
+    TimeoutMs: number             # Positive monotonic ms; omitted uses finite adapter default
+    Predicted: boolean            # If true, client may speculatively Activate (§13.8)
+
+  Tasks:                          # Sequential task definitions
+    - Type: string                # Task type name
+      Params: object              # Task-specific parameters
+
+  Metadata:
+    DisplayName: string
+    Description: string
+    Icon: string
+----
+
+'''
+
+[[async-validation]]
+==== 8.8 Asynchronous Validation and Predicted Activation
+
+An activation may require an asynchronous server-side decision (anti-cheat, remote inventory,
+or entitlement). The optional `AsyncValidation` marker selects this path. When `Required`
+is absent or false, activation retains the synchronous §8.3 → §8.4 path. `Predicted` defaults
+to false; true requires `Required: true`. `Kind` remains an extensible adapter-defined string.
+
+[[pending-confirmation]]
+===== 8.8.1 The PendingConfirmation State
+
+An activation passing §8.3 with `AsyncValidation.Required == true` MUST enter
+`PendingConfirmation` before authoritative Commit. While pending it MUST NOT consume cost,
+start cooldown, grant ActivationOwnedTags, or execute authoritative gameplay Tasks.
+`IsActive` is false, but the pending attempt blocks another activation of a single-instance
+ability. Presentation-only wind-up is permitted. Multiple-instance abilities require distinct
+attempt records; one shared `spec.State` cannot represent several concurrent validations.
+
+Every activation has an immutable attempt ID distinct from its grant handle, even without
+client prediction. Callbacks, timeout/cancel messages, and prediction keys identify that
+attempt. IDs MUST NOT be reused within an epoch; stale messages cannot apply to a new attempt
+on the same grant. Ungrant, owner death/destruction, or disconnect MUST retire affected pending
+attempts and release their timers/reservations according to the adapter contract.
+
+An explicit `TimeoutMs` MUST be finite and greater than zero. If omitted, the adapter MUST
+supply and document a finite positive default. The server sets the deadline from its own
+monotonic clock at entry to pending. Timeout is elapsed real time, unaffected by gameplay
+pause or time scale. Async success at or after the deadline is failure, even if the timeout
+callback has not yet run. Client prediction has its separate, usually shorter, §13.8.2 window.
+
+===== 8.8.2 Transition Table
+
+[cols="2,2,4",options="header"]
+|===
+| From | To | Trigger
+| Validating | Commit → Active | Synchronous-only checks and commit succeed.
+| Validating | PendingConfirmation | Async required; synchronous checks pass; reserve an attempt ID.
+| Validating | Granted | Check/commit fails; no partial mutation survives.
+| PendingConfirmation | Commit → Active | Matching attempt succeeds before deadline, mutable requirements still pass, and commit succeeds.
+| PendingConfirmation | Granted (Fail) | Validation failure, deadline expiry, failed recheck, or failed commit.
+| PendingConfirmation | Granted (Cancel) | Cancellation, interruption, ungrant, or owner teardown wins before commit.
+| Speculative Active | Reconciled state | Authoritative success or failure via §13.5; local cost/timing may differ.
+|===
+
+Pending failure/cancellation consumes no authoritative resources. All exits terminalize the
+attempt exactly once. A terminal result cannot change merely because another callback arrives.
+A rejected parent attempt rejects dependent predicted children per §13.8.4.
+
+===== 8.8.3 Path A — Server-Authoritative Async Validation (No Prediction)
+
+Validation completion, timeout, cancellation, and commit MUST be serialized on the GC mutation
+executor. Checking an ID/state on a worker thread and committing later is not sufficient.
+After the wait, recheck grant/owner validity, tags, cost, cooldown, target eligibility, and any
+validation-result expiry. Ignore only the current attempt in the pending-conflict check.
+The recheck and §8.4 transaction cannot yield; two abilities cannot spend the same last resource.
+
+[source,typescript]
+----
+function StartAsyncActivation(spec: AbilitySpec, request: ActivationRequest): void {
+  // Runs on the GC mutation executor; SubmitOnce retransmits share request identity.
+  if (ReturnExistingOutcomeIfDuplicate(request)) return;
+  if (!CanActivateAbility(spec)) { RejectOnce(request); return; }
+  const attempt = RegisterPendingAttempt(spec, request, EffectiveTimeout(spec));
+  // Register pending state and timer BEFORE invoking a possibly synchronous callback.
+  BeginAsyncValidation(attempt.Id, result =>
+    GC.EnqueueMutation(() => ResolveValidation(spec, attempt.Id, result)));
+}
+
+function ResolveValidation(spec: AbilitySpec, id: AttemptId, result: ValidationResult): void {
+  const attempt = GetPendingAttempt(spec, id);
+  if (!attempt) return; // A cancelled, B pending: A's result cannot act on B.
+  if (!result.ok || MonotonicMillis() >= attempt.Deadline ||
+      !RecheckMutableRequirements(spec, id) || !CommitAbility(spec)) {
+    TerminalizeBeforeCallbacks(attempt, Rejected); // invalidate ID; cancel timer; cleanup
+    PublishOutcomeOnce(attempt);
+    return;
+  }
+  TerminalizeBeforeCallbacks(attempt, Accepted);
+  ActivateAbility(spec);
+  PublishOutcomeOnce(attempt); // complete group update, including authoritative state
+}
+----
+
+Commit stages effects and defers reentrant callbacks until terminalization. Cancellation
+processed before commit invalidates the attempt first, then attempts to abort the remote
+validation. Aborting is best effort: late results MUST be discarded. Cancellation processed
+after successful commit follows §8.6's active-ability cancellation policy, including its
+cost/cooldown rules; it cannot retroactively turn success into an uncommitted attempt.
+
+Remote inventory reservations or purchases require an adapter-defined idempotent
+reserve/commit/release protocol using the attempt ID. A local gameplay rollback cannot undo
+an external service transaction. The adapter MUST not treat an irreversible remote operation
+as speculative client work.
+
+===== 8.8.4 Path B — Client-Side Prediction
+
+When `AsyncValidation.Predicted == true`, the owning client MAY speculatively commit while
+the server holds PendingConfirmation. Use exactly the §13.4 request/prediction procedure:
+capture before any mutation, check eligibility and finite limits, then submit once whether
+or not prediction was possible. A window guard MUST NOT return before authority submission.
+The authoritative server commits only after successful validation and rechecking requirements.
+
+Both success and rejection feed the §13.5 reconciliation procedure, using the attempt's group
+and authoritative state revision. Success does not mean “no change”: cooldown timing, cost,
+targets, or intervening server state may differ. Rejection removes the speculative cost,
+cooldown, tags, and dependent effects. Do not restore an old attempt snapshot over later
+confirmed changes; rebuild the eligible replay suffix instead.
+
+A group result includes all Sub outcomes (§13.8.4). Parent success with child failure is
+permitted, but accepted children require accepted ancestors. Pending validation prevents a
+terminal group result and cannot advance the resolved-input watermark.
+
+===== 8.8.5 Interaction with Cancellation, Interruption, and the Prediction Window
+
+Cancel a pending authoritative attempt by matching ID, invalidate it before cleanup, stop its
+timer, and emit at most one terminal result. It has no committed cost/cooldown to reverse and
+no ActivationOwnedTags effect to remove. Stale success, cancellation, and timer callbacks
+MUST NOT affect a later attempt on the same grant.
+
+Client cancellation stops speculative presentation and sends an idempotent cancel for that
+attempt. The server determines whether cancel or commit won; replicated state may still show
+a cost/cooldown if commit won. A late confirmation MUST NOT resurrect an ended/cancelled local
+activation or emit its cues again. Terminal and presentation-retirement information survives
+local rollback until safe to retire under §13.8.5.
+
+Prediction expiry restores authoritative state and retires speculation; it does not cancel
+the remote request. Late authority may update state once but cannot execute the activation a
+second time. An ability whose expected validation delay exceeds the prediction window SHOULD
+use Path A to avoid routine visual correction.
+

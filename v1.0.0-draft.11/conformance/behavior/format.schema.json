@@ -1,0 +1,914 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UGAS behavioral conformance fixture v1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "model": {
+          "const": "rng"
+        },
+        "initial": {
+          "type": "object",
+          "properties": {
+            "seed": {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            },
+            "sub": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 256,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "next"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "raw",
+                          "float",
+                          "int"
+                        ]
+                      },
+                      "minimum": {
+                        "type": "integer"
+                      },
+                      "maximum": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "save"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op",
+                  "args"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "restore"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op",
+                  "args"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "observe"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {},
+                    "required": [],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "version",
+        "id",
+        "description",
+        "model",
+        "steps"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "model": {
+          "const": "async"
+        },
+        "initial": {
+          "type": "object",
+          "properties": {
+            "mana": {
+              "type": "number",
+              "minimum": 0
+            },
+            "default_timeout": {
+              "type": "number",
+              "minimum": 0
+            },
+            "max_requests": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1024
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 256,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "start"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "ability": {
+                        "type": "string"
+                      },
+                      "cost": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "timeout": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op",
+                  "args"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "resolve"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "ok": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op",
+                  "args"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "cancel"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op",
+                  "args"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "advance"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "milliseconds": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "fire_timers": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "milliseconds"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op",
+                  "args"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "change"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "mana": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "blocked": {
+                        "type": "boolean"
+                      },
+                      "granted": {
+                        "type": "boolean"
+                      },
+                      "commit_fails": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "observe"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {},
+                    "required": [],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "version",
+        "id",
+        "description",
+        "model",
+        "steps"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "model": {
+          "const": "prediction"
+        },
+        "initial": {
+          "type": "object",
+          "properties": {
+            "mana": {
+              "type": "number",
+              "minimum": 0
+            },
+            "max_millis": {
+              "type": "number",
+              "minimum": 0
+            },
+            "max_frames": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "max_actions": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "max_requests": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "epoch": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "owner": {
+              "type": "string"
+            },
+            "period_ms": {
+              "type": "number",
+              "minimum": 0
+            },
+            "tick_mana": {
+              "type": "number"
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 256,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "submit"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "base": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 4294967295
+                      },
+                      "nodes": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "sub": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "parent": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ],
+                              "minimum": 0
+                            },
+                            "cost": {
+                              "type": "number",
+                              "minimum": 0
+                            },
+                            "target": {
+                              "type": "string"
+                            },
+                            "authority_only": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "sub",
+                            "parent",
+                            "cost"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "minItems": 1,
+                        "maxItems": 128
+                      },
+                      "predictable": {
+                        "type": "boolean"
+                      },
+                      "local_failure": {
+                        "type": "boolean"
+                      },
+                      "late_nonpredictable": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "base",
+                      "nodes"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op",
+                  "args"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "advance"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "milliseconds": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "frames": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Defaults to 1. Zero advances only the monotonic clock and checks expiry, without changing gameplay, recording a timer step, or resetting action capacity."
+                      },
+                      "simulation_ms": {
+                        "type": "number",
+                        "minimum": 0,
+                        "description": "Simulation time for advancing frames; defaults to milliseconds. With frames=0 it must be absent or zero; a positive value is a runtime error."
+                      }
+                    },
+                    "required": [
+                      "milliseconds"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op",
+                  "args"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "receipt"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "base": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 4294967295
+                      }
+                    },
+                    "required": [
+                      "base"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op",
+                  "args"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "cancel"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "base": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 4294967295
+                      }
+                    },
+                    "required": [
+                      "base"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op",
+                  "args"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "update"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "revision": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "state": {
+                        "type": "object",
+                        "properties": {
+                          "mana": {
+                            "type": "number"
+                          },
+                          "cooldowns": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "tags": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "effects": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "period": {
+                            "type": "object",
+                            "properties": {
+                              "elapsed": {
+                                "type": "number",
+                                "minimum": 0
+                              },
+                              "count": {
+                                "type": "integer",
+                                "minimum": 0
+                              }
+                            },
+                            "required": [
+                              "elapsed",
+                              "count"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "mana",
+                          "cooldowns",
+                          "tags",
+                          "effects"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "outcomes": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "base": {
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 4294967295
+                            },
+                            "accepted": {
+                              "type": "array",
+                              "items": {
+                                "type": "boolean"
+                              }
+                            }
+                          },
+                          "required": [
+                            "base",
+                            "accepted"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "resolved_through": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "included": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 4294967295
+                        }
+                      },
+                      "complete_history": {
+                        "type": "boolean"
+                      },
+                      "epoch": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "owner": {
+                        "type": "string"
+                      },
+                      "checkpoint_frame": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "revision",
+                      "state",
+                      "outcomes"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op",
+                  "args"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "reconnect"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {
+                      "epoch": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "owner": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "epoch"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op",
+                  "args"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "op": {
+                    "const": "observe"
+                  },
+                  "args": {
+                    "type": "object",
+                    "properties": {},
+                    "required": [],
+                    "additionalProperties": false
+                  },
+                  "expect": {
+                    "type": "object",
+                    "minProperties": 1
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "op"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "version",
+        "id",
+        "description",
+        "model",
+        "steps"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

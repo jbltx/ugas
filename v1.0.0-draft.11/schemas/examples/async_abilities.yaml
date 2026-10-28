@@ -1,0 +1,15 @@
+$schema: https://ugas.jbltx.com/v1.0.0-draft.11/schemas/gameplay_ability.json
+Name: ServerValidatedAbility
+AsyncValidation:
+  Required: true
+  Kind: RemoteInventory
+  TimeoutMs: 5000
+  Predicted: false
+---
+$schema: https://ugas.jbltx.com/v1.0.0-draft.11/schemas/gameplay_ability.json
+Name: PredictedValidatedAbility
+AsyncValidation:
+  Required: true
+  Kind: AntiCheat
+  TimeoutMs: 200
+  Predicted: true

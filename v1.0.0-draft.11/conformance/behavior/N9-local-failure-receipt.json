@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "id": "N9-local-failure-receipt",
+  "description": "Local failure unwinds partial cost; receipt cannot resolve a different pending input.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      }
+    },
+    {
+      "op": "submit",
+      "args": {
+        "base": 2,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ],
+        "local_failure": true
+      },
+      "expect": {
+        "state": {
+          "mana": 90,
+          "cooldowns": [
+            "1:0"
+          ],
+          "tags": [
+            "1:0"
+          ],
+          "effects": []
+        },
+        "journal": [
+          1
+        ]
+      }
+    },
+    {
+      "op": "receipt",
+      "args": {
+        "base": 1
+      },
+      "expect": {
+        "watermark": 0,
+        "journal": [
+          1
+        ],
+        "pending": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "op": "observe",
+      "expect": {
+        "watermark": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "id": "R4-authority-fallback",
+  "description": "Unavailable seed/profile/query or known non-predictable calculation declines prediction.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ],
+        "predictable": false
+      },
+      "expect": {
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "journal": [],
+        "trace": [
+          "send:1",
+          "authority:1"
+        ]
+      }
+    },
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ],
+        "predictable": false
+      },
+      "expect": {
+        "trace": [
+          "send:1",
+          "authority:1"
+        ]
+      }
+    }
+  ]
+}

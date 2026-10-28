@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "id": "N1-rejected-cost",
+  "description": "Rejection restores cost, cooldown and activation tags from before prediction.",
+  "model": "prediction",
+  "steps": [
+    {
+      "op": "submit",
+      "args": {
+        "base": 1,
+        "nodes": [
+          {
+            "sub": 0,
+            "parent": null,
+            "cost": 10
+          }
+        ]
+      },
+      "expect": {
+        "state": {
+          "mana": 90,
+          "cooldowns": [
+            "1:0"
+          ],
+          "tags": [
+            "1:0"
+          ],
+          "effects": []
+        }
+      }
+    },
+    {
+      "op": "update",
+      "args": {
+        "revision": 1,
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "outcomes": [
+          {
+            "base": 1,
+            "accepted": [
+              false
+            ]
+          }
+        ],
+        "resolved_through": 1
+      },
+      "expect": {
+        "state": {
+          "mana": 100,
+          "cooldowns": [],
+          "tags": [],
+          "effects": []
+        },
+        "pending": [],
+        "journal": []
+      }
+    }
+  ]
+}

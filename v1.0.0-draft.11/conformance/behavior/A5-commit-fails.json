@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "id": "A5-commit-fails",
+  "description": "A failed commit has no partial resource/tag/cooldown changes.",
+  "model": "async",
+  "steps": [
+    {
+      "op": "start",
+      "args": {
+        "id": "A"
+      }
+    },
+    {
+      "op": "change",
+      "args": {
+        "commit_fails": true
+      }
+    },
+    {
+      "op": "resolve",
+      "args": {
+        "id": "A"
+      },
+      "expect": {
+        "mana": 100,
+        "commits": [],
+        "tags": [],
+        "cooldowns": [],
+        "terminal": {
+          "A": "Rejected"
+        }
+      }
+    }
+  ]
+}

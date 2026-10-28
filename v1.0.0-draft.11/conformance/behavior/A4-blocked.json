@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "id": "A4-blocked",
+  "description": "Requirements change while waiting; success cannot commit stale validation.",
+  "model": "async",
+  "steps": [
+    {
+      "op": "start",
+      "args": {
+        "id": "A"
+      }
+    },
+    {
+      "op": "change",
+      "args": {
+        "blocked": true
+      }
+    },
+    {
+      "op": "resolve",
+      "args": {
+        "id": "A"
+      },
+      "expect": {
+        "commits": [],
+        "pending": [],
+        "tags": []
+      }
+    }
+  ]
+}

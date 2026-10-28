@@ -1,0 +1,8 @@
+{
+  "$schema": "https://ugas.jbltx.com/v1.0.0-draft.11/schemas/gameplay_ability.json",
+  "Name": "ability_async_zero_timeout",
+  "AsyncValidation": {
+    "Required": true,
+    "TimeoutMs": 0
+  }
+}

@@ -1,0 +1,5 @@
+== Part V: Reference Implementation
+
+include::part-5-reference-implementation/15-implementation-examples.adoc[]
+
+include::part-5-reference-implementation/16-case-studies.adoc[]

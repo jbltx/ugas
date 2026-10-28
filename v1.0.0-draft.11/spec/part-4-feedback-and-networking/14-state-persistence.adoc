@@ -1,0 +1,262 @@
+=== 14. State Persistence
+
+==== 14.1 Overview
+
+UGAS defines a persistence protocol so that the runtime state of a Gameplay Controller — attributes, active effects, granted abilities, and owned tags — can be captured, serialized, and restored. The primary use cases are:
+
+- _Save / Load_ in single-player games ("save anywhere" support)
+- _Reconnection_ in multiplayer — restoring a player's GC after a disconnect
+- _Server migration_ — transferring authoritative GC state between server processes
+- _Replay systems_ — recording and replaying gameplay state at arbitrary points
+
+Attribute Sets are the serialization boundary for attribute data (§6.1). This section defines the complementary protocol for active effect state, which is the primary source of complexity in GC persistence.
+
+==== 14.2 GC State Snapshot
+
+A complete GC snapshot MUST contain:
+
+[cols="2,3,2",options="header"]
+|===
+| Component
+| Content
+| Restoration Order
+
+| Attribute Sets
+| Base Values for every registered attribute
+| 1 — restore first
+
+| Active Effects
+| One `ActiveEffectRecord` per active effect (see §14.3)
+| 2 — re-apply after attributes
+
+| Granted Abilities
+| Ability class, level, input binding, grant source
+| 3 — after effects (some are effect-granted)
+
+| Owned Tags
+| Tag grant counts
+| Derived — reconstructed from restored effects
+|===
+
+Current Values and Owned Tags are _derived state_: they are recomputed when active effects are re-applied to the restored Base Values. Implementations MUST NOT serialize Current Values or tag grant counts as authoritative state; they exist in the snapshot only for debugging and validation.
+
+[source,typescript]
+----
+struct GCSnapshot {
+  /** Monotonic snapshot version for forward-compatibility checks */
+  Version: integer;
+
+  /** Reference to the snapshotted GC */
+  OwnerActorID: string;
+
+  /** Wall-clock or game-time at capture */
+  CaptureTimestamp: number;
+
+  /** Base Values, keyed by AttributeSet then Attribute name */
+  AttributeSets: SerializedAttributeSet[];
+
+  /** Every active (non-Instant) effect */
+  ActiveEffects: ActiveEffectRecord[];
+
+  /** Granted abilities not sourced from an active effect */
+  GrantedAbilities: SerializedAbilityGrant[];
+}
+----
+
+==== 14.3 Active Effect Record
+
+Each active effect (`HasDuration` or `Infinite`) is serialized as an `ActiveEffectRecord`. Instant effects modify Base Values directly and leave no active state; they are captured implicitly via the attribute snapshot.
+
+[source,typescript]
+----
+struct ActiveEffectRecord {
+  /** Unique handle — preserved across save/load for external references */
+  Handle: string;
+
+  /** Effect class identifier (references a GameplayEffect definition) */
+  EffectClass: string;
+
+  /** Duration policy of the originating effect */
+  DurationPolicy: "HasDuration" | "Infinite";
+
+  /** Effect level at time of application */
+  Level: integer;
+
+  /** GC that applied this effect */
+  InstigatorGC: string;
+
+  /** Ability that applied this effect (if any) */
+  SourceAbility?: string;
+
+  /** Remaining duration in seconds. Present only for HasDuration effects. */
+  RemainingDuration?: number;
+
+  /** Periodic execution state. Present only for periodic effects. */
+  PeriodicState?: PeriodicExecutionState;
+
+  /** Execution policy state for multi-instance effects */
+  ExecutionPolicyState?: ExecutionPolicyState;
+
+  /** Number of active instances (RunInParallel) or queued+active instances (RunInSequence) */
+  InstanceCount: integer;
+
+  /** Attribute values captured OnApplication (frozen at apply-time) */
+  CapturedAttributes?: Map<string, number>;
+
+  /** SetByCaller magnitudes set at application time */
+  SetByCallerMagnitudes?: Map<string, number>;
+}
+----
+
+===== 14.3.1 Duration Encoding
+
+`HasDuration` effects MUST serialize remaining time as _seconds remaining_, not as an absolute wall-clock or game-time deadline.
+
+[cols="2,3",options="header"]
+|===
+| Field
+| Semantics
+
+| `RemainingDuration`
+| Seconds of effect time remaining at the moment of capture. On restore, the effect timer resumes from this value.
+|===
+
+Rationale: absolute timestamps couple serialized state to the clock source. Remaining-seconds is portable across sessions, servers, and time zones. The `CaptureTimestamp` on the snapshot provides the reference point if an implementation needs to compute how much time has elapsed since capture (e.g., to expire effects during an offline period — see §14.5).
+
+===== 14.3.2 Infinite Effect Intent
+
+Infinite effects have no expiry timer, which raises a cleanup concern: is an Infinite effect _intended to persist indefinitely_ (e.g., an equipment passive) or was it _leaked_ by a bug?
+
+The serialization protocol addresses this through provenance tracking: every `ActiveEffectRecord` with `DurationPolicy: Infinite` MUST carry an `InstigatorGC`, a `SourceAbility`, or both. On restoration, implementations SHOULD validate that the instigator and/or source ability still exist. If neither reference resolves, the implementation SHOULD log a warning and MAY discard the effect.
+
+Implementations MAY additionally define a `Gameplay.Effect.Persistent` tag on effect definitions that are _designed_ to survive serialization boundaries. Effects without this tag MAY be stripped during save if the game design requires it (e.g., clearing temporary combat buffs on zone transition or session end). This is a game-design decision, not a spec mandate — the tag provides a declarative mechanism for expressing the intent.
+
+===== 14.3.3 Periodic Execution State
+
+For effects with `Period` settings (§9.3), the serialization record MUST capture where the effect is within its current period cycle:
+
+[source,typescript]
+----
+struct PeriodicExecutionState {
+  /** Seconds elapsed since the last periodic execution */
+  PeriodElapsed: number;
+
+  /** Total number of periodic executions that have fired */
+  ExecutionCount: integer;
+}
+----
+
+On restoration:
+
+1. The period timer resumes from `PeriodElapsed`, counting toward the next execution at the configured `Period` interval.
+2. The effect MUST NOT re-execute for the current period on load. A periodic tick fires only when the resumed timer reaches the next period boundary.
+3. `ExecutionCount` is preserved for effects whose logic depends on how many times they have executed (e.g., escalating damage over time).
+
+===== 14.3.4 Execution Policy State
+
+====== RunInParallel
+
+Each concurrent instance is serialized as an independent `ActiveEffectRecord` sharing the same `EffectClass`. `InstanceCount` records the total number of simultaneously active instances. On restore, all instances resume independently with their own timers.
+
+====== RunInSequence
+
+Queued instances that are waiting (not yet active) MUST also be serialized. The queue is represented by an ordered list of handles:
+
+[source,typescript]
+----
+struct SequenceQueueState {
+  /** Ordered handles of instances — first element is the currently active instance */
+  Queue: string[];
+}
+----
+
+The active instance (head of the queue) carries its own `RemainingDuration` and `PeriodicState`. Queued instances retain their full configured duration — they have not started yet. On restore, the GC reconstructs the queue: the head instance resumes with its saved timer state, and queued instances wait in order.
+
+====== RunInMerge
+
+A merged effect is a single logical instance regardless of how many times it was applied. The serialized record carries the merged remaining duration (time until the latest-ending application would have expired) and the merge count:
+
+[source,typescript]
+----
+struct MergeState {
+  /** Number of applications that were merged into this instance */
+  MergeCount: integer;
+}
+----
+
+==== 14.4 Restoration Protocol
+
+Restoring a GC from a snapshot MUST follow this sequence:
+
+1. **Restore Attribute Base Values.** For each `SerializedAttributeSet`, set each attribute's Base Value. Do NOT recompute Current Values yet.
+
+2. **Re-apply Active Effects.** For each `ActiveEffectRecord`, reconstruct the `EffectSpec` from the stored `EffectClass` definition, `Level`, `SetByCallerMagnitudes`, and `CapturedAttributes`. Apply the effect to the GC using the restoration overrides (duration from `RemainingDuration`, periodic state from `PeriodicState`). The effect pipeline runs normally — modifiers are added, Tags are granted, Abilities are granted — but timers are initialized from the serialized state rather than from the effect's configured values.
+
+3. **Restore Granted Abilities.** Re-grant abilities that were not sourced from an active effect. Effect-granted abilities are restored automatically in step 2.
+
+4. **Recompute Current Values.** With all modifiers back in place, trigger a full attribute recalculation. The resulting Current Values SHOULD match the pre-save state.
+
+5. **Validate.** Implementations SHOULD compare restored Current Values and Owned Tags against any debug/validation copies stored in the snapshot. Mismatches indicate a restoration error or a data definition change between save and load.
+
+[source,typescript]
+----
+function RestoreGC(gc: GameplayController, snapshot: GCSnapshot): void {
+  // 1. Attributes
+  for (const set of snapshot.AttributeSets) {
+    const attrSet = gc.GetAttributeSet(set.Name);
+    for (const attr of set.Attributes) {
+      attrSet.SetBaseValue(attr.Name, attr.BaseValue);
+    }
+  }
+
+  // 2. Active Effects — order matters for RunInSequence queues
+  for (const record of snapshot.ActiveEffects) {
+    const spec = ReconstructEffectSpec(record);
+    gc.ApplyGameplayEffect(spec, {
+      ResumeRemainingDuration: record.RemainingDuration,
+      ResumePeriodicState: record.PeriodicState,
+      RestoredHandle: record.Handle
+    });
+  }
+
+  // 3. Non-effect-granted Abilities
+  for (const grant of snapshot.GrantedAbilities) {
+    gc.GrantAbility(grant.AbilityClass, grant.Level, grant.InputID);
+  }
+
+  // 4. Recompute
+  gc.RecalculateAllAttributes();
+}
+----
+
+==== 14.5 Offline Duration Advancement
+
+For single-player games where real time passes between save and load (e.g., mobile idle games), implementations MAY advance effect timers by the elapsed real time:
+
+[source,typescript]
+----
+function AdvanceOfflineTime(
+  snapshot: GCSnapshot,
+  currentTime: number
+): void {
+  const elapsed = currentTime - snapshot.CaptureTimestamp;
+
+  for (const record of snapshot.ActiveEffects) {
+    if (record.DurationPolicy === "HasDuration" && record.RemainingDuration != null) {
+      record.RemainingDuration -= elapsed;
+      if (record.RemainingDuration <= 0) {
+        // Effect expired while offline — remove from snapshot before restore
+        continue;
+      }
+    }
+    if (record.PeriodicState) {
+      record.PeriodicState.PeriodElapsed += elapsed;
+    }
+  }
+}
+----
+
+Whether to execute missed periodic ticks (batch-fire accumulated executions) or simply advance the timer is a game-design decision. The spec does not mandate either behavior; implementations SHOULD document their choice.
+
+'''
+

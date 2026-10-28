@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "id": "A4-pending-conflict",
+  "description": "Single-instance pending state blocks a second attempt; request retransmission is idempotent.",
+  "model": "async",
+  "steps": [
+    {
+      "op": "start",
+      "args": {
+        "id": "A"
+      }
+    },
+    {
+      "op": "start",
+      "args": {
+        "id": "A"
+      }
+    },
+    {
+      "op": "start",
+      "args": {
+        "id": "B"
+      },
+      "expect": {
+        "pending": [
+          "A"
+        ],
+        "terminal": {
+          "B": "Rejected"
+        },
+        "mana": 100
+      }
+    },
+    {
+      "op": "resolve",
+      "args": {
+        "id": "A"
+      },
+      "expect": {
+        "commits": [
+          "A"
+        ],
+        "mana": 90
+      }
+    }
+  ]
+}
